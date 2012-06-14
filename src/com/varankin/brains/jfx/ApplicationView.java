@@ -3,7 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.appl.LoggingHandler;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
-import java.io.IOException;
+
 import java.util.logging.Level;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -16,13 +16,12 @@ import javafx.scene.layout.*;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-public class ApplicationView extends Scene
+class ApplicationView extends Scene
 {
 
-    public ApplicationView( JavaFX jfx )
+    ApplicationView( JavaFX jfx )
     {
-        super( newRoot( new Context( jfx ) ) );
-        //Context context = new Context( контекст );
+        super( new ContentPane( new Context( jfx ) ) );
         Текст словарь = Текст.ПАКЕТЫ.словарь( ApplicationView.class, jfx.контекст.специфика );
         
         //TODO Позиционер
@@ -39,7 +38,7 @@ public class ApplicationView extends Scene
      */
     static public final class Context
     {
-        public final JavaFX jfx;
+        final JavaFX jfx;
         public final ActionFactory actions;
 //        private Scene frame;
 
@@ -60,51 +59,82 @@ public class ApplicationView extends Scene
 //        }
     }
 
-    static private Region newRoot( Context context )
+    static private class ContentPane extends BorderPane
     {
-        Контекст контекст = context.jfx.контекст;
-
-        BorderPane root = new BorderPane();
-        // меню приложения
-        MenuBar mb = new ApplicationMenuBar( context );
-        root.setTop( mb );
+        ContentPane( Context context )
+        {
+            setTop( top( context ) );
+            setCenter( center( context ) );
+        }
         
-        // навигатор по модели данных
-        BrowserView навигатор = new BrowserView( context );
-        StackPane spbv = new StackPane();
-        spbv.getChildren().add( навигатор );
-
-        // окно просмотра
-        TextArea просмотр = new TextArea( "preview" );
-        Pane sppw = new StackPane();
-        sppw.getChildren().add( просмотр );
+        static Node top( Context context )
+        {
+            // меню приложения
+            MenuBar mb = new ApplicationMenuBar( context );
+            return mb;
+        }
         
-        // консоль сообщений
-        int limit = Integer.valueOf( контекст.параметр( "frame.console.rows.buffer", "5" ) );//"50"
-        TextArea табло = new Табло( limit );
-        LoggingHandler информатор = new LoggingHandler( new LoggingAgent( 
-                табло ) );//, RED, BLUE, null, null, null, null, null ) );
-        информатор.setLevel( Level.INFO ); //TODO setup
-        контекст.регистратор().addHandler( информатор );
-        ScrollPane spoc = new ScrollPane();
-        spoc.setContent( табло );
-        spoc.setFitToHeight( true );
-        spoc.setFitToWidth( true );
+        static Node left( Context context )
+        {
+            // панель обозревателей
+            
+            BrowserView навигатор = new BrowserView( context ); // навигатор по модели данных
 
-        // блоки, регулируемые по размеру
-        Integer шр = Integer.valueOf( контекст.параметр( "frame.divider.size",  "4" ) ); //TODO 
-        SplitPane блок1 = new SplitPane();
-        блок1.setOrientation( Orientation.HORIZONTAL );
-        блок1.setDividerPosition( 0, 0.3 );
-        //блок1.getDividers().get(0).setMaxWidth( шр.doubleValue() );
-        блок1.getItems().addAll( spbv, sppw );
-        SplitPane блок2 = new SplitPane();
-        блок2.setOrientation( Orientation.VERTICAL );
-        блок2.setDividerPosition( 0, 0.8 );
-        блок2.getItems().addAll( блок1, spoc );
-        root.setCenter( блок2 );
+            CatalogView архиватор = new CatalogView( context ); // навигатор по архиву модулей
+
+            TitledPane pane0 = new TitledPane( "Project Explorer", навигатор );
+            TitledPane pane1 = new TitledPane( "Archived Modules", архиватор );
+            Accordion обозреватели = new Accordion();
+            обозреватели.getPanes().addAll( pane0, pane1 );
+            обозреватели.setExpandedPane( pane0 );
+            return обозреватели;
+        }
         
-        return root;
+        static Node right( Context context )
+        {
+            // окно просмотра
+            TextArea просмотр = new TextArea( "preview" );
+            Pane sppw = new StackPane();
+            sppw.getChildren().add( просмотр );
+            return sppw;
+        }
+        
+        static Node center( Context context )
+        {
+            // три вложенных блока, регулируемых по размеру пользователем
+//            Integer шр = Integer.valueOf( context.jfx.контекст.параметр( "frame.divider.size",  "4" ) ); //TODO 
+            
+            SplitPane блок1 = new SplitPane();
+            блок1.setOrientation( Orientation.HORIZONTAL );
+            блок1.setDividerPosition( 0, 0.3 );
+            блок1.getItems().addAll( left( context ), right( context ) );
+            
+            SplitPane блок2 = new SplitPane();
+            блок2.setOrientation( Orientation.VERTICAL );
+            блок2.setDividerPosition( 0, 0.8 );
+            блок2.getItems().addAll( блок1, bottom( context ) );
+            
+            return блок2;
+        }
+        
+        static Node bottom( Context context )
+        {
+//            // консоль сообщений
+            Контекст контекст = context.jfx.контекст;
+            int limit = Integer.valueOf( контекст.параметр( "frame.console.rows.buffer", "5" ) );//"50"
+            TextArea табло = new Табло( limit );
+            LoggingHandler информатор = new LoggingHandler( new LoggingAgent( 
+                    табло ) );//, RED, BLUE, null, null, null, null, null ) );
+            информатор.setLevel( Level.INFO ); //TODO setup
+            контекст.регистратор().addHandler( информатор );
+            ScrollPane spoc = new ScrollPane();
+            spoc.setContent( табло );
+            spoc.setFitToHeight( true );
+            spoc.setFitToWidth( true );
+
+            return spoc;
+        }
+        
     }
     
 }
