@@ -32,7 +32,7 @@ class ApplicationActionStop extends Action
         context.actions.getPause().setEnabled( false );
         context.actions.getStop() .setEnabled( false );
         
-        new ApplicationActionWorker( действие, context.jfx ).execute();
+        new ApplicationActionWorker( действие, context.jfx.контекст, context.jfx ).execute();
     }
 
 }

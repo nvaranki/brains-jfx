@@ -3,6 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.Мыслитель;
 import com.varankin.brains.appl.УстановитьСостояние;
+import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
 import javafx.event.ActionEvent;
 
@@ -14,7 +15,7 @@ import javafx.event.ActionEvent;
 class ApplicationActionStart extends Action
 {
     private final ApplicationView.Context context;
-    private final Действие<com.varankin.brains.Контекст> действие;
+    private final Действие<Контекст> действие;
 
     ApplicationActionStart( ApplicationView.Context context )
     {
@@ -32,7 +33,7 @@ class ApplicationActionStart extends Action
         context.actions.getPause().setEnabled( true  );
         context.actions.getStop() .setEnabled( true  );
         
-        new ApplicationActionWorker( действие, context.jfx ).execute();
+        new ApplicationActionWorker( действие, context.jfx.контекст, context.jfx ).execute();
     }
 
 }

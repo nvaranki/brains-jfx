@@ -159,14 +159,14 @@ class ApplicationActionImportXml extends Action
         
         Агент( Provider<InputStream> поставщик, String заголовок )
         {
-            super( new Импортировать( поставщик ), jfx );
+            super( new Импортировать( поставщик ), jfx.контекст, jfx );
             this.поставщик = поставщик;
             updateTitle( заголовок );
         }
         
         Агент( Агент прототип )
         {
-            super( new Импортировать( прототип.поставщик ), jfx );
+            super( new Импортировать( прототип.поставщик ), jfx.контекст, jfx );
             this.поставщик = прототип.поставщик;
             updateTitle( прототип.getTitle() );
         }

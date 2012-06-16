@@ -2,7 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.*;
 import com.varankin.brains.appl.ResultLogger;
-import com.varankin.brains.Контекст;
+
 import javafx.concurrent.Task;
 
 /**
@@ -10,21 +10,25 @@ import javafx.concurrent.Task;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionWorker extends Task<Результат>
+class ApplicationActionWorker<КОНТЕКСТ> extends Task<Результат>
 {
-    private final Действие<Контекст> действие;
+    private final Действие<КОНТЕКСТ> действие;
+    private final КОНТЕКСТ контекст;
     private final JavaFX jfx;
+    private Action[] участники;
 
-    ApplicationActionWorker( Действие<Контекст> действие, JavaFX jfx )
+    ApplicationActionWorker( Действие<КОНТЕКСТ> действие, КОНТЕКСТ контекст, JavaFX jfx, Action... участники )
     {
         this.действие = действие;
+        this.контекст = контекст;
         this.jfx = jfx;
+        this.участники = участники;
     }
     
     @Override
     protected Результат call() throws Exception
     {
-        return действие.выполнить( jfx.контекст );
+        return действие.выполнить( контекст );
     }
     
     @Override
@@ -61,14 +65,25 @@ class ApplicationActionWorker extends Task<Результат>
     protected void finished()
     {
         // "abstract" method
+        setDependentActionsEnabled( true );
     }
 
     /**
      * Convenience method simulating SwingWorker.execute().
+     * 
+     * @param участники действия, которые следует заблокировать на время выполнения.
      */
-    void execute()
+    void execute( Action... участники )
     {
+        if( участники.length > 0 ) this.участники = участники;
+        setDependentActionsEnabled( false );
         jfx.getExecutorService().execute( this );
+    }
+
+    private void setDependentActionsEnabled( boolean статус )
+    {
+        for( Action участник : участники )
+            участник.setEnabled( статус );
     }
 
 }

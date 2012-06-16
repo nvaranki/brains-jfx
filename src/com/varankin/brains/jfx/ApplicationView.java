@@ -40,12 +40,14 @@ class ApplicationView extends Scene
     {
         final JavaFX jfx;
         public final ActionFactory actions;
+        final MenuFactory menuFactory;
 //        private Scene frame;
 
         private Context( JavaFX jfx )
         {
             this.jfx = jfx;
             this.actions = new ActionFactory( this );
+            this.menuFactory = new MenuFactory( jfx );
         }
         
 //        private void setScene( Scene value )

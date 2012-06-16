@@ -12,29 +12,21 @@ import javafx.event.ActionEvent;
 class ApplicationActionClean extends Action
 {
     private final ActionFactory actions;
+    private Очистить действие;
 
     ApplicationActionClean( ApplicationView.Context context )
     {
         super( context.jfx, Текст.ПАКЕТЫ.словарь( ApplicationActionClean.class, 
                 context.jfx.контекст.специфика ) );
         actions = context.actions;
+        действие = new Очистить();
     }
 
     @Override
     public void handle( ActionEvent _ )
     {
-        actions.getLoad() .setEnabled( false );
-        actions.getClean().setEnabled( false );
-        
-        new ApplicationActionWorker( new Очистить(), jfx )
-        {
-            @Override
-            protected void finished()
-            {
-                actions.getLoad() .setEnabled( true );
-                actions.getClean().setEnabled( true );
-            }
-        }.execute();
+        new ApplicationActionWorker( действие, jfx.контекст, jfx, 
+                actions.getLoad(), actions.getClean() ).execute();
     }
 
 }

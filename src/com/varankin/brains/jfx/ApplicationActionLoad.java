@@ -36,18 +36,8 @@ class ApplicationActionLoad extends Action
     @Override
     public void handle( ActionEvent event )
     {
-        context.actions.getLoad() .setEnabled( false );
-        context.actions.getClean().setEnabled( false );
-        
-        new ApplicationActionWorker( действие, context.jfx )
-        {
-            @Override
-            protected void finished()
-            {
-                context.actions.getLoad() .setEnabled( true );
-                context.actions.getClean().setEnabled( true );
-            }
-        }.execute();
+        new ApplicationActionWorker( действие, context.jfx.контекст, context.jfx,
+                context.actions.getLoad(), context.actions.getClean() ).execute();
     }
     
 }
