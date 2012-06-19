@@ -1,44 +1,39 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.biz.action.Результат;
+import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Модуль;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
+import com.varankin.util.Текст;
 
 import java.util.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
+import javafx.beans.binding.BooleanBinding;
+import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
 /**
+ * Каталог модулей архива.
  *
- *
- * @author &copy; 2011 Николай
+ * @author &copy; 2012 Николай Варанкин
  */
 class CatalogView extends ListView<Модуль>
 {
     private final Архив склад;
+    private final ApplicationView.Context context;
 
     CatalogView( ApplicationView.Context context )
     {
-        getSelectionModel().setSelectionMode( SelectionMode.SINGLE );
-        setContextMenu( context.menuFactory.createContextMenu( popup( context ) ) );
-        Popup contextMenu = new Popup();
-        getSelectionModel().selectedItemProperty().addListener( contextMenu.getChangeListener() );//getSelectionListener() );
-        //this.getSelectionModel().
-        //setContextMenu( contextMenu );
-        setCellFactory( new Callback<ListView<Модуль>, ListCell<Модуль>>() 
-        {
-            @Override
-            public ListCell<Модуль> call( ListView<Модуль> view )
-            {
-                return new VisibleRow();
-            }
-        } );
+        this.context = context;
+        getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
+        setContextMenu( context.menuFactory.createContextMenu( popup() ) );
+                
+        setCellFactory( new RowBuilder() );
         
         склад = context.jfx.контекст.склад;
         populate( ); //TODO sep. thread
+        //Текст словарь = Текст.ПАКЕТЫ.словарь( CatalogView.class, context.jfx.контекст.специфика );
     }
     
     private void populate()
@@ -47,6 +42,55 @@ class CatalogView extends ListView<Модуль>
         //TODO Collections.sort( модули );
         getItems().addAll( модули );
         
+    }
+
+    private MenuNode popup()
+    {
+        return new MenuNode( null,
+                new MenuNode( new ActionDbModulePreview(), new DisableDetector( 1, 1 ) ),
+                new MenuNode( new ActionDbModuleEdit(), new DisableDetector( 1, 1 ) ),
+                null, 
+                new MenuNode( new ActionDbModuleRemove(), new DisableDetector( 1 ) ),
+                null, 
+                new MenuNode( new ActionSelectAll() ),
+                null,
+                new MenuNode( new ActionDbModuleProperties(), new DisableDetector( 1, 1 ) )
+                );
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="классы">
+    
+    private class DisableDetector extends BooleanBinding
+    {
+        final int low, high;
+
+        DisableDetector( int low, int high )
+        {
+            super.bind( getSelectionModel().getSelectedItems() );
+            this.low = low;
+            this.high = high;
+        }
+
+        DisableDetector( int min )
+        {
+            this( min, Integer.MAX_VALUE );
+        }
+        
+        @Override
+        protected boolean computeValue()
+        {
+            int size = getSelectionModel().getSelectedItems().size();
+            return !( low <= size && size <= high );
+        }
+    }
+    
+    private class RowBuilder implements Callback<ListView<Модуль>, ListCell<Модуль>>
+    {
+        @Override
+        public ListCell<Модуль> call( ListView<Модуль> view )
+        {
+            return new VisibleRow();
+        }
     }
     
     static private class VisibleRow extends ListCell<Модуль>
@@ -59,89 +103,94 @@ class CatalogView extends ListView<Модуль>
         }
     }
     
-    static MenuNode popup( ApplicationView.Context context )
+    private class ActionDbModulePreview extends Action
     {
-        ActionFactory actions = context.actions;
-        return new MenuNode( null,
-                new MenuNode( actions.getAbout() ),
-                new MenuNode( actions.getAbout() ),
-                null, 
-                new MenuNode( actions.getDbRemoveModule() )
-                );
+        
+        ActionDbModulePreview()
+        {
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModulePreview.class, context.jfx.контекст.специфика ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            //TODO not impl.
+        }
     }
     
-    private class Popup extends ContextMenu
+    private class ActionDbModuleEdit extends Action
     {
-        private final ChangeListener<MultipleSelectionModel<Модуль>> selectionListener;
-        private final ChangeListener<Модуль> changeListener;
-        private final MenuItem menuItemEdit;
-        private final MenuItem menuItemProperties;
-        private final MenuItem menuItemView;
-        private final MenuItem menuItemDelete;
         
-        Popup()
+        ActionDbModuleEdit()
         {
-            menuItemView = new MenuItem( "View" );
-            menuItemEdit = new MenuItem( "Edit" );
-            menuItemDelete = new MenuItem( "Delete" );
-            menuItemProperties = new MenuItem( "Properties" );
-            selectionListener = new SelectionListener();
-            changeListener = new ItemChangeListener();
-            getItems().addAll( 
-                    menuItemView, menuItemEdit, new SeparatorMenuItem(), 
-                    menuItemDelete, new SeparatorMenuItem(), 
-                    menuItemProperties );
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleEdit.class, context.jfx.контекст.специфика ) );
         }
         
-        ChangeListener<MultipleSelectionModel<Модуль>> getSelectionListener()
+        @Override
+        public void handle( ActionEvent _ )
         {
-            return selectionListener;
-        }
-        
-        ChangeListener<Модуль> getChangeListener() 
-        {
-            return changeListener;
-        }
-        
-        class SelectionListener implements ChangeListener<MultipleSelectionModel<Модуль>>
-        {
-
-            @Override
-            public void changed( 
-                    ObservableValue<? extends MultipleSelectionModel<Модуль>> observable, 
-                    MultipleSelectionModel<Модуль> oldValue, 
-                    MultipleSelectionModel<Модуль> newValue )
-            {
-                ObservableList<Модуль> selectedItems = observable.getValue().getSelectedItems();
-                System.out.println( selectedItems );
-                int numSelected = CatalogView.this.selectionModelProperty().get().getSelectedIndices().size();
-                Popup.this.menuItemView.setDisable( numSelected != 1 );
-                Popup.this.menuItemEdit.setDisable( numSelected != 1 );
-                Popup.this.menuItemDelete.setDisable( numSelected > 0 );
-                Popup.this.menuItemProperties.setDisable( numSelected != 1 );
-            }
-            
-        }
-        
-        class ItemChangeListener implements ChangeListener<Модуль>
-        {
-
-            @Override
-            public void changed( 
-                    ObservableValue<? extends Модуль> observable, 
-                    Модуль oldValue, 
-                    Модуль newValue )
-            {
-                //ObservableList<String> selectedItems = observable.getValue().getSelectedItems();
-                int numSelected = CatalogView.this.selectionModelProperty().getValue().getSelectedIndices().size();
-                System.out.println( numSelected );
-                System.out.println( CatalogView.this.getSelectionModel().getSelectedItems() );
-                Popup.this.menuItemView.setDisable( numSelected != 1 );
-                Popup.this.menuItemEdit.setDisable( numSelected != 1 );
-                Popup.this.menuItemProperties.setDisable( numSelected != 1 );
-            }
-            
+            //TODO not impl.
         }
     }
-
+    
+    private class ActionSelectAll extends Action
+    {
+        
+        ActionSelectAll()
+        {
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionSelectAll.class, context.jfx.контекст.специфика ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            getSelectionModel().selectAll();
+        }
+    }
+    
+    private class ActionDbModuleRemove extends Action
+    {
+        final УдалитьАрхивныйМодуль действие;
+        
+        ActionDbModuleRemove()
+        {
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleRemove.class, context.jfx.контекст.специфика ) );
+            действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.склад );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            List<Модуль> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            new ApplicationActionWorker<Collection<Модуль>>( действие, ceлектор, context.jfx )
+            {
+                @Override
+                protected void succeeded()
+                {
+                    super.succeeded();
+                    Результат результат = getValue();
+                    if( результат != null && результат.код() == Результат.НОРМА )
+                        getItems().removeAll( контекст() );
+                }
+            }.execute();
+        }
+    }
+    
+    private class ActionDbModuleProperties extends Action
+    {
+        
+        ActionDbModuleProperties()
+        {
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleProperties.class, context.jfx.контекст.специфика ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            //TODO not impl.
+        }
+    }
+    
+    //</editor-fold>
+    
 }

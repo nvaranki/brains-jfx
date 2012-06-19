@@ -25,6 +25,11 @@ class ApplicationActionWorker<КОНТЕКСТ> extends Task<Результат>
         this.участники = участники;
     }
     
+    protected КОНТЕКСТ контекст()
+    {
+        return контекст;
+    }
+    
     @Override
     protected Результат call() throws Exception
     {

@@ -22,7 +22,7 @@ public class ActionFactory
     private ApplicationActionRepositoryXml rXml;
     private ApplicationActionRepositoryInThePast rPast;
     private ApplicationActionImportXml[] iXml;
-    private ApplicationActionDbModuleRemove dbRemoveModule;
+    //private ApplicationActionDbModuleRemove dbRemoveModule;
 
     ActionFactory( ApplicationView.Context context )
     {
@@ -103,10 +103,10 @@ public class ActionFactory
         return rPast;
     }
 
-    public Action getDbRemoveModule()
-    {
-        if( dbRemoveModule == null ) dbRemoveModule = new ApplicationActionDbModuleRemove( context );
-        return dbRemoveModule;
-    }
+//    public Action getDbRemoveModule()
+//    {
+//        if( dbRemoveModule == null ) dbRemoveModule = new ApplicationActionDbModuleRemove( context );
+//        return dbRemoveModule;
+//    }
     
 }
