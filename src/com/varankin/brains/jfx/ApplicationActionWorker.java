@@ -25,7 +25,7 @@ class ApplicationActionWorker<КОНТЕКСТ> extends Task<Результат>
         this.участники = участники;
     }
     
-    protected КОНТЕКСТ контекст()
+    protected final КОНТЕКСТ контекст()
     {
         return контекст;
     }
