@@ -35,6 +35,7 @@ public class Application extends javafx.application.Application
         jfx = new JavaFX( primaryStage, контекст );
         primaryStage.setScene( new ApplicationView( jfx ) );
         primaryStage.show();
+        jfx.старт();
     }
     
     @Override

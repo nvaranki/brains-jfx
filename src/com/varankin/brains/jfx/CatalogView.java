@@ -2,7 +2,6 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
-import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Модуль;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
@@ -20,7 +19,6 @@ import javafx.util.Callback;
  */
 class CatalogView extends ListView<Модуль>
 {
-    private final Архив склад;
     private final ApplicationView.Context context;
 
     CatalogView( ApplicationView.Context context )
@@ -28,22 +26,12 @@ class CatalogView extends ListView<Модуль>
         this.context = context;
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
-                
         setCellFactory( new RowBuilder() );
+        itemsProperty().bind( context.jfx.getDataBaseModuleMonitor() );
         
-        склад = context.jfx.контекст.склад;
-        populate( ); //TODO sep. thread
         //Текст словарь = Текст.ПАКЕТЫ.словарь( CatalogView.class, context.jfx.контекст.специфика );
     }
     
-    private void populate()
-    {
-        List<Модуль> модули = new ArrayList<>( склад.модули() );
-        //TODO Collections.sort( модули );
-        getItems().addAll( модули );
-        
-    }
-
     private MenuNode popup()
     {
         return new MenuNode( null,
@@ -170,7 +158,7 @@ class CatalogView extends ListView<Модуль>
                     super.succeeded();
                     Результат результат = getValue();
                     if( результат != null && результат.код() == Результат.НОРМА )
-                        getItems().removeAll( контекст() );
+                        jfx.getDataBaseModuleMonitor().getValue().removeAll( контекст() );
                 }
             }.execute();
         }

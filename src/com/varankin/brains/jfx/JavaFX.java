@@ -1,6 +1,9 @@
 package com.varankin.brains.jfx;
 
+import com.sun.javafx.collections.ObservableListWrapper;
+import com.varankin.brains.db.Модуль;
 import com.varankin.brains.Контекст;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +12,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.beans.binding.ListBinding;
+import javafx.beans.binding.ListExpression;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableListValue;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ObservableValueBase;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
@@ -26,6 +35,8 @@ final class JavaFX
     public final Stage платформа;
     //public final Позиционер позиционер;
     private final Map<Action,Collection<MenuItem>> targetsOnActions;
+//    private final ObservableDataBaseModuleList dbmm;
+    private final DataBaseModuleListProperty dbmm;
     private final ExecutorService es;
 
     /**
@@ -42,6 +53,15 @@ final class JavaFX
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
+        //dbmm = new ObservableDataBaseModuleList( new ArrayList<Модуль>() );
+        dbmm = new DataBaseModuleListProperty( new ArrayList<Модуль>() );
+    }
+    
+    ObservableValue<ObservableList<Модуль>>
+    //ListProperty<Модуль>
+            getDataBaseModuleMonitor()
+    {
+        return dbmm;
     }
     
     Collection<MenuItem> getMenuItems( Action action )
@@ -86,6 +106,19 @@ final class JavaFX
         return es;
     }
 
+    void старт()
+    {
+        es.submit( new Task<Void>()
+        {
+            @Override
+            protected Void call() throws Exception
+            {
+                dbmm.getValue().addAll( контекст.склад.модули() );
+                return null;
+            }
+        } );
+    }
+
     void стоп()
     {
         es.shutdown();
@@ -97,4 +130,42 @@ final class JavaFX
         return new File( System.getProperty( "user.dir" ) );
     }
 
+    private class ObservableDataBaseModuleList extends ObservableValueBase<ObservableList<Модуль>>
+    {
+        final ObservableList<Модуль> value;
+
+        ObservableDataBaseModuleList( ArrayList<Модуль> storage )
+        {
+            value = FXCollections.observableList( storage );//new ObservableListWrapper<>( storage ); //TODO jfxrt.jar
+        }
+        
+        @Override
+        public ObservableList<Модуль> getValue()
+        {
+            return value;
+        }
+
+    }
+    
+    private class DataBaseModuleListProperty extends ListPropertyBase<Модуль>
+    {
+        DataBaseModuleListProperty( ArrayList<Модуль> storage )
+        {
+            super( FXCollections.observableList( storage ) );//new ObservableListWrapper<>( storage ) ); //TODO jfxrt.jar
+        }
+        
+        @Override
+        public Object getBean()
+        {
+            return JavaFX.this;
+        }
+
+        @Override
+        public String getName()
+        {
+            return "dataBaseModuleList";
+        }
+
+    }
+    
 }
