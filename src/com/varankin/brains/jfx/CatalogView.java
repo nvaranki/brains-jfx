@@ -35,14 +35,12 @@ class CatalogView extends ListView<Модуль>
     private MenuNode popup()
     {
         return new MenuNode( null,
-                new MenuNode( new ActionDbModulePreview(), new DisableDetector( 1, 1 ) ),
-                new MenuNode( new ActionDbModuleEdit(), new DisableDetector( 1, 1 ) ),
+                new MenuNode( new ActionDbModulePreview() ),
+                new MenuNode( new ActionDbModuleEdit() ),
                 null, 
-                new MenuNode( new ActionDbModuleRemove(), new DisableDetector( 1 ) ),
+                new MenuNode( new ActionDbModuleRemove() ),
                 null, 
-                new MenuNode( new ActionSelectAll() ),
-                null,
-                new MenuNode( new ActionDbModuleProperties(), new DisableDetector( 1, 1 ) )
+                new MenuNode( new ActionDbModuleProperties() )
                 );
     }
     
@@ -97,6 +95,7 @@ class CatalogView extends ListView<Модуль>
         ActionDbModulePreview()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModulePreview.class, context.jfx.контекст.специфика ) );
+            disableProperty().bind( new DisableDetector( 1, 1 ) );
         }
         
         @Override
@@ -112,27 +111,13 @@ class CatalogView extends ListView<Модуль>
         ActionDbModuleEdit()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleEdit.class, context.jfx.контекст.специфика ) );
+            disableProperty().bind( new DisableDetector( 1, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
             //TODO not impl.
-        }
-    }
-    
-    private class ActionSelectAll extends Action
-    {
-        
-        ActionSelectAll()
-        {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionSelectAll.class, context.jfx.контекст.специфика ) );
-        }
-        
-        @Override
-        public void handle( ActionEvent _ )
-        {
-            getSelectionModel().selectAll();
         }
     }
     
@@ -144,6 +129,7 @@ class CatalogView extends ListView<Модуль>
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleRemove.class, context.jfx.контекст.специфика ) );
             действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.склад );
+            disableProperty().bind( new DisableDetector( 1 ) );
         }
         
         @Override
@@ -170,6 +156,7 @@ class CatalogView extends ListView<Модуль>
         ActionDbModuleProperties()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleProperties.class, context.jfx.контекст.специфика ) );
+            disableProperty().bind( new DisableDetector( 1, 1 ) );
         }
         
         @Override

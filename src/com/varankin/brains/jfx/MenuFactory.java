@@ -59,20 +59,11 @@ class MenuFactory
     {
         private final Action node;
         private final MenuNode childs[];
-        private final ObservableValue<Boolean> detector;
 
         MenuNode( Action node, MenuNode... childs )
         {
             this.node = node;
-            this.detector = null;
             this.childs = childs;
-        }
-
-        MenuNode( Action node, ObservableValue<Boolean> detector )
-        {
-            this.node = node;
-            this.detector = detector;
-            this.childs = new MenuNode[0];
         }
 
         private MenuItem toMenuItem( JavaFX jfx )
@@ -89,8 +80,7 @@ class MenuFactory
                 item.setAccelerator( node.shortcut );
                 item.setGraphic( node.icon );
                 item.setOnAction( node );
-                item.setDisable( !node.isEnabled() );
-                if( detector != null ) item.disableProperty().bind( detector );
+                item.disableProperty().bind( node.disableProperty() );
                 jfx.getMenuItems( node ).add( item );
                 return item; 
             }

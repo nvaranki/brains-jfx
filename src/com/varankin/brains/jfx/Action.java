@@ -1,8 +1,11 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.util.Текст;
+
 import java.io.InputStream;
-import java.net.URL;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.*;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
@@ -26,7 +29,7 @@ public abstract class Action implements EventHandler<ActionEvent>
     //TODO end of copied ...
 
     private String text;
-    private boolean enabled;
+    private BooleanProperty disable;
     
     protected final JavaFX jfx;
     protected final Текст словарь;
@@ -42,7 +45,7 @@ public abstract class Action implements EventHandler<ActionEvent>
         this.text = словарь.текст( NAME );
         this.icon = icon( словарь.текст( SMALL_ICON ) );
         this.shortcut = shortcut( словарь.текст( MNEMONIC_KEY ) );
-        this.enabled = true;
+        this.disable = new SimpleBooleanProperty( Action.this, "disabled", false );
     }
     
     private Node icon( String value )
@@ -56,17 +59,15 @@ public abstract class Action implements EventHandler<ActionEvent>
     {
         return value.trim().isEmpty() ? null : new KeyCharacterCombination( value.trim().substring( 0, 1 ) );
     }
-
-    boolean isEnabled()
-    {
-        return enabled;
-    }
     
+    BooleanProperty disableProperty()
+    {
+        return disable;
+    }
+
     void setEnabled( boolean value )
     {
-        enabled = value;
-        for( MenuItem target : jfx.getMenuItems( this ) )
-            target.setDisable( !value );
+        disable.setValue( !value );
     }
 
     String getText()
