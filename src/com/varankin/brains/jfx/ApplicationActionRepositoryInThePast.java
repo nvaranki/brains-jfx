@@ -26,7 +26,7 @@ class ApplicationActionRepositoryInThePast extends Action
     void агент( Task<Void> worker, String метка )
     {
         агент = worker;
-        setText( "1 " + limitTextLength( метка != null ? метка : "" ) );
+        textProperty().setValue( "1 " + limitTextLength( метка != null ? метка : "" ) );
         setEnabled( агент != null );
     }
     

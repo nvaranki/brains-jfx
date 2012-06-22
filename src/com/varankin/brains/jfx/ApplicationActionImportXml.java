@@ -45,7 +45,7 @@ class ApplicationActionImportXml extends Action
         actions = context.actions;
         селектор = null;
         setEnabled( false );
-        setText( Integer.toString( индекс ) );
+        textProperty().setValue( Integer.toString( индекс ) );
     }
 
     @Override
@@ -92,7 +92,7 @@ class ApplicationActionImportXml extends Action
             if( i >= индексСписка ) 
             {
                 String префикс = Integer.toString( i ) + ' ';
-                history[i].setText( замена != null ? префикс + замена.поставщик : префикс );
+                history[i].textProperty().setValue( замена != null ? префикс + замена.поставщик : префикс );
             }
         }
     }
@@ -140,7 +140,7 @@ class ApplicationActionImportXml extends Action
                 File директория = выбор.getParentFile();
                 if( директория != null )
                     chooser.setInitialDirectory( директория );
-                return new Агент( new FileInputStreamProvider( выбор ), getText() );
+                return new Агент( new FileInputStreamProvider( выбор ), textProperty().get() );
             }
             else
             {

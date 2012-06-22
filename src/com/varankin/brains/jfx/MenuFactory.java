@@ -44,7 +44,7 @@ class MenuFactory
      */
     Menu createMenu( MenuNode модель )
     {
-        Menu menu = new Menu( модель.node.getText() );
+        Menu menu = new Menu( модель.node.textProperty().get() );
         модель.populate( menu.getItems(), jfx );
         return menu;
     }
@@ -73,19 +73,18 @@ class MenuFactory
             {
                 MenuItem item = new MenuItem();
                 item.setMnemonicParsing( false );
-                item.setText( node.getText() );
+                item.textProperty().bind( node.textProperty() );
                 item.setAccelerator( node.shortcut );
                 item.setGraphic( node.icon );
                 item.setOnAction( node );
                 item.disableProperty().bind( node.disableProperty() );
-                jfx.getMenuItems( node ).add( item );
                 return item; 
             }
         }
 
         private Menu toMenu( JavaFX jfx )
         {
-            Menu menu = new Menu( node.getText() );
+            Menu menu = new Menu( node.textProperty().get() );
             populate( menu.getItems(), jfx );
             return menu;
         }

@@ -5,6 +5,8 @@ import com.varankin.util.Текст;
 import java.io.InputStream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.*;
 import javafx.scene.Node;
@@ -28,7 +30,7 @@ public abstract class Action implements EventHandler<ActionEvent>
     public static final String MNEMONIC_KEY="MnemonicKey";
     //TODO end of copied ...
 
-    private String text;
+    private StringProperty text;
     private BooleanProperty disable;
     
     protected final JavaFX jfx;
@@ -42,10 +44,10 @@ public abstract class Action implements EventHandler<ActionEvent>
     {
         this.jfx = jfx;
         this.словарь = словарь;
-        this.text = словарь.текст( NAME );
+        this.text = new SimpleStringProperty( Action.this, "text", словарь.текст( NAME ) );
         this.icon = icon( словарь.текст( SMALL_ICON ) );
         this.shortcut = shortcut( словарь.текст( MNEMONIC_KEY ) );
-        this.disable = new SimpleBooleanProperty( Action.this, "disabled", false );
+        this.disable = new SimpleBooleanProperty( Action.this, "disable", false );
     }
     
     private Node icon( String value )
@@ -70,37 +72,9 @@ public abstract class Action implements EventHandler<ActionEvent>
         disable.setValue( !value );
     }
 
-    String getText()
-    { 
+    StringProperty textProperty()
+    {
         return text;
     }
-
-    void setText( String value )
-    {
-        text = value != null ? value : "";
-        for( MenuItem target : jfx.getMenuItems( this ) )
-            target.setText( text );
-    }
     
-//    static class MenuItemEnabledEventType extends EventType<MenuItemEnabledEvent>
-//    {
-//    }
-//    
-//    final class MenuItemEnabledEvent extends Event
-//    {
-//        private final boolean enabled;
-//
-//        private MenuItemEnabledEvent( boolean enabled )
-//        {
-//            super( Action.this, null, new MenuItemEnabledEventType() );
-//            this.enabled = enabled;
-//        }
-//
-//        public boolean isEnabled()
-//        {
-//            return enabled;
-//        }
-//        
-//    }
-
 }

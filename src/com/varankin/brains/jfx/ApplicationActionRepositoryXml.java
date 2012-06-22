@@ -71,7 +71,7 @@ class ApplicationActionRepositoryXml extends Action
                 if( директория != null )
                     chooser.setInitialDirectory( директория );
                 jfx.getExecutorService().execute( new Агент( 
-                    new FileInputStreamProvider( returnVal ), getText() ) );
+                    new FileInputStreamProvider( returnVal ), textProperty().get() ) );
             }
             else
             {

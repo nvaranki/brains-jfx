@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx;
 
-import com.sun.javafx.collections.ObservableListWrapper;
 import com.varankin.brains.db.Модуль;
 import com.varankin.brains.Контекст;
 
@@ -12,16 +11,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
-import javafx.beans.binding.ListBinding;
-import javafx.beans.binding.ListExpression;
-import javafx.beans.property.*;
-import javafx.beans.value.ObservableListValue;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
 /**
@@ -34,9 +28,7 @@ final class JavaFX
     public final Контекст контекст;
     public final Stage платформа;
     //public final Позиционер позиционер;
-    private final Map<Action,Collection<MenuItem>> targetsOnActions;
-//    private final ObservableDataBaseModuleList dbmm;
-    private final DataBaseModuleListProperty dbmm;
+    private final ObservableDataBaseModuleList dbmm;
     private final ExecutorService es;
 
     /**
@@ -48,27 +40,16 @@ final class JavaFX
         this.платформа = платформа;
         this.контекст = контекст;
         //this.позиционер = new Позиционер();
-        targetsOnActions = new HashMap<>();
         es = new ThreadPoolExecutor( //TODO load preferences
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
-        //dbmm = new ObservableDataBaseModuleList( new ArrayList<Модуль>() );
-        dbmm = new DataBaseModuleListProperty( new ArrayList<Модуль>() );
+        dbmm = new ObservableDataBaseModuleList( new ArrayList<Модуль>() );
     }
     
-    ObservableValue<ObservableList<Модуль>>
-    //ListProperty<Модуль>
-            getDataBaseModuleMonitor()
+    ObservableValue<ObservableList<Модуль>> getDataBaseModuleMonitor()
     {
         return dbmm;
-    }
-    
-    Collection<MenuItem> getMenuItems( Action action )
-    {
-        if( !targetsOnActions.containsKey( action ) )
-            targetsOnActions.put( action, new HashSet<MenuItem>() );
-        return targetsOnActions.get( action );
     }
     
     /**
@@ -134,36 +115,15 @@ final class JavaFX
     {
         final ObservableList<Модуль> value;
 
-        ObservableDataBaseModuleList( ArrayList<Модуль> storage )
+        ObservableDataBaseModuleList( List<Модуль> storage )
         {
-            value = FXCollections.observableList( storage );//new ObservableListWrapper<>( storage ); //TODO jfxrt.jar
+            value = FXCollections.observableList( storage );
         }
         
         @Override
         public ObservableList<Модуль> getValue()
         {
             return value;
-        }
-
-    }
-    
-    private class DataBaseModuleListProperty extends ListPropertyBase<Модуль>
-    {
-        DataBaseModuleListProperty( ArrayList<Модуль> storage )
-        {
-            super( FXCollections.observableList( storage ) );//new ObservableListWrapper<>( storage ) ); //TODO jfxrt.jar
-        }
-        
-        @Override
-        public Object getBean()
-        {
-            return JavaFX.this;
-        }
-
-        @Override
-        public String getName()
-        {
-            return "dataBaseModuleList";
         }
 
     }
