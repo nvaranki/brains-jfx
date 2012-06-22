@@ -1,11 +1,8 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.util.Текст;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-import javafx.beans.value.ObservableValue;
 
+import java.util.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
