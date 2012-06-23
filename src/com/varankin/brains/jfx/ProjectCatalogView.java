@@ -2,34 +2,41 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
-import com.varankin.brains.db.Модуль;
+import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
 
 import java.util.*;
-import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
 /**
- * Каталог модулей архива.
+ * Каталог проектов архива.
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class CatalogView extends ListView<Модуль>
+class ProjectCatalogView extends ListView<Проект>
 {
     private final ApplicationView.Context context;
+    private final ReadOnlyStringProperty title;
 
-    CatalogView( ApplicationView.Context context )
+    ProjectCatalogView( ApplicationView.Context context )
     {
         this.context = context;
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( context.jfx.getDataBaseModuleMonitor() );
-        
-        //Текст словарь = Текст.ПАКЕТЫ.словарь( CatalogView.class, context.jfx.контекст.специфика );
+        itemsProperty().bind( context.jfx.getDataBaseProjectMonitor() );
+        Текст словарь = Текст.ПАКЕТЫ.словарь( ProjectCatalogView.class, context.jfx.контекст.специфика );
+        title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
+    }
+    
+    final ReadOnlyStringProperty titleProperty()
+    {
+        return title;
     }
     
     private MenuNode popup()
@@ -45,44 +52,20 @@ class CatalogView extends ListView<Модуль>
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
-    
-    private class DisableDetector extends BooleanBinding
-    {
-        final int low, high;
 
-        DisableDetector( int low, int high )
-        {
-            super.bind( getSelectionModel().getSelectedItems() );
-            this.low = low;
-            this.high = high;
-        }
-
-        DisableDetector( int min )
-        {
-            this( min, Integer.MAX_VALUE );
-        }
-        
-        @Override
-        protected boolean computeValue()
-        {
-            int size = getSelectionModel().getSelectedItems().size();
-            return !( low <= size && size <= high );
-        }
-    }
-    
-    private class RowBuilder implements Callback<ListView<Модуль>, ListCell<Модуль>>
+    private class RowBuilder implements Callback<ListView<Проект>, ListCell<Проект>>
     {
         @Override
-        public ListCell<Модуль> call( ListView<Модуль> view )
+        public ListCell<Проект> call( ListView<Проект> view )
         {
             return new VisibleRow();
         }
     }
-    
-    static private class VisibleRow extends ListCell<Модуль>
+
+    static private class VisibleRow extends ListCell<Проект>
     {
         @Override
-        public void updateItem( Модуль item, boolean empty ) 
+        public void updateItem( Проект item, boolean empty ) 
         {
             super.updateItem( item, empty );
             setText( empty ? null : item.toString() );
@@ -95,7 +78,7 @@ class CatalogView extends ListView<Модуль>
         ActionDbModulePreview()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModulePreview.class, context.jfx.контекст.специфика ) );
-            disableProperty().bind( new DisableDetector( 1, 1 ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
@@ -111,7 +94,7 @@ class CatalogView extends ListView<Модуль>
         ActionDbModuleEdit()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleEdit.class, context.jfx.контекст.специфика ) );
-            disableProperty().bind( new DisableDetector( 1, 1 ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
@@ -129,24 +112,24 @@ class CatalogView extends ListView<Модуль>
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleRemove.class, context.jfx.контекст.специфика ) );
             действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.склад );
-            disableProperty().bind( new DisableDetector( 1 ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            List<Модуль> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-            new ApplicationActionWorker<Collection<Модуль>>( действие, ceлектор, context.jfx )
-            {
-                @Override
-                protected void succeeded()
-                {
-                    super.succeeded();
-                    Результат результат = getValue();
-                    if( результат != null && результат.код() == Результат.НОРМА )
-                        jfx.getDataBaseModuleMonitor().getValue().removeAll( контекст() );
-                }
-            }.execute();
+//            List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+//            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор, context.jfx )
+//            {
+//                @Override
+//                protected void succeeded()
+//                {
+//                    super.succeeded();
+//                    Результат результат = getValue();
+//                    if( результат != null && результат.код() == Результат.НОРМА )
+//                        jfx.getDataBaseModuleMonitor().getValue().removeAll( контекст() );
+//                }
+//            }.execute();
         }
     }
     
@@ -156,7 +139,7 @@ class CatalogView extends ListView<Модуль>
         ActionDbModuleProperties()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleProperties.class, context.jfx.контекст.специфика ) );
-            disableProperty().bind( new DisableDetector( 1, 1 ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override

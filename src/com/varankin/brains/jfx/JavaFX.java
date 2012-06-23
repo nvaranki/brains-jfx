@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.db.Модуль;
+import com.varankin.brains.db.Проект;
 import com.varankin.brains.Контекст;
 
 import java.awt.Desktop;
@@ -11,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
@@ -28,7 +30,8 @@ final class JavaFX
     public final Контекст контекст;
     public final Stage платформа;
     //public final Позиционер позиционер;
-    private final ObservableDataBaseModuleList dbmm;
+    private final ObservableDataBaseObjectList<Модуль> dbmm;
+    private final ObservableDataBaseObjectList<Проект> dbpm;
     private final ExecutorService es;
 
     /**
@@ -44,12 +47,18 @@ final class JavaFX
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
-        dbmm = new ObservableDataBaseModuleList( new ArrayList<Модуль>() );
+        dbmm = new ObservableDataBaseObjectList<>( new ArrayList<Модуль>() );
+        dbpm = new ObservableDataBaseObjectList<>( new ArrayList<Проект>() );
     }
     
     ObservableValue<ObservableList<Модуль>> getDataBaseModuleMonitor()
     {
         return dbmm;
+    }
+    
+    ObservableValue<ObservableList<Проект>> getDataBaseProjectMonitor()
+    {
+        return dbpm;
     }
     
     /**
@@ -89,15 +98,16 @@ final class JavaFX
 
     void старт()
     {
-        es.submit( new Task<Void>()
-        {
-            @Override
-            protected Void call() throws Exception
-            {
+//        Platform.runLater( new Task<Void>() //TODO re-design
+//        {
+//            @Override
+//            protected Void call() throws Exception
+//            {
                 dbmm.getValue().addAll( контекст.склад.модули() );
-                return null;
-            }
-        } );
+                dbpm.getValue().addAll( контекст.склад.проекты() );
+//                return null;
+//            }
+//        } );
     }
 
     void стоп()
@@ -111,17 +121,17 @@ final class JavaFX
         return new File( System.getProperty( "user.dir" ) );
     }
 
-    private class ObservableDataBaseModuleList extends ObservableValueBase<ObservableList<Модуль>>
+    private class ObservableDataBaseObjectList<T> extends ObservableValueBase<ObservableList<T>>
     {
-        final ObservableList<Модуль> value;
+        final ObservableList<T> value;
 
-        ObservableDataBaseModuleList( List<Модуль> storage )
+        ObservableDataBaseObjectList( List<T> storage )
         {
             value = FXCollections.observableList( storage );
         }
         
         @Override
-        public ObservableList<Модуль> getValue()
+        public final ObservableList<T> getValue()
         {
             return value;
         }

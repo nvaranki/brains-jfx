@@ -81,13 +81,20 @@ class ApplicationView extends Scene
             // панель обозревателей
             
             BrowserView навигатор = new BrowserView( context ); // навигатор по модели данных
-
-            CatalogView архиватор = new CatalogView( context ); // навигатор по архиву модулей
-
             TitledPane pane0 = new TitledPane( "Project Explorer", навигатор );
-            TitledPane pane1 = new TitledPane( "Archived Modules", архиватор );
+
+            ModuleCatalogView архиватор1 = new ModuleCatalogView( context ); // навигатор по архиву модулей
+            TitledPane pane1 = new TitledPane();
+            pane1.textProperty().bind( архиватор1.titleProperty() );
+            pane1.setContent( архиватор1 );
+
+            ProjectCatalogView архиватор2 = new ProjectCatalogView( context ); // навигатор по архиву проектов
+            TitledPane pane2 = new TitledPane();
+            pane2.textProperty().bind( архиватор2.titleProperty() );
+            pane2.setContent( архиватор2 );
+
             Accordion обозреватели = new Accordion();
-            обозреватели.getPanes().addAll( pane0, pane1 );
+            обозреватели.getPanes().addAll( pane0, pane2, pane1 );
             обозреватели.setExpandedPane( pane0 );
             return обозреватели;
         }
