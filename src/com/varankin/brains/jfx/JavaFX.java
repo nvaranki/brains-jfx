@@ -30,8 +30,9 @@ final class JavaFX
     public final Контекст контекст;
     public final Stage платформа;
     //public final Позиционер позиционер;
-    private final ObservableDataBaseObjectList<Модуль> dbmm;
-    private final ObservableDataBaseObjectList<Проект> dbpm;
+    private final ObservableObjectList<Модуль> dbmm;
+    private final ObservableObjectList<Проект> dbpm;
+    private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
 
     /**
@@ -47,8 +48,9 @@ final class JavaFX
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
-        dbmm = new ObservableDataBaseObjectList<>( new ArrayList<Модуль>() );
-        dbpm = new ObservableDataBaseObjectList<>( new ArrayList<Проект>() );
+        dbmm = new ObservableObjectList<>( new ArrayList<Модуль>() );
+        dbpm = new ObservableObjectList<>( new ArrayList<Проект>() );
+        views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
     }
     
     ObservableValue<ObservableList<Модуль>> getDataBaseModuleMonitor()
@@ -60,7 +62,12 @@ final class JavaFX
     {
         return dbpm;
     }
-    
+
+    ObservableValue<ObservableList<TitledSceneGraph>> getViews()
+    {
+        return views;
+    }
+
     /**
      * Открывает HTML-ссылку в стандартном браузере операционной системы.
      * 
@@ -121,11 +128,11 @@ final class JavaFX
         return new File( System.getProperty( "user.dir" ) );
     }
 
-    private class ObservableDataBaseObjectList<T> extends ObservableValueBase<ObservableList<T>>
+    private class ObservableObjectList<T> extends ObservableValueBase<ObservableList<T>>
     {
         final ObservableList<T> value;
 
-        ObservableDataBaseObjectList( List<T> storage )
+        ObservableObjectList( List<T> storage )
         {
             value = FXCollections.observableList( storage );
         }

@@ -7,10 +7,17 @@ import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
 
 import java.util.*;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.web.WebView;
 import javafx.util.Callback;
 
 /**
@@ -84,8 +91,53 @@ class ModuleCatalogView extends ListView<Модуль>
         @Override
         public void handle( ActionEvent _ )
         {
-            //TODO not impl.
+            ObservableList<TitledSceneGraph> views = jfx.getViews().getValue();
+            
+            for( Модуль модуль : selectionModelProperty().getValue().getSelectedItems() )
+                if( модуль != null )
+                {
+                    TitledSceneGraph tsg;
+                    if( ( tsg = isShown( модуль, views ) ) == null )
+                        show( модуль, views );
+                    else
+                        //TODO временный обходной вариант для активации view
+                        views.set( views.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
+                }
         }
+        
+        private TitledSceneGraph isShown( Модуль модуль, Iterable<TitledSceneGraph> views )
+        {
+            for( TitledSceneGraph tsg : views )
+            {
+                Object content = tsg.node.getUserData();
+                if( tsg.node instanceof WebView && модуль.equals( content ) )
+                    return tsg;
+            }
+            return null;
+        }
+
+        private void show( final Модуль модуль, Collection<TitledSceneGraph> views )
+        {
+            final WebView node = new WebView();
+            node.setUserData( модуль );
+            views.add( new TitledSceneGraph( node, new SimpleStringProperty( модуль.toString() ) ) );
+            
+            jfx.getExecutorService().submit( new Task<String>() 
+            {
+                @Override
+                protected String call() throws Exception
+                {
+                    return модуль.getImage( Модуль.MIME_SVG );
+                }
+
+                @Override
+                protected void succeeded()
+                {
+                    node.getEngine().loadContent( getValue(), Модуль.MIME_SVG );
+                }
+            } );
+        }
+
     }
     
     private class ActionDbModuleEdit extends Action
@@ -102,6 +154,7 @@ class ModuleCatalogView extends ListView<Модуль>
         {
             //TODO not impl.
         }
+
     }
     
     private class ActionDbModuleRemove extends Action

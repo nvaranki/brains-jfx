@@ -5,6 +5,7 @@ import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
 
 import java.util.logging.Level;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -102,10 +103,14 @@ class ApplicationView extends Scene
         static Node right( Context context )
         {
             // окно просмотра
-            TextArea просмотр = new TextArea( "preview" );
-            Pane sppw = new StackPane();
-            sppw.getChildren().add( просмотр );
-            return sppw;
+            TabPane просмотр = new TabPane();
+            ObservableList<Tab> tabs = просмотр.getTabs(); //TODO tab removed listener
+            ObservableList<TitledSceneGraph> views = context.jfx.getViews().getValue();
+            tabs.addListener( new TabCloseMonitor( views ) );
+            views.addListener( new TabPaneContentManager( просмотр ) );
+//            Pane sppw = new StackPane();
+//            sppw.getChildren().add( просмотр );
+            return просмотр;//sppw;
         }
         
         static Node center( Context context )
