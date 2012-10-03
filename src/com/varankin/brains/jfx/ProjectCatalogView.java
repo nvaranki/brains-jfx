@@ -1,17 +1,21 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
+import com.varankin.brains.appl.УдалитьАрхивныйПроект;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+import java.util.logging.*;
 
 /**
  * Каталог проектов архива.
@@ -20,6 +24,8 @@ import javafx.util.Callback;
  */
 class ProjectCatalogView extends ListView<Проект>
 {
+    private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
+    
     private final ApplicationView.Context context;
     private final ReadOnlyStringProperty title;
 
@@ -42,12 +48,15 @@ class ProjectCatalogView extends ListView<Проект>
     private MenuNode popup()
     {
         return new MenuNode( null,
-                new MenuNode( new ActionDbModulePreview() ),
-                new MenuNode( new ActionDbModuleEdit() ),
+                new MenuNode( new ActionPreview() ),
+                new MenuNode( new ActionEdit() ),
+                new MenuNode( new ActionRun() ),
                 null, 
-                new MenuNode( new ActionDbModuleRemove() ),
+                new MenuNode( new ActionRemove() ),
                 null, 
-                new MenuNode( new ActionDbModuleProperties() )
+                new MenuNode( new ActionExport() ),
+                null, 
+                new MenuNode( new ActionProperties() )
                 );
     }
     
@@ -72,80 +81,113 @@ class ProjectCatalogView extends ListView<Проект>
         }
     }
     
-    private class ActionDbModulePreview extends Action
+    private class ActionPreview extends Action
     {
         
-        ActionDbModulePreview()
+        ActionPreview()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModulePreview.class, context.jfx.контекст.специфика ) );
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionPreview.class, context.jfx.контекст.специфика ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            //TODO not impl.
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
     
-    private class ActionDbModuleEdit extends Action
+    private class ActionEdit extends Action
     {
         
-        ActionDbModuleEdit()
+        ActionEdit()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleEdit.class, context.jfx.контекст.специфика ) );
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionEdit.class, context.jfx.контекст.специфика ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            //TODO not impl.
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
     
-    private class ActionDbModuleRemove extends Action
+    private class ActionRun extends Action
     {
-        final УдалитьАрхивныйМодуль действие;
         
-        ActionDbModuleRemove()
+        ActionRun()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleRemove.class, context.jfx.контекст.специфика ) );
-            действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.склад );
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionRun.class, context.jfx.контекст.специфика ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
+    
+    private class ActionExport extends Action
+    {
+        
+        ActionExport()
+        {
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionExport.class, context.jfx.контекст.специфика ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
+    
+    private class ActionRemove extends Action
+    {
+        final Действие<Collection<Проект>> действие;
+        
+        ActionRemove()
+        {
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionRemove.class, context.jfx.контекст.специфика ) );
+            действие = new УдалитьАрхивныйПроект( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-//            List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-//            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор, context.jfx )
-//            {
-//                @Override
-//                protected void succeeded()
-//                {
-//                    super.succeeded();
-//                    Результат результат = getValue();
-//                    if( результат != null && результат.код() == Результат.НОРМА )
-//                        jfx.getDataBaseModuleMonitor().getValue().removeAll( контекст() );
-//                }
-//            }.execute();
+//            LOGGER.info( "Sorry, the command is not implemented." );
+            List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор, context.jfx )
+            {
+                @Override
+                protected void succeeded()
+                {
+                    super.succeeded();
+                    Результат результат = getValue();
+                    if( результат != null && результат.код() == Результат.НОРМА )
+                        jfx.getDataBaseProjectMonitor().getValue().removeAll( контекст() );
+                }
+            }.execute();
         }
     }
     
-    private class ActionDbModuleProperties extends Action
+    private class ActionProperties extends Action
     {
         
-        ActionDbModuleProperties()
+        ActionProperties()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleProperties.class, context.jfx.контекст.специфика ) );
+            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionProperties.class, context.jfx.контекст.специфика ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            //TODO not impl.
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
     

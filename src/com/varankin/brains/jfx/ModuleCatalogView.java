@@ -164,7 +164,7 @@ class ModuleCatalogView extends ListView<Модуль>
         ActionDbModuleRemove()
         {
             super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleRemove.class, context.jfx.контекст.специфика ) );
-            действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.склад );
+            действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
         

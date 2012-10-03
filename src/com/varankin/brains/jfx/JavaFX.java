@@ -110,8 +110,8 @@ final class JavaFX
 //            @Override
 //            protected Void call() throws Exception
 //            {
-                dbmm.getValue().addAll( контекст.склад.модули() );
-                dbpm.getValue().addAll( контекст.склад.проекты() );
+                dbmm.getValue().addAll( контекст.архив.модули() );
+                dbpm.getValue().addAll( контекст.архив.проекты() );
 //                return null;
 //            }
 //        } );
