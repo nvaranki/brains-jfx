@@ -3,14 +3,21 @@ package com.varankin.brains.jfx;
 import com.varankin.brains.appl.Импортировать;
 import com.varankin.io.container.Provider;
 import com.varankin.io.stream.FileInputStreamProvider;
+import com.varankin.util.Serializator;
 import com.varankin.util.Текст;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.*;
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.stage.FileChooser;
@@ -21,9 +28,12 @@ import javafx.stage.FileChooser;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionImportXml extends Action 
+class ApplicationActionImportXml extends Action
 {
     static private final Logger LOGGER = Logger.getLogger( ApplicationActionImportXml.class.getName() );
+    static private final Preferences PNODE = 
+            Preferences.userNodeForPackage( ApplicationActionImportXml.class )
+            .node( ApplicationActionImportXml.class.getSimpleName() );
 
     private final ActionFactory actions;
     private final Runnable селектор;
@@ -44,8 +54,11 @@ class ApplicationActionImportXml extends Action
                 context.jfx.контекст.специфика ) );
         actions = context.actions;
         селектор = null;
-        setEnabled( false );
-        textProperty().setValue( Integer.toString( индекс ) );
+        byte[] data = PNODE.getByteArray( Integer.toString( индекс ), null );
+        Object object = Serializator.byteArrayToObject( data );
+        агент = object instanceof Provider ? new Агент( (Provider<InputStream>)object ) : null;
+        setEnabled( агент != null );
+        setTitle( индекс, агент );
     }
 
     @Override
@@ -55,7 +68,7 @@ class ApplicationActionImportXml extends Action
         if( селектор != null )
             Platform.runLater( селектор );
         else if( агент != null )
-            new Агент( агент ).execute(); // т.к. одноразовый SwingWorker
+            new Агент( агент.поставщик ).execute(); // т.к. одноразовый
         else
             setEnabledAll( true );
     }
@@ -72,9 +85,15 @@ class ApplicationActionImportXml extends Action
             action.setEnabled( статус );
     }
     
+    private void setTitle( int индекс, Агент агент )
+    {
+        String префикс = Integer.toString( индекс );
+        textProperty().setValue( агент != null ? префикс + ' ' + агент.поставщик : префикс );
+    }
+    
     static private void updateHistory( ApplicationActionImportXml[] history, int индексСписка, Агент агент )
     {
-        // скопировать историю в список и почистить
+        // скопировать историю агентов в список и почистить
         List<Агент> порядок = new ArrayList<>( history.length );
         for( int i = 0; i < history.length; i++ )
             порядок.add( history[i].агент );
@@ -91,8 +110,13 @@ class ApplicationActionImportXml extends Action
             history[i].агент = замена;
             if( i >= индексСписка ) 
             {
-                String префикс = Integer.toString( i ) + ' ';
-                history[i].textProperty().setValue( замена != null ? префикс + замена.поставщик : префикс );
+                history[i].setTitle( i, замена );
+                String key = Integer.toString( i );
+                byte[] value = Serializator.objectToByteArray( замена != null ? замена.поставщик : null );
+                if( value != null )
+                    PNODE.putByteArray( key, value );
+                else
+                    PNODE.remove( key );
             }
         }
     }
@@ -122,7 +146,7 @@ class ApplicationActionImportXml extends Action
             if( агент != null )
             {
                 updateHistory( (ApplicationActionImportXml[])actions.getImportXml(), 1, агент );
-                new Агент( агент ).execute(); // т.к. одноразовый Task
+                new Агент( агент.поставщик ).execute(); // т.к. одноразовый
             }
             else
             {
@@ -140,7 +164,8 @@ class ApplicationActionImportXml extends Action
                 File директория = выбор.getParentFile();
                 if( директория != null )
                     chooser.setInitialDirectory( директория );
-                return new Агент( new FileInputStreamProvider( выбор ), textProperty().get() );
+                Агент агент = new Агент( new FileInputStreamProvider( выбор ));
+                return агент;
             }
             else
             {
@@ -153,22 +178,15 @@ class ApplicationActionImportXml extends Action
     /**
      * Одноразовый агент исполнения действия по импорту XML-файла.
      */
-    private class Агент extends ApplicationActionWorker
+    private class Агент extends ApplicationActionWorker implements Serializable
     {
         final Provider<InputStream> поставщик;
         
-        Агент( Provider<InputStream> поставщик, String заголовок )
+        Агент( Provider<InputStream> поставщик )
         {
             super( new Импортировать( поставщик ), jfx.контекст, jfx );
             this.поставщик = поставщик;
-            updateTitle( заголовок );
-        }
-        
-        Агент( Агент прототип )
-        {
-            super( new Импортировать( прототип.поставщик ), jfx.контекст, jfx );
-            this.поставщик = прототип.поставщик;
-            updateTitle( прототип.getTitle() );
+            updateTitle( textProperty().getValueSafe() );
         }
         
         @Override
