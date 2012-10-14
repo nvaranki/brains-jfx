@@ -118,9 +118,9 @@ class ModuleCatalogView extends ListView<Модуль>
 
         private void show( final Модуль модуль, Collection<TitledSceneGraph> views )
         {
-            final WebView node = new WebView();
-            node.setUserData( модуль );
-            views.add( new TitledSceneGraph( node, new SimpleStringProperty( модуль.toString() ) ) );
+            final WebView view = new WebView();
+            view.setUserData( модуль );
+            views.add( new TitledSceneGraph( view, new SimpleStringProperty( модуль.toString() ) ) );
             
             jfx.getExecutorService().submit( new Task<String>() 
             {
@@ -133,7 +133,7 @@ class ModuleCatalogView extends ListView<Модуль>
                 @Override
                 protected void succeeded()
                 {
-                    node.getEngine().loadContent( getValue(), Модуль.MIME_SVG );
+                    view.getEngine().loadContent( getValue(), Модуль.MIME_SVG );
                 }
             } );
         }

@@ -4,6 +4,7 @@ import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
 import com.varankin.brains.appl.УдалитьАрхивныйПроект;
+import com.varankin.brains.db.Отображаемый;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
@@ -16,6 +17,10 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 import java.util.logging.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.scene.web.WebView;
 
 /**
  * Каталог проектов архива.
@@ -93,8 +98,63 @@ class ProjectCatalogView extends ListView<Проект>
         @Override
         public void handle( ActionEvent _ )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            ObservableList<TitledSceneGraph> views = jfx.getViews().getValue();
+            
+            for( Проект проект : selectionModelProperty().getValue().getSelectedItems() )
+                if( проект != null )
+                {
+                    TitledSceneGraph tsg;
+                    if( ( tsg = isShown( проект, views ) ) == null )
+                        show( проект, views );
+                    else
+                        //TODO временный обходной вариант для активации view
+                        views.set( views.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
+                }
         }
+
+        private TitledSceneGraph isShown( Проект проект, Iterable<TitledSceneGraph> views )
+        {
+            for( TitledSceneGraph tsg : views )
+            {
+                Object content = tsg.node.getUserData();
+                if( tsg.node instanceof WebView && проект.equals( content ) )
+                    return tsg;
+            }
+            return null;
+        }
+
+        private void show( final Проект проект, Collection<TitledSceneGraph> views )
+        {
+            final WebView view = new WebView();
+            view.setUserData( проект );
+            views.add( new TitledSceneGraph( view, new SimpleStringProperty( проект.toString() ) ) );
+            
+            jfx.getExecutorService().submit( new Task<String>() 
+            {
+                @Override
+                protected String call() throws Exception
+                {
+                    return проект.getImage( Отображаемый.MIME_SVG );
+                }
+
+                @Override
+                protected void succeeded()
+                {
+                    view.getEngine().loadContent( getValue(), Отображаемый.MIME_SVG );
+                }
+                
+                @Override
+                protected void failed()
+                {
+                    Throwable exception = this.getException();
+                    String problem = "<html><body>Failed to obtain project image.</body></html>";
+                    if( exception != null ) problem += "\n" + exception.getStackTrace();
+                    view.getEngine().loadContent( problem, "text/html" );
+                    LOGGER.log( Level.SEVERE, "Failed to obtain project image.", exception );
+                }
+            } );
+        }
+
     }
     
     private class ActionEdit extends Action
@@ -159,8 +219,11 @@ class ProjectCatalogView extends ListView<Проект>
         @Override
         public void handle( ActionEvent _ )
         {
-//            LOGGER.info( "Sorry, the command is not implemented." );
+            //TODO confirmation dialog
+            
+            // собрать выделенные проекты немедленно, ибо список может затем измениться другими процессами
             List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            
             new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор, context.jfx )
             {
                 @Override
