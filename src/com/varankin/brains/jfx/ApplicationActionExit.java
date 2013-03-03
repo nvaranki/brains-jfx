@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.util.Текст;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
@@ -9,13 +8,12 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionExit extends Action
+class ApplicationActionExit extends AbstractJfxAction<ApplicationView.Context>
 {
 
     ApplicationActionExit( ApplicationView.Context context )
     {
-        super( context.jfx, Текст.ПАКЕТЫ.словарь( ApplicationActionExit.class, 
-                context.jfx.контекст.специфика ) );
+        super( context, context.jfx.словарь( ApplicationActionExit.class ) );
     }
 
     @Override

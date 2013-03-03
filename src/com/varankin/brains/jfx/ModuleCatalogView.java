@@ -5,17 +5,13 @@ import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
 import com.varankin.brains.db.Модуль;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
-
 import java.util.*;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
@@ -79,19 +75,19 @@ class ModuleCatalogView extends ListView<Модуль>
         }
     }
     
-    private class ActionDbModulePreview extends Action
+    private class ActionDbModulePreview extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionDbModulePreview()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModulePreview.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionDbModulePreview.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            ObservableList<TitledSceneGraph> views = jfx.getViews().getValue();
+            ObservableList<TitledSceneGraph> views = контекст.jfx.getViews().getValue();
             
             for( Модуль модуль : selectionModelProperty().getValue().getSelectedItems() )
                 if( модуль != null )
@@ -122,7 +118,7 @@ class ModuleCatalogView extends ListView<Модуль>
             view.setUserData( модуль );
             views.add( new TitledSceneGraph( view, new SimpleStringProperty( модуль.toString() ) ) );
             
-            jfx.getExecutorService().submit( new Task<String>() 
+            контекст.jfx.getExecutorService().submit( new Task<String>() 
             {
                 @Override
                 protected String call() throws Exception
@@ -140,12 +136,12 @@ class ModuleCatalogView extends ListView<Модуль>
 
     }
     
-    private class ActionDbModuleEdit extends Action
+    private class ActionDbModuleEdit extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionDbModuleEdit()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleEdit.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionDbModuleEdit.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
@@ -157,13 +153,13 @@ class ModuleCatalogView extends ListView<Модуль>
 
     }
     
-    private class ActionDbModuleRemove extends Action
+    private class ActionDbModuleRemove extends AbstractJfxAction<ApplicationView.Context>
     {
         final УдалитьАрхивныйМодуль действие;
         
         ActionDbModuleRemove()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleRemove.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionDbModuleRemove.class ) );
             действие = new УдалитьАрхивныйМодуль( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
@@ -172,7 +168,7 @@ class ModuleCatalogView extends ListView<Модуль>
         public void handle( ActionEvent _ )
         {
             List<Модуль> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-            new ApplicationActionWorker<Collection<Модуль>>( действие, ceлектор, context.jfx )
+            new ApplicationActionWorker<Collection<Модуль>>( действие, ceлектор )
             {
                 @Override
                 protected void succeeded()
@@ -180,18 +176,18 @@ class ModuleCatalogView extends ListView<Модуль>
                     super.succeeded();
                     Результат результат = getValue();
                     if( результат != null && результат.код() == Результат.НОРМА )
-                        jfx.getDataBaseModuleMonitor().getValue().removeAll( контекст() );
+                        контекст.jfx.getDataBaseModuleMonitor().getValue().removeAll( контекст() );
                 }
-            }.execute();
+            }.execute( контекст.jfx );
         }
     }
     
-    private class ActionDbModuleProperties extends Action
+    private class ActionDbModuleProperties extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionDbModuleProperties()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionDbModuleProperties.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionDbModuleProperties.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         

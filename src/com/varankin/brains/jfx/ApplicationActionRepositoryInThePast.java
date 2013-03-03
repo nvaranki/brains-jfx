@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.util.Текст;
+import com.varankin.brains.Контекст;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 
@@ -10,24 +10,21 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionRepositoryInThePast extends Action
+class ApplicationActionRepositoryInThePast extends AbstractJfxAction<ApplicationView.Context>
 {
-    private final ApplicationView.Context context;
     private Task<Void> агент;
 
     ApplicationActionRepositoryInThePast( ApplicationView.Context context )
     {
-        super( context.jfx, Текст.ПАКЕТЫ.словарь( ApplicationActionRepositoryInThePast.class, 
-                context.jfx.контекст.специфика ) );
-        this.context = context;
-        setEnabled( false );
+        super( context, context.jfx.словарь( ApplicationActionRepositoryInThePast.class ) );
+        //setEnabled( false );
     }
 
     void агент( Task<Void> worker, String метка )
     {
         агент = worker;
         textProperty().setValue( "1 " + limitTextLength( метка != null ? метка : "" ) );
-        setEnabled( агент != null );
+        //setEnabled( агент != null );
     }
     
     @Override
@@ -35,22 +32,23 @@ class ApplicationActionRepositoryInThePast extends Action
     {
         if( агент != null )
         {
-            context.actions.getRepositorySql().setEnabled( false );
-            context.actions.getRepositoryXml().setEnabled( false );
-            context.actions.getRepositoryInThePast().setEnabled( false );
+//            контекст.actions.getRepositorySql().setEnabled( false );
+//            контекст.actions.getRepositoryXml().setEnabled( false );
+//            контекст.actions.getRepositoryInThePast().setEnabled( false );
             
-            jfx.getExecutorService().execute( агент ); 
+            контекст.jfx.getExecutorService().execute( агент ); 
         }
     }
 
     private String limitTextLength( String оригинал )
     {
         StringBuilder chars = new StringBuilder( оригинал );
-        int лимит = Integer.valueOf( jfx.контекст.параметр( "frame.file.path.limit", "30" ) );
+        Контекст к = контекст.jfx.контекст;
+        int лимит = Integer.valueOf( к.параметр( "frame.file.path.limit", "30" ) );
         int размер = chars.length();
         if( размер > лимит )
         {
-            String вставка = jfx.контекст.параметр( "frame.file.path.implant", "..." );
+            String вставка = к.параметр( "frame.file.path.implant", "..." );
             int m = размер / 2;
             int ext = Math.max( 0, размер - лимит + вставка.length() ) / 2;
             chars.replace( m - ext, m + ext, вставка );

@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.util.Текст;
 import javafx.event.ActionEvent;
 
 /**
@@ -8,21 +7,20 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionAbout extends Action
+class ApplicationActionAbout extends AbstractJfxAction<JavaFX>
 {
     private Открытка открытка;
 
     ApplicationActionAbout( ApplicationView.Context context )
     {
-        super( context.jfx, Текст.ПАКЕТЫ.словарь( ApplicationActionAbout.class, 
-                context.jfx.контекст.специфика ) );
+        super( context.jfx, context.jfx.словарь( ApplicationActionAbout.class ) );
     }
 
     @Override
     public void handle( ActionEvent event )
     {
         if( открытка == null )
-            открытка = new Открытка( jfx, false );
+            открытка = new Открытка( контекст, false );
         открытка.show();
     }
 

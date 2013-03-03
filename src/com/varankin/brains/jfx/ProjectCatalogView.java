@@ -2,7 +2,6 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
-import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
 import com.varankin.brains.appl.УдалитьАрхивныйПроект;
 import com.varankin.brains.db.Отображаемый;
 import com.varankin.brains.db.Проект;
@@ -11,16 +10,16 @@ import com.varankin.util.Текст;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.*;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.event.ActionEvent;
-import javafx.scene.control.*;
-import javafx.util.Callback;
-import java.util.logging.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.scene.control.*;
 import javafx.scene.web.WebView;
+import javafx.util.Callback;
 
 /**
  * Каталог проектов архива.
@@ -86,19 +85,19 @@ class ProjectCatalogView extends ListView<Проект>
         }
     }
     
-    private class ActionPreview extends Action
+    private class ActionPreview extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionPreview()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionPreview.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionPreview.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            ObservableList<TitledSceneGraph> views = jfx.getViews().getValue();
+            ObservableList<TitledSceneGraph> views = контекст.jfx.getViews().getValue();
             
             for( Проект проект : selectionModelProperty().getValue().getSelectedItems() )
                 if( проект != null )
@@ -129,7 +128,7 @@ class ProjectCatalogView extends ListView<Проект>
             view.setUserData( проект );
             views.add( new TitledSceneGraph( view, new SimpleStringProperty( проект.toString() ) ) );
             
-            jfx.getExecutorService().submit( new Task<String>() 
+            контекст.jfx.getExecutorService().submit( new Task<String>() 
             {
                 @Override
                 protected String call() throws Exception
@@ -157,12 +156,12 @@ class ProjectCatalogView extends ListView<Проект>
 
     }
     
-    private class ActionEdit extends Action
+    private class ActionEdit extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionEdit()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionEdit.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionEdit.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
@@ -173,12 +172,12 @@ class ProjectCatalogView extends ListView<Проект>
         }
     }
     
-    private class ActionRun extends Action
+    private class ActionRun extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionRun()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionRun.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionRun.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
@@ -189,12 +188,12 @@ class ProjectCatalogView extends ListView<Проект>
         }
     }
     
-    private class ActionExport extends Action
+    private class ActionExport extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionExport()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionExport.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionExport.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
@@ -205,13 +204,13 @@ class ProjectCatalogView extends ListView<Проект>
         }
     }
     
-    private class ActionRemove extends Action
+    private class ActionRemove extends AbstractJfxAction<ApplicationView.Context>
     {
         final Действие<Collection<Проект>> действие;
         
         ActionRemove()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionRemove.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionRemove.class ) );
             действие = new УдалитьАрхивныйПроект( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
@@ -224,7 +223,7 @@ class ProjectCatalogView extends ListView<Проект>
             // собрать выделенные проекты немедленно, ибо список может затем измениться другими процессами
             List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             
-            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор, context.jfx )
+            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор )
             {
                 @Override
                 protected void succeeded()
@@ -232,18 +231,18 @@ class ProjectCatalogView extends ListView<Проект>
                     super.succeeded();
                     Результат результат = getValue();
                     if( результат != null && результат.код() == Результат.НОРМА )
-                        jfx.getDataBaseProjectMonitor().getValue().removeAll( контекст() );
+                        контекст.jfx.getDataBaseProjectMonitor().getValue().removeAll( контекст() );
                 }
-            }.execute();
+            }.execute( context.jfx );
         }
     }
     
-    private class ActionProperties extends Action
+    private class ActionProperties extends AbstractJfxAction<ApplicationView.Context>
     {
         
         ActionProperties()
         {
-            super( context.jfx, Текст.ПАКЕТЫ.словарь( ActionProperties.class, context.jfx.контекст.специфика ) );
+            super( context, context.jfx.словарь( ActionProperties.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         

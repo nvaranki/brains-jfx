@@ -3,6 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.brains.db.Модуль;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.Контекст;
+import com.varankin.util.Текст;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -123,6 +124,11 @@ final class JavaFX
         //TODO контекст.стоп(); //мыслитель.стоп();
     }
     
+    Текст словарь( Class<?> c )
+    {
+        return Текст.ПАКЕТЫ.словарь( c, контекст.специфика );
+    }
+
     File getCurrentLocalDirectory()
     {
         return new File( System.getProperty( "user.dir" ) );

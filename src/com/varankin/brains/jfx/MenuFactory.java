@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.util.jfx.AbstractJfxAction;
 import com.varankin.util.Текст;
-
 import java.util.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
@@ -10,7 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
 /**
- * Коструктор меню приложения.
+ * Конструктор меню приложения.
  *
  * @author &copy; 2012 Николай Варанкин
  */
@@ -54,10 +54,10 @@ class MenuFactory
      */
     static class MenuNode
     {
-        private final Action node;
+        private final AbstractJfxAction node;
         private final MenuNode childs[];
 
-        MenuNode( Action node, MenuNode... childs )
+        MenuNode( AbstractJfxAction node, MenuNode... childs )
         {
             this.node = node;
             this.childs = childs;
@@ -103,11 +103,11 @@ class MenuFactory
     /**
      * Вспомогательное {@linkplain Action действие} для элемента раскрытия подменю.
      */
-    static class SubMenuAction extends Action
+    static class SubMenuAction extends AbstractJfxAction
     {
         SubMenuAction( Текст словарь )
         {
-            super( null, словарь );
+            super( словарь );
         }
 
         SubMenuAction( Class класс, String суффикс, Map<Locale.Category,Locale> специфика )

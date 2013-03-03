@@ -1,9 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.jfx.ApplicationView.Context;
-import com.varankin.util.Текст;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 /**
@@ -12,32 +10,34 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionRepositorySql extends Action
+class ApplicationActionRepositorySql extends AbstractJfxAction<ApplicationView.Context>
 {
     static private final Logger LOGGER = Logger.getLogger( 
             ApplicationActionRepositoryXml.class.getName() );
 
-    private final ApplicationView.Context context;
 //    private final DataBaseChooser chooser;
 
     ApplicationActionRepositorySql( Context context )
     {
-        super( context.jfx, Текст.ПАКЕТЫ.словарь( ApplicationActionRepositorySql.class, 
-                context.jfx.контекст.специфика ) );
-        this.context = context;
+        super( context, context.jfx.словарь( ApplicationActionRepositorySql.class ) );
 //        chooser = new DataBaseChooser( context );
     }
 
     @Override
     public void handle( ActionEvent event )
     {
-        context.actions.getRepositorySql().setEnabled( false );
-        context.actions.getRepositoryXml().setEnabled( false );
-        context.actions.getRepositoryInThePast().setEnabled( false );
-        context.actions.getRepositoryInThePast().агент( null, null );
-        context.actions.getLoad().setEnabled( false );
+//        контекст.actions.getRepositorySql().setEnabled( false );
+//        контекст.actions.getRepositoryXml().setEnabled( false );
+//        контекст.actions.getRepositoryInThePast().setEnabled( false );
+//        контекст.actions.getRepositoryInThePast().агент( null, null );
+//        контекст.actions.getLoad().setEnabled( false );
 
 //        Platform.runLater( new Chooser() );
     }
 
+    private ApplicationActionRepositoryInThePast getRepositoryInThePast()
+    {
+        return null;//TODO контекст.actions.getRepositoryInThePast();
+    }
+    
 }

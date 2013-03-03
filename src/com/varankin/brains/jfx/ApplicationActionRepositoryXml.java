@@ -4,7 +4,6 @@ import com.varankin.brains.artificial.io.xml.ЗагрузчикImpl;
 import com.varankin.brains.Контекст;
 import com.varankin.io.container.Provider;
 import com.varankin.io.stream.FileInputStreamProvider;
-import com.varankin.util.Текст;
 import java.io.*;
 import java.util.logging.*;
 import javafx.application.Platform;
@@ -18,18 +17,15 @@ import javafx.stage.FileChooser;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionRepositoryXml extends Action
+class ApplicationActionRepositoryXml extends AbstractJfxAction<ApplicationView.Context>
 {
     static private final Logger LOGGER = Logger.getLogger( ApplicationActionRepositoryXml.class.getName() );
 
-    private final ApplicationView.Context context;
     private final FileChooser chooser;
 
     ApplicationActionRepositoryXml( ApplicationView.Context context )
     {
-        super( context.jfx, Текст.ПАКЕТЫ.словарь( ApplicationActionRepositoryXml.class, 
-                context.jfx.контекст.специфика ) );
-        this.context = context;
+        super( context, context.jfx.словарь( ApplicationActionRepositoryXml.class ) );
         this.chooser = new FileChooser();
         chooser.setInitialDirectory( context.jfx.getCurrentLocalDirectory() );
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter( словарь.текст( "ext.xml" ), "*.xml" );
@@ -39,22 +35,22 @@ class ApplicationActionRepositoryXml extends Action
     @Override
     public void handle( ActionEvent event )
     {
-        ActionFactory actions = context.actions;
-        actions.getRepositorySql().setEnabled( false );
-        actions.getRepositoryXml().setEnabled( false );
-        actions.getRepositoryInThePast().setEnabled( false );
-        actions.getLoad().setEnabled( false );
+//        ActionFactory actions = контекст.actions;
+//        actions.getRepositorySql().setEnabled( false );
+//        actions.getRepositoryXml().setEnabled( false );
+//        actions.getRepositoryInThePast().setEnabled( false );
+//        actions.getLoad().setEnabled( false );
 
         Platform.runLater( new FileSelector() );
     }
     
     private void finish( Агент агент )
     {
-        ActionFactory actions = context.actions;
-        actions.getRepositorySql().setEnabled( true );
-        actions.getRepositoryXml().setEnabled( true );
-        actions.getRepositoryInThePast().setEnabled( агент != null );
-        actions.getLoad().setEnabled( агент != null );
+//        ActionFactory actions = контекст.actions;
+//        actions.getRepositorySql().setEnabled( true );
+//        actions.getRepositoryXml().setEnabled( true );
+//        actions.getRepositoryInThePast().setEnabled( агент != null );
+//        actions.getLoad().setEnabled( агент != null );
     }
     
     private class FileSelector implements Runnable
@@ -62,7 +58,7 @@ class ApplicationActionRepositoryXml extends Action
         @Override
         public void run()
         {
-            File returnVal = chooser.showOpenDialog( context.jfx.платформа );
+            File returnVal = chooser.showOpenDialog( контекст.jfx.платформа );
             if( returnVal != null ) 
             {
                 String путь = returnVal.getAbsolutePath();
@@ -70,15 +66,20 @@ class ApplicationActionRepositoryXml extends Action
                 File директория = returnVal.getParentFile();
                 if( директория != null )
                     chooser.setInitialDirectory( директория );
-                jfx.getExecutorService().execute( new Агент( 
+                контекст.jfx.getExecutorService().execute( new Агент( 
                     new FileInputStreamProvider( returnVal ), textProperty().get() ) );
             }
             else
             {
-                context.actions.getRepositoryInThePast().агент( null, null );//TODO а если загрузчик есть, но отмеенен?
+                //TODO контекст.actions.getRepositoryInThePast().агент( null, null );//TODO а если загрузчик есть, но отмеенен?
                 finish( null );
             }
         }
+    }
+    
+    private ApplicationActionRepositoryInThePast getRepositoryInThePast()
+    {
+        return null;//TODO контекст.actions.getRepositoryInThePast();
     }
     
     private class Агент extends Task<Void>
@@ -88,7 +89,7 @@ class ApplicationActionRepositoryXml extends Action
 
         Агент( Provider<InputStream> поставщик, String title )
         {
-            this.контекст = context.jfx.контекст;
+            this.контекст = ApplicationActionRepositoryXml.this.контекст.jfx.контекст;
             this.поставщик = поставщик;
             updateTitle( title );
         }
@@ -106,7 +107,7 @@ class ApplicationActionRepositoryXml extends Action
         protected void succeeded()
         {
             Агент агент = new Агент( поставщик, getTitle() );
-            context.actions.getRepositoryInThePast().агент( агент, поставщик.toString() );
+            getRepositoryInThePast().агент( агент, поставщик.toString() );
             finish( агент );
             LOGGER.log( Level.INFO, словарь.текст( "success", поставщик.toString() ) );
         }
@@ -115,7 +116,7 @@ class ApplicationActionRepositoryXml extends Action
         protected void failed()
         {
             finish( null );
-            context.actions.getRepositoryInThePast().агент( null, null );
+            getRepositoryInThePast().агент( null, null );
             Throwable exception = getException();
             if( exception != null )
                 LOGGER.log( Level.SEVERE, словарь.текст( "failure", поставщик.toString() ), exception );
@@ -126,7 +127,7 @@ class ApplicationActionRepositoryXml extends Action
         @Override
         protected void cancelled()
         {
-            context.actions.getRepositoryInThePast().агент( null, null );
+            getRepositoryInThePast().агент( null, null );
             finish( null );
             LOGGER.log( Level.SEVERE, словарь.текст( "failure", поставщик.toString() ) );
         }
