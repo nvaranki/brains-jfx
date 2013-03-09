@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.db.Модуль;
+import com.varankin.brains.db.Модуль_;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
@@ -31,7 +31,7 @@ final class JavaFX
     public final Контекст контекст;
     public final Stage платформа;
     //public final Позиционер позиционер;
-    private final ObservableObjectList<Модуль> dbmm;
+    private final ObservableObjectList<Модуль_> dbmm;
     private final ObservableObjectList<Проект> dbpm;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
@@ -49,12 +49,12 @@ final class JavaFX
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
-        dbmm = new ObservableObjectList<>( new ArrayList<Модуль>() );
+        dbmm = new ObservableObjectList<>( new ArrayList<Модуль_>() );
         dbpm = new ObservableObjectList<>( new ArrayList<Проект>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
     }
     
-    ObservableValue<ObservableList<Модуль>> getDataBaseModuleMonitor()
+    ObservableValue<ObservableList<Модуль_>> getDataBaseModuleMonitor()
     {
         return dbmm;
     }
@@ -112,7 +112,8 @@ final class JavaFX
 //            protected Void call() throws Exception
 //            {
                 dbmm.getValue().addAll( контекст.архив.модули() );
-                dbpm.getValue().addAll( контекст.архив.проекты() );
+                for( Проект проект : контекст.архив.проекты() )
+                    dbpm.getValue().add( проект );
 //                return null;
 //            }
 //        } );

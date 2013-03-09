@@ -2,7 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйМодуль;
-import com.varankin.brains.db.Модуль;
+import com.varankin.brains.db.Модуль_;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
 import java.util.*;
@@ -21,7 +21,7 @@ import javafx.util.Callback;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ModuleCatalogView extends ListView<Модуль>
+class ModuleCatalogView extends ListView<Модуль_>
 {
     private final ApplicationView.Context context;
     private final ReadOnlyStringProperty title;
@@ -56,19 +56,19 @@ class ModuleCatalogView extends ListView<Модуль>
     
     //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class RowBuilder implements Callback<ListView<Модуль>, ListCell<Модуль>>
+    private class RowBuilder implements Callback<ListView<Модуль_>, ListCell<Модуль_>>
     {
         @Override
-        public ListCell<Модуль> call( ListView<Модуль> view )
+        public ListCell<Модуль_> call( ListView<Модуль_> view )
         {
             return new VisibleRow();
         }
     }
 
-    static private class VisibleRow extends ListCell<Модуль>
+    static private class VisibleRow extends ListCell<Модуль_>
     {
         @Override
-        public void updateItem( Модуль item, boolean empty ) 
+        public void updateItem( Модуль_ item, boolean empty ) 
         {
             super.updateItem( item, empty );
             setText( empty ? null : item.toString() );
@@ -89,7 +89,7 @@ class ModuleCatalogView extends ListView<Модуль>
         {
             ObservableList<TitledSceneGraph> views = контекст.jfx.getViews().getValue();
             
-            for( Модуль модуль : selectionModelProperty().getValue().getSelectedItems() )
+            for( Модуль_ модуль : selectionModelProperty().getValue().getSelectedItems() )
                 if( модуль != null )
                 {
                     TitledSceneGraph tsg;
@@ -101,7 +101,7 @@ class ModuleCatalogView extends ListView<Модуль>
                 }
         }
         
-        private TitledSceneGraph isShown( Модуль модуль, Iterable<TitledSceneGraph> views )
+        private TitledSceneGraph isShown( Модуль_ модуль, Iterable<TitledSceneGraph> views )
         {
             for( TitledSceneGraph tsg : views )
             {
@@ -112,7 +112,7 @@ class ModuleCatalogView extends ListView<Модуль>
             return null;
         }
 
-        private void show( final Модуль модуль, Collection<TitledSceneGraph> views )
+        private void show( final Модуль_ модуль, Collection<TitledSceneGraph> views )
         {
             final WebView view = new WebView();
             view.setUserData( модуль );
@@ -123,13 +123,13 @@ class ModuleCatalogView extends ListView<Модуль>
                 @Override
                 protected String call() throws Exception
                 {
-                    return модуль.getImage( Модуль.MIME_SVG );
+                    return модуль.getImage( Модуль_.MIME_SVG );
                 }
 
                 @Override
                 protected void succeeded()
                 {
-                    view.getEngine().loadContent( getValue(), Модуль.MIME_SVG );
+                    view.getEngine().loadContent( getValue(), Модуль_.MIME_SVG );
                 }
             } );
         }
@@ -167,8 +167,8 @@ class ModuleCatalogView extends ListView<Модуль>
         @Override
         public void handle( ActionEvent _ )
         {
-            List<Модуль> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-            new ApplicationActionWorker<Collection<Модуль>>( действие, ceлектор )
+            List<Модуль_> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            new ApplicationActionWorker<Collection<Модуль_>>( действие, ceлектор )
             {
                 @Override
                 protected void succeeded()

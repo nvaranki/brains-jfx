@@ -3,6 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйПроект;
+import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.db.Отображаемый;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
@@ -133,7 +134,8 @@ class ProjectCatalogView extends ListView<Проект>
                 @Override
                 protected String call() throws Exception
                 {
-                    return проект.getImage( Отображаемый.MIME_SVG );
+                    //return проект.getImage( Отображаемый.MIME_SVG );
+                    return new SvgПроект( проект ).generateImage( "  " );
                 }
 
                 @Override
