@@ -3,29 +3,20 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
 import com.varankin.brains.appl.УдалитьАрхивныйПроект;
+import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
-import com.varankin.brains.db.Коллекция;
+import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Отображаемый;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.*;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ObservableValueBase;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -38,21 +29,21 @@ import javafx.util.Callback;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ProjectCatalogView extends ListView<Проект>
+class LibraryCatalogView extends ListView<Библиотека>
 {
-    private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
+    private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
     private final ApplicationView.Context context;
     private final ReadOnlyStringProperty title;
 
-    ProjectCatalogView( final ApplicationView.Context context )
+    LibraryCatalogView( ApplicationView.Context context )
     {
         this.context = context;
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( context.jfx.проекты() );
-        Текст словарь = Текст.ПАКЕТЫ.словарь( ProjectCatalogView.class, context.jfx.контекст.специфика );
+        itemsProperty().bind( context.jfx.getDataBaseLibraryMonitor() );
+        Текст словарь = Текст.ПАКЕТЫ.словарь( LibraryCatalogView.class, context.jfx.контекст.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
     }
     
@@ -78,22 +69,22 @@ class ProjectCatalogView extends ListView<Проект>
     
     //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class RowBuilder implements Callback<ListView<Проект>, ListCell<Проект>>
+    private class RowBuilder implements Callback<ListView<Библиотека>, ListCell<Библиотека>>
     {
         @Override
-        public ListCell<Проект> call( ListView<Проект> view )
+        public ListCell<Библиотека> call( ListView<Библиотека> view )
         {
             return new VisibleRow();
         }
     }
 
-    static private class VisibleRow extends ListCell<Проект>
+    static private class VisibleRow extends ListCell<Библиотека>
     {
         @Override
-        public void updateItem( Проект item, boolean empty ) 
+        public void updateItem( Библиотека item, boolean empty ) 
         {
             super.updateItem( item, empty );
-            setText( empty ? null : item.toString() );
+            setText( empty ? null : item.название() );
         }
     }
     
@@ -111,7 +102,7 @@ class ProjectCatalogView extends ListView<Проект>
         {
             ObservableList<TitledSceneGraph> views = контекст.jfx.getViews().getValue();
             
-            for( Проект проект : selectionModelProperty().getValue().getSelectedItems() )
+            for( Библиотека проект : selectionModelProperty().getValue().getSelectedItems() )
                 if( проект != null )
                 {
                     TitledSceneGraph tsg;
@@ -123,7 +114,7 @@ class ProjectCatalogView extends ListView<Проект>
                 }
         }
 
-        private TitledSceneGraph isShown( Проект проект, Iterable<TitledSceneGraph> views )
+        private TitledSceneGraph isShown( Библиотека проект, Iterable<TitledSceneGraph> views )
         {
             for( TitledSceneGraph tsg : views )
             {
@@ -134,7 +125,7 @@ class ProjectCatalogView extends ListView<Проект>
             return null;
         }
 
-        private void show( final Проект проект, Collection<TitledSceneGraph> views )
+        private void show( final Библиотека проект, Collection<TitledSceneGraph> views )
         {
             final WebView view = new WebView();
             view.setUserData( проект );
@@ -146,7 +137,7 @@ class ProjectCatalogView extends ListView<Проект>
                 protected String call() throws Exception
                 {
                     //return проект.getImage( Отображаемый.MIME_SVG );
-                    return new SvgПроект( проект ).generateImage( "  " );
+                    return new SvgБиблиотека( проект ).generateImage( "  " );
                 }
 
                 @Override
@@ -219,12 +210,12 @@ class ProjectCatalogView extends ListView<Проект>
     
     private class ActionRemove extends AbstractJfxAction<ApplicationView.Context>
     {
-        final Действие<Collection<Проект>> действие;
+        final Действие<Collection<Библиотека>> действие;
         
         ActionRemove()
         {
             super( context, context.jfx.словарь( ActionRemove.class ) );
-            действие = new УдалитьАрхивныйПроект( context.jfx.контекст.архив );
+            действие = null;//TODO new УдалитьАрхивныйПроект( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
         
@@ -234,9 +225,9 @@ class ProjectCatalogView extends ListView<Проект>
             //TODO confirmation dialog
             
             // собрать выделенные проекты немедленно, ибо список может затем измениться другими процессами
-            List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            List<Библиотека> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             
-            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор )
+            new ApplicationActionWorker<Collection<Библиотека>>( действие, ceлектор )
             {
                 @Override
                 protected void succeeded()

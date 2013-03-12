@@ -93,8 +93,13 @@ class ApplicationView extends Scene
             pane2.textProperty().bind( архиватор2.titleProperty() );
             pane2.setContent( архиватор2 );
 
+            LibraryCatalogView архиватор3 = new LibraryCatalogView( context ); // навигатор по архиву библиотек
+            TitledPane pane3 = new TitledPane();
+            pane3.textProperty().bind( архиватор3.titleProperty() );
+            pane3.setContent( архиватор3 );
+
             Accordion обозреватели = new Accordion();
-            обозреватели.getPanes().addAll( pane0, pane2, pane1 );
+            обозреватели.getPanes().addAll( pane0, pane2, pane3 );
             обозреватели.setExpandedPane( pane0 );
             return обозреватели;
         }
