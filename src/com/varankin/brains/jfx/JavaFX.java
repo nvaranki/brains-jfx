@@ -261,22 +261,29 @@ final class JavaFX
         private class GuiUpdater implements Runnable
         {
             final List<Проект> update;
-            final boolean added;
+            final Object action;
 
-            public GuiUpdater( Collection<? extends Проект> update, boolean added ) 
+            public GuiUpdater( Collection<? extends Проект> update, Object action ) 
             {
                 this.update = new ArrayList<>( update ); // snapshot
-                this.added = added;
+                this.action = action;
             }
             
             @Override
             public void run() 
             {
-                //TODO use temp storage
-                if( added )
+                //TODO sort?!
+                if( Коллекция.PROPERTY_ADDED.equals( action ) )
                     value.addAll( update );
-                else
+                else if( Коллекция.PROPERTY_REMOVED.equals( action ) )
                     value.removeAll( update );
+                else if( Коллекция.PROPERTY_UPDATED.equals( action ) )
+                {
+                    value.retainAll( update );
+                    for( Проект проект : update )
+                        if( !value.contains( проект ) )
+                            value.add( проект );
+                }
                 ProjectListWrapper.this.fireValueChangedEvent();
             }
         }
@@ -289,13 +296,17 @@ final class JavaFX
                 // database part got changed
                 switch( evt.getPropertyName() )
                 {
-                    case "added": //AbstractCollectionView.PROPERTY_ADDED
+                    case Коллекция.PROPERTY_ADDED:
                         Platform.runLater( new ProjectListWrapper.GuiUpdater( 
-                                Arrays.<Проект>asList( (Проект)evt.getNewValue() ), true ) );
+                                Arrays.<Проект>asList( (Проект)evt.getNewValue() ), Коллекция.PROPERTY_ADDED ) );
                         break;
-                    case "deleted": //AbstractCollectionView.PROPERTY_DELETED
+                    case Коллекция.PROPERTY_REMOVED:
                         Platform.runLater( new ProjectListWrapper.GuiUpdater( 
-                                Arrays.<Проект>asList( (Проект)evt.getOldValue() ), false ) );
+                                Arrays.<Проект>asList( (Проект)evt.getOldValue() ), Коллекция.PROPERTY_REMOVED ) );
+                        break;
+                    case Коллекция.PROPERTY_UPDATED:
+                        Platform.runLater( new ProjectListWrapper.GuiUpdater( 
+                                контекст.архив.проекты(), Коллекция.PROPERTY_UPDATED ) );
                         break;
                 }
             }
