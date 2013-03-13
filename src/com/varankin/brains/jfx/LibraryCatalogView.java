@@ -2,12 +2,9 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
-import com.varankin.brains.appl.УдалитьАрхивныйПроект;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
-import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Отображаемый;
-import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
 import java.util.ArrayList;
@@ -42,7 +39,7 @@ class LibraryCatalogView extends ListView<Библиотека>
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( context.jfx.getDataBaseLibraryMonitor() );
+        itemsProperty().bind( context.jfx.библиотеки() );
         Текст словарь = Текст.ПАКЕТЫ.словарь( LibraryCatalogView.class, context.jfx.контекст.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
     }

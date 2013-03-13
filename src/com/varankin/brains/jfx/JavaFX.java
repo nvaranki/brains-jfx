@@ -18,11 +18,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectPropertyBase;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
@@ -45,7 +40,8 @@ final class JavaFX
     private final ObservableObjectList<Библиотека> dblm;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
-    private final ReadOnlyProperty<ObservableList<Проект>> ПРОЕКТЫ;
+    private final ObservableValue<ObservableList<Проект>> ПРОЕКТЫ;
+    private final ObservableValue<ObservableList<Библиотека>> БИБЛИОТЕКИ;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -64,24 +60,33 @@ final class JavaFX
         dbpm = new ObservableObjectList<>( new ArrayList<Проект>() );
         dblm = new ObservableObjectList<>( new ArrayList<Библиотека>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
-        ПРОЕКТЫ = new ProjectListWrapper();
+        ПРОЕКТЫ = new ValueListWrapper<>( контекст.архив.проекты() );
+        БИБЛИОТЕКИ = new ValueListWrapper<>( контекст.архив.библиотеки() );
     }
     
-    ReadOnlyProperty<ObservableList<Проект>> проекты() 
+    ObservableValue<ObservableList<Проект>> проекты() 
     {
         return ПРОЕКТЫ;
     }
     
+    ObservableValue<ObservableList<Библиотека>> библиотеки() 
+    {
+        return БИБЛИОТЕКИ;
+    }
+    
+    @Deprecated
     ObservableValue<ObservableList<Модуль_>> getDataBaseModuleMonitor()
     {
         return dbmm;
     }
     
+    @Deprecated
     ObservableValue<ObservableList<Проект>> getDataBaseProjectMonitor()
     {
         return dbpm;
     }
 
+    @Deprecated
     ObservableValue<ObservableList<Библиотека>> getDataBaseLibraryMonitor()
     {
         return dblm;
@@ -130,6 +135,7 @@ final class JavaFX
     void старт()
     {
         ПРОЕКТЫ.getValue().addAll( контекст.архив.проекты() );
+        БИБЛИОТЕКИ.getValue().addAll( контекст.архив.библиотеки() );
 //        Platform.runLater( new Task<Void>() //TODO re-design
 //        {
 //            @Override
@@ -162,6 +168,8 @@ final class JavaFX
         return new File( System.getProperty( "user.dir" ) );
     }
 
+    //<editor-fold defaultstate="collapsed" desc="классы">
+    
     private class ObservableObjectList<T> extends ObservableValueBase<ObservableList<T>>
     {
         final ObservableList<T> value;
@@ -179,98 +187,35 @@ final class JavaFX
 
     }
     
-    private class ProjectListWrapper extends ReadOnlyObjectPropertyBase<ObservableList<Проект>>
+    private static class ValueListWrapper<T> extends ObservableValueBase<ObservableList<T>>
     {
-        final int hashCode;
-        final ObservableList<Проект> value = FXCollections.<Проект>observableArrayList();
+        final ObservableList<T> value = FXCollections.<T>observableArrayList();
         
-        ProjectListWrapper() 
+        ValueListWrapper( Коллекция<T> элементы )
         {
-            //super( FXCollections.<Проект>observableArrayList() );
-            Коллекция<Проект> проекты = контекст.архив.проекты();
-            hashCode = проекты.hashCode() ^ 69 * 7;
-            проекты.addPropertyChangeListener( new PropertyChangeListenerImpl() );
-            //getValue().addAll( проекты );
+            элементы.addPropertyChangeListener( new PropertyChangeListenerImpl( элементы ) );
         }
         
         @Override
-        public final int hashCode()
-        {
-            return hashCode;
-        }
-        
-//        @Override
-//        public final ObservableList<Проект> getValue()
-//        {
-//            return super.getValue();
-//        }
-
-        @Override
-        public Object getBean() 
-        {
-            return ProjectListWrapper.this; //TODO
-        }
-
-        @Override
-        public String getName() 
-        {
-            return "projects";//Проект.class.getSimpleName(); //TODO
-        }
-
-        @Override
-        public ObservableList<Проект> get() 
+        public ObservableList<T> getValue()
         {
             return value;
         }
         
-//        @Override
-//        protected void invalidated()
-//        {
-//            // GUI part got changed
-////            getExecutorService().submit( 
-////                    new DataBaseUpdater( ProjectCatalogView.this.itemsProperty().getValue() ) );
-//            return;
-//        }
-        
-        private class DataBaseUpdater implements Runnable
+        private class PropertyChangeAction implements Runnable
         {
-            final List<Проект> проектыНаВиду;
-
-            DataBaseUpdater( List<? extends Проект> проекты ) 
-            {
-                this.проектыНаВиду = new ArrayList<>( проекты );
-            }
-
-            @Override
-            public void run() 
-            {
-                Коллекция<Проект> проекты = контекст.архив.проекты();
-                List<Проект> проектыАрхива = new ArrayList<>( проекты );
-                Collection<Проект> добавлено = new ArrayList<>( проектыНаВиду ); добавлено.removeAll( проектыАрхива );
-                Collection<Проект> удалено   = new ArrayList<>( проектыАрхива ); удалено.removeAll( проектыНаВиду );
-                проекты.addAll( добавлено );
-                проекты.removeAll( удалено );
-                
-                //TODO if Set<E>
-                //проекты.retainAll( проектыНаВиду );
-                //проекты.addAll( проектыНаВиду );
-            }
-            
-        }
-        
-        private class GuiUpdater implements Runnable
-        {
-            final List<Проект> update;
+            //final List<T> value;
+            final List<T> update;
             final Object action;
-
-            public GuiUpdater( Collection<? extends Проект> update, Object action ) 
+            
+            public PropertyChangeAction( Collection<? extends T> update, Object action )
             {
                 this.update = new ArrayList<>( update ); // snapshot
                 this.action = action;
             }
             
             @Override
-            public void run() 
+            public void run()
             {
                 //TODO sort?!
                 if( Коллекция.PROPERTY_ADDED.equals( action ) )
@@ -280,38 +225,47 @@ final class JavaFX
                 else if( Коллекция.PROPERTY_UPDATED.equals( action ) )
                 {
                     value.retainAll( update );
-                    for( Проект проект : update )
-                        if( !value.contains( проект ) )
-                            value.add( проект );
+                    for( T t : update )
+                        if( !value.contains( t ) )
+                            value.add( t );
                 }
-                ProjectListWrapper.this.fireValueChangedEvent();
+                ValueListWrapper.this.fireValueChangedEvent();
             }
         }
-
+        
         private class PropertyChangeListenerImpl implements PropertyChangeListener
         {
+            final Collection<T> элементы;
+            
+            public PropertyChangeListenerImpl( Collection<T> элементы )
+            {
+                this.элементы = элементы;
+            }
+            
             @Override
-            public void propertyChange( PropertyChangeEvent evt ) 
+            public void propertyChange( PropertyChangeEvent evt )
             {
                 // database part got changed
                 switch( evt.getPropertyName() )
                 {
                     case Коллекция.PROPERTY_ADDED:
-                        Platform.runLater( new ProjectListWrapper.GuiUpdater( 
-                                Arrays.<Проект>asList( (Проект)evt.getNewValue() ), Коллекция.PROPERTY_ADDED ) );
+                        Platform.runLater( new PropertyChangeAction(
+                                Arrays.<T>asList( (T)evt.getNewValue() ), Коллекция.PROPERTY_ADDED ) );
                         break;
                     case Коллекция.PROPERTY_REMOVED:
-                        Platform.runLater( new ProjectListWrapper.GuiUpdater( 
-                                Arrays.<Проект>asList( (Проект)evt.getOldValue() ), Коллекция.PROPERTY_REMOVED ) );
+                        Platform.runLater( new PropertyChangeAction(
+                                Arrays.<T>asList( (T)evt.getOldValue() ), Коллекция.PROPERTY_REMOVED ) );
                         break;
                     case Коллекция.PROPERTY_UPDATED:
-                        Platform.runLater( new ProjectListWrapper.GuiUpdater( 
-                                контекст.архив.проекты(), Коллекция.PROPERTY_UPDATED ) );
+                        Platform.runLater( new PropertyChangeAction(
+                                элементы, Коллекция.PROPERTY_UPDATED ) );
                         break;
                 }
             }
         }
         
     }
+    
+    //</editor-fold>
     
 }

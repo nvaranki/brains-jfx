@@ -2,30 +2,19 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
-import com.varankin.brains.appl.УдалитьАрхивныйПроект;
+import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
-import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Отображаемый;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.*;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ObservableValueBase;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -224,7 +213,7 @@ class ProjectCatalogView extends ListView<Проект>
         ActionRemove()
         {
             super( context, context.jfx.словарь( ActionRemove.class ) );
-            действие = new УдалитьАрхивныйПроект( context.jfx.контекст.архив );
+            действие = new УдалитьАрхивныеПроекты( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
         
