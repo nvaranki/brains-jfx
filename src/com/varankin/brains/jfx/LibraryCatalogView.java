@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
-import com.varankin.biz.action.Результат;
+import com.varankin.brains.appl.УдалитьАрхивныеБиблиотеки;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
 import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Отображаемый;
@@ -24,7 +24,7 @@ import javafx.util.Callback;
 /**
  * Каталог проектов архива.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 class LibraryCatalogView extends ListView<Библиотека>
 {
@@ -39,7 +39,7 @@ class LibraryCatalogView extends ListView<Библиотека>
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( context.jfx.библиотеки() );
+        itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.библиотеки() ) );
         Текст словарь = Текст.ПАКЕТЫ.словарь( LibraryCatalogView.class, context.jfx.контекст.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
     }
@@ -54,7 +54,6 @@ class LibraryCatalogView extends ListView<Библиотека>
         return new MenuNode( null,
                 new MenuNode( new ActionPreview() ),
                 new MenuNode( new ActionEdit() ),
-                new MenuNode( new ActionRun() ),
                 null, 
                 new MenuNode( new ActionRemove() ),
                 null, 
@@ -122,19 +121,19 @@ class LibraryCatalogView extends ListView<Библиотека>
             return null;
         }
 
-        private void show( final Библиотека проект, Collection<TitledSceneGraph> views )
+        private void show( final Библиотека библиотека, Collection<TitledSceneGraph> views )
         {
             final WebView view = new WebView();
-            view.setUserData( проект );
-            views.add( new TitledSceneGraph( view, new SimpleStringProperty( проект.toString() ) ) );
+            view.setUserData( библиотека );
+            views.add( new TitledSceneGraph( view, new SimpleStringProperty( библиотека.название() ) ) );
             
             контекст.jfx.getExecutorService().submit( new Task<String>() 
             {
                 @Override
                 protected String call() throws Exception
                 {
-                    //return проект.getImage( Отображаемый.MIME_SVG );
-                    return new SvgБиблиотека( проект ).generateImage( "  " );
+                    //return библиотека.getImage( Отображаемый.MIME_SVG );
+                    return new SvgБиблиотека( библиотека ).generateImage( "  " );
                 }
 
                 @Override
@@ -147,10 +146,10 @@ class LibraryCatalogView extends ListView<Библиотека>
                 protected void failed()
                 {
                     Throwable exception = this.getException();
-                    String problem = "<html><body>Failed to obtain project image.</body></html>";
+                    String problem = "<html><body>Failed to obtain library image.</body></html>";
                     if( exception != null ) problem += "\n" + exception.getStackTrace();
                     view.getEngine().loadContent( problem, "text/html" );
-                    LOGGER.log( Level.SEVERE, "Failed to obtain project image.", exception );
+                    LOGGER.log( Level.SEVERE, "Failed to obtain library image.", exception );
                 }
             } );
         }
@@ -163,22 +162,6 @@ class LibraryCatalogView extends ListView<Библиотека>
         ActionEdit()
         {
             super( context, context.jfx.словарь( ActionEdit.class ) );
-            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
-        }
-        
-        @Override
-        public void handle( ActionEvent _ )
-        {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
-        }
-    }
-    
-    private class ActionRun extends AbstractJfxAction<ApplicationView.Context>
-    {
-        
-        ActionRun()
-        {
-            super( context, context.jfx.словарь( ActionRun.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
@@ -212,29 +195,17 @@ class LibraryCatalogView extends ListView<Библиотека>
         ActionRemove()
         {
             super( context, context.jfx.словарь( ActionRemove.class ) );
-            действие = null;//TODO new УдалитьАрхивныйПроект( context.jfx.контекст.архив );
+            действие = new УдалитьАрхивныеБиблиотеки( context.jfx.контекст.архив );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1 ) );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            //TODO confirmation dialog
-            
-            // собрать выделенные проекты немедленно, ибо список может затем измениться другими процессами
+            // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<Библиотека> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-            
-            new ApplicationActionWorker<Collection<Библиотека>>( действие, ceлектор )
-            {
-                @Override
-                protected void succeeded()
-                {
-                    super.succeeded();
-                    Результат результат = getValue();
-                    if( результат != null && результат.код() == Результат.НОРМА )
-                        контекст.jfx.getDataBaseProjectMonitor().getValue().removeAll( контекст() );
-                }
-            }.execute( context.jfx );
+            //TODO confirmation dialog
+            new ApplicationActionWorker<>( действие, ceлектор ).execute( context.jfx );
         }
     }
     

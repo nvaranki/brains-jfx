@@ -78,29 +78,26 @@ class ApplicationView extends Scene
         
         static Node left( Context context )
         {
+            // навигатор по модели данных рабочего проекта
+            BrowserView навигатор = new BrowserView( context ); 
+            TitledPane панель0 = new TitledPane( "Project Explorer", навигатор );
+
+            // навигатор по архиву проектов
+            ProjectCatalogView архиватор2 = new ProjectCatalogView( context ); 
+            TitledPane панель2 = new TitledPane();
+            панель2.textProperty().bind( архиватор2.titleProperty() );
+            панель2.setContent( архиватор2 );
+
+            // навигатор по архиву библиотек
+            LibraryCatalogView архиватор3 = new LibraryCatalogView( context ); 
+            TitledPane панель3 = new TitledPane();
+            панель3.textProperty().bind( архиватор3.titleProperty() );
+            панель3.setContent( архиватор3 );
+
             // панель обозревателей
-            
-            BrowserView навигатор = new BrowserView( context ); // навигатор по модели данных
-            TitledPane pane0 = new TitledPane( "Project Explorer", навигатор );
-
-            ModuleCatalogView архиватор1 = new ModuleCatalogView( context ); // навигатор по архиву модулей
-            TitledPane pane1 = new TitledPane();
-            pane1.textProperty().bind( архиватор1.titleProperty() );
-            pane1.setContent( архиватор1 );
-
-            ProjectCatalogView архиватор2 = new ProjectCatalogView( context ); // навигатор по архиву проектов
-            TitledPane pane2 = new TitledPane();
-            pane2.textProperty().bind( архиватор2.titleProperty() );
-            pane2.setContent( архиватор2 );
-
-            LibraryCatalogView архиватор3 = new LibraryCatalogView( context ); // навигатор по архиву библиотек
-            TitledPane pane3 = new TitledPane();
-            pane3.textProperty().bind( архиватор3.titleProperty() );
-            pane3.setContent( архиватор3 );
-
             Accordion обозреватели = new Accordion();
-            обозреватели.getPanes().addAll( pane0, pane2, pane3 );
-            обозреватели.setExpandedPane( pane0 );
+            обозреватели.getPanes().addAll( панель0, панель2, панель3 );
+            обозреватели.setExpandedPane( панель0 );
             return обозреватели;
         }
         

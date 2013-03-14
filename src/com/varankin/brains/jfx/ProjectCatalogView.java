@@ -34,13 +34,13 @@ class ProjectCatalogView extends ListView<Проект>
     private final ApplicationView.Context context;
     private final ReadOnlyStringProperty title;
 
-    ProjectCatalogView( final ApplicationView.Context context )
+    ProjectCatalogView( ApplicationView.Context context )
     {
         this.context = context;
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( context.jfx.проекты() );
+        itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.проекты() ) );
         Текст словарь = Текст.ПАКЕТЫ.словарь( ProjectCatalogView.class, context.jfx.контекст.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
     }
@@ -82,7 +82,7 @@ class ProjectCatalogView extends ListView<Проект>
         public void updateItem( Проект item, boolean empty ) 
         {
             super.updateItem( item, empty );
-            setText( empty ? null : item.toString() );
+            setText( empty ? null : item.название() );
         }
     }
     
@@ -127,7 +127,7 @@ class ProjectCatalogView extends ListView<Проект>
         {
             final WebView view = new WebView();
             view.setUserData( проект );
-            views.add( new TitledSceneGraph( view, new SimpleStringProperty( проект.toString() ) ) );
+            views.add( new TitledSceneGraph( view, new SimpleStringProperty( проект.название() ) ) );
             
             контекст.jfx.getExecutorService().submit( new Task<String>() 
             {
@@ -220,22 +220,10 @@ class ProjectCatalogView extends ListView<Проект>
         @Override
         public void handle( ActionEvent _ )
         {
-            //TODO confirmation dialog
-            
-            // собрать выделенные проекты немедленно, ибо список может затем измениться другими процессами
+            // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-            
-            new ApplicationActionWorker<Collection<Проект>>( действие, ceлектор )
-            {
-                @Override
-                protected void succeeded()
-                {
-                    super.succeeded();
-                    Результат результат = getValue();
-                    if( результат != null && результат.код() == Результат.НОРМА )
-                        контекст.jfx.getDataBaseProjectMonitor().getValue().removeAll( контекст() );
-                }
-            }.execute( context.jfx );
+            //TODO confirmation dialog
+            new ApplicationActionWorker<>( действие, ceлектор ).execute( context.jfx );
         }
     }
     
