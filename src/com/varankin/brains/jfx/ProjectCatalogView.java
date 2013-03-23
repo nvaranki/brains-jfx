@@ -8,6 +8,10 @@ import com.varankin.brains.db.Отображаемый;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.util.Текст;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -131,11 +135,12 @@ class ProjectCatalogView extends ListView<Проект>
             
             контекст.jfx.getExecutorService().submit( new Task<String>() 
             {
+                final Проект элемент = проект;
+                
                 @Override
                 protected String call() throws Exception
                 {
-                    //return проект.getImage( Отображаемый.MIME_SVG );
-                    return new SvgПроект( проект ).generateImage( "  " );
+                    return new SvgПроект( элемент ).generateImage( "  " ); //TODO Отображаемый.MIME_SVG
                 }
 
                 @Override
@@ -147,11 +152,10 @@ class ProjectCatalogView extends ListView<Проект>
                 @Override
                 protected void failed()
                 {
+                    String msg = словарь.текст( "failure", элемент.название() );
                     Throwable exception = this.getException();
-                    String problem = "<html><body>Failed to obtain project image.</body></html>";
-                    if( exception != null ) problem += "\n" + exception.getStackTrace();
-                    view.getEngine().loadContent( problem, "text/html" );
-                    LOGGER.log( Level.SEVERE, "Failed to obtain project image.", exception );
+                    view.getEngine().loadContent( HtmlGenerator.toHtml( msg, exception ), Отображаемый.MIME_TEXT );
+                    LOGGER.log( Level.SEVERE, msg, exception );
                 }
             } );
         }
