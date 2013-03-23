@@ -2,7 +2,9 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.appl.LoggingHandler;
 import com.varankin.brains.Контекст;
+import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
+import java.io.File;
 import java.util.logging.Level;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -42,12 +44,14 @@ class ApplicationView extends Scene
 //        public final ActionFactory actions;
         final MenuFactory menuFactory;
 //        private Scene frame;
+        final Provider<File> exporter;
 
         private Context( JavaFX jfx )
         {
             this.jfx = jfx;
 //            this.actions = new ActionFactory( this );
             this.menuFactory = new MenuFactory( jfx );
+            this.exporter = new ExportFileSelector( jfx );
         }
         
 //        private void setScene( Scene value )
