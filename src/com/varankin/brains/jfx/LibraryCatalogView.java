@@ -4,6 +4,7 @@ import com.varankin.brains.appl.УдалитьАрхивныеБиблиотек
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
 import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.Сборка;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.logging.*;
@@ -36,7 +37,8 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
             @Override
             public Provider<String> getPainter( Библиотека библиотека )
             {
-                return new SvgБиблиотека( библиотека );
+                return new SvgБиблиотека( библиотека, 
+                        new Сборка.Фильтр<>( Библиотека.СБОРКА_ТИПОВАЯ ) ); //TODO сборка
             }
         };
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );

@@ -2,6 +2,8 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.ApplicationView.Context;
 import com.varankin.io.container.Provider;
@@ -156,7 +158,8 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
                 if( сeлектор.size() == 1 )
                 {
                     ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст( 
-                            контекст.jfx.контекст, сeлектор.get( 0 ), file );
+                            контекст.jfx.контекст, сeлектор.get( 0 ), 
+                            new Сборка.Фильтр<>( Элемент.СБОРКА_ТИПОВАЯ ), file ); //TODO сборка
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
                         .execute( context.jfx );
                 }
