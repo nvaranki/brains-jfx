@@ -2,10 +2,10 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
-import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.ApplicationView.Context;
+import com.varankin.filter.Фильтр;
 import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.io.File;
@@ -19,7 +19,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
@@ -157,9 +156,9 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
             if( file != null )
                 if( сeлектор.size() == 1 )
                 {
+                    T элемент = сeлектор.get( 0 );
                     ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст( 
-                            контекст.jfx.контекст, сeлектор.get( 0 ), 
-                            new Сборка.Фильтр<>( Элемент.СБОРКА_ТИПОВАЯ ), file ); //TODO сборка
+                            контекст.jfx.контекст, элемент, new Сборка( элемент ), file );
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
                         .execute( context.jfx );
                 }

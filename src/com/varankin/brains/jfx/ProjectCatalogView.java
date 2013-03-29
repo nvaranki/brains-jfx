@@ -5,6 +5,7 @@ import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Сборка;
+import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.logging.*;
@@ -37,8 +38,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
             @Override
             public Provider<String> getPainter( Проект проект )
             {
-                return new SvgПроект( проект, 
-                        new Сборка.Фильтр<>( Проект.СБОРКА_ТИПОВАЯ ) ); //TODO сборка
+                return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
