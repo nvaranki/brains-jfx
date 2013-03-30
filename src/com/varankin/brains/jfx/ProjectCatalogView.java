@@ -1,5 +1,7 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.biz.action.Действие;
+import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
@@ -8,7 +10,11 @@ import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.*;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -46,7 +52,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         return new MenuNode( null,
                 new MenuNode( new ActionPreview( svg, blocker_1_1 ) ),
                 new MenuNode( new ActionEdit( blocker_1_1 ) ),
-                new MenuNode( new ActionRun() ),
+                new MenuNode( new ActionLoad( new ЗагрузитьАрхивныйПроект( context.jfx.контекст ), blocker_1_1 ) ),
                 null, 
                 new MenuNode( new ActionRemove( new УдалитьАрхивныеПроекты( context.jfx.контекст.архив ), blocker_1_N ) ),
                 null, 
@@ -77,18 +83,25 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         }
     }
     
-    private class ActionRun extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionLoad extends AbstractJfxAction<ApplicationView.Context>
     {
+        Действие<Collection<Проект>> ДЕЙСТВИЕ;
         
-        ActionRun()
+        ActionLoad( Действие<Collection<Проект>> действие, ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionRun.class ) );
-            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
+            super( context, context.jfx.словарь( ActionLoad.class ) );
+            ДЕЙСТВИЕ = действие;
+            disableProperty().bind( blocker );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
+            // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
+            List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            //TODO confirmation dialog
+            new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор ).execute( context.jfx );
+            //LdrПроект
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
