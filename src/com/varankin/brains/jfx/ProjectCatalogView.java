@@ -101,8 +101,6 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
             List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             //TODO confirmation dialog
             new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор ).execute( context.jfx );
-            //LdrПроект
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
     
