@@ -85,18 +85,27 @@ class ApplicationView extends Scene
             // навигатор по модели данных рабочего проекта
             BrowserView навигатор = new BrowserView( context ); 
             TitledPane панель0 = new TitledPane( "Project Explorer", навигатор );
+            int spacing = 3;
 
             // навигатор по архиву проектов
-            ProjectCatalogView архиватор2 = new ProjectCatalogView( context ); 
+            HBox toolbar = new HBox(spacing);
+            ProjectCatalogView архиватор2 = new ProjectCatalogView( context, toolbar ); 
             TitledPane панель2 = new TitledPane();
             панель2.textProperty().bind( архиватор2.titleProperty() );
-            панель2.setContent( архиватор2 );
+//            панель2.setContent( архиватор2 );
+            VBox vBox = new VBox(spacing);
+            vBox.getChildren().addAll( toolbar, архиватор2 );
+            панель2.setContent( vBox );
 
             // навигатор по архиву библиотек
-            LibraryCatalogView архиватор3 = new LibraryCatalogView( context ); 
+            toolbar = new HBox(spacing);
+            LibraryCatalogView архиватор3 = new LibraryCatalogView( context, toolbar ); 
             TitledPane панель3 = new TitledPane();
             панель3.textProperty().bind( архиватор3.titleProperty() );
-            панель3.setContent( архиватор3 );
+//            панель3.setContent( архиватор3 );
+            vBox = new VBox(spacing);
+            vBox.getChildren().addAll( toolbar, архиватор3 );
+            панель3.setContent( vBox );
 
             // панель обозревателей
             Accordion обозреватели = new Accordion();

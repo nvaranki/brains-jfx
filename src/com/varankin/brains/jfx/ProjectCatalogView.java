@@ -17,6 +17,7 @@ import java.util.logging.*;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 /**
@@ -28,17 +29,10 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
 {
     private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
     
-    ProjectCatalogView( ApplicationView.Context context )
+    ProjectCatalogView( ApplicationView.Context context, HBox toolbar )
     {
         super( context );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
-        setContextMenu( context.menuFactory.createContextMenu( popup() ) );
-        setCellFactory( new RowBuilder() );
-        itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.проекты() ) );
-    }
-    
-    private MenuNode popup()
-    {
         SvgService<Проект> svg = new SvgService<Проект>() 
         {
             @Override
@@ -47,13 +41,40 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
+        setContextMenu( context.menuFactory.createContextMenu( popup( svg ) ) );
+        setCellFactory( new RowBuilder() );
+        itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.проекты() ) );
+
+        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
+        toolbar.getChildren().addAll( new Button( "Load" ) );
+        toolbar.getChildren().addAll( makeButton( new ActionPreview( svg, blocker_1_1 ) ) );
+        toolbar.getChildren().addAll( new Button( "Edit" ) );
+        toolbar.getChildren().addAll( new Button( "Remove" ) );
+        toolbar.getChildren().addAll( new Button( "Export" ) );
+        toolbar.getChildren().addAll( new Button( "Properties" ) );
+    }
+    
+    private static Button makeButton( com.varankin.util.jfx.AbstractJfxAction node )
+    {
+        Button item = new Button();
+        item.setMnemonicParsing( false );
+        item.textProperty().bind( node.textProperty() );
+        //item.setAccelerator( node.shortcut );
+        item.setGraphic( node.icon );
+        item.setOnAction( node );
+        item.disableProperty().bind( node.disableProperty() );
+        return item; 
+    }
+    
+    private MenuNode popup( SvgService<Проект> svg )
+    {
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
         return new MenuNode( null,
-                new MenuNode( new ActionPreview( svg, blocker_1_1 ) ),
-                new MenuNode( new ActionEdit( blocker_1_1 ) ),
                 new MenuNode( new ActionLoad( new ЗагрузитьАрхивныйПроект( context.jfx.контекст ), blocker_1_1 ) ),
                 null, 
+                new MenuNode( new ActionPreview( svg, blocker_1_1 ) ),
+                new MenuNode( new ActionEdit( blocker_1_1 ) ),
                 new MenuNode( new ActionRemove( new УдалитьАрхивныеПроекты( context.jfx.контекст.архив ), blocker_1_N ) ),
                 null, 
                 new MenuNode( new ActionExport( new ЭкспортироватьSvg(), blocker_1_N ) ),

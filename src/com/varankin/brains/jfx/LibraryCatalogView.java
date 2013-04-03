@@ -12,6 +12,7 @@ import com.varankin.io.container.Provider;
 import java.util.logging.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 /**
@@ -23,13 +24,20 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
 {
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
-    LibraryCatalogView( ApplicationView.Context context )
+    LibraryCatalogView( ApplicationView.Context context, HBox toolbar )
     {
         super( context );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setContextMenu( context.menuFactory.createContextMenu( popup() ) );
         setCellFactory( new RowBuilder() );
         itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.библиотеки() ) );
+
+        toolbar.getChildren().addAll( new Button( "Preview" ) );
+        toolbar.getChildren().addAll( new Button( "Edit" ) );
+        //toolbar.getChildren().addAll( new Button( "Load" ) );
+        toolbar.getChildren().addAll( new Button( "Remove" ) );
+        toolbar.getChildren().addAll( new Button( "Export" ) );
+        toolbar.getChildren().addAll( new Button( "Properties" ) );
     }
     
     private MenuNode popup()
@@ -47,7 +55,6 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         return new MenuNode( null,
                 new MenuNode( new ActionPreview( svg, blocker_1_1 ) ),
                 new MenuNode( new ActionEdit( blocker_1_1 ) ),
-                null, 
                 new MenuNode( new ActionRemove( new УдалитьАрхивныеБиблиотеки( context.jfx.контекст.архив ), blocker_1_N ) ),
                 null, 
                 new MenuNode( new ActionExport( new ЭкспортироватьSvg(), blocker_1_N ) ),
