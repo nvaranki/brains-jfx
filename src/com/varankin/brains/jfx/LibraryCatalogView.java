@@ -8,6 +8,7 @@ import com.varankin.brains.db.Сборка;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.logging.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Orientation;
@@ -39,12 +40,14 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 return new SvgБиблиотека( библиотека, new Сборка( библиотека ) );
             }
         };
+        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
         УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( context.jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
 
         setContextMenu( context.menuFactory.createContextMenu( new MenuNode( null,
+                new MenuNode( new ActionNew( blocker_0_0 ) ), 
                 new MenuNode( new ActionPreview( svg, blocker_1_1 ) ), 
                 new MenuNode( new ActionEdit( blocker_1_1 ) ), 
                 new MenuNode( new ActionRemove( действиеУдалить, blocker_1_N ) ), 
@@ -54,6 +57,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 new MenuNode( new ActionProperties() ) ) ) );
 
         toolbar.addAll( 
+                makeButton( new ActionNew( blocker_0_0 ) ), 
                 makeButton( new ActionPreview( svg, blocker_1_1 ) ), 
                 makeButton( new ActionEdit( blocker_1_1 ) ), 
                 makeButton( new ActionRemove( действиеУдалить, blocker_1_N ) ),
@@ -81,6 +85,22 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         {
             super.updateItem( item, empty );
             setText( empty ? null : item.название() );
+        }
+    }
+    
+    private class ActionNew extends AbstractJfxAction<ApplicationView.Context>
+    {
+        
+        ActionNew( ObservableValue<Boolean> blocker )
+        {
+            super( context, context.jfx.словарь( ActionNew.class ) );
+            disableProperty().bind( blocker );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
     

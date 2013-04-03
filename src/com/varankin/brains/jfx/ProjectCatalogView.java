@@ -45,6 +45,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
+        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
         ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( context.jfx.контекст );
@@ -54,6 +55,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         setContextMenu( context.menuFactory.createContextMenu( new MenuNode( null,
                 new MenuNode( new ActionLoad( действиеЗагрузить, blocker_1_1 ) ), 
                 null,
+                new MenuNode( new ActionNew( blocker_0_0 ) ), 
                 new MenuNode( new ActionPreview( svg, blocker_1_1 ) ), 
                 new MenuNode( new ActionEdit( blocker_1_1 ) ), 
                 new MenuNode( new ActionRemove( действиеУдалить, blocker_1_N ) ), 
@@ -65,6 +67,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         toolbar.addAll( 
                 makeButton( new ActionLoad( действиеЗагрузить, blocker_1_1 ) ), 
                 new Separator( Orientation.HORIZONTAL ),
+                makeButton( new ActionNew( blocker_0_0 ) ), 
                 makeButton( new ActionPreview( svg, blocker_1_1 ) ), 
                 makeButton( new ActionEdit( blocker_1_1 ) ), 
                 makeButton( new ActionRemove( действиеУдалить, blocker_1_N ) ), 
@@ -92,6 +95,22 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         {
             super.updateItem( item, empty );
             setText( empty ? null : item.название() );
+        }
+    }
+    
+    private class ActionNew extends AbstractJfxAction<ApplicationView.Context>
+    {
+        
+        ActionNew( ObservableValue<Boolean> blocker )
+        {
+            super( context, context.jfx.словарь( ActionNew.class ) );
+            disableProperty().bind( blocker );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
     }
     
