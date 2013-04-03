@@ -86,26 +86,41 @@ class ApplicationView extends Scene
             BrowserView навигатор = new BrowserView( context ); 
             TitledPane панель0 = new TitledPane( "Project Explorer", навигатор );
             int spacing = 3;
+            ToolBar toolbar;
 
             // навигатор по архиву проектов
-            HBox toolbar = new HBox(spacing);
-            ProjectCatalogView архиватор2 = new ProjectCatalogView( context, toolbar ); 
+            toolbar = new ToolBar();
+            toolbar.setOrientation( Orientation.VERTICAL );
+            ProjectCatalogView архиватор2 = new ProjectCatalogView( context, toolbar.getItems() ); 
             TitledPane панель2 = new TitledPane();
             панель2.textProperty().bind( архиватор2.titleProperty() );
-//            панель2.setContent( архиватор2 );
-            VBox vBox = new VBox(spacing);
-            vBox.getChildren().addAll( toolbar, архиватор2 );
-            панель2.setContent( vBox );
+            if( Boolean.valueOf( context.jfx.контекст.параметр( "ProjectCatalogView.toolbar", "true" ) ) )
+            {
+                Pane pane = new HBox(spacing);
+                pane.getChildren().addAll( toolbar, архиватор2 );
+                панель2.setContent( pane );
+            }
+            else
+            {
+                панель2.setContent( архиватор2 );
+            }
 
             // навигатор по архиву библиотек
-            toolbar = new HBox(spacing);
-            LibraryCatalogView архиватор3 = new LibraryCatalogView( context, toolbar ); 
+            toolbar = new ToolBar();
+            toolbar.setOrientation( Orientation.VERTICAL );
+            LibraryCatalogView архиватор3 = new LibraryCatalogView( context, toolbar.getItems() ); 
             TitledPane панель3 = new TitledPane();
             панель3.textProperty().bind( архиватор3.titleProperty() );
-//            панель3.setContent( архиватор3 );
-            vBox = new VBox(spacing);
-            vBox.getChildren().addAll( toolbar, архиватор3 );
-            панель3.setContent( vBox );
+            if( Boolean.valueOf( context.jfx.контекст.параметр( "LibraryCatalogView.toolbar", "true" ) ) )
+            {
+                Pane pane = new HBox(spacing);
+                pane.getChildren().addAll( toolbar, архиватор3 );
+                панель3.setContent( pane );
+            }
+            else
+            {
+                панель3.setContent( архиватор3 );
+            }
 
             // панель обозревателей
             Accordion обозреватели = new Accordion();

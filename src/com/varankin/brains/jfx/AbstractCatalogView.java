@@ -20,7 +20,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.web.WebView;
 
 /**
@@ -47,6 +49,22 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     {
         return title;
     }
+    
+    protected static Button makeButton( com.varankin.util.jfx.AbstractJfxAction node )
+    {
+        Button item = new Button();
+        item.setMnemonicParsing( false );
+        item.setTooltip( new Tooltip( node.textProperty().getValue() + " " ) );
+        //item.textProperty().bind( node.textProperty() );
+        //item.setAccelerator( node.shortcut );
+        item.setGraphic( node.icon );
+        //item.setMaxWidth( item.getHeight() );//GraphicTextGap( 0. );
+        item.setOnAction( node );
+        item.disableProperty().bind( node.disableProperty() );
+        return item; 
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="classes">
     
     protected class ActionPreview extends AbstractJfxAction<ApplicationView.Context>
     {
@@ -75,7 +93,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
                         views.set( views.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
                 }
         }
-
+        
         private TitledSceneGraph isShown( T элемент, Iterable<TitledSceneGraph> views )
         {
             for( TitledSceneGraph tsg : views )
@@ -86,7 +104,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
             }
             return null;
         }
-
+        
         private TitledSceneGraph show( T элемент )
         {
             WebView view = new WebView();
@@ -157,10 +175,10 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
                 if( сeлектор.size() == 1 )
                 {
                     T элемент = сeлектор.get( 0 );
-                    ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст( 
+                    ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст(
                             контекст.jfx.контекст, элемент, new Сборка( элемент ), file );
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
-                        .execute( context.jfx );
+                            .execute( context.jfx );
                 }
                 else
                     LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements in single file.", сeлектор.size() );
@@ -171,5 +189,6 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     {
         Provider<String> getPainter( T element );
     }
-
+    
+    //</editor-fold>
 }
