@@ -72,11 +72,11 @@ class MenuFactory
             else
             {
                 MenuItem item = new MenuItem();
-                item.setMnemonicParsing( false );
-                item.textProperty().bind( node.textProperty() );
-                item.setAccelerator( node.shortcut );
-                item.setGraphic( node.icon );
                 item.setOnAction( node );
+                item.setMnemonicParsing( false );
+                item.setAccelerator( node.shortcut );
+                item.textProperty().bind( node.textProperty() );
+                item.graphicProperty().bind( node.iconProperty() );
                 item.disableProperty().bind( node.disableProperty() );
                 return item; 
             }

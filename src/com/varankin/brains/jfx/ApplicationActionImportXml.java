@@ -31,7 +31,7 @@ class ApplicationActionImportXml extends CoordinatedAction<Импортиров�
             Provider<Provider<InputStream>> селектор, 
             HistoryList<Provider<InputStream>> история )
     {
-        super( действие, контекст, jfx, ApplicationActionImportXml.class.getSimpleName() );
+        super( действие, контекст, jfx, селектор.getClass().getSimpleName() );
         this.история = история;
         this.селектор = селектор;
     }

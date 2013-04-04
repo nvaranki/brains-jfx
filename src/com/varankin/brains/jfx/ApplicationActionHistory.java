@@ -2,6 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.СогласованноеДействие;
 import com.varankin.util.HistoryList;
+import com.varankin.util.Текст;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
@@ -63,6 +64,10 @@ class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ>
         disableProperty().setValue( элемент == null || !действие.isEnabled() );
         String название = элемент != null ? элемент.toString() : "";
         textProperty().setValue( Integer.toString( позиция ) + ' ' + название );
+        Текст словарь = Текст.ПАКЕТЫ.словарь( getClass().getPackage(), 
+                ( элемент != null ? элемент : this ).getClass().getSimpleName(), 
+                this.jfx.контекст.специфика );
+        iconProperty().setValue( icon( словарь.текст( SMALL_ICON ) ) );
     }
     
     @Override

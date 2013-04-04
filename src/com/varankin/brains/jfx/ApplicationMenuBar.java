@@ -72,6 +72,10 @@ public class ApplicationMenuBar extends MenuBar
                             (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
                             new Импортировать.Контекст( jfx.контекст, null ),
                             jfx, new XmlFileSelector( jfx ), historyXml ) ),
+                        new MenuNode( new ApplicationActionImportXml( 
+                            (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
+                            new Импортировать.Контекст( jfx.контекст, null ),
+                            jfx, new XmlUrlSelector( jfx ), historyXml ) ),
                         null,
                         new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 1, providersXml ) ), 
                         new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 2, providersXml ) ), 

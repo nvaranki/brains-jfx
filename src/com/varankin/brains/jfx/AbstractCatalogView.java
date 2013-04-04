@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -53,13 +54,11 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     protected static Button makeButton( com.varankin.util.jfx.AbstractJfxAction node )
     {
         Button item = new Button();
-        item.setMnemonicParsing( false );
-        item.setTooltip( new Tooltip( node.textProperty().getValue() + " " ) );
-        //item.textProperty().bind( node.textProperty() );
-        //item.setAccelerator( node.shortcut );
-        item.setGraphic( node.icon );
-        //item.setMaxWidth( item.getHeight() );//GraphicTextGap( 0. );
         item.setOnAction( node );
+        item.setMnemonicParsing( false );
+        item.setTooltip( new Tooltip() );
+        item.tooltipProperty().getValue().textProperty().bind( node.textProperty() );
+        item.graphicProperty().bind( node.iconProperty() );
         item.disableProperty().bind( node.disableProperty() );
         return item; 
     }
