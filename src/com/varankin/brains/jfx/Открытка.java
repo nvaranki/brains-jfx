@@ -45,7 +45,7 @@ class Открытка extends Stage
         версия = new Text( словарь.текст( "Card.version" ) + jfx.контекст.версия );
         права = new Text( словарь.текст( "Card.copyright" ));
         закрыть = new Button( словарь.текст( "Card.close" ));
-        закрыть.setOnAction( new ButtonCloseHandler( this, dispose ) );
+        закрыть.setOnAction( new StageCloseHandler<ActionEvent>( this, dispose ) );
         сайт = new Hyperlink ( "www.varankin.com" );
         //сайт.setVisited( false );
         String html = jfx.контекст.параметр( "Card.company", "http://varankin.com/" );//TODO
@@ -59,7 +59,7 @@ class Открытка extends Stage
         Scene scene = new Scene( new Layout( jfx ), 350.0, 160.0, Color.WHITE );
         //Позиционер.настроить( (Window)this );
         setScene( scene );
-        setOnCloseRequest( new WindowCloseHandler( this, dispose ) );
+        setOnCloseRequest( new StageCloseHandler<WindowEvent>( this, dispose ) );
         закрыть.requestFocus();
      }
     
@@ -83,46 +83,6 @@ class Открытка extends Stage
             setValignment( логотип, VPos.CENTER );
             setHalignment( закрыть, HPos.RIGHT );
         }
-    }
-
-    static private class WindowCloseHandler implements EventHandler<WindowEvent>
-    {
-        private final Stage stage;
-        private final boolean dispose;
-
-        WindowCloseHandler( Stage stage, boolean dispose )
-        {
-            this.stage = stage;
-            this.dispose = dispose;
-        }
-
-        @Override
-        public void handle( WindowEvent _ )
-        {
-            if( dispose ) stage.close(); 
-            else stage.hide();
-        }
-
-    }
-    
-    static private class ButtonCloseHandler implements EventHandler<ActionEvent>
-    {
-        private final Stage stage;
-        private final boolean dispose;
-
-        ButtonCloseHandler( Stage stage, boolean dispose )
-        {
-            this.stage = stage;
-            this.dispose = dispose;
-        }
-        
-        @Override
-        public void handle( ActionEvent _ )
-        {
-            if( dispose ) stage.close(); 
-            else stage.hide();
-        }
-        
     }
     
     static private class HtmlLinkHandler implements EventHandler<ActionEvent>, Runnable
