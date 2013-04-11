@@ -4,7 +4,7 @@
  */
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.db.Отображаемый;
+import com.varankin.brains.appl.Отображаемый;
 import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.util.logging.Level;
