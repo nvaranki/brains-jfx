@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.AbstracResourceLocator;
+import com.varankin.brains.appl.Мыслитель;
 import com.varankin.brains.artificial.*;
 import java.net.URL;
 import javafx.scene.Node;
@@ -59,6 +60,8 @@ public class BrowserRenderer
                 название = "function.png";
             else if( id instanceof ПроцессорРасчета )
                 название = "processor2.png";
+            else if( id instanceof Мыслитель )
+                название = "load.png";
             //TODO and so on
             else
                 название = null;

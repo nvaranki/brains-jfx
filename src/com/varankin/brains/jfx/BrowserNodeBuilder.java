@@ -57,7 +57,7 @@ class BrowserNodeBuilder implements BrainsListener
             if( root != null )
                 узел = root;
             else if( создать )
-                модель.setRoot( узел = узел( Элемент.МЫСЛИТЕЛЬ ) );
+                модель.setRoot( узел = узел( Элемент.ВСЕ_МЫСЛИТЕЛИ ) );
         }
         else
         {
@@ -161,7 +161,7 @@ class BrowserNodeBuilder implements BrainsListener
     /**
      * Элемент отображения произвольного узла дерева.
      */
-    private class BrowserTreeCell extends TreeCell<Элемент>
+    private static class BrowserTreeCell extends TreeCell<Элемент>
     {
         private final TreeView<Элемент> treeView;
 
@@ -199,6 +199,19 @@ class BrowserNodeBuilder implements BrainsListener
         {
             super( элемент, image );
             this.метка = метка;
+        }
+        
+        @Override
+        public boolean equals( Object o )
+        {
+            return o instanceof Узел && getValue().equals( (Узел)o );
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = 7 ^ getValue().hashCode();
+            return hash;
         }
 
         @Override

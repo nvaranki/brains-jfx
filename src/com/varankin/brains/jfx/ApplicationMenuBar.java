@@ -59,14 +59,14 @@ public class ApplicationMenuBar extends MenuBar
         return new MenuNode[]
         {
             new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1", специфика ),
-                    new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1.1", специфика ),
-                        new MenuNode( new ApplicationActionRepositorySql( context ) ), 
-                        new MenuNode( new ApplicationActionRepositoryXml( context ) ), 
-                        null,
-                        new MenuNode( new ApplicationActionRepositoryInThePast( context ) ) ),
-                    new MenuNode( действие( Загрузить, jfx, "ApplicationActionLoad" ) ),
-                    new MenuNode( действие( Очистить,  jfx, "ApplicationActionClean" ) ),
-                    null,
+//                    new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1.1", специфика ),
+//                        new MenuNode( new ApplicationActionRepositorySql( context ) ), 
+//                        new MenuNode( new ApplicationActionRepositoryXml( context ) ), 
+//                        null,
+//                        new MenuNode( new ApplicationActionRepositoryInThePast( context ) ) ),
+//                    new MenuNode( действие( Загрузить, jfx, "ApplicationActionLoad" ) ),
+//                    new MenuNode( действие( Очистить,  jfx, "ApplicationActionClean" ) ),
+//                    null,
                     new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1.2", специфика ),
                         new MenuNode( new ApplicationActionImportXml( 
                             (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
