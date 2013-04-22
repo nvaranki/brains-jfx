@@ -65,16 +65,16 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 new MenuNode( new ActionProperties() ) ) ) );
         
         toolbar.addAll( 
-                makeButton( new ActionLoad( действиеЗагрузить, blocker_1_1 ) ), 
+                new ActionLoad( действиеЗагрузить, blocker_1_1 ).makeButton(), 
                 new Separator( Orientation.HORIZONTAL ),
-                makeButton( new ActionNew( blocker_0_0 ) ), 
-                makeButton( new ActionPreview( svg, blocker_1_1 ) ), 
-                makeButton( new ActionEdit( blocker_1_1 ) ), 
-                makeButton( new ActionRemove( действиеУдалить, blocker_1_N ) ), 
+                new ActionNew( blocker_0_0 ).makeButton(), 
+                new ActionPreview( svg, blocker_1_1 ).makeButton(), 
+                new ActionEdit( blocker_1_1 ).makeButton(), 
+                new ActionRemove( действиеУдалить, blocker_1_N ).makeButton(), 
                 new Separator( Orientation.HORIZONTAL ),
-                makeButton( new ActionExport( действиеЭкспортироватьSvg, blocker_1_N ) ), 
+                new ActionExport( действиеЭкспортироватьSvg, blocker_1_N ).makeButton(), 
                 new Separator( Orientation.HORIZONTAL ),
-                makeButton( new ActionProperties() ) );
+                new ActionProperties().makeButton() );
     }
     
         //<editor-fold defaultstate="collapsed" desc="классы">

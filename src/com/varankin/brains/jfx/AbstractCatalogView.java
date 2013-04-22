@@ -5,7 +5,6 @@ import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.ApplicationView.Context;
-import com.varankin.filter.Фильтр;
 import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.io.File;
@@ -17,13 +16,10 @@ import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Tooltip;
 import javafx.scene.web.WebView;
 
 /**
@@ -46,23 +42,11 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
     }
     
-    protected final ReadOnlyStringProperty titleProperty()
+    final ReadOnlyStringProperty titleProperty()
     {
         return title;
     }
-    
-    protected static Button makeButton( com.varankin.util.jfx.AbstractJfxAction node )
-    {
-        Button item = new Button();
-        item.setOnAction( node );
-        item.setMnemonicParsing( false );
-        item.setTooltip( new Tooltip() );
-        item.tooltipProperty().getValue().textProperty().bind( node.textProperty() );
-        item.graphicProperty().bind( node.iconProperty() );
-        item.disableProperty().bind( node.disableProperty() );
-        return item; 
-    }
-    
+
     //<editor-fold defaultstate="collapsed" desc="classes">
     
     protected class ActionPreview extends AbstractJfxAction<ApplicationView.Context>

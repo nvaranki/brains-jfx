@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.*;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -87,6 +88,18 @@ public abstract class AbstractJfxAction implements EventHandler<ActionEvent>
     public ObjectProperty<Node> iconProperty()
     {
         return icon;
+    }
+    
+    public Button makeButton()
+    {
+        Button item = new Button();
+        item.setOnAction( this );
+        item.setMnemonicParsing( false );
+        item.setTooltip( new Tooltip() );
+        item.tooltipProperty().getValue().textProperty().bind( textProperty() );
+        item.graphicProperty().bind( iconProperty() );
+        item.disableProperty().bind( disableProperty() );
+        return item; 
     }
     
 }

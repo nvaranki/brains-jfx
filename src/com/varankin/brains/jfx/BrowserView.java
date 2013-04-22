@@ -1,16 +1,23 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.util.MonitoredSet;
 import com.varankin.brains.appl.Мыслитель;
 import com.varankin.brains.appl.Элемент;
 import com.varankin.brains.Контекст;
+import com.varankin.util.MonitoredSet;
 import com.varankin.util.PropertyHolder;
+import com.varankin.util.Текст;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 
 /**
@@ -24,12 +31,17 @@ class BrowserView extends TreeView<Элемент>
     
     private final Контекст КОНТЕКСТ;
     private final BrowserNodeBuilder СТРОИТЕЛЬ;
+    private final ReadOnlyStringProperty title;
+    private final ApplicationView.Context context;
 
-    BrowserView( final ApplicationView.Context контекст )
+    BrowserView( ApplicationView.Context контекст, ObservableList<Node> toolbar )
     {
         Map<Locale.Category,Locale> специфика = контекст.jfx.контекст.специфика;
+        context = контекст;
         КОНТЕКСТ = контекст.jfx.контекст;
         СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
+        Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
+        title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
         Object мыслители = контекст.jfx.контекст.мыслители();
         if( мыслители instanceof PropertyHolder )
             ((PropertyHolder)мыслители).addPropertyChangeListener( 
@@ -41,9 +53,86 @@ class BrowserView extends TreeView<Элемент>
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( "frame.browser.width.min", "150" ) );
         setMinWidth( w );
+
+        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
+        toolbar.addAll( 
+                new ActionStart( blocker_1_1 ).makeButton(), 
+                new ActionPause( blocker_1_1 ).makeButton(), 
+                new ActionStop( blocker_1_1 ).makeButton(), 
+                new Separator( Orientation.HORIZONTAL ),
+                new ActionProperties().makeButton() );
+    }
+    
+    final ReadOnlyStringProperty titleProperty()
+    {
+        return title;
     }
     
     //<editor-fold defaultstate="collapsed" desc="кдассы">
+
+    private class ActionStart extends AbstractJfxAction<ApplicationView.Context>
+    {
+        
+        ActionStart( ObservableValue<Boolean> blocker )
+        {
+            super( context, context.jfx.словарь( ActionStart.class ) );
+            disableProperty().bind( blocker );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
+    
+    private class ActionStop extends AbstractJfxAction<ApplicationView.Context>
+    {
+        
+        ActionStop( ObservableValue<Boolean> blocker )
+        {
+            super( context, context.jfx.словарь( ActionStop.class ) );
+            disableProperty().bind( blocker );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
+    
+    private class ActionPause extends AbstractJfxAction<ApplicationView.Context>
+    {
+        
+        ActionPause( ObservableValue<Boolean> blocker )
+        {
+            super( context, context.jfx.словарь( ActionPause.class ) );
+            disableProperty().bind( blocker );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
+    
+    private class ActionProperties extends AbstractJfxAction<ApplicationView.Context>
+    {
+        
+        ActionProperties()
+        {
+            super( context, context.jfx.словарь( ActionProperties.class ) );
+            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
     
     private class PropertyChangeListenerImpl implements PropertyChangeListener
     {

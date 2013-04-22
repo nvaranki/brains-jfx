@@ -82,11 +82,25 @@ class ApplicationView extends Scene
         
         static Node left( Context context )
         {
-            // навигатор по модели данных рабочего проекта
-            BrowserView навигатор = new BrowserView( context ); 
-            TitledPane панель0 = new TitledPane( "Project Explorer", навигатор );
             int spacing = 3;
             ToolBar toolbar;
+
+            // навигатор по модели данных рабочего проекта
+            toolbar = new ToolBar();
+            toolbar.setOrientation( Orientation.VERTICAL );
+            BrowserView навигатор = new BrowserView( context, toolbar.getItems() ); 
+            TitledPane панель0 = new TitledPane();
+            панель0.textProperty().bind( навигатор.titleProperty() );
+            if( Boolean.valueOf( context.jfx.контекст.параметр( "BrowserView.toolbar", "true" ) ) )
+            {
+                Pane pane = new HBox(spacing);
+                pane.getChildren().addAll( toolbar, навигатор );
+                панель0.setContent( pane );
+            }
+            else
+            {
+                панель0.setContent( навигатор );
+            }
 
             // навигатор по архиву проектов
             toolbar = new ToolBar();
