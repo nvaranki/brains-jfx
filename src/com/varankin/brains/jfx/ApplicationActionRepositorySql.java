@@ -10,7 +10,7 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionRepositorySql extends AbstractJfxAction<ApplicationView.Context>
+class ApplicationActionRepositorySql extends AbstractContextJfxAction<ApplicationView.Context>
 {
     static private final Logger LOGGER = Logger.getLogger( 
             ApplicationActionRepositoryXml.class.getName() );
@@ -34,10 +34,10 @@ class ApplicationActionRepositorySql extends AbstractJfxAction<ApplicationView.C
 
 //        Platform.runLater( new Chooser() );
     }
-
+    
     private ApplicationActionRepositoryInThePast getRepositoryInThePast()
     {
         return null;//TODO контекст.actions.getRepositoryInThePast();
     }
-    
+
 }

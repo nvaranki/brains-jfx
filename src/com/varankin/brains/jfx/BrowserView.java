@@ -70,7 +70,7 @@ class BrowserView extends TreeView<Элемент>
     
     //<editor-fold defaultstate="collapsed" desc="кдассы">
 
-    private class ActionStart extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionStart extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionStart( ObservableValue<Boolean> blocker )
@@ -86,7 +86,7 @@ class BrowserView extends TreeView<Элемент>
         }
     }
     
-    private class ActionStop extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionStop extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionStop( ObservableValue<Boolean> blocker )
@@ -102,7 +102,7 @@ class BrowserView extends TreeView<Элемент>
         }
     }
     
-    private class ActionPause extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionPause extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionPause( ObservableValue<Boolean> blocker )
@@ -118,7 +118,7 @@ class BrowserView extends TreeView<Элемент>
         }
     }
     
-    private class ActionProperties extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionProperties extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionProperties()

@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionExit extends AbstractJfxAction<ApplicationView.Context>
+class ApplicationActionExit extends AbstractContextJfxAction<ApplicationView.Context>
 {
 
     ApplicationActionExit( ApplicationView.Context context )

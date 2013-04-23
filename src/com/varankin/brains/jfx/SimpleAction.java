@@ -9,7 +9,7 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class SimpleAction<КОНТЕКСТ> extends com.varankin.util.jfx.AbstractJfxAction
+class SimpleAction<КОНТЕКСТ> extends com.varankin.brains.jfx.AbstractJfxAction
 {
     private final Действие<КОНТЕКСТ> действие;
     private final КОНТЕКСТ контекст;

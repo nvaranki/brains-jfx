@@ -7,7 +7,7 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionAbout extends AbstractJfxAction<JavaFX>
+class ApplicationActionAbout extends AbstractContextJfxAction<JavaFX>
 {
     private Открытка открытка;
 

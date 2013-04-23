@@ -10,7 +10,7 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionRepositoryInThePast extends AbstractJfxAction<ApplicationView.Context>
+class ApplicationActionRepositoryInThePast extends AbstractContextJfxAction<ApplicationView.Context>
 {
     private Task<Void> агент;
 

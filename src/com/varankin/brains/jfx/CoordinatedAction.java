@@ -11,7 +11,7 @@ import javafx.event.ActionEvent;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class CoordinatedAction<КОНТЕКСТ> extends com.varankin.util.jfx.AbstractJfxAction
+class CoordinatedAction<КОНТЕКСТ> extends com.varankin.brains.jfx.AbstractJfxAction
 {
     protected final СогласованноеДействие<КОНТЕКСТ> действие;
     protected       КОНТЕКСТ контекст;

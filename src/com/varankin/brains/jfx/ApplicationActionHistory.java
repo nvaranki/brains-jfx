@@ -57,7 +57,7 @@ class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ>
             }            
         }.execute( jfx );
     }
-
+    
     private void refreshProperties() 
     {
         ЭЛЕМЕНТ элемент = история.get( позиция );

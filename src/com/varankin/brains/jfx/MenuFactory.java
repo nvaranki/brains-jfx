@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.util.jfx.AbstractJfxAction;
 import com.varankin.util.Текст;
 import java.util.*;
 import javafx.event.ActionEvent;
@@ -12,7 +11,7 @@ import javafx.scene.control.SeparatorMenuItem;
 /**
  * Конструктор меню приложения.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 class MenuFactory 
 {
@@ -44,7 +43,7 @@ class MenuFactory
      */
     Menu createMenu( MenuNode модель )
     {
-        Menu menu = new Menu( модель.node.textProperty().get() );
+        Menu menu = new Menu( модель.node.textProperty().getValue() );
         модель.populate( menu.getItems(), jfx );
         return menu;
     }
@@ -84,7 +83,7 @@ class MenuFactory
 
         private Menu toMenu( JavaFX jfx )
         {
-            Menu menu = new Menu( node.textProperty().get() );
+            Menu menu = new Menu( node.textProperty().getValue() );
             populate( menu.getItems(), jfx );
             return menu;
         }

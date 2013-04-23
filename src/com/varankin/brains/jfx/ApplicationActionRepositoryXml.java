@@ -17,7 +17,7 @@ import javafx.stage.FileChooser;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class ApplicationActionRepositoryXml extends AbstractJfxAction<ApplicationView.Context>
+class ApplicationActionRepositoryXml extends AbstractContextJfxAction<ApplicationView.Context>
 {
     static private final Logger LOGGER = Logger.getLogger( ApplicationActionRepositoryXml.class.getName() );
 
@@ -52,7 +52,7 @@ class ApplicationActionRepositoryXml extends AbstractJfxAction<ApplicationView.C
 //        actions.getRepositoryInThePast().setEnabled( агент != null );
 //        actions.getLoad().setEnabled( агент != null );
     }
-    
+
     private class FileSelector implements Runnable
     {
         @Override
@@ -67,7 +67,7 @@ class ApplicationActionRepositoryXml extends AbstractJfxAction<ApplicationView.C
                 if( директория != null )
                     chooser.setInitialDirectory( директория );
                 контекст.jfx.getExecutorService().execute( new Агент( 
-                    new FileInputStreamProvider( returnVal ), textProperty().get() ) );
+                    new FileInputStreamProvider( returnVal ), textProperty().getValue() ) );
             }
             else
             {

@@ -45,26 +45,33 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
         УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( context.jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
+        
+        ActionNew actionNew = new ActionNew( blocker_0_0 );
+        ActionPreview actionPreview = new ActionPreview( svg, blocker_1_1 );
+        ActionEdit actionEdit = new ActionEdit( blocker_1_1 );
+        ActionRemove actionRemove = new ActionRemove( действиеУдалить, blocker_1_N );
+        ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg, blocker_1_N );
+        ActionProperties actionProperties = new ActionProperties();
 
         setContextMenu( context.menuFactory.createContextMenu( new MenuNode( null,
-                new MenuNode( new ActionNew( blocker_0_0 ) ), 
-                new MenuNode( new ActionPreview( svg, blocker_1_1 ) ), 
-                new MenuNode( new ActionEdit( blocker_1_1 ) ), 
-                new MenuNode( new ActionRemove( действиеУдалить, blocker_1_N ) ), 
+                new MenuNode( actionNew ), 
+                new MenuNode( actionPreview ), 
+                new MenuNode( actionEdit ), 
+                new MenuNode( actionRemove ), 
                 null,
-                new MenuNode( new ActionExport( действиеЭкспортироватьSvg, blocker_1_N ) ), 
+                new MenuNode( actionExport ), 
                 null,
-                new MenuNode( new ActionProperties() ) ) ) );
+                new MenuNode( actionProperties ) ) ) );
 
         toolbar.addAll( 
-                new ActionNew( blocker_0_0 ).makeButton(), 
-                new ActionPreview( svg, blocker_1_1 ).makeButton(), 
-                new ActionEdit( blocker_1_1 ).makeButton(), 
-                new ActionRemove( действиеУдалить, blocker_1_N ).makeButton(),
+                actionNew.makeButton(), 
+                actionPreview.makeButton(), 
+                actionEdit.makeButton(), 
+                actionRemove.makeButton(),
                 new Separator( Orientation.HORIZONTAL ),
-                new ActionExport( действиеЭкспортироватьSvg, blocker_1_N ).makeButton(), 
+                actionExport.makeButton(), 
                 new Separator( Orientation.HORIZONTAL ),
-                new ActionProperties().makeButton() );
+                actionProperties.makeButton() );
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
@@ -88,7 +95,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         }
     }
     
-    private class ActionNew extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionNew extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionNew( ObservableValue<Boolean> blocker )
@@ -104,7 +111,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         }
     }
     
-    private class ActionProperties extends AbstractJfxAction<ApplicationView.Context>
+    private class ActionProperties extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionProperties()

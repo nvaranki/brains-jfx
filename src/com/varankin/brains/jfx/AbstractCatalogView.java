@@ -49,7 +49,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
 
     //<editor-fold defaultstate="collapsed" desc="classes">
     
-    protected class ActionPreview extends AbstractJfxAction<ApplicationView.Context>
+    protected class ActionPreview extends AbstractContextJfxAction<ApplicationView.Context>
     {
         private final SvgService<T> service;
         
@@ -97,10 +97,10 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
                     service.getPainter( элемент ), view.getEngine(), название, словарь ) );
             return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
         }
-        
+
     }
     
-    protected class ActionEdit extends AbstractJfxAction<ApplicationView.Context>
+    protected class ActionEdit extends AbstractContextJfxAction<ApplicationView.Context>
     {
         
         ActionEdit( ObservableValue<Boolean> blocker )
@@ -108,7 +108,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
             super( context, context.jfx.словарь( ActionEdit.class ) );
             disableProperty().bind( blocker );
         }
-        
+
         @Override
         public void handle( ActionEvent _ )
         {
@@ -116,7 +116,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         }
     }
     
-    protected class ActionRemove extends AbstractJfxAction<ApplicationView.Context>
+    protected class ActionRemove extends AbstractContextJfxAction<ApplicationView.Context>
     {
         private final Действие<Collection<T>> действие;
         
@@ -137,7 +137,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         }
     }
     
-    protected class ActionExport extends AbstractJfxAction<ApplicationView.Context>
+    protected class ActionExport extends AbstractContextJfxAction<ApplicationView.Context>
     {
         final ЭкспортироватьSvg действие;
         
