@@ -94,6 +94,7 @@ class ApplicationView extends Scene
             if( Boolean.valueOf( context.jfx.контекст.параметр( "BrowserView.toolbar", "true" ) ) )
             {
                 Pane pane = new HBox(spacing);
+                HBox.setHgrow( навигатор, Priority.ALWAYS );
                 pane.getChildren().addAll( toolbar, навигатор );
                 панель0.setContent( pane );
             }
@@ -111,6 +112,7 @@ class ApplicationView extends Scene
             if( Boolean.valueOf( context.jfx.контекст.параметр( "ProjectCatalogView.toolbar", "true" ) ) )
             {
                 Pane pane = new HBox(spacing);
+                HBox.setHgrow( архиватор2, Priority.ALWAYS );
                 pane.getChildren().addAll( toolbar, архиватор2 );
                 панель2.setContent( pane );
             }
@@ -128,6 +130,7 @@ class ApplicationView extends Scene
             if( Boolean.valueOf( context.jfx.контекст.параметр( "LibraryCatalogView.toolbar", "true" ) ) )
             {
                 Pane pane = new HBox(spacing);
+                HBox.setHgrow( архиватор3, Priority.ALWAYS );
                 pane.getChildren().addAll( toolbar, архиватор3 );
                 панель3.setContent( pane );
             }
