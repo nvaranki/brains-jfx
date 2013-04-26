@@ -4,7 +4,6 @@ import com.varankin.brains.appl.Мыслитель;
 import com.varankin.brains.appl.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.MonitoredSet;
-import com.varankin.util.PropertyHolder;
 import com.varankin.util.Текст;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -42,9 +41,7 @@ class BrowserView extends TreeView<Элемент>
         СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
-        Object мыслители = контекст.jfx.контекст.мыслители();
-        if( мыслители instanceof PropertyHolder )
-            ((PropertyHolder)мыслители).addPropertyChangeListener( 
+        КОНТЕКСТ.мыслители().addPropertyChangeListener( 
                     new PropertyChangeListenerImpl() );
 
         setCellFactory( СТРОИТЕЛЬ.фабрика() );
