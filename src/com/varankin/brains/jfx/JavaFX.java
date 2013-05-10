@@ -3,7 +3,6 @@ package com.varankin.brains.jfx;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
-
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,7 @@ final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
+        платформа.setScene( new ApplicationView( JavaFX.this ) );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -90,11 +90,13 @@ final class JavaFX
 
     void старт()
     {
+        платформа.show();
         es.execute( new Task<Void>()
         {
             @Override
             protected Void call() throws Exception
             {
+                //TODO should not be called!!!
                 контекст.архив.проекты().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
                 контекст.архив.библиотеки().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
                 return null;
@@ -105,7 +107,7 @@ final class JavaFX
     void стоп()
     {
         es.shutdown();
-        //TODO контекст.стоп(); //мыслитель.стоп();
+        платформа.hide();
     }
     
     Текст словарь( Class<?> c )

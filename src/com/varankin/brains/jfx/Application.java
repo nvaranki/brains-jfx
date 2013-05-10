@@ -7,20 +7,14 @@ import javafx.stage.Stage;
 /**
  * Приложение для среды JavaFX.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 public class Application extends javafx.application.Application
 {
     private volatile Контекст контекст;
     private JavaFX jfx;
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main( String[] args )
-    {
-        launch( args );
-    }
+    public Application() {}
     
     @Override
     public void init() throws Exception
@@ -32,9 +26,8 @@ public class Application extends javafx.application.Application
     @Override
     public void start( Stage primaryStage )
     {
+        контекст.старт();
         jfx = new JavaFX( primaryStage, контекст );
-        primaryStage.setScene( new ApplicationView( jfx ) );
-        primaryStage.show();
         jfx.старт();
     }
     
@@ -42,5 +35,17 @@ public class Application extends javafx.application.Application
     public void stop() throws Exception
     {
         jfx.стоп();
+        контекст.стоп();
     }
+    
+    /**
+     * Запускает приложение из JVM.
+     * 
+     * @param args the command line arguments
+     */
+    public static void main( String[] args )
+    {
+        launch( args );
+    }
+
 }

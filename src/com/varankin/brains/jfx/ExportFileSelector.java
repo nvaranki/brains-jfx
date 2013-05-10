@@ -36,17 +36,15 @@ class ExportFileSelector implements Provider<File>
     public File newInstance()
     {
         File выбор = селектор.showSaveDialog( платформа );
-        if( выбор == null )
-            return null;
-        else
+        if( выбор != null )
         {
             String путь = выбор.getAbsolutePath();
             LOGGER.log( Level.FINE, словарь.текст( "path", путь ) );
             File директория = выбор.getParentFile();
             if( директория != null )
                 селектор.setInitialDirectory( директория );
-            return выбор;
         }
+        return выбор;
     }
     
 }

@@ -38,31 +38,18 @@ class ApplicationView extends Scene
     /**
      * Контекст {@linkplain ApplicationView главной экранной формы приложения}.
      */
-    static public final class Context
+    static final class Context
     {
         final JavaFX jfx;
-//        public final ActionFactory actions;
         final MenuFactory menuFactory;
-//        private Scene frame;
         final Provider<File> exporter;
 
         private Context( JavaFX jfx )
         {
             this.jfx = jfx;
-//            this.actions = new ActionFactory( this );
             this.menuFactory = new MenuFactory( jfx );
             this.exporter = new ExportFileSelector( jfx );
         }
-        
-//        private void setScene( Scene value )
-//        {
-//            frame = value;
-//        }
-//        
-//        public final Scene getScene()
-//        {
-//            return frame;
-//        }
     }
 
     static private class ContentPane extends BorderPane
