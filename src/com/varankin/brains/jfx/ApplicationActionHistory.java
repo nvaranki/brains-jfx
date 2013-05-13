@@ -66,7 +66,7 @@ class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ>
         textProperty().setValue( Integer.toString( позиция ) + ' ' + название );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass().getPackage(), 
                 ( элемент != null ? элемент : this ).getClass().getSimpleName(), 
-                this.jfx.контекст.специфика );
+                jfx.контекст.специфика );
         iconProperty().setValue( icon( словарь.текст( SMALL_ICON ) ) );
     }
     

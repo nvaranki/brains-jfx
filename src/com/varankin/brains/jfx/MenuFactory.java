@@ -3,10 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.util.Текст;
 import java.util.*;
 import javafx.event.ActionEvent;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 
 /**
  * Конструктор меню приложения.
@@ -15,23 +12,16 @@ import javafx.scene.control.SeparatorMenuItem;
  */
 class MenuFactory 
 {
-    private final JavaFX jfx;
-
-    MenuFactory( JavaFX jfx )
-    {
-        this.jfx = jfx;
-    }
-    
     /**
      * Создает всплывающее меню по модели.
      * 
      * @param модель окончательная модель меню.
      * @return всплывающее меню.
      */
-    ContextMenu createContextMenu( MenuNode модель )
+    static ContextMenu createContextMenu( MenuNode модель )
     {
         ContextMenu menu = new ContextMenu();
-        модель.populate( menu.getItems(), jfx );
+        модель.populate( menu.getItems() );
         return menu;
     }
     
@@ -41,10 +31,10 @@ class MenuFactory
      * @param модель окончательная модель меню.
      * @return стандартное меню.
      */
-    Menu createMenu( MenuNode модель )
+    static Menu createMenu( MenuNode модель )
     {
         Menu menu = new Menu( модель.node.textProperty().getValue() );
-        модель.populate( menu.getItems(), jfx );
+        модель.populate( menu.getItems() );
         return menu;
     }
 
@@ -62,11 +52,11 @@ class MenuFactory
             this.childs = childs;
         }
 
-        private MenuItem toMenuItem( JavaFX jfx )
+        private MenuItem toMenuItem()
         {
             if( childs.length > 0 )
             {
-                return toMenu( jfx );
+                return toMenu();
             }
             else
             {
@@ -81,18 +71,18 @@ class MenuFactory
             }
         }
 
-        private Menu toMenu( JavaFX jfx )
+        private Menu toMenu()
         {
             Menu menu = new Menu( node.textProperty().getValue() );
-            populate( menu.getItems(), jfx );
+            populate( menu.getItems() );
             return menu;
         }
         
-        private void populate( Collection<MenuItem> items, JavaFX jfx )
+        private void populate( Collection<MenuItem> items )
         {
             for( MenuNode child : childs )
                 if( child != null )
-                    items.add( child.toMenuItem( jfx ) );
+                    items.add( child.toMenuItem() );
                 else
                     items.add( new SeparatorMenuItem() );
         }

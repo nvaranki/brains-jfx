@@ -7,11 +7,11 @@ import java.beans.PropertyChangeListener;
 import javafx.event.ActionEvent;
 
 /**
- * Простое действие в среде JavaFX, согласованное с другими действиями.
+ * Согласованное действие в среде JavaFX.
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class CoordinatedAction<КОНТЕКСТ> extends com.varankin.brains.jfx.AbstractJfxAction
+class CoordinatedAction<КОНТЕКСТ> extends AbstractJfxAction
 {
     protected final СогласованноеДействие<КОНТЕКСТ> действие;
     protected       КОНТЕКСТ контекст;

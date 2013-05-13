@@ -29,8 +29,9 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 /**
- *
- * @author Николай
+ * Интерактивная форма запроса URL.
+ * 
+ * @author &copy; 2013 Николай Варанкин
  */
 class UrlChooser extends Stage
 {
@@ -63,23 +64,17 @@ class UrlChooser extends Stage
         initModality( Modality.APPLICATION_MODAL );
         setTitle( словарь.текст( "title" ) );
         setResizable( true );
-        Scene scene = new Scene( new Layout( jfx, new Text( "URL:" ), text, status, импорт, отмена ), 
-                550.0, 80.0, Color.WHITE );
-        setScene( scene );
+        setScene( new Scene( new Layout( new Text( "URL:" ), text, status, 
+                импорт, отмена, jfx.getDefaultGap() ), 550.0, 80.0, Color.WHITE ) );
         setOnCloseRequest( new StageCloseHandler<WindowEvent>( this, dispose ) );
     }
     
-    public final StringProperty initialPathProperty()
+    final StringProperty initialPathProperty()
     {
         return urlText;
     }
     
-    public final ReadOnlyObjectProperty<URL> urlProperty()
-    {
-        return url;
-    }
-    
-    public URL showOpenDialog( Window owner )
+    URL showOpenDialog( Window owner )
     {
         if( getOwner() == null )
             initOwner( owner );
@@ -99,7 +94,9 @@ class UrlChooser extends Stage
             url.value = null;
             String value = urlText.getValue();
             if( value == null )
+            {
                 hide();
+            }
             else if( value.contains( "<" ) || value.contains( ">" ) )
             {
                 text.requestFocus();
@@ -184,10 +181,8 @@ class UrlChooser extends Stage
 
     private class Layout extends GridPane
     {
-
-        Layout( JavaFX jfx, Node label, Node text, Node status, Node импорт, Node отмена )
+        Layout( Node label, Node text, Node status, Node импорт, Node отмена, double gap )
         {
-            double gap = jfx.getDefaultGap();
             setHgap( gap );
             setVgap( gap );
             setPadding( new Insets( gap ) );

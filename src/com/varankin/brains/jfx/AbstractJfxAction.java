@@ -54,9 +54,8 @@ public abstract class AbstractJfxAction implements EventHandler<ActionEvent>
         this.shortcut = shortcut( словарь.текст( MNEMONIC_KEY ) );
     }
     
-    protected final ImageView icon( String value )
+    protected final ImageView icon( String path )
     {
-        String path = value.toString();
         InputStream stream = path.isEmpty() ? null : getClass().getClassLoader().getResourceAsStream( path );
         return stream != null ? new ImageView( new Image( stream ) ) : null;
     }

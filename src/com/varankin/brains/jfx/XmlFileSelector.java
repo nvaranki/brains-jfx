@@ -25,9 +25,8 @@ class XmlFileSelector implements Provider<Provider<InputStream>>
         селектор.setInitialDirectory( jfx.getCurrentLocalDirectory() );
         Текст словарь = Текст.ПАКЕТЫ.словарь( XmlFileSelector.class, 
                 jfx.контекст.специфика );
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(
-                словарь.текст( "ext.xml" ), "*.xml" );
-        селектор.getExtensionFilters().add( filter );
+        селектор.getExtensionFilters().add( new FileChooser.ExtensionFilter(
+                словарь.текст( "ext.xml" ), "*.xml" ) );
     }
 
     @Override

@@ -47,7 +47,7 @@ class ApplicationView extends Scene
         private Context( JavaFX jfx )
         {
             this.jfx = jfx;
-            this.menuFactory = new MenuFactory( jfx );
+            this.menuFactory = new MenuFactory();
             this.exporter = new ExportFileSelector( jfx );
         }
     }
@@ -63,8 +63,7 @@ class ApplicationView extends Scene
         static Node top( Context context )
         {
             // меню приложения
-            MenuBar mb = new ApplicationMenuBar( context );
-            return mb;
+            return ApplicationMenuBar.create( context );
         }
         
         static Node left( Context context )

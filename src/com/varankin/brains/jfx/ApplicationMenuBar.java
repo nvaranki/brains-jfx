@@ -3,39 +3,33 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.action.СогласованноеДействие;
 import com.varankin.brains.appl.HistoricProvider;
 import com.varankin.brains.appl.Импортировать;
-import com.varankin.util.HistoryList;
 import com.varankin.brains.appl.КаталогДействий;
 import static com.varankin.brains.appl.КаталогДействий.Индекс.*;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.brains.jfx.MenuFactory.SubMenuAction;
-import com.varankin.brains.Контекст;
 import com.varankin.io.container.Provider;
+import com.varankin.util.HistoryList;
 import java.io.InputStream;
-
 import java.util.*;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ListPropertyBase;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.*;
-import javafx.stage.FileChooser;
 
 /**
- * Главное меню приложения.
+ * Построитель главного меню приложения.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
-public class ApplicationMenuBar extends MenuBar
+class ApplicationMenuBar 
 {
-
-    ApplicationMenuBar( ApplicationView.Context context )
+    static MenuBar create( ApplicationView.Context context )
     {
-        List<Menu> menus = getMenus();
+        MenuBar menuBar = new MenuBar();
+        List<Menu> menus = menuBar.getMenus();
         for( MenuFactory.MenuNode node : model( context ) ) 
             menus.add( context.menuFactory.createMenu( node ) );
+        return menuBar;
     }
 
     /**
@@ -112,15 +106,6 @@ public class ApplicationMenuBar extends MenuBar
     static private AbstractJfxAction действие( КаталогДействий.Индекс индекс, JavaFX jfx, String префикс )
     {
         return new CoordinatedAction<>( jfx.контекст.действие( индекс ), jfx.контекст, jfx, префикс );
-    }
-    
-    static private MenuNode[] inlineMenuNodes( AbstractJfxAction[] actions, int индексРазделителя )
-    {
-        List<MenuNode> nodes = new ArrayList<>( actions.length + 1 );
-        for( AbstractJfxAction a : actions )
-            nodes.add( new MenuNode( a ) );
-        nodes.add( индексРазделителя, null );
-        return nodes.toArray( new MenuNode[nodes.size()] );
     }
     
 }
