@@ -28,7 +28,7 @@ class ApplicationMenuBar
         MenuBar menuBar = new MenuBar();
         List<Menu> menus = menuBar.getMenus();
         for( MenuFactory.MenuNode node : model( context ) ) 
-            menus.add( context.menuFactory.createMenu( node ) );
+            menus.add( MenuFactory.createMenu( node ) );
         return menuBar;
     }
 
@@ -45,7 +45,7 @@ class ApplicationMenuBar
         
         ListProperty<Provider<InputStream>> providersXml 
                 = new SimpleListProperty<>( FXCollections.<Provider<InputStream>>observableArrayList() );
-        providersXml.add( null ); // --> ApplicationActionImportXml
+        providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
         HistoryList<Provider<InputStream>> historyXml 
                 = new HistoryList<>( providersXml, ApplicationActionImportXml.class );
 

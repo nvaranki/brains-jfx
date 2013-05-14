@@ -60,7 +60,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg, blocker_1_N );
         ActionProperties actionProperties = new ActionProperties();
         
-        setContextMenu( context.menuFactory.createContextMenu( new MenuNode( null,
+        setContextMenu( MenuFactory.createContextMenu( new MenuNode( null,
                 new MenuNode( actionLoad ), 
                 null,
                 new MenuNode( actionNew ), 

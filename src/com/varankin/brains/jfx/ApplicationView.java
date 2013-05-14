@@ -41,13 +41,11 @@ class ApplicationView extends Scene
     static final class Context
     {
         final JavaFX jfx;
-        final MenuFactory menuFactory;
         final Provider<File> exporter;
 
         private Context( JavaFX jfx )
         {
             this.jfx = jfx;
-            this.menuFactory = new MenuFactory();
             this.exporter = new ExportFileSelector( jfx );
         }
     }

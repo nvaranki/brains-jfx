@@ -53,7 +53,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg, blocker_1_N );
         ActionProperties actionProperties = new ActionProperties();
 
-        setContextMenu( context.menuFactory.createContextMenu( new MenuNode( null,
+        setContextMenu( MenuFactory.createContextMenu( new MenuNode( null,
                 new MenuNode( actionNew ), 
                 new MenuNode( actionPreview ), 
                 new MenuNode( actionEdit ), 
