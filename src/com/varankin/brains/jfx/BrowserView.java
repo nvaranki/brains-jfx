@@ -65,7 +65,7 @@ class BrowserView extends TreeView<Элемент>
         return title;
     }
     
-    //<editor-fold defaultstate="collapsed" desc="кдассы">
+    //<editor-fold defaultstate="collapsed" desc="классы">
 
     private class ActionStart extends AbstractContextJfxAction<ApplicationView.Context>
     {
@@ -253,9 +253,9 @@ class BrowserView extends TreeView<Элемент>
 
         private TreeItem<Элемент> начало()
         {
-            for( TreeItem<Элемент> root : BrowserView.this.getRoot().getChildren() )
-                if( root.getValue().equals( МЫСЛИТЕЛЬ ) )
-                    return root;
+            for( TreeItem<Элемент> item : BrowserView.this.getRoot().getChildren() )
+                if( item.getValue().equals( МЫСЛИТЕЛЬ ) )
+                    return item;
             return null;
         }
         
