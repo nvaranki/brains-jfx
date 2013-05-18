@@ -2,9 +2,9 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
-import com.varankin.brains.jfx.ApplicationView.Context;
 import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.io.File;
@@ -32,14 +32,15 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     
     private final ReadOnlyStringProperty title;
 
-    protected final ApplicationView.Context context;
+    protected final JavaFX jfx;
     protected final Текст словарь;
 
-    protected AbstractCatalogView( Context context )
+    protected AbstractCatalogView( JavaFX jfx, Коллекция<T> коллекция )
     {
-        this.context = context;
-        словарь = Текст.ПАКЕТЫ.словарь( getClass(), context.jfx.контекст.специфика );
+        this.jfx = jfx;
+        словарь = Текст.ПАКЕТЫ.словарь( getClass(), jfx.контекст.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
+        itemsProperty().bind( new ObservableValueList<>( коллекция ) );
     }
     
     final ReadOnlyStringProperty titleProperty()
@@ -49,13 +50,13 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
 
     //<editor-fold defaultstate="collapsed" desc="classes">
     
-    protected class ActionPreview extends AbstractContextJfxAction<ApplicationView.Context>
+    protected class ActionPreview extends AbstractContextJfxAction<JavaFX>
     {
         private final SvgService<T> service;
         
         ActionPreview( SvgService<T> service, ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionPreview.class ) );
+            super( jfx, jfx.словарь( ActionPreview.class ) );
             this.service = service;
             disableProperty().bind( blocker );
         }
@@ -63,7 +64,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         @Override
         public void handle( ActionEvent _ )
         {
-            ObservableList<TitledSceneGraph> views = контекст.jfx.getViews().getValue();
+            ObservableList<TitledSceneGraph> views = контекст.getViews().getValue();
             
             for( T элемент : selectionModelProperty().getValue().getSelectedItems() )
                 if( элемент != null )
@@ -93,19 +94,19 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
             WebView view = new WebView();
             view.setUserData( элемент );
             String название = элемент.название();
-            контекст.jfx.getExecutorService().submit( new WebViewLoaderTask(
+            контекст.getExecutorService().submit( new WebViewLoaderTask(
                     service.getPainter( элемент ), view.getEngine(), название, словарь ) );
             return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
         }
 
     }
     
-    protected class ActionEdit extends AbstractContextJfxAction<ApplicationView.Context>
+    protected class ActionEdit extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionEdit( ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionEdit.class ) );
+            super( jfx, jfx.словарь( ActionEdit.class ) );
             disableProperty().bind( blocker );
         }
 
@@ -116,13 +117,13 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         }
     }
     
-    protected class ActionRemove extends AbstractContextJfxAction<ApplicationView.Context>
+    protected class ActionRemove extends AbstractContextJfxAction<JavaFX>
     {
         private final Действие<Collection<T>> действие;
         
         ActionRemove( Действие<Collection<T>> действие, ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionRemove.class ) );
+            super( jfx, jfx.словарь( ActionRemove.class ) );
             this.действие = действие;
             disableProperty().bind( blocker );
         }
@@ -133,18 +134,20 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<T> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             //TODO confirmation dialog
-            new ApplicationActionWorker<>( действие, ceлектор ).execute( context.jfx );
+            new ApplicationActionWorker<>( действие, ceлектор ).execute( контекст );
         }
     }
     
-    protected class ActionExport extends AbstractContextJfxAction<ApplicationView.Context>
+    protected class ActionExport extends AbstractContextJfxAction<JavaFX>
     {
         final ЭкспортироватьSvg действие;
+        final Provider<File> fileToExportToProvider;
         
         ActionExport( ЭкспортироватьSvg действие, ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionExport.class ) );
+            super( jfx, jfx.словарь( ActionExport.class ) );
             this.действие = действие;
+            this.fileToExportToProvider = new ExportFileSelector( jfx );
             disableProperty().bind( blocker );
         }
         
@@ -153,15 +156,15 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<T> сeлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
-            File file = context.exporter.newInstance();
+            File file = fileToExportToProvider.newInstance();
             if( file != null )
                 if( сeлектор.size() == 1 )
                 {
                     T элемент = сeлектор.get( 0 );
                     ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст(
-                            контекст.jfx.контекст, элемент, new Сборка( элемент ), file );
+                            контекст.контекст, элемент, new Сборка( элемент ), file );
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
-                            .execute( context.jfx );
+                            .execute( jfx );
                 }
                 else
                     LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements in single file.", сeлектор.size() );

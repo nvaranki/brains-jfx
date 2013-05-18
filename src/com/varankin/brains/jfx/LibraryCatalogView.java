@@ -17,7 +17,7 @@ import javafx.scene.control.*;
 import javafx.util.Callback;
 
 /**
- * Каталог проектов архива.
+ * Каталог библиотек архива.
  *
  * @author &copy; 2013 Николай Варанкин
  */
@@ -25,12 +25,11 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
 {
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
-    LibraryCatalogView( ApplicationView.Context context, ObservableList<Node> toolbar )
+    LibraryCatalogView( JavaFX jfx, ObservableList<Node> toolbar )
     {
-        super( context );
+        super( jfx, jfx.контекст.архив.библиотеки() );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.библиотеки() ) );
         
         SvgService<Библиотека> svg = new SvgService<Библиотека>() 
         {
@@ -43,7 +42,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
-        УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( context.jfx.контекст.архив );
+        УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
         ActionNew actionNew = new ActionNew( blocker_0_0 );
@@ -79,7 +78,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     private class RowBuilder implements Callback<ListView<Библиотека>, ListCell<Библиотека>>
     {
         @Override
-        public ListCell<Библиотека> call( ListView<Библиотека> view )
+        public ListCell<Библиотека> call( ListView<Библиотека> _ )
         {
             return new VisibleRow();
         }
@@ -95,12 +94,12 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         }
     }
     
-    private class ActionNew extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionNew( ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionNew.class ) );
+            super( jfx, jfx.словарь( ActionNew.class ) );
             disableProperty().bind( blocker );
         }
         
@@ -111,12 +110,12 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         }
     }
     
-    private class ActionProperties extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionProperties extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionProperties()
         {
-            super( context, context.jfx.словарь( ActionProperties.class ) );
+            super( jfx, jfx.словарь( ActionProperties.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         

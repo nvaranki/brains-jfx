@@ -16,6 +16,9 @@ import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -45,7 +48,6 @@ final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
-        платформа.setScene( new ApplicationView( JavaFX.this ) );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -87,9 +89,10 @@ final class JavaFX
     {
         return es;
     }
-
+    
     void старт()
     {
+        new GuiBuilder( this ).createView( платформа );
         платформа.show();
         es.execute( new Task<Void>()
         {

@@ -6,14 +6,14 @@ import javafx.event.ActionEvent;
 /**
  * Действие JavaFX для завершения приложения.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
-class ApplicationActionExit extends AbstractContextJfxAction<ApplicationView.Context>
+class ApplicationActionExit extends AbstractContextJfxAction<JavaFX>
 {
 
-    ApplicationActionExit( ApplicationView.Context context )
+    ApplicationActionExit( JavaFX jfx )
     {
-        super( context, context.jfx.словарь( ApplicationActionExit.class ) );
+        super( jfx, jfx.словарь( ApplicationActionExit.class ) );
     }
 
     @Override

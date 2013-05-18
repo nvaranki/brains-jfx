@@ -5,15 +5,15 @@ import javafx.event.ActionEvent;
 /**
  * Действие JavaFX для показа диалога с визиткой программы.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 class ApplicationActionAbout extends AbstractContextJfxAction<JavaFX>
 {
     private Открытка открытка;
 
-    ApplicationActionAbout( ApplicationView.Context context )
+    ApplicationActionAbout( JavaFX jfx )
     {
-        super( context.jfx, context.jfx.словарь( ApplicationActionAbout.class ) );
+        super( jfx, jfx.словарь( ApplicationActionAbout.class ) );
     }
 
     @Override

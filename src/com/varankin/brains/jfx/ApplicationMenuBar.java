@@ -23,11 +23,11 @@ import javafx.scene.control.*;
  */
 class ApplicationMenuBar 
 {
-    static MenuBar create( ApplicationView.Context context )
+    static MenuBar create( JavaFX jfx )
     {
         MenuBar menuBar = new MenuBar();
         List<Menu> menus = menuBar.getMenus();
-        for( MenuFactory.MenuNode node : model( context ) ) 
+        for( MenuFactory.MenuNode node : model( jfx ) ) 
             menus.add( MenuFactory.createMenu( node ) );
         return menuBar;
     }
@@ -38,9 +38,8 @@ class ApplicationMenuBar
      * @param context контекст главного окна приложения.
      * @return модель меню.
      */
-    static private MenuFactory.MenuNode[] model( ApplicationView.Context context )
+    static private MenuFactory.MenuNode[] model( JavaFX jfx )
     {
-        JavaFX jfx = context.jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
         
         ListProperty<Provider<InputStream>> providersXml 
@@ -74,7 +73,7 @@ class ApplicationMenuBar
                         new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 2, providersXml ) ), 
                         new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 3, providersXml ) ) ),
                     null,
-                    new MenuNode( new ApplicationActionExit( context ) ) ),
+                    new MenuNode( new ApplicationActionExit( jfx ) ) ),
 
             new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".0", специфика ),
                     new MenuNode( действие( Старт, jfx, "ApplicationActionStart" ) ),
@@ -86,7 +85,7 @@ class ApplicationMenuBar
 //                    new MenuNode( new SubMenu( ".5.1", специфика ),
 //                        new MenuNode( actions.getAbout() ) ),
 //                    null,
-                    new MenuNode( new ApplicationActionAbout( context ) ) )
+                    new MenuNode( new ApplicationActionAbout( jfx ) ) )
         };
     }
     
@@ -107,5 +106,5 @@ class ApplicationMenuBar
     {
         return new CoordinatedAction<>( jfx.контекст.действие( индекс ), jfx.контекст, jfx, префикс );
     }
-    
+
 }

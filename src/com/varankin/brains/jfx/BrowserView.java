@@ -28,16 +28,16 @@ class BrowserView extends TreeView<Элемент>
 {
     private static final Logger LOGGER = Logger.getLogger( BrowserView.class.getName() );
     
+    private final JavaFX JFX;
     private final Контекст КОНТЕКСТ;
     private final BrowserNodeBuilder СТРОИТЕЛЬ;
     private final ReadOnlyStringProperty title;
-    private final ApplicationView.Context context;
 
-    BrowserView( ApplicationView.Context контекст, ObservableList<Node> toolbar )
+    BrowserView( JavaFX jfx, ObservableList<Node> toolbar )
     {
-        Map<Locale.Category,Locale> специфика = контекст.jfx.контекст.специфика;
-        context = контекст;
-        КОНТЕКСТ = контекст.jfx.контекст;
+        JFX = jfx;
+        Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
+        КОНТЕКСТ = jfx.контекст;
         СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
@@ -67,12 +67,12 @@ class BrowserView extends TreeView<Элемент>
     
     //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class ActionStart extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionStart extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionStart( ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionStart.class ) );
+            super( JFX, JFX.словарь( ActionStart.class ) );
             disableProperty().bind( blocker );
         }
         
@@ -83,12 +83,12 @@ class BrowserView extends TreeView<Элемент>
         }
     }
     
-    private class ActionStop extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionStop extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionStop( ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionStop.class ) );
+            super( JFX, JFX.словарь( ActionStop.class ) );
             disableProperty().bind( blocker );
         }
         
@@ -99,12 +99,12 @@ class BrowserView extends TreeView<Элемент>
         }
     }
     
-    private class ActionPause extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionPause extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionPause( ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionPause.class ) );
+            super( JFX, JFX.словарь( ActionPause.class ) );
             disableProperty().bind( blocker );
         }
         
@@ -115,12 +115,12 @@ class BrowserView extends TreeView<Элемент>
         }
     }
     
-    private class ActionProperties extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionProperties extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionProperties()
         {
-            super( context, context.jfx.словарь( ActionProperties.class ) );
+            super( JFX, JFX.словарь( ActionProperties.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         

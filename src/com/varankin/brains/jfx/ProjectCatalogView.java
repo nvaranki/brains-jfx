@@ -24,18 +24,17 @@ import javafx.util.Callback;
 /**
  * Каталог проектов архива.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 class ProjectCatalogView extends AbstractCatalogView<Проект>
 {
     private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
     
-    ProjectCatalogView( ApplicationView.Context context, ObservableList<Node> toolbar )
+    ProjectCatalogView( JavaFX jfx, ObservableList<Node> toolbar )
     {
-        super( context );
+        super( jfx, jfx.контекст.архив.проекты() );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setCellFactory( new RowBuilder() );
-        itemsProperty().bind( new ObservableValueList<>( context.jfx.контекст.архив.проекты() ) );
 
         SvgService<Проект> svg = new SvgService<Проект>() 
         {
@@ -48,8 +47,8 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
-        ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( context.jfx.контекст );
-        УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( context.jfx.контекст.архив );
+        ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст );
+        УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
         ActionLoad actionLoad = new ActionLoad( действиеЗагрузить, blocker_1_1 );
@@ -90,7 +89,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     private class RowBuilder implements Callback<ListView<Проект>, ListCell<Проект>>
     {
         @Override
-        public ListCell<Проект> call( ListView<Проект> view )
+        public ListCell<Проект> call( ListView<Проект> _ )
         {
             return new VisibleRow();
         }
@@ -106,12 +105,12 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         }
     }
     
-    private class ActionNew extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionNew( ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionNew.class ) );
+            super( jfx, jfx.словарь( ActionNew.class ) );
             disableProperty().bind( blocker );
         }
         
@@ -122,13 +121,13 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         }
     }
     
-    private class ActionLoad extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionLoad extends AbstractContextJfxAction<JavaFX>
     {
         Действие<Collection<Проект>> ДЕЙСТВИЕ;
         
         ActionLoad( Действие<Collection<Проект>> действие, ObservableValue<Boolean> blocker )
         {
-            super( context, context.jfx.словарь( ActionLoad.class ) );
+            super( jfx, jfx.словарь( ActionLoad.class ) );
             ДЕЙСТВИЕ = действие;
             disableProperty().bind( blocker );
         }
@@ -139,16 +138,16 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             //TODO confirmation dialog
-            new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор ).execute( context.jfx );
+            new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор ).execute( контекст );
         }
     }
     
-    private class ActionProperties extends AbstractContextJfxAction<ApplicationView.Context>
+    private class ActionProperties extends AbstractContextJfxAction<JavaFX>
     {
         
         ActionProperties()
         {
-            super( context, context.jfx.словарь( ActionProperties.class ) );
+            super( jfx, jfx.словарь( ActionProperties.class ) );
             disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
