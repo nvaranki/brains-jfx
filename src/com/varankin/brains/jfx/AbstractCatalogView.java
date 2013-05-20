@@ -2,6 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
@@ -11,13 +12,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
@@ -26,7 +24,7 @@ import javafx.scene.web.WebView;
  *
  * @author Николай
  */
-abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
+abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
 {
     private static final Logger LOGGER = Logger.getLogger( AbstractCatalogView.class.getName() );
     
@@ -35,7 +33,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     protected final JavaFX jfx;
     protected final Текст словарь;
 
-    protected AbstractCatalogView( JavaFX jfx, Коллекция<T> коллекция )
+    protected AbstractCatalogView( JavaFX jfx, Коллекция<E> коллекция )
     {
         this.jfx = jfx;
         словарь = Текст.ПАКЕТЫ.словарь( getClass(), jfx.контекст.специфика );
@@ -52,21 +50,20 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     
     protected class ActionPreview extends AbstractContextJfxAction<JavaFX>
     {
-        private final SvgService<T> service;
+        private final SvgService<E> service;
         
-        ActionPreview( SvgService<T> service, ObservableValue<Boolean> blocker )
+        ActionPreview( SvgService<E> service )
         {
             super( jfx, jfx.словарь( ActionPreview.class ) );
             this.service = service;
-            disableProperty().bind( blocker );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
-            ObservableList<TitledSceneGraph> views = контекст.getViews().getValue();
+            List<TitledSceneGraph> views = контекст.getViews().getValue();
             
-            for( T элемент : selectionModelProperty().getValue().getSelectedItems() )
+            for( E элемент : selectionModelProperty().getValue().getSelectedItems() )
                 if( элемент != null )
                 {
                     TitledSceneGraph tsg = isShown( элемент, views );
@@ -78,7 +75,7 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
                 }
         }
         
-        private TitledSceneGraph isShown( T элемент, Iterable<TitledSceneGraph> views )
+        private TitledSceneGraph isShown( E элемент, Iterable<TitledSceneGraph> views )
         {
             for( TitledSceneGraph tsg : views )
             {
@@ -89,13 +86,13 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
             return null;
         }
         
-        private TitledSceneGraph show( T элемент )
+        private TitledSceneGraph show( E элемент )
         {
             WebView view = new WebView();
             view.setUserData( элемент );
             String название = элемент.название();
             контекст.getExecutorService().submit( new WebViewLoaderTask(
-                    service.getPainter( элемент ), view.getEngine(), название, словарь ) );
+                    service.toSvg( элемент ), view.getEngine(), название, словарь ) );
             return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
         }
 
@@ -104,10 +101,9 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     protected class ActionEdit extends AbstractContextJfxAction<JavaFX>
     {
         
-        ActionEdit( ObservableValue<Boolean> blocker )
+        ActionEdit()
         {
             super( jfx, jfx.словарь( ActionEdit.class ) );
-            disableProperty().bind( blocker );
         }
 
         @Override
@@ -119,20 +115,19 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
     
     protected class ActionRemove extends AbstractContextJfxAction<JavaFX>
     {
-        private final Действие<Collection<T>> действие;
+        private final Действие<Collection<E>> действие;
         
-        ActionRemove( Действие<Collection<T>> действие, ObservableValue<Boolean> blocker )
+        ActionRemove( Действие<Collection<E>> действие )
         {
             super( jfx, jfx.словарь( ActionRemove.class ) );
             this.действие = действие;
-            disableProperty().bind( blocker );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
-            List<T> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            List<E> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             //TODO confirmation dialog
             new ApplicationActionWorker<>( действие, ceлектор ).execute( контекст );
         }
@@ -143,24 +138,23 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
         final ЭкспортироватьSvg действие;
         final Provider<File> fileToExportToProvider;
         
-        ActionExport( ЭкспортироватьSvg действие, ObservableValue<Boolean> blocker )
+        ActionExport( ЭкспортироватьSvg действие )
         {
             super( jfx, jfx.словарь( ActionExport.class ) );
             this.действие = действие;
             this.fileToExportToProvider = new ExportFileSelector( jfx );
-            disableProperty().bind( blocker );
         }
         
         @Override
         public void handle( ActionEvent _ )
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
-            List<T> сeлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            List<E> сeлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             File file = fileToExportToProvider.newInstance();
             if( file != null )
                 if( сeлектор.size() == 1 )
                 {
-                    T элемент = сeлектор.get( 0 );
+                    E элемент = сeлектор.get( 0 );
                     ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст(
                             контекст.контекст, элемент, new Сборка( элемент ), file );
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
@@ -169,11 +163,6 @@ abstract class AbstractCatalogView<T extends Элемент> extends ListView<T>
                 else
                     LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements in single file.", сeлектор.size() );
         }
-    }
-    
-    interface SvgService<T extends Элемент >
-    {
-        Provider<String> getPainter( T element );
     }
     
     //</editor-fold>

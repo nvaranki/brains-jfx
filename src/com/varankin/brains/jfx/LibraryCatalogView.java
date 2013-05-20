@@ -2,6 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.УдалитьАрхивныеБиблиотеки;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
 import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Сборка;
@@ -34,7 +35,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         SvgService<Библиотека> svg = new SvgService<Библиотека>() 
         {
             @Override
-            public Provider<String> getPainter( Библиотека библиотека )
+            public Provider<String> toSvg( Библиотека библиотека )
             {
                 return new SvgБиблиотека( библиотека, new Сборка( библиотека ) );
             }
@@ -45,14 +46,22 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
-        ActionNew actionNew = new ActionNew( blocker_0_0 );
-        ActionPreview actionPreview = new ActionPreview( svg, blocker_1_1 );
-        ActionEdit actionEdit = new ActionEdit( blocker_1_1 );
-        ActionRemove actionRemove = new ActionRemove( действиеУдалить, blocker_1_N );
-        ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg, blocker_1_N );
+        ActionNew actionNew = new ActionNew();
+        ActionPreview actionPreview = new ActionPreview( svg );
+        ActionEdit actionEdit = new ActionEdit();
+        ActionRemove actionRemove = new ActionRemove( действиеУдалить );
+        ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg );
         ActionProperties actionProperties = new ActionProperties();
 
-        setContextMenu( MenuFactory.createContextMenu( new MenuNode( null,
+        actionNew       .disableProperty().bind( blocker_0_0 );
+        actionPreview   .disableProperty().bind( blocker_1_1 );
+        actionEdit      .disableProperty().bind( blocker_1_1 );
+        actionRemove    .disableProperty().bind( blocker_1_N );
+        actionExport    .disableProperty().bind( blocker_1_N );
+        actionProperties.disableProperty().bind( blocker_1_1 );
+
+        setContextMenu( MenuFactory.createContextMenu( 
+            new MenuNode( null,
                 new MenuNode( actionNew ), 
                 new MenuNode( actionPreview ), 
                 new MenuNode( actionEdit ), 
@@ -60,7 +69,8 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 null,
                 new MenuNode( actionExport ), 
                 null,
-                new MenuNode( actionProperties ) ) ) );
+                new MenuNode( actionProperties ) 
+                ) ) );
 
         toolbar.addAll( 
                 actionNew.makeButton(), 
@@ -97,10 +107,9 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
         
-        ActionNew( ObservableValue<Boolean> blocker )
+        ActionNew()
         {
             super( jfx, jfx.словарь( ActionNew.class ) );
-            disableProperty().bind( blocker );
         }
         
         @Override
@@ -116,7 +125,6 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         ActionProperties()
         {
             super( jfx, jfx.словарь( ActionProperties.class ) );
-            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override

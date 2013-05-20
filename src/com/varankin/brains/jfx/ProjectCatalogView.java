@@ -4,6 +4,7 @@ import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Сборка;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Orientation;
@@ -39,7 +39,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         SvgService<Проект> svg = new SvgService<Проект>() 
         {
             @Override
-            public Provider<String> getPainter( Проект проект )
+            public Provider<String> toSvg( Проект проект )
             {
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
@@ -51,15 +51,24 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
-        ActionLoad actionLoad = new ActionLoad( действиеЗагрузить, blocker_1_1 );
-        ActionNew actionNew = new ActionNew( blocker_0_0 );
-        ActionPreview actionPreview = new ActionPreview( svg, blocker_1_1 );
-        ActionEdit actionEdit = new ActionEdit( blocker_1_1 );
-        ActionRemove actionRemove = new ActionRemove( действиеУдалить, blocker_1_N );
-        ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg, blocker_1_N );
+        ActionLoad actionLoad = new ActionLoad( действиеЗагрузить );
+        ActionNew actionNew = new ActionNew();
+        ActionPreview actionPreview = new ActionPreview( svg );
+        ActionEdit actionEdit = new ActionEdit();
+        ActionRemove actionRemove = new ActionRemove( действиеУдалить );
+        ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg );
         ActionProperties actionProperties = new ActionProperties();
+
+        actionLoad      .disableProperty().bind( blocker_1_1 );
+        actionNew       .disableProperty().bind( blocker_0_0 );
+        actionPreview   .disableProperty().bind( blocker_1_1 );
+        actionEdit      .disableProperty().bind( blocker_1_1 );
+        actionRemove    .disableProperty().bind( blocker_1_N );
+        actionExport    .disableProperty().bind( blocker_1_N );
+        actionProperties.disableProperty().bind( blocker_1_1 );
         
-        setContextMenu( MenuFactory.createContextMenu( new MenuNode( null,
+        setContextMenu( MenuFactory.createContextMenu( 
+            new MenuNode( null,
                 new MenuNode( actionLoad ), 
                 null,
                 new MenuNode( actionNew ), 
@@ -108,10 +117,9 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
         
-        ActionNew( ObservableValue<Boolean> blocker )
+        ActionNew()
         {
             super( jfx, jfx.словарь( ActionNew.class ) );
-            disableProperty().bind( blocker );
         }
         
         @Override
@@ -125,11 +133,10 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     {
         Действие<Collection<Проект>> ДЕЙСТВИЕ;
         
-        ActionLoad( Действие<Collection<Проект>> действие, ObservableValue<Boolean> blocker )
+        ActionLoad( Действие<Collection<Проект>> действие )
         {
             super( jfx, jfx.словарь( ActionLoad.class ) );
             ДЕЙСТВИЕ = действие;
-            disableProperty().bind( blocker );
         }
         
         @Override
@@ -148,7 +155,6 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         ActionProperties()
         {
             super( jfx, jfx.словарь( ActionProperties.class ) );
-            disableProperty().bind( new SelectionDetector( selectionModelProperty(), false, 1, 1 ) );
         }
         
         @Override

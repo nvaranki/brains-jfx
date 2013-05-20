@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.Отображаемый;
@@ -16,7 +12,7 @@ import javafx.scene.web.WebEngine;
  *
  * @author Николай
  */
-public class WebViewLoaderTask extends Task<String>
+class WebViewLoaderTask extends Task<String>
 {
     private static final Logger LOGGER = Logger.getLogger( WebViewLoaderTask.class.getName() );
     
@@ -25,7 +21,7 @@ public class WebViewLoaderTask extends Task<String>
     private final String название;
     private final Текст словарь;
 
-    public WebViewLoaderTask( Provider<String> svg, WebEngine engine, String название, Текст словарь )
+    WebViewLoaderTask( Provider<String> svg, WebEngine engine, String название, Текст словарь )
     {
         this.svg = svg;
         this.engine = engine;

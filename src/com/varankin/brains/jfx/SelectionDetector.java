@@ -7,14 +7,14 @@ import javafx.scene.control.MultipleSelectionModel;
 /**
  * Детектор числа выбранных элементов.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 class SelectionDetector<T> extends BooleanBinding 
 {
-    final int low;
-    final int high;
-    final boolean direct;
-    private final ObjectProperty<? extends MultipleSelectionModel<T>> property;
+    private final int LOW;
+    private final int HIGH;
+    private final boolean DIRECT;
+    private final ObjectProperty<? extends MultipleSelectionModel<T>> PROPERTY;
 
     /**
      * @param property объект мониторинга.
@@ -24,10 +24,10 @@ class SelectionDetector<T> extends BooleanBinding
      */
     SelectionDetector( ObjectProperty<? extends MultipleSelectionModel<T>> property, boolean direct, int low, int high )
     {
-        this.property = property;
-        this.low = low;
-        this.high = high;
-        this.direct = direct;
+        PROPERTY = property;
+        LOW = low;
+        HIGH = high;
+        DIRECT = direct;
         super.bind( property.getValue().getSelectedItems() );
     }
 
@@ -44,9 +44,9 @@ class SelectionDetector<T> extends BooleanBinding
     @Override
     protected boolean computeValue()
     {
-        int size = property.getValue().getSelectedItems().size();
-        boolean value = low <= size && size <= high;
-        return direct ? value : !value;
+        int size = PROPERTY.getValue().getSelectedItems().size();
+        boolean value = LOW <= size && size <= HIGH;
+        return DIRECT ? value : !value;
     }
 
 }
