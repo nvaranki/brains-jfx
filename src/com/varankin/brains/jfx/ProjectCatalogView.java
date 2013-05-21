@@ -11,6 +11,7 @@ import com.varankin.brains.db.Сборка;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.*;
@@ -30,7 +31,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
 {
     private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
     
-    ProjectCatalogView( JavaFX jfx, ObservableList<Node> toolbar )
+    ProjectCatalogView( JavaFX jfx )
     {
         super( jfx, jfx.контекст.архив.проекты() );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
@@ -44,9 +45,6 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
-        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
-        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
-        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
         ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст );
         УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
@@ -58,6 +56,10 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         ActionRemove actionRemove = new ActionRemove( действиеУдалить );
         ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg );
         ActionProperties actionProperties = new ActionProperties();
+
+        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
+        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
+        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
 
         actionLoad      .disableProperty().bind( blocker_1_1 );
         actionNew       .disableProperty().bind( blocker_0_0 );
@@ -80,17 +82,17 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 null,
                 new MenuNode( actionProperties ) ) ) );
         
-        toolbar.addAll( 
-                actionLoad.makeButton(), 
-                new Separator( Orientation.HORIZONTAL ),
-                actionNew.makeButton(), 
-                actionPreview.makeButton(), 
-                actionEdit.makeButton(), 
-                actionRemove.makeButton(), 
-                new Separator( Orientation.HORIZONTAL ),
-                actionExport.makeButton(), 
-                new Separator( Orientation.HORIZONTAL ),
-                actionProperties.makeButton() );
+        actions.addAll( Arrays.asList( 
+                actionLoad, 
+                null,
+                actionNew, 
+                actionPreview, 
+                actionEdit, 
+                actionRemove, 
+                null,
+                actionExport, 
+                null,
+                actionProperties ) );
     }
     
         //<editor-fold defaultstate="collapsed" desc="классы">

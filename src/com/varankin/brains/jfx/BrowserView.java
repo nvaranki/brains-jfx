@@ -32,8 +32,9 @@ class BrowserView extends TreeView<Элемент>
     private final Контекст КОНТЕКСТ;
     private final BrowserNodeBuilder СТРОИТЕЛЬ;
     private final ReadOnlyStringProperty title;
+    private final List<AbstractJfxAction> actions;
 
-    BrowserView( JavaFX jfx, ObservableList<Node> toolbar )
+    BrowserView( JavaFX jfx )
     {
         JFX = jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
@@ -52,17 +53,24 @@ class BrowserView extends TreeView<Элемент>
         setMinWidth( w );
 
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
-        toolbar.addAll( 
-                new ActionStart( blocker_1_1 ).makeButton(), 
-                new ActionPause( blocker_1_1 ).makeButton(), 
-                new ActionStop( blocker_1_1 ).makeButton(), 
-                new Separator( Orientation.HORIZONTAL ),
-                new ActionProperties().makeButton() );
+        actions = new ArrayList<>();
+        actions.addAll( Arrays.asList( 
+                new ActionStart( blocker_1_1 ), 
+                new ActionPause( blocker_1_1 ), 
+                new ActionStop( blocker_1_1 ), 
+                null,
+                new ActionProperties() 
+                ) );
     }
     
     final ReadOnlyStringProperty titleProperty()
     {
         return title;
+    }
+    
+    final List<AbstractJfxAction> getActions()
+    {
+        return actions;
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">

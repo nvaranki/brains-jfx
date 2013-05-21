@@ -32,6 +32,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
 
     protected final JavaFX jfx;
     protected final Текст словарь;
+    protected final List<AbstractJfxAction> actions;
 
     protected AbstractCatalogView( JavaFX jfx, Коллекция<E> коллекция )
     {
@@ -39,6 +40,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         словарь = Текст.ПАКЕТЫ.словарь( getClass(), jfx.контекст.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
         itemsProperty().bind( new ObservableValueList<>( коллекция ) );
+        actions = new ArrayList<>();
     }
     
     final ReadOnlyStringProperty titleProperty()
@@ -46,6 +48,11 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         return title;
     }
 
+    final List<AbstractJfxAction> getActions()
+    {
+        return actions;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="classes">
     
     protected class ActionPreview extends AbstractContextJfxAction<JavaFX>

@@ -3,7 +3,9 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.appl.LoggingHandler;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
+import java.util.List;
 import java.util.logging.*;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -110,61 +112,46 @@ class GuiBuilder
 
     private TitledPane навигаторПоРабочемуПроекту( int spacing )
     {
-        // навигатор по модели данных рабочего проекта
-        ToolBar toolbar = new ToolBar();
-        toolbar.setOrientation( Orientation.VERTICAL );
-        BrowserView навигатор = new BrowserView( JFX, toolbar.getItems() );
+        BrowserView view = new BrowserView( JFX );
+        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
+    }
+
+    private TitledPane навигаторПоАрхивуПроектов( int spacing )
+    {
+        ProjectCatalogView view = new ProjectCatalogView( JFX );
+        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
+    }
+
+    private TitledPane навигаторПоАрхивуБиблиотек( int spacing )
+    {
+        LibraryCatalogView view = new LibraryCatalogView( JFX );
+        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
+    }
+
+    private TitledPane навигатор( Node навигатор, int spacing, 
+            List<AbstractJfxAction> actions, ReadOnlyStringProperty title )
+    {
         TitledPane панель = new TitledPane();
-        панель.textProperty().bind( навигатор.titleProperty() );
-        if( Boolean.valueOf( JFX.контекст.параметр( "BrowserView.toolbar", "true" ) ) )
+        панель.textProperty().bind( title );
+        String кп = навигатор.getClass().getSimpleName() + ".toolbar";
+        if( Boolean.valueOf( JFX.контекст.параметр( кп, "true" ) ) )
         {
+            ToolBar toolbar = new ToolBar();
+            toolbar.setOrientation( Orientation.VERTICAL );
+            for( AbstractJfxAction action : actions )
+                if( action != null )
+                    toolbar.getItems().add( action.makeButton() );
+                else
+                    toolbar.getItems().add( new Separator( Orientation.HORIZONTAL ) );
             Pane pane = new HBox( spacing );
             HBox.setHgrow( навигатор, Priority.ALWAYS );
             pane.getChildren().addAll( toolbar, навигатор );
             панель.setContent( pane );
         }
         else
+        {
             панель.setContent( навигатор );
-        return панель;
-    }
-
-    private TitledPane навигаторПоАрхивуПроектов( int spacing )
-    {
-        // навигатор по архиву проектов
-        ToolBar toolbar = new ToolBar();
-        toolbar.setOrientation( Orientation.VERTICAL );
-        ProjectCatalogView архиватор = new ProjectCatalogView( JFX, toolbar.getItems() );
-        TitledPane панель = new TitledPane();
-        панель.textProperty().bind( архиватор.titleProperty() );
-        if( Boolean.valueOf( JFX.контекст.параметр( "ProjectCatalogView.toolbar", "true" ) ) )
-        {
-            Pane pane = new HBox( spacing );
-            HBox.setHgrow( архиватор, Priority.ALWAYS );
-            pane.getChildren().addAll( toolbar, архиватор );
-            панель.setContent( pane );
         }
-        else
-            панель.setContent( архиватор );
-        return панель;
-    }
-
-    private TitledPane навигаторПоАрхивуБиблиотек( int spacing )
-    {
-        // навигатор по архиву библиотек
-        ToolBar toolbar = new ToolBar();
-        toolbar.setOrientation( Orientation.VERTICAL );
-        LibraryCatalogView архиватор = new LibraryCatalogView( JFX, toolbar.getItems() );
-        TitledPane панель = new TitledPane();
-        панель.textProperty().bind( архиватор.titleProperty() );
-        if( Boolean.valueOf( JFX.контекст.параметр( "LibraryCatalogView.toolbar", "true" ) ) )
-        {
-            Pane pane = new HBox( spacing );
-            HBox.setHgrow( архиватор, Priority.ALWAYS );
-            pane.getChildren().addAll( toolbar, архиватор );
-            панель.setContent( pane );
-        }
-        else
-            панель.setContent( архиватор );
         return панель;
     }
 

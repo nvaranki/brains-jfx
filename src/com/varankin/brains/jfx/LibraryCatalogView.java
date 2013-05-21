@@ -8,6 +8,7 @@ import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
+import java.util.Arrays;
 import java.util.logging.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -26,7 +27,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
 {
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
-    LibraryCatalogView( JavaFX jfx, ObservableList<Node> toolbar )
+    LibraryCatalogView( JavaFX jfx )
     {
         super( jfx, jfx.контекст.архив.библиотеки() );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
@@ -40,9 +41,6 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 return new SvgБиблиотека( библиотека, new Сборка( библиотека ) );
             }
         };
-        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
-        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
-        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
         УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
@@ -52,6 +50,10 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         ActionRemove actionRemove = new ActionRemove( действиеУдалить );
         ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg );
         ActionProperties actionProperties = new ActionProperties();
+
+        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
+        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
+        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
 
         actionNew       .disableProperty().bind( blocker_0_0 );
         actionPreview   .disableProperty().bind( blocker_1_1 );
@@ -72,15 +74,16 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 new MenuNode( actionProperties ) 
                 ) ) );
 
-        toolbar.addAll( 
-                actionNew.makeButton(), 
-                actionPreview.makeButton(), 
-                actionEdit.makeButton(), 
-                actionRemove.makeButton(),
-                new Separator( Orientation.HORIZONTAL ),
-                actionExport.makeButton(), 
-                new Separator( Orientation.HORIZONTAL ),
-                actionProperties.makeButton() );
+        actions.addAll( Arrays.asList( 
+                actionNew, 
+                actionPreview, 
+                actionEdit, 
+                actionRemove,
+                null,
+                actionExport, 
+                null,
+                actionProperties 
+                ) );
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
