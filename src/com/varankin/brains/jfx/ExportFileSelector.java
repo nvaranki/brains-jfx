@@ -3,14 +3,14 @@ package com.varankin.brains.jfx;
 import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- *
- * @author Николай
+ * Форма выбора файла для экспорта данных.
+ * 
+ * @author &copy; 2013 Николай Варанкин
  */
 class ExportFileSelector implements Provider<File>
 {
@@ -39,6 +39,7 @@ class ExportFileSelector implements Provider<File>
         if( выбор != null )
         {
             String путь = выбор.getAbsolutePath();
+            //TODO селектор.getFileFilter();
             LOGGER.log( Level.FINE, словарь.текст( "path", путь ) );
             File директория = выбор.getParentFile();
             if( директория != null )
