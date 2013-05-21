@@ -5,6 +5,7 @@ import com.varankin.util.Текст;
 import java.io.File;
 import java.util.logging.*;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 /**
@@ -26,10 +27,10 @@ class ExportFileSelector implements Provider<File>
         платформа = jfx.платформа;
         селектор = new FileChooser();
         селектор.setInitialDirectory( jfx.getCurrentLocalDirectory() );
-        селектор.getExtensionFilters().add( 
-            new FileChooser.ExtensionFilter( словарь.текст( "ext.svg" ), "*.svg" ) );
-//        селектор.getExtensionFilters().add( 
-//            new FileChooser.ExtensionFilter( словарь.текст( "ext.xml" ), "*.xml" ) );
+        ExtensionFilter фильтрSvg = new FileChooser.ExtensionFilter( словарь.текст( "ext.svg" ), "*.svg" );
+        //ExtensionFilter фильтрXml = new FileChooser.ExtensionFilter( словарь.текст( "ext.xml" ), "*.xml" );
+        селектор.getExtensionFilters().add( фильтрSvg );
+        //селектор.getExtensionFilters().add( фильтрXml );
     }
     
     @Override
