@@ -53,7 +53,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
 
         SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
-        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1 );
+        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1, Integer.MAX_VALUE );
 
         actionNew       .disableProperty().bind( blocker_0_0 );
         actionPreview   .disableProperty().bind( blocker_1_1 );

@@ -31,16 +31,6 @@ class SelectionDetector<T> extends BooleanBinding
         super.bind( property.getValue().getSelectedItems() );
     }
 
-    /**
-     * @param property объект мониторинга.
-     * @param direct   {@code true} для проверки вхождения в диапазон, {@code false} для проверки отсутствия в диапазоне.
-     * @param min      нижняя граница диапазона; верхняя граница диапазона подразумевается {@link Integer#MAX_VALUE).
-     */
-    SelectionDetector( ObjectProperty<? extends MultipleSelectionModel<T>> property, boolean direct, int min )
-    {
-        this( property, direct, min, Integer.MAX_VALUE );
-    }
-
     @Override
     protected boolean computeValue()
     {
