@@ -40,7 +40,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         SvgService<Проект> svg = new SvgService<Проект>() 
         {
             @Override
-            public Provider<String> toSvg( Проект проект )
+            public Provider<String> генератор( Проект проект )
             {
                 return new SvgПроект( проект, new Сборка( проект ) );
             }

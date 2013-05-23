@@ -99,7 +99,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
             view.setUserData( элемент );
             String название = элемент.название();
             контекст.getExecutorService().submit( new WebViewLoaderTask(
-                    service.toSvg( элемент ), view.getEngine(), название, словарь ) );
+                    service.генератор( элемент ), view.getEngine(), название, словарь ) );
             return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
         }
 

@@ -36,7 +36,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         SvgService<Библиотека> svg = new SvgService<Библиотека>() 
         {
             @Override
-            public Provider<String> toSvg( Библиотека библиотека )
+            public Provider<String> генератор( Библиотека библиотека )
             {
                 return new SvgБиблиотека( библиотека, new Сборка( библиотека ) );
             }
