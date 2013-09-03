@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
 import com.varankin.util.Текст;
 import java.util.*;

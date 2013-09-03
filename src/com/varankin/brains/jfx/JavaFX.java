@@ -1,5 +1,10 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.appl.НаборФабрик;
+import com.varankin.brains.artificial.СтандартныйПроцессорРасчета;
+import com.varankin.brains.artificial.СтандартныйСенсор;
+import com.varankin.brains.db.loader.СенсорноеПолеImpl;
+import com.varankin.brains.db.loader.ФункцияImpl;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
@@ -33,6 +38,7 @@ final class JavaFX
     //public final Позиционер позиционер;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
+    private final НаборФабрик СТРОИТЕЛЬ;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -48,6 +54,8 @@ final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
+        СТРОИТЕЛЬ = new НаборФабрик( СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
+                ФункцияImpl.class, СтандартныйПроцессорРасчета.class );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -121,6 +129,11 @@ final class JavaFX
     File getCurrentLocalDirectory()
     {
         return new File( System.getProperty( "user.dir" ) );
+    }
+
+    НаборФабрик строитель()
+    {
+        return СТРОИТЕЛЬ;
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">

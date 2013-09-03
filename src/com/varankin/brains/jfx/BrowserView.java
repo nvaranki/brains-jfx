@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.Мыслитель;
-import com.varankin.brains.appl.Элемент;
+import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.MonitoredSet;
 import com.varankin.util.Текст;
