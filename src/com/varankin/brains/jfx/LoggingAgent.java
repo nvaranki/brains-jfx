@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.biz.appl.LoggingHandler;
+import com.varankin.util.LoggingHandler;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.scene.control.TextInputControl;

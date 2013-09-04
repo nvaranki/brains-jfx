@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.biz.appl.LoggingHandler;
+import com.varankin.util.LoggingHandler;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
 import java.util.List;
