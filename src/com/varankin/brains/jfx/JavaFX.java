@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.НаборФабрик;
+import com.varankin.brains.appl.ФабрикаЭлементов;
+import com.varankin.brains.artificial.ПассивныйРазветвитель;
 import com.varankin.brains.artificial.СтандартныйПроцессорРасчета;
 import com.varankin.brains.artificial.СтандартныйСенсор;
 import com.varankin.brains.db.loader.СенсорноеПолеImpl;
-import com.varankin.brains.db.loader.ФункцияImpl;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
@@ -21,9 +22,6 @@ import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -38,7 +36,7 @@ final class JavaFX
     //public final Позиционер позиционер;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
-    private final НаборФабрик СТРОИТЕЛЬ;
+    private final ФабрикаЭлементов СТРОИТЕЛЬ;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -55,7 +53,7 @@ final class JavaFX
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
         СТРОИТЕЛЬ = new НаборФабрик( СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
-                ФункцияImpl.class, СтандартныйПроцессорРасчета.class );
+                ПассивныйРазветвитель.class, СтандартныйПроцессорРасчета.class );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -131,7 +129,7 @@ final class JavaFX
         return new File( System.getProperty( "user.dir" ) );
     }
 
-    НаборФабрик строитель()
+    ФабрикаЭлементов строитель()
     {
         return СТРОИТЕЛЬ;
     }
