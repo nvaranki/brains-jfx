@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.Мыслитель;
+import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.MonitoredSet;
@@ -40,7 +41,7 @@ class BrowserView extends TreeView<Элемент>
         СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
-        КОНТЕКСТ.мыслители().addPropertyChangeListener( 
+        КОНТЕКСТ.проекты().addPropertyChangeListener( 
                     new PropertyChangeListenerImpl() );
 
         setCellFactory( СТРОИТЕЛЬ.фабрика() );
@@ -181,8 +182,8 @@ class BrowserView extends TreeView<Элемент>
                 ObservableList<TreeItem<Элемент>> children
                         = BrowserView.this.getRoot().getChildren();
                 children.clear();
-                for( Мыслитель мыслитель : КОНТЕКСТ.мыслители() )
-                    children.add( СТРОИТЕЛЬ.узел( мыслитель ) );
+                for( Проект проект : КОНТЕКСТ.проекты() )
+                    children.add( СТРОИТЕЛЬ.узел( проект ) );
             }
         };
 

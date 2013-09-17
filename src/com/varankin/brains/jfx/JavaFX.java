@@ -5,7 +5,7 @@ import com.varankin.brains.appl.ФабрикаЭлементов;
 import com.varankin.brains.artificial.ПассивныйРазветвитель;
 import com.varankin.brains.artificial.СтандартныйПроцессорРасчета;
 import com.varankin.brains.artificial.СтандартныйСенсор;
-import com.varankin.brains.db.loader.СенсорноеПолеImpl;
+import com.varankin.brains.artificial.СенсорноеПолеImpl;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
@@ -52,7 +52,7 @@ final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
-        СТРОИТЕЛЬ = new НаборФабрик( СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
+        СТРОИТЕЛЬ = new НаборФабрик( контекст, СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
                 ПассивныйРазветвитель.class, СтандартныйПроцессорРасчета.class );
     }
     
