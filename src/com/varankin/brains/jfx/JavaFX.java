@@ -39,7 +39,6 @@ final class JavaFX
     //public final Позиционер позиционер;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
-    private final ФабрикаЭлементов СТРОИТЕЛЬ;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -55,25 +54,6 @@ final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
-        Фабрика<Void,Set<?>> фн = new Фабрика<Void,Set<?>>() {
-
-            @Override
-            public Set<?> создать( Void спецификация )
-            {
-                return new MonitoredSet( new LinkedHashSet() );
-            }
-        };
-        Фабрика<Void,List<?>> фс = new Фабрика<Void,List<?>>() {
-
-            @Override
-            public List<?> создать( Void спецификация )
-            {
-                return new MonitoredList( new ArrayList() );
-            }
-        };
-        СТРОИТЕЛЬ = new ФабрикаЭлементовImpl( контекст, фн, фс, 
-                СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
-                ПассивныйРазветвитель.class, СтандартныйПроцессорРасчета.class );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -147,11 +127,6 @@ final class JavaFX
     File getCurrentLocalDirectory()
     {
         return new File( System.getProperty( "user.dir" ) );
-    }
-
-    ФабрикаЭлементов строитель()
-    {
-        return СТРОИТЕЛЬ;
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">
