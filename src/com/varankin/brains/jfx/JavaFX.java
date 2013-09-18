@@ -1,13 +1,16 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.appl.НаборФабрик;
+import com.varankin.brains.appl.ФабрикаЭлементовImpl;
 import com.varankin.brains.appl.ФабрикаЭлементов;
+import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.artificial.ПассивныйРазветвитель;
 import com.varankin.brains.artificial.СтандартныйПроцессорРасчета;
 import com.varankin.brains.artificial.СтандартныйСенсор;
 import com.varankin.brains.artificial.СенсорноеПолеImpl;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.Контекст;
+import com.varankin.util.MonitoredList;
+import com.varankin.util.MonitoredSet;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
 import java.io.File;
@@ -52,7 +55,24 @@ final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
-        СТРОИТЕЛЬ = new НаборФабрик( контекст, СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
+        Фабрика<Void,Set<?>> фн = new Фабрика<Void,Set<?>>() {
+
+            @Override
+            public Set<?> создать( Void спецификация )
+            {
+                return new MonitoredSet( new LinkedHashSet() );
+            }
+        };
+        Фабрика<Void,List<?>> фс = new Фабрика<Void,List<?>>() {
+
+            @Override
+            public List<?> создать( Void спецификация )
+            {
+                return new MonitoredList( new ArrayList() );
+            }
+        };
+        СТРОИТЕЛЬ = new ФабрикаЭлементовImpl( контекст, фн, фс, 
+                СенсорноеПолеImpl.class, СтандартныйСенсор.class, 
                 ПассивныйРазветвитель.class, СтандартныйПроцессорРасчета.class );
     }
     
