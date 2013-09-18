@@ -6,6 +6,7 @@ import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
+import com.varankin.brains.db.factory.ФабрикаБазовыхЭлементов;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
@@ -45,7 +46,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
-        ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст, jfx.строитель() );
+        ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст, ФабрикаБазовыхЭлементов.class );
         УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         

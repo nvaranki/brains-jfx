@@ -1,10 +1,14 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.Мыслитель;
+import com.varankin.brains.artificial.КогнитивнаяФункция;
 import com.varankin.brains.artificial.Проект;
+import com.varankin.brains.artificial.ПроцессорРасчета;
+import com.varankin.brains.artificial.СенсорноеПоле;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.MonitoredSet;
+import com.varankin.util.PropertyHolder;
 import com.varankin.util.Текст;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -145,7 +149,7 @@ class BrowserView extends TreeView<Элемент>
         @Override
         public void propertyChange( PropertyChangeEvent evt )
         {
-            Мыслитель мыслитель;
+            Проект мыслитель;
             
             switch( evt.getPropertyName() )
             {
@@ -154,18 +158,24 @@ class BrowserView extends TreeView<Элемент>
                     break;
 
                 case Мыслитель.PROPERTY_ADDED:
-                    мыслитель = (Мыслитель)evt.getNewValue();
+                    мыслитель = (Проект)evt.getNewValue();
                     Platform.runLater( new OnPropertyAdded( мыслитель ) );
-                    мыслитель.поля().addPropertyChangeListener( 
+                    Set<СенсорноеПоле> поля = мыслитель.поля(); 
+                    if( поля instanceof PropertyHolder )
+                        ((PropertyHolder)поля).addPropertyChangeListener( 
                             new PropertyChangeListenerImpl2( мыслитель, Элемент.ВСЕ_ПОЛЯ ) );
-                    мыслитель.функции().addPropertyChangeListener( 
+                    Set<КогнитивнаяФункция> функции = мыслитель.функции(); 
+                    if( функции instanceof PropertyHolder )
+                        ((PropertyHolder)функции).addPropertyChangeListener( 
                             new PropertyChangeListenerImpl2( мыслитель, Элемент.ВСЕ_ФУНКЦИИ ) );
-                    мыслитель.процессоры().addPropertyChangeListener( 
+                    Set<ПроцессорРасчета> процессоры = мыслитель.процессоры(); 
+                    if( процессоры instanceof PropertyHolder )
+                        ((PropertyHolder)процессоры).addPropertyChangeListener( 
                             new PropertyChangeListenerImpl2( мыслитель, Элемент.ВСЕ_ПРОЦЕССОРЫ ) );
                     break;
 
                 case Мыслитель.PROPERTY_REMOVED:
-                    мыслитель = (Мыслитель)evt.getOldValue();
+                    мыслитель = (Проект)evt.getOldValue();
                     Platform.runLater( new OnPropertyRemoved( мыслитель ) );
                     break;
 
@@ -189,9 +199,9 @@ class BrowserView extends TreeView<Элемент>
 
         private class OnPropertyAdded implements Runnable
         {
-            private final Мыслитель УЗЕЛ;
+            private final Проект УЗЕЛ;
 
-            OnPropertyAdded( Мыслитель узел )
+            OnPropertyAdded( Проект узел )
             {
                 УЗЕЛ = узел;
             }
@@ -207,9 +217,9 @@ class BrowserView extends TreeView<Элемент>
 
         private class OnPropertyRemoved implements Runnable
         {
-            private final Мыслитель УЗЕЛ;
+            private final Проект УЗЕЛ;
 
-            OnPropertyRemoved( Мыслитель узел )
+            OnPropertyRemoved( Проект узел )
             {
                 УЗЕЛ = узел;
             }
@@ -227,12 +237,12 @@ class BrowserView extends TreeView<Элемент>
         
     private class PropertyChangeListenerImpl2 implements PropertyChangeListener
     {
-        private final Мыслитель МЫСЛИТЕЛЬ;
+        private final Проект МЫСЛИТЕЛЬ;
         private final Элемент ЭЛЕМЕНТ;
         private TreeItem<Элемент> НАЧАЛО;
         private TreeItem<Элемент> СПИСОК;
 
-        private PropertyChangeListenerImpl2( Мыслитель мыслитель, Элемент элемент )
+        private PropertyChangeListenerImpl2( Проект мыслитель, Элемент элемент )
         {
             МЫСЛИТЕЛЬ = мыслитель;
             ЭЛЕМЕНТ = элемент;
