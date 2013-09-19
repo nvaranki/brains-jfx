@@ -2,7 +2,12 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
+import com.varankin.brains.artificial.structure.Структурный;
+import com.varankin.util.MonitoredSet;
+import com.varankin.util.PropertyHolder;
 import com.varankin.util.Текст;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.Platform;
@@ -35,9 +40,19 @@ class BrowserNodeBuilder implements BrainsListener
 
     TreeItem<Элемент> узел( Элемент элемент )
     {
-        return new Узел( элемент, 
-                фабрикаНазваний.метка( (Object)элемент ), 
-                фабрикаКартинок.getIcon( элемент ) );
+        Узел узел = new Узел( элемент, 
+                     фабрикаНазваний.метка( (Object)элемент ), 
+                     фабрикаКартинок.getIcon( элемент ) );
+        if( элемент instanceof Структурный )
+        {
+            Collection<Элемент> элементы = ((Структурный)элемент).элементы();
+            if( элементы instanceof PropertyHolder )
+                ((PropertyHolder)элементы).addPropertyChangeListener( 
+                    new PropertyChangeListenerImpl( узел, this ) );
+            for( Элемент э : элементы )
+                узел.getChildren().add( узел( э ) );
+        }
+        return узел;
     }
 
     /**
@@ -223,6 +238,81 @@ class BrowserNodeBuilder implements BrainsListener
         
     }
     
+    private static class PropertyChangeListenerImpl implements PropertyChangeListener
+    {
+        private final Узел УЗЕЛ;
+        private final BrowserNodeBuilder СТРОИТЕЛЬ;
+
+        PropertyChangeListenerImpl( Узел узел, BrowserNodeBuilder строитель )
+        {
+            УЗЕЛ = узел;
+            СТРОИТЕЛЬ = строитель;
+        }
+
+        @Override
+        public void propertyChange( PropertyChangeEvent evt )
+        {
+            Элемент элемент;
+            
+            switch( evt.getPropertyName() )
+            {
+                case MonitoredSet.PROPERTY_ADDED:
+                    элемент = (Элемент)evt.getNewValue();
+                    Platform.runLater( new OnPropertyAdded( элемент ) );
+                    break;
+                
+                case MonitoredSet.PROPERTY_REMOVED:
+                    элемент = (Элемент)evt.getOldValue();
+                    Platform.runLater( new OnPropertyRemoved( элемент ) );
+                    break;
+                
+                default:
+                    LOGGER.log( Level.SEVERE, "Unsupported change to node received: {0}", evt.getPropertyName() );
+            }            
+        }
+
+        private class OnPropertyAdded implements Runnable
+        {
+            private final Элемент ЭЛЕМЕНТ;
+
+            OnPropertyAdded( Элемент элемент )
+            {
+                ЭЛЕМЕНТ = элемент;
+            }
+
+            @Override
+            public void run()
+            {
+                УЗЕЛ.getChildren().add( СТРОИТЕЛЬ.узел( ЭЛЕМЕНТ ) );
+            }
+        };
+
+        private class OnPropertyRemoved implements Runnable
+        {
+            private final Элемент ЭЛЕМЕНТ;
+
+            OnPropertyRemoved( Элемент элемент )
+            {
+                ЭЛЕМЕНТ = элемент;
+            }
+
+            @Override
+            public void run()
+            {
+                TreeItem<Элемент> удаляемый = null;
+                for( TreeItem<Элемент> узел : УЗЕЛ.getChildren() )
+                    if( ЭЛЕМЕНТ.equals( узел.getValue() ) )
+                    {
+                        удаляемый = узел;
+                        break;
+                    }
+                if( удаляемый != null )
+                    УЗЕЛ.getChildren().remove( удаляемый );
+            }
+        };
+
+    }
+
     private class Appender implements Runnable
     {
         private final Элемент элемент;

@@ -1,8 +1,11 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.AbstracResourceLocator;
-import com.varankin.brains.artificial.*;
+import com.varankin.brains.db.factory.Базовый;
+import com.varankin.brains.db.Элемент;
 import java.net.URL;
+import java.util.*;
+import java.util.logging.*;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,6 +17,8 @@ import javafx.scene.image.ImageView;
  */
 public class BrowserRenderer 
 {
+    private static final Logger LOGGER = Logger.getLogger( BrowserRenderer.class.getName() );
+    
     private final IconLocator локатор;
     
     BrowserRenderer()
@@ -44,29 +49,52 @@ public class BrowserRenderer
         @Override
         protected String name( Object id )
         {
-            String название;
-            if( id instanceof Разветвитель )
-                название = "splitter.png";
-            else if( id instanceof Приемник )
-                название = "receiver2.png";
-            else if( id instanceof Источник )
-                название = "transmitter2.png";
-            else if( id instanceof СенсорноеПоле )
-                название = "field2.png";
-            else if( id instanceof Сенсор )
-                название = "sensor.png";
-            else if( id instanceof КогнитивнаяФункция )
-                название = "function.png";
-            else if( id instanceof ПроцессорРасчета )
-                название = "processor2.png";
-            else if( id instanceof Проект )
-                название = "load.png";
-            //TODO and so on
-            else
-                название = null;
-            return название;
+            Class класс = null;
+            if( id instanceof Базовый )
+            {
+                Элемент шаблон = ((Базовый)id).шаблон();
+                if( шаблон != null )
+                    класс = шаблон.getClass();
+            }
+            else if( id != null )
+            {
+                класс = id.getClass();
+            }
+            LOGGER.log( Level.FINE, "Icon search for class {0}.", класс );
+            if( класс != null )
+                for( Map.Entry<Class,String> e : КАТАЛОГ.entrySet() )
+                    if( e.getKey().isAssignableFrom( класс ) )
+                        return e.getValue();
+            return null;
         }
         
+    }
+    
+    private static final Map<Class,String> КАТАЛОГ = new HashMap<>();
+    static
+    {
+        // Иконки базы данных
+        КАТАЛОГ.put( com.varankin.brains.db.Проект.class, "load.png" );
+        КАТАЛОГ.put( com.varankin.brains.db.Модуль.class, "module.png" ); //TODO
+        КАТАЛОГ.put( com.varankin.brains.db.Расчет.class, "function.png" );
+        КАТАЛОГ.put( com.varankin.brains.db.Процессор.class, "processor2.png" );
+        КАТАЛОГ.put( com.varankin.brains.db.Поле.class, "field2.png" );
+        КАТАЛОГ.put( com.varankin.brains.db.Сигнал.class, "signal.png" ); //TODO
+        КАТАЛОГ.put( com.varankin.brains.db.Точка.class, "point.png" ); //TODO
+        КАТАЛОГ.put( com.varankin.brains.db.Контакт.class, "pin.png" ); //TODO
+        КАТАЛОГ.put( com.varankin.brains.db.Соединение.class, "connector.png" ); //TODO
+        // Иконки элементов мыслительной структуры        
+        КАТАЛОГ.put( com.varankin.brains.artificial.Аргумент.class, "point.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Ветвь.class, "point.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Значение.class, "point.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Источник.class, "transmitter2.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Приемник.class, "receiver2.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Проект.class, "load.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.ПроцессорРасчета.class, "processor2.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Разветвитель.class, "splitter.png" ); //TODO
+        КАТАЛОГ.put( com.varankin.brains.artificial.Сенсор.class, "sensor.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.СенсорноеПоле.class, "field2.png" );
+        КАТАЛОГ.put( com.varankin.brains.artificial.Сигнал.class, "signal.png" ); //TODO
     }
 
 }
