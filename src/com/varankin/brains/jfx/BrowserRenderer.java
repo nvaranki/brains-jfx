@@ -60,7 +60,7 @@ public class BrowserRenderer
                 название = "function.png";
             else if( id instanceof ПроцессорРасчета )
                 название = "processor2.png";
-            else if( id instanceof Мыслитель )
+            else if( id instanceof Проект )
                 название = "load.png";
             //TODO and so on
             else
