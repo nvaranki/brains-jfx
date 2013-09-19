@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.AbstracResourceLocator;
-import com.varankin.brains.appl.Мыслитель;
 import com.varankin.brains.artificial.*;
 import java.net.URL;
 import javafx.scene.Node;
