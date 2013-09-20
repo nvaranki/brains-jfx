@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.artificial.factory.structured.Структурный;
+import com.varankin.brains.appl.ВсеПроекты;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
@@ -31,12 +31,13 @@ class BrowserView extends TreeView<Элемент>
         JFX = jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
         КОНТЕКСТ = jfx.контекст;
-        СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
+        СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика, 
+                new ВсеПроекты( КОНТЕКСТ ) );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
 
         setCellFactory( СТРОИТЕЛЬ.фабрика() );
-        setRoot( СТРОИТЕЛЬ.узел( new ВсеПроекты() ) );
+        setRoot( СТРОИТЕЛЬ.узел() );
         setShowRoot( true );
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( "frame.browser.width.min", "150" ) );
@@ -71,23 +72,6 @@ class BrowserView extends TreeView<Элемент>
     
     //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class ВсеПроекты implements Структурный, Элемент
-    {
-
-        @Override
-        public Структурный вхождение()
-        {
-            return null;
-        }
-
-        @Override
-        public Collection<Элемент> элементы()
-        {
-            return (Collection)КОНТЕКСТ.проекты();
-        }
-        
-    }
-    
     private class ActionStart extends AbstractContextJfxAction<JavaFX>
     {
         

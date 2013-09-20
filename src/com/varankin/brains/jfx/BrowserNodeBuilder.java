@@ -26,16 +26,23 @@ class BrowserNodeBuilder implements BrainsListener
     static private final Logger LOGGER = Logger.getLogger( BrowserNodeBuilder.class.getName() );
 
     private final TreeView<Элемент> модель;
+    private final Элемент элемент;
     private final Текст словарь;
     private final ФабрикаНазваний фабрикаНазваний;
     private final BrowserRenderer фабрикаКартинок;
 
-    BrowserNodeBuilder( TreeView<Элемент> модель, Map<Locale.Category,Locale> специфика )
+    BrowserNodeBuilder( TreeView<Элемент> модель, Map<Locale.Category,Locale> специфика, Элемент элемент )
     {
         this.модель = модель;
+        this.элемент = элемент;
         this.словарь = Текст.ПАКЕТЫ.словарь( BrowserNodeBuilder.class, специфика );
         this.фабрикаНазваний = new ФабрикаНазваний( специфика );
         this.фабрикаКартинок = new BrowserRenderer();
+    }
+
+    TreeItem<Элемент> узел()
+    {
+        return узел( элемент );
     }
 
     TreeItem<Элемент> узел( Элемент элемент )
