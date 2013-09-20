@@ -2,7 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
-import com.varankin.brains.artificial.structure.Структурный;
+import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.util.MonitoredSet;
 import com.varankin.util.PropertyHolder;
 import com.varankin.util.Текст;

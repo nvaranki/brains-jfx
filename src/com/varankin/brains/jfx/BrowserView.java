@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.artificial.structure.Структурный;
+import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;

@@ -1,12 +1,12 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.appl.ФабрикаЭлементовImpl;
-import com.varankin.brains.appl.ФабрикаЭлементов;
+import com.varankin.brains.artificial.factory.ФабрикаЭлементовImpl;
+import com.varankin.brains.artificial.factory.ФабрикаЭлементов;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.artificial.ПассивныйРазветвитель;
-import com.varankin.brains.artificial.СтандартныйПроцессорРасчета;
-import com.varankin.brains.artificial.СтандартныйСенсор;
-import com.varankin.brains.artificial.СенсорноеПолеImpl;
+import com.varankin.brains.artificial.factory.ПассивныйРазветвитель;
+import com.varankin.brains.artificial.factory.СтандартныйПроцессорРасчета;
+import com.varankin.brains.artificial.factory.СтандартныйСенсор;
+import com.varankin.brains.artificial.factory.СенсорноеПолеImpl;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.Контекст;
 import com.varankin.util.MonitoredList;
