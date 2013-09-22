@@ -49,15 +49,20 @@ class BrowserView extends TreeView<Элемент>
         ActionStart actionStart = new ActionStart();
         ActionPause actionPause = new ActionPause();
         ActionStop actionStop = new ActionStop();
+        ActionRemove actionRemove = new ActionRemove();//( действиеУдалить );
         ActionProperties actionProperties = new ActionProperties();
 
         actionStart     .disableProperty().bind( blocker_1_N );
         actionPause     .disableProperty().bind( blocker_1_N );
         actionStop      .disableProperty().bind( blocker_1_N );
+        actionRemove    .disableProperty().bind( blocker_1_N );
         actionProperties.disableProperty().bind( blocker_1_1 );
         
         actions = new ArrayList<>();
-        actions.addAll( Arrays.asList( actionStart, actionPause, actionStop, null, actionProperties ) );
+        actions.addAll( Arrays.asList( 
+                actionStart, actionPause, actionStop, null, 
+                actionRemove, null, 
+                actionProperties ) );
     }
     
     final ReadOnlyStringProperty titleProperty()
@@ -108,6 +113,21 @@ class BrowserView extends TreeView<Элемент>
         ActionPause()
         {
             super( JFX, JFX.словарь( ActionPause.class ) );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        }
+    }
+    
+    private class ActionRemove extends AbstractContextJfxAction<JavaFX>
+    {
+        
+        ActionRemove()
+        {
+            super( JFX, JFX.словарь( ActionRemove.class ) );
         }
         
         @Override

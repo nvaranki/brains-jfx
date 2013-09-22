@@ -4,6 +4,7 @@ import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.artificial.factory.ФабрикаЭлементов;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.db.factory.ФабрикаБазовыхЭлементов;
