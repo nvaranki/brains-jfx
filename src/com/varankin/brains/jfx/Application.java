@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.Контекст;
+import java.util.Arrays;
 import java.util.List;
 import javafx.stage.Stage;
 
@@ -35,7 +36,7 @@ public class Application extends javafx.application.Application
     public void stop() throws Exception
     {
         jfx.стоп();
-        контекст.стоп();
+        контекст.стоп( "main", "JavaFX-Launcher", "JavaFX Application Thread" );
     }
     
     /**
