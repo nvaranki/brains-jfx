@@ -1,6 +1,13 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ВсеПроекты;
+import com.varankin.brains.appl.ВыгрузитьПроект;
+import com.varankin.brains.appl.ДействияПоПорядку;
+import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
+import com.varankin.brains.appl.УправлениеПроцессом;
+import com.varankin.brains.artificial.async.Процесс;
+import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
@@ -77,64 +84,101 @@ class BrowserView extends TreeView<Элемент>
     
     //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class ActionStart extends AbstractContextJfxAction<JavaFX>
+    private abstract class ActionProcessControl<T extends Процесс> extends AbstractContextJfxAction<JavaFX>
     {
+        private final Действие<List<T>> ДЕЙСТВИЕ;
         
+        ActionProcessControl( Текст словарь, Действие... действия )
+        {
+            super( JFX, словарь );
+            ДЕЙСТВИЕ = new ДействияПоПорядку( JFX.контекст, Приоритет.КОНТЕКСТ, действия );
+        }
+        
+        @Override
+        public void handle( ActionEvent _ )
+        {
+            new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор() ).execute( контекст );
+        }
+        
+        private List<T> ceлектор()
+        {
+            List<T> список = new ArrayList<>();
+            for( TreeItem<Элемент> ti : getSelectionModel().getSelectedItems() )
+            {
+                T элемент = convert( ti.getValue() );
+                if( элемент != null )
+                    список.add( элемент );
+            }
+            return список;
+        }
+        
+        abstract T convert( Элемент элемент ); //TODO Фильтр
+        
+    }
+    
+    private class ActionStart extends ActionProcessControl<Процесс>
+    {
         ActionStart()
         {
-            super( JFX, JFX.словарь( ActionStart.class ) );
+            super( JFX.словарь( ActionStart.class ), 
+                new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.СТАРТ ) );
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        Процесс convert( Элемент элемент )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            return элемент instanceof Процесс ? (Процесс)элемент : null;
         }
+        
     }
     
-    private class ActionStop extends AbstractContextJfxAction<JavaFX>
+    private class ActionStop extends ActionProcessControl<Процесс>
     {
-        
         ActionStop()
         {
-            super( JFX, JFX.словарь( ActionStop.class ) );
+            super( JFX.словарь( ActionStop.class ), 
+                new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.СТОП ) );
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        Процесс convert( Элемент элемент )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            return элемент instanceof Процесс ? (Процесс)элемент : null;
         }
+        
     }
     
-    private class ActionPause extends AbstractContextJfxAction<JavaFX>
+    private class ActionPause extends ActionProcessControl<Процесс>
     {
-        
         ActionPause()
         {
-            super( JFX, JFX.словарь( ActionPause.class ) );
+            super( JFX.словарь( ActionPause.class ), 
+                new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.ПАУЗА ) );
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        Процесс convert( Элемент элемент )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            return элемент instanceof Процесс ? (Процесс)элемент : null;
         }
+        
     }
     
-    private class ActionRemove extends AbstractContextJfxAction<JavaFX>
+    private class ActionRemove extends ActionProcessControl<Проект>
     {
-        
         ActionRemove()
         {
-            super( JFX, JFX.словарь( ActionRemove.class ) );
+            super( JFX.словарь( ActionRemove.class ),
+                new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.СТОП ),
+                new ВыгрузитьПроект( JFX.контекст ) );
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        Проект convert( Элемент элемент )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            return элемент instanceof Проект ? (Проект)элемент : null;
         }
+        
     }
     
     private class ActionProperties extends AbstractContextJfxAction<JavaFX>

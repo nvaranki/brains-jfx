@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
+import com.varankin.brains.appl.ДействияПоПорядку;
+import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
-import com.varankin.brains.artificial.factory.ФабрикаЭлементов;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.db.factory.ФабрикаБазовыхЭлементов;
@@ -14,13 +15,9 @@ import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.*;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
@@ -47,7 +44,8 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
-        ЗагрузитьАрхивныйПроект действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст, ФабрикаБазовыхЭлементов.class );
+        Действие<Проект> действиеЗагрузить = 
+            new ЗагрузитьАрхивныйПроект( jfx.контекст, ФабрикаБазовыхЭлементов.class );
         УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
@@ -63,7 +61,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
         SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1, Integer.MAX_VALUE );
 
-        actionLoad      .disableProperty().bind( blocker_1_1 );
+        actionLoad      .disableProperty().bind( blocker_1_N );
         actionNew       .disableProperty().bind( blocker_0_0 );
         actionPreview   .disableProperty().bind( blocker_1_1 );
         actionEdit      .disableProperty().bind( blocker_1_1 );
@@ -135,12 +133,12 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     
     private class ActionLoad extends AbstractContextJfxAction<JavaFX>
     {
-        Действие<Collection<Проект>> ДЕЙСТВИЕ;
+        Действие<Iterable<? extends Проект>> ДЕЙСТВИЕ;
         
-        ActionLoad( Действие<Collection<Проект>> действие )
+        ActionLoad( Действие<Проект> действие )
         {
             super( jfx, jfx.словарь( ActionLoad.class ) );
-            ДЕЙСТВИЕ = действие;
+            ДЕЙСТВИЕ = new ДействияПоПорядку<>( jfx.контекст, Приоритет.КОНТЕКСТ, действие );
         }
         
         @Override

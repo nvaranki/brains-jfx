@@ -50,15 +50,10 @@ class BrowserNodeBuilder implements BrainsListener
         Узел узел = new Узел( элемент, 
                      фабрикаНазваний.метка( (Object)элемент ), 
                      фабрикаКартинок.getIcon( элемент ) );
+        узел.addChildMonitor( this );
         if( элемент instanceof Структурный )
-        {
-            Collection<Элемент> элементы = ((Структурный)элемент).элементы();
-            if( элементы instanceof PropertyHolder )
-                ((PropertyHolder)элементы).addPropertyChangeListener( 
-                    new PropertyChangeListenerImpl( узел, this ) );
-            for( Элемент э : элементы )
+            for( Элемент э : ((Структурный)элемент).элементы() )
                 узел.getChildren().add( узел( э ) );
-        }
         return узел;
     }
 
@@ -217,6 +212,7 @@ class BrowserNodeBuilder implements BrainsListener
     static private class Узел extends TreeItem<Элемент>
     {
         private final String метка;
+        private PropertyChangeListener монитор;
         
         Узел( Элемент элемент, String метка, Node image )
         {
@@ -224,10 +220,39 @@ class BrowserNodeBuilder implements BrainsListener
             this.метка = метка;
         }
         
+        void addChildMonitor( BrowserNodeBuilder строитель )
+        {
+            Элемент элемент = getValue();
+            if( элемент instanceof Структурный )
+            {
+                Collection<Элемент> элементы = ((Структурный)элемент).элементы();
+                if( элементы instanceof PropertyHolder )
+                {
+                    монитор = new PropertyChangeListenerImpl( this, строитель );
+                    ((PropertyHolder)элементы).addPropertyChangeListener( монитор );
+                }
+            }
+        }
+        
+        void removeChildMonitor()
+        {
+            Элемент элемент = getValue();
+            if( монитор != null )
+                if( элемент instanceof Структурный )
+                {
+                    Collection<Элемент> элементы = ((Структурный)элемент).элементы();
+                    if( элементы instanceof PropertyHolder )
+                    {
+                        ((PropertyHolder)элементы).removePropertyChangeListener( монитор );
+                        монитор = null;
+                    }
+                }
+        }
+        
         @Override
         public boolean equals( Object o )
         {
-            return o instanceof Узел && getValue().equals( (Узел)o );
+            return o instanceof Узел && getValue().equals( ((Узел)o).getValue() );
         }
 
         @Override
@@ -314,10 +339,25 @@ class BrowserNodeBuilder implements BrainsListener
                         break;
                     }
                 if( удаляемый != null )
+                {
+                    removeTreeItemChildren( удаляемый );
                     УЗЕЛ.getChildren().remove( удаляемый );
+                }
             }
         };
 
+    }
+    
+    private static <T> void removeTreeItemChildren( TreeItem<T> ti )
+    {
+        if( !ti.isLeaf() )
+        {
+            for( TreeItem<T> c : ti.getChildren() )
+                removeTreeItemChildren( c );
+            ti.getChildren().clear();
+            if( ti instanceof Узел )
+                ((Узел)ti).removeChildMonitor();
+        }
     }
 
     private class Appender implements Runnable
