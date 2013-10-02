@@ -38,13 +38,12 @@ class BrowserView extends TreeView<Элемент>
         JFX = jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
         КОНТЕКСТ = jfx.контекст;
-        СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика, 
-                new ВсеПроекты( КОНТЕКСТ ) );
+        СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
 
         setCellFactory( СТРОИТЕЛЬ.фабрика() );
-        setRoot( СТРОИТЕЛЬ.узел() );
+        setRoot( СТРОИТЕЛЬ.узел( new ВсеПроекты( КОНТЕКСТ ) ) );
         setShowRoot( true );
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( "frame.browser.width.min", "150" ) );
