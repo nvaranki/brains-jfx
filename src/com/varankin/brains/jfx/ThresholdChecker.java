@@ -1,40 +1,38 @@
 package com.varankin.brains.jfx;
 
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.control.MultipleSelectionModel;
+import javafx.collections.ObservableList;
 
 /**
  * Детектор числа выбранных элементов.
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class SelectionDetector<T> extends BooleanBinding 
+class ThresholdChecker<E> extends BooleanBinding 
 {
     private final int LOW;
     private final int HIGH;
     private final boolean DIRECT;
-    private final ObjectProperty<? extends MultipleSelectionModel<T>> PROPERTY;
+    private final ObservableList<E> LIST;
 
     /**
-     * @param property объект мониторинга.
+     * @param list     объект мониторинга.
      * @param direct   {@code true} для проверки вхождения в диапазон, {@code false} для проверки отсутствия в диапазоне.
      * @param low      нижняя граница диапазона.
      * @param high     верхняя граница диапазона.
      */
-    SelectionDetector( ObjectProperty<? extends MultipleSelectionModel<T>> property, boolean direct, int low, int high )
+    ThresholdChecker( ObservableList<E> list, boolean direct, int low, int high )
     {
-        PROPERTY = property;
         LOW = low;
         HIGH = high;
         DIRECT = direct;
-        super.bind( property.getValue().getSelectedItems() );
+        super.bind( LIST = list );
     }
 
     @Override
     protected boolean computeValue()
     {
-        int size = PROPERTY.getValue().getSelectedItems().size();
+        int size = LIST.size();
         boolean value = LOW <= size && size <= HIGH;
         return DIRECT ? value : !value;
     }

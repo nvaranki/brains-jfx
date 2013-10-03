@@ -10,11 +10,14 @@ import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
+import com.varankin.filter.Фильтр;
 import com.varankin.util.Текст;
 import java.util.*;
 import java.util.logging.*;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 
@@ -48,21 +51,34 @@ class BrowserView extends TreeView<Элемент>
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( "frame.browser.width.min", "150" ) );
         setMinWidth( w );
+        getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
 
-        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
-        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1, Integer.MAX_VALUE );
+        ObservableList<TreeItem<Элемент>> selection = selectionModelProperty().getValue().getSelectedItems();
+        BooleanBinding процесс_1_N = blocker( selection, Процесс.class, 1, Integer.MAX_VALUE );
+        BooleanBinding проект_1_N  = blocker( selection, Проект.class,  1, Integer.MAX_VALUE );
+        BooleanBinding элемент_1_1 = blocker( selection, Элемент.class, 1, 1 );
 
         ActionStart actionStart = new ActionStart();
         ActionPause actionPause = new ActionPause();
         ActionStop actionStop = new ActionStop();
-        ActionRemove actionRemove = new ActionRemove();//( действиеУдалить );
+        ActionRemove actionRemove = new ActionRemove();
         ActionProperties actionProperties = new ActionProperties();
 
-        actionStart     .disableProperty().bind( blocker_1_N );
-        actionPause     .disableProperty().bind( blocker_1_N );
-        actionStop      .disableProperty().bind( blocker_1_N );
-        actionRemove    .disableProperty().bind( blocker_1_N );
-        actionProperties.disableProperty().bind( blocker_1_1 );
+        actionStart     .disableProperty().bind( процесс_1_N );
+        actionPause     .disableProperty().bind( процесс_1_N );
+        actionStop      .disableProperty().bind( процесс_1_N );
+        actionRemove    .disableProperty().bind( проект_1_N );
+        actionProperties.disableProperty().bind( элемент_1_1 );
+        
+        setContextMenu( MenuFactory.createContextMenu( 
+            new MenuFactory.MenuNode( null,
+                new MenuFactory.MenuNode( actionStart ), 
+                new MenuFactory.MenuNode( actionPause ), 
+                new MenuFactory.MenuNode( actionStop ), 
+                null,
+                new MenuFactory.MenuNode( actionRemove ), 
+                null,
+                new MenuFactory.MenuNode( actionProperties ) ) ) );
         
         actions = new ArrayList<>();
         actions.addAll( Arrays.asList( 
@@ -79,6 +95,24 @@ class BrowserView extends TreeView<Элемент>
     final List<AbstractJfxAction> getActions()
     {
         return actions;
+    }
+    
+    private static BooleanBinding blocker( 
+            ObservableList<TreeItem<Элемент>> selection,
+            final Class<?> класс,
+            int low, int high )
+    {
+        Фильтр<TreeItem<Элемент>> фильтр = new Фильтр<TreeItem<Элемент>>() 
+        {
+            @Override
+            public boolean пропускает( TreeItem<Элемент> item )
+            {
+                return класс.isInstance( item.getValue() );
+            }
+        };
+        return new ThresholdChecker<>( 
+                new ObservableListExclusiveFilter<>( selection, фильтр ), 
+                false, low, high );
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">

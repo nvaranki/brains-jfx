@@ -57,9 +57,9 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         ActionExport actionExport = new ActionExport( действиеЭкспортироватьSvg );
         ActionProperties actionProperties = new ActionProperties();
 
-        SelectionDetector blocker_0_0 = new SelectionDetector( selectionModelProperty(), false, 0, 0 );
-        SelectionDetector blocker_1_1 = new SelectionDetector( selectionModelProperty(), false, 1, 1 );
-        SelectionDetector blocker_1_N = new SelectionDetector( selectionModelProperty(), false, 1, Integer.MAX_VALUE );
+        ThresholdChecker blocker_0_0 = new ThresholdChecker( selectionModelProperty().getValue().getSelectedItems(), false, 0, 0);
+        ThresholdChecker blocker_1_1 = new ThresholdChecker( selectionModelProperty().getValue().getSelectedItems(), false, 1, 1);
+        ThresholdChecker blocker_1_N = new ThresholdChecker( selectionModelProperty().getValue().getSelectedItems(), false, 1, Integer.MAX_VALUE);
 
         actionLoad      .disableProperty().bind( blocker_1_N );
         actionNew       .disableProperty().bind( blocker_0_0 );
