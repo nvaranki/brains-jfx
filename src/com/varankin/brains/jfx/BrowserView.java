@@ -10,7 +10,6 @@ import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.Контекст;
-import com.varankin.filter.Фильтр;
 import com.varankin.util.Текст;
 import java.util.*;
 import java.util.logging.*;
@@ -102,17 +101,29 @@ class BrowserView extends TreeView<Элемент>
             final Class<?> класс,
             int low, int high )
     {
-        Фильтр<TreeItem<Элемент>> фильтр = new Фильтр<TreeItem<Элемент>>() 
+        ObservableListMirror.Copier<TreeItem<Элемент>> copier 
+                = new ObservableListMirror.Copier<TreeItem<Элемент>>()
         {
+            /**
+             * Копирует исходный список только если ВСЕ его элементы пропускаются фильтром. 
+             */
             @Override
-            public boolean пропускает( TreeItem<Элемент> item )
+            public void copy( List<TreeItem<Элемент>> source, List<TreeItem<Элемент>> target )
             {
-                return класс.isInstance( item.getValue() );
+                target.retainAll( source ); // .retainAll(...) сигналит по необходимости :)
+                Collection<TreeItem<Элемент>> tmp = new ArrayList<>( source );
+                tmp.removeAll( target );
+                for( TreeItem<Элемент> item : tmp )
+                    if( !класс.isInstance( item.getValue() ) )
+                    {
+                        target.clear(); // это означает Exclusive
+                        return;
+                    }
+                if( !tmp.isEmpty() ) // .addAll(...) сигналит всегда :(
+                    target.addAll( tmp );
             }
         };
-        return new ThresholdChecker<>( 
-                new ObservableListExclusiveFilter<>( selection, фильтр ), 
-                false, low, high );
+        return new ThresholdChecker<>( new ObservableListMirror<>( selection, copier ), false, low, high );
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
