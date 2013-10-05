@@ -139,6 +139,7 @@ class BrowserView extends TreeView<Элемент>
         
         abstract T convert( Элемент элемент ); //TODO Фильтр
         
+        @Deprecated // use events
         abstract void adjust( TreeItem ti );
     }
     
