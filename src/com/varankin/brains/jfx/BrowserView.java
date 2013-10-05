@@ -53,7 +53,7 @@ class BrowserView extends TreeView<Элемент>
         setRoot( СТРОИТЕЛЬ.узел( new ВсеПроекты( КОНТЕКСТ ) ) );
         setShowRoot( true );
         setEditable( false );
-        int w = Integer.valueOf( КОНТЕКСТ.параметр( "frame.browser.width.min", "150" ) );
+        int w = Integer.valueOf( КОНТЕКСТ.параметр( Контекст.Параметры.BROWSER_WIDTH ) );
         setMinWidth( w );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
 
