@@ -18,7 +18,16 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventType;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorInput;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 /**
  * Экранная форма просмотра мыслительных структур.
@@ -114,7 +123,7 @@ class BrowserView extends TreeView<Элемент>
                 Collection<TreeItem<Элемент>> tmp = new ArrayList<>( source );
                 tmp.removeAll( target );
                 for( TreeItem<Элемент> item : tmp )
-                    if( !класс.isInstance( item.getValue() ) )
+                    if( item == null || !класс.isInstance( item.getValue() ) )
                     {
                         target.clear(); // это означает Exclusive
                         return;
@@ -151,13 +160,17 @@ class BrowserView extends TreeView<Элемент>
             {
                 T элемент = convert( ti.getValue() );
                 if( элемент != null )
+                {
                     список.add( элемент );
+                    adjust( ti );
+                }
             }
             return список;
         }
         
         abstract T convert( Элемент элемент ); //TODO Фильтр
         
+        abstract void adjust( TreeItem ti );
     }
     
     private class ActionStart extends ActionProcessControl<Процесс>
@@ -172,6 +185,21 @@ class BrowserView extends TreeView<Элемент>
         Процесс convert( Элемент элемент )
         {
             return элемент instanceof Процесс ? (Процесс)элемент : null;
+        }
+
+        @Override
+        void adjust( TreeItem item )
+        {
+            Node graphic = item.getGraphic();
+            if( graphic instanceof ImageView )
+            {
+                ImageView view = (ImageView)graphic;
+                Blend blend = new Blend();
+                blend.setMode(BlendMode.COLOR_BURN);
+                ColorInput effect = new ColorInput( 0, 0, 15, 15, Color.LIGHTGREEN );
+                blend.setTopInput( effect );
+                view.setEffect( blend );
+            }
         }
         
     }
@@ -189,6 +217,21 @@ class BrowserView extends TreeView<Элемент>
         {
             return элемент instanceof Процесс ? (Процесс)элемент : null;
         }
+
+        @Override
+        void adjust( TreeItem item )
+        {
+            Node graphic = item.getGraphic();
+            if( graphic instanceof ImageView )
+            {
+                ImageView view = (ImageView)graphic;
+//                Blend blend = new Blend();
+//                blend.setMode(BlendMode.COLOR_BURN);
+//                ColorInput effect = new ColorInput( 0, 0, 15, 15, Color.LIGHTGREEN );
+//                blend.setTopInput( effect );
+                view.setEffect( null );
+            }
+        }
         
     }
     
@@ -204,6 +247,21 @@ class BrowserView extends TreeView<Элемент>
         Процесс convert( Элемент элемент )
         {
             return элемент instanceof Процесс ? (Процесс)элемент : null;
+        }
+
+        @Override
+        void adjust( TreeItem item )
+        {
+            Node graphic = item.getGraphic();
+            if( graphic instanceof ImageView )
+            {
+                ImageView view = (ImageView)graphic;
+                Blend blend = new Blend();
+                blend.setMode(BlendMode.COLOR_BURN);
+                ColorInput effect = new ColorInput( 0, 0, 15, 15, Color.YELLOW );
+                blend.setTopInput( effect );
+                view.setEffect( blend );
+            }
         }
         
     }
@@ -221,6 +279,12 @@ class BrowserView extends TreeView<Элемент>
         Проект convert( Элемент элемент )
         {
             return элемент instanceof Проект ? (Проект)элемент : null;
+        }
+
+        @Override
+        void adjust( TreeItem ti )
+        {
+            //throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
         }
         
     }

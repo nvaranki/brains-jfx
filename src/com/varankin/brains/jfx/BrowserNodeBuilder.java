@@ -4,7 +4,7 @@ import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
 import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.util.MonitoredSet;
-import com.varankin.util.PropertyHolder;
+import com.varankin.util.PropertyMonitor;
 import com.varankin.util.Текст;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -195,9 +195,9 @@ class BrowserNodeBuilder implements BrainsListener
                 TreeItem<Элемент> item = getTreeItem();
                 setText( item.toString() );
                 setGraphic( item.getGraphic() );
+                }
             }
         }
-    }
     
     /**
      * Узел дерева для произвольного объекта.
@@ -219,10 +219,10 @@ class BrowserNodeBuilder implements BrainsListener
             if( элемент instanceof Структурный )
             {
                 Collection<Элемент> элементы = ((Структурный)элемент).элементы();
-                if( элементы instanceof PropertyHolder )
+                if( элементы instanceof PropertyMonitor )
                 {
                     монитор = new PropertyChangeListenerImpl( this, строитель );
-                    ((PropertyHolder)элементы).addPropertyChangeListener( монитор );
+                    ((PropertyMonitor)элементы).addPropertyChangeListener( монитор );
                 }
             }
         }
@@ -234,9 +234,9 @@ class BrowserNodeBuilder implements BrainsListener
                 if( элемент instanceof Структурный )
                 {
                     Collection<Элемент> элементы = ((Структурный)элемент).элементы();
-                    if( элементы instanceof PropertyHolder )
+                    if( элементы instanceof PropertyMonitor )
                     {
-                        ((PropertyHolder)элементы).removePropertyChangeListener( монитор );
+                        ((PropertyMonitor)элементы).removePropertyChangeListener( монитор );
                         монитор = null;
                     }
                 }
