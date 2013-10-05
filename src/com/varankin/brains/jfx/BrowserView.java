@@ -13,7 +13,6 @@ import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
 import java.util.*;
 import java.util.logging.*;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
@@ -58,23 +57,20 @@ class BrowserView extends TreeView<Элемент>
         setMinWidth( w );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
 
-        ObservableList<TreeItem<Элемент>> selection = selectionModelProperty().getValue().getSelectedItems();
-        BooleanBinding процесс_1_N = blocker( selection, Процесс.class, 1, Integer.MAX_VALUE );
-        BooleanBinding проект_1_N  = blocker( selection, Проект.class,  1, Integer.MAX_VALUE );
-        BooleanBinding элемент_1_1 = blocker( selection, Элемент.class, 1, 1 );
+        ObservableList<TreeItem<Элемент>> selection = selection();
+        ThresholdChecker процесс_1_N = new ThresholdChecker( new ObservableListMirror<>( selection, 
+                new ExclusiveTreeItemCopier( Процесс.class ) ), false, 1, Integer.MAX_VALUE );
+        ThresholdChecker проект_1_N  = new ThresholdChecker( new ObservableListMirror<>( selection, 
+                new ExclusiveTreeItemCopier( Проект.class ) ), false,  1, Integer.MAX_VALUE );
+        ThresholdChecker элемент_1_1 = new ThresholdChecker( new ObservableListMirror<>( selection, 
+                new ExclusiveTreeItemCopier( Элемент.class ) ), false, 1, 1 );
 
-        ActionStart actionStart = new ActionStart();
-        ActionPause actionPause = new ActionPause();
-        ActionStop actionStop = new ActionStop();
-        ActionRemove actionRemove = new ActionRemove();
-        ActionProperties actionProperties = new ActionProperties();
+        ActionStart actionStart = new ActionStart( процесс_1_N );
+        ActionPause actionPause = new ActionPause( процесс_1_N );
+        ActionStop actionStop = new ActionStop( процесс_1_N );
+        ActionRemove actionRemove = new ActionRemove( проект_1_N );
+        ActionProperties actionProperties = new ActionProperties( элемент_1_1 );
 
-        actionStart     .disableProperty().bind( процесс_1_N );
-        actionPause     .disableProperty().bind( процесс_1_N );
-        actionStop      .disableProperty().bind( процесс_1_N );
-        actionRemove    .disableProperty().bind( проект_1_N );
-        actionProperties.disableProperty().bind( элемент_1_1 );
-        
         setContextMenu( MenuFactory.createContextMenu( 
             new MenuFactory.MenuNode( null,
                 new MenuFactory.MenuNode( actionStart ), 
@@ -92,6 +88,11 @@ class BrowserView extends TreeView<Элемент>
                 actionProperties ) );
     }
     
+    private ObservableList<TreeItem<Элемент>> selection()
+    {
+        return selectionModelProperty().getValue().getSelectedItems();
+    }
+    
     final ReadOnlyStringProperty titleProperty()
     {
         return title;
@@ -102,46 +103,17 @@ class BrowserView extends TreeView<Элемент>
         return actions;
     }
     
-    private static BooleanBinding blocker( 
-            ObservableList<TreeItem<Элемент>> selection,
-            final Class<?> класс,
-            int low, int high )
-    {
-        ObservableListMirror.Copier<TreeItem<Элемент>> copier 
-                = new ObservableListMirror.Copier<TreeItem<Элемент>>()
-        {
-            /**
-             * Копирует исходный список только если ВСЕ его элементы пропускаются фильтром. 
-             */
-            @Override
-            public void copy( List<TreeItem<Элемент>> source, List<TreeItem<Элемент>> target )
-            {
-                target.retainAll( source ); // .retainAll(...) сигналит по необходимости :)
-                Collection<TreeItem<Элемент>> tmp = new ArrayList<>( source );
-                tmp.removeAll( target );
-                for( TreeItem<Элемент> item : tmp )
-                    if( item == null || !класс.isInstance( item.getValue() ) )
-                    {
-                        target.clear(); // это означает Exclusive
-                        return;
-                    }
-                if( !tmp.isEmpty() ) // .addAll(...) сигналит всегда :(
-                    target.addAll( tmp );
-            }
-        };
-        return new ThresholdChecker<>( new ObservableListMirror<>( selection, copier ), false, low, high );
-    }
-    
     //<editor-fold defaultstate="collapsed" desc="классы">
 
     private abstract class ActionProcessControl<T extends Процесс> extends AbstractContextJfxAction<JavaFX>
     {
         private final Действие<List<T>> ДЕЙСТВИЕ;
         
-        ActionProcessControl( Текст словарь, Действие... действия )
+        ActionProcessControl( Текст словарь, ThresholdChecker монитор, Действие... действия )
         {
             super( JFX, словарь );
             ДЕЙСТВИЕ = new ДействияПоПорядку( JFX.контекст, Приоритет.КОНТЕКСТ, действия );
+            disableProperty().bind( монитор );
         }
         
         @Override
@@ -172,9 +144,9 @@ class BrowserView extends TreeView<Элемент>
     
     private class ActionStart extends ActionProcessControl<Процесс>
     {
-        ActionStart()
+        ActionStart( ThresholdChecker монитор )
         {
-            super( JFX.словарь( ActionStart.class ), 
+            super( JFX.словарь( ActionStart.class ), монитор, 
                 new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.СТАРТ ) );
         }
         
@@ -203,9 +175,9 @@ class BrowserView extends TreeView<Элемент>
     
     private class ActionStop extends ActionProcessControl<Процесс>
     {
-        ActionStop()
+        ActionStop( ThresholdChecker монитор )
         {
-            super( JFX.словарь( ActionStop.class ), 
+            super( JFX.словарь( ActionStop.class ), монитор, 
                 new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.СТОП ) );
         }
         
@@ -234,9 +206,9 @@ class BrowserView extends TreeView<Элемент>
     
     private class ActionPause extends ActionProcessControl<Процесс>
     {
-        ActionPause()
+        ActionPause( ThresholdChecker монитор )
         {
-            super( JFX.словарь( ActionPause.class ), 
+            super( JFX.словарь( ActionPause.class ), монитор,
                 new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.ПАУЗА ) );
         }
         
@@ -265,9 +237,9 @@ class BrowserView extends TreeView<Элемент>
     
     private class ActionRemove extends ActionProcessControl<Проект>
     {
-        ActionRemove()
+        ActionRemove( ThresholdChecker монитор )
         {
-            super( JFX.словарь( ActionRemove.class ),
+            super( JFX.словарь( ActionRemove.class ), монитор,
                 new УправлениеПроцессом( JFX.контекст, УправлениеПроцессом.Команда.СТОП ),
                 new ВыгрузитьПроект( JFX.контекст ) );
         }
@@ -289,9 +261,10 @@ class BrowserView extends TreeView<Элемент>
     private class ActionProperties extends AbstractContextJfxAction<JavaFX>
     {
         
-        ActionProperties()
+        ActionProperties( ThresholdChecker монитор )
         {
             super( JFX, JFX.словарь( ActionProperties.class ) );
+            disableProperty().bind( монитор );
         }
         
         @Override
