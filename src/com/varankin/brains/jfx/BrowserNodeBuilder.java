@@ -305,6 +305,7 @@ class BrowserNodeBuilder implements BrainsListener
                 
                 case Процесс.PROPERTY_STATUS:
                     Platform.runLater( new OnStatusChangeded( (Процесс.Состояние)evt.getNewValue() ) );
+                    break;
                     
                 default:
                     LOGGER.log( Level.SEVERE, "Unsupported change to node received: {0}", evt.getPropertyName() );
