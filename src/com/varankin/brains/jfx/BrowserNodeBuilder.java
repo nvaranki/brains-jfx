@@ -2,6 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
+import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.util.MonitoredSet;
 import com.varankin.util.PropertyMonitor;
@@ -43,7 +44,7 @@ class BrowserNodeBuilder implements BrainsListener
         Узел узел = new Узел( элемент, 
                      фабрикаНазваний.метка( (Object)элемент ), 
                      фабрикаКартинок.getIcon( элемент ) );
-        узел.addChildMonitor( this );
+        узел.addMonitor( this );
         if( элемент instanceof Структурный )
             for( Элемент э : ((Структурный)элемент).элементы() )
                 узел.getChildren().add( узел( э ) );
@@ -213,33 +214,48 @@ class BrowserNodeBuilder implements BrainsListener
             this.метка = метка;
         }
         
-        void addChildMonitor( BrowserNodeBuilder строитель )
+        void addMonitor( BrowserNodeBuilder строитель )
         {
             Элемент элемент = getValue();
-            if( элемент instanceof Структурный )
+            boolean структурный = элемент instanceof Структурный;
+            boolean property = элемент instanceof PropertyMonitor;
+            if( структурный || property )
+                монитор = new PropertyChangeListenerImpl( this, строитель );
+            
+            if( property )
+            {
+                ((PropertyMonitor)элемент).addPropertyChangeListener( монитор );
+            }
+            if( структурный )
             {
                 Collection<Элемент> элементы = ((Структурный)элемент).элементы();
                 if( элементы instanceof PropertyMonitor )
                 {
-                    монитор = new PropertyChangeListenerImpl( this, строитель );
                     ((PropertyMonitor)элементы).addPropertyChangeListener( монитор );
                 }
             }
         }
         
-        void removeChildMonitor()
+        void removeMonitor()
         {
-            Элемент элемент = getValue();
             if( монитор != null )
+            {
+                Элемент элемент = getValue();
+                
+                if( элемент instanceof PropertyMonitor )
+                {
+                    ((PropertyMonitor)элемент).removePropertyChangeListener( монитор );
+                }
                 if( элемент instanceof Структурный )
                 {
                     Collection<Элемент> элементы = ((Структурный)элемент).элементы();
                     if( элементы instanceof PropertyMonitor )
                     {
                         ((PropertyMonitor)элементы).removePropertyChangeListener( монитор );
-                        монитор = null;
                     }
                 }
+                монитор = null;
+            }
         }
         
         @Override
@@ -260,7 +276,7 @@ class BrowserNodeBuilder implements BrainsListener
         {
             return метка;
         }
-        
+
     }
     
     private static class PropertyChangeListenerImpl implements PropertyChangeListener
@@ -277,30 +293,45 @@ class BrowserNodeBuilder implements BrainsListener
         @Override
         public void propertyChange( PropertyChangeEvent evt )
         {
-            Элемент элемент;
-            
             switch( evt.getPropertyName() )
             {
                 case MonitoredSet.PROPERTY_ADDED:
-                    элемент = (Элемент)evt.getNewValue();
-                    Platform.runLater( new OnPropertyAdded( элемент ) );
+                    Platform.runLater( new OnElementAdded( (Элемент)evt.getNewValue() ) );
                     break;
                 
                 case MonitoredSet.PROPERTY_REMOVED:
-                    элемент = (Элемент)evt.getOldValue();
-                    Platform.runLater( new OnPropertyRemoved( элемент ) );
+                    Platform.runLater( new OnElementRemoved( (Элемент)evt.getOldValue() ) );
                     break;
                 
+                case Процесс.PROPERTY_STATUS:
+                    Platform.runLater( new OnStatusChangeded( (Процесс.Состояние)evt.getNewValue() ) );
+                    
                 default:
                     LOGGER.log( Level.SEVERE, "Unsupported change to node received: {0}", evt.getPropertyName() );
             }            
         }
 
-        private class OnPropertyAdded implements Runnable
+        private class OnStatusChangeded implements Runnable
+        {
+            final Процесс.Состояние СОСТОЯНИЕ;
+
+            OnStatusChangeded( Процесс.Состояние состояние )
+            {
+                СОСТОЯНИЕ = состояние;
+            }
+
+            @Override
+            public void run()
+            {
+                СТРОИТЕЛЬ.фабрикаКартинок.setBgColor( УЗЕЛ.getGraphic(), СОСТОЯНИЕ );
+            }
+        }
+
+        private class OnElementAdded implements Runnable
         {
             private final Элемент ЭЛЕМЕНТ;
 
-            OnPropertyAdded( Элемент элемент )
+            OnElementAdded( Элемент элемент )
             {
                 ЭЛЕМЕНТ = элемент;
             }
@@ -312,11 +343,11 @@ class BrowserNodeBuilder implements BrainsListener
             }
         };
 
-        private class OnPropertyRemoved implements Runnable
+        private class OnElementRemoved implements Runnable
         {
             private final Элемент ЭЛЕМЕНТ;
 
-            OnPropertyRemoved( Элемент элемент )
+            OnElementRemoved( Элемент элемент )
             {
                 ЭЛЕМЕНТ = элемент;
             }
@@ -349,7 +380,7 @@ class BrowserNodeBuilder implements BrainsListener
                 removeTreeItemChildren( c );
             ti.getChildren().clear();
             if( ti instanceof Узел )
-                ((Узел)ti).removeChildMonitor();
+                ((Узел)ti).removeMonitor();
         }
     }
 
