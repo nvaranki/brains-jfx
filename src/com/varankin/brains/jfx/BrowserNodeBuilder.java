@@ -303,7 +303,7 @@ class BrowserNodeBuilder implements BrainsListener
                     Platform.runLater( new OnElementRemoved( (Элемент)evt.getOldValue() ) );
                     break;
                 
-                case Процесс.PROPERTY_STATUS:
+                case Процесс.СОСТОЯНИЕ:
                     Platform.runLater( new OnStatusChangeded( (Процесс.Состояние)evt.getNewValue() ) );
                     break;
                     
