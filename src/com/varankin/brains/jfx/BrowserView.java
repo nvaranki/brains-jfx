@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
-import com.varankin.brains.appl.ВсеПроекты;
+import com.varankin.brains.appl.Мыслитель;
 import com.varankin.brains.appl.ВыгрузитьПроект;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
@@ -44,7 +44,7 @@ class BrowserView extends TreeView<Элемент>
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
 
         setCellFactory( СТРОИТЕЛЬ.фабрика() );
-        setRoot( СТРОИТЕЛЬ.узел( new ВсеПроекты( КОНТЕКСТ ) ) );
+        setRoot( СТРОИТЕЛЬ.узел( new Мыслитель( КОНТЕКСТ ) ) );
         setShowRoot( true );
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( Контекст.Параметры.BROWSER_WIDTH ) );
