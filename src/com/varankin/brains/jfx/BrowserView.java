@@ -44,7 +44,9 @@ class BrowserView extends TreeView<Элемент>
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
 
         setCellFactory( СТРОИТЕЛЬ.фабрика() );
-        setRoot( СТРОИТЕЛЬ.узел( new Мыслитель( КОНТЕКСТ ) ) );
+        BrowserNode узел = СТРОИТЕЛЬ.узел( new Мыслитель( КОНТЕКСТ ) );
+        setRoot( узел );
+        узел.expand( СТРОИТЕЛЬ, узел.addMonitor( СТРОИТЕЛЬ, null ) );
         setShowRoot( true );
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( Контекст.Параметры.BROWSER_WIDTH ) );

@@ -4,15 +4,11 @@ import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.factory.structured.Структурный;
-import com.varankin.property.MonitoredSet;
+import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.Текст;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
-import java.util.logging.*;
-import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
@@ -22,14 +18,13 @@ import javafx.util.Callback;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-class BrowserNodeBuilder implements BrainsListener
+final class BrowserNodeBuilder
 {
-    static private final Logger LOGGER = Logger.getLogger( BrowserNodeBuilder.class.getName() );
-
     private final TreeView<Элемент> модель;
     private final Текст словарь;
     private final ФабрикаНазваний фабрикаНазваний;
     private final BrowserRenderer фабрикаКартинок;
+    private final Фабрика<BrowserNode,PropertyChangeListener> фабрикаМониторов;
 
     BrowserNodeBuilder( TreeView<Элемент> модель, Map<Locale.Category,Locale> специфика )
     {
@@ -37,17 +32,32 @@ class BrowserNodeBuilder implements BrainsListener
         this.словарь = Текст.ПАКЕТЫ.словарь( BrowserNodeBuilder.class, специфика );
         this.фабрикаНазваний = new ФабрикаНазваний( специфика );
         this.фабрикаКартинок = new BrowserRenderer();
+        this.фабрикаМониторов = new Фабрика<BrowserNode,PropertyChangeListener>() 
+        {
+            @Override
+            public PropertyChangeListener создать( BrowserNode узел )
+            {
+                return new BrowserMonitor( узел, BrowserNodeBuilder.this );
+            }
+        };
+    }
+    
+    BrowserRenderer фабрикаКартинок()
+    {
+        return фабрикаКартинок;
     }
 
-    TreeItem<Элемент> узел( Элемент элемент )
+    Фабрика<BrowserNode,PropertyChangeListener> фабрикаМониторов()
     {
-        Узел узел = new Узел( элемент, 
+        return фабрикаМониторов;
+    }
+    
+    BrowserNode узел( Элемент элемент )
+    {
+        BrowserNode узел = new BrowserNode( элемент, 
                      фабрикаНазваний.метка( (Object)элемент ), 
                      фабрикаКартинок.getIcon( элемент ) );
-        узел.addMonitor( this );
-        if( элемент instanceof Структурный )
-            for( Элемент э : ((Структурный)элемент).элементы() )
-                узел.getChildren().add( узел( э ) );
+        узел.addMonitor( фабрикаМониторов );
         return узел;
     }
 
@@ -59,6 +69,7 @@ class BrowserNodeBuilder implements BrainsListener
      * @return узел, соответствующий {@code путь[0]}, или {@code null}, если такового нет,
      *              а автоматическое создание узлов не предусмотрено.
      */
+    @Deprecated
     TreeItem<Элемент> список( boolean создать, Элемент... путь )
     {
         TreeItem<Элемент> узел = null;
@@ -108,28 +119,6 @@ class BrowserNodeBuilder implements BrainsListener
     
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="interface BrainsListener">
-    
-    @Override
-    public void brainsElementAdded( BrainsEvent event )
-    {
-        Platform.runLater( new Appender( event.элемент(), event.группа() ) );
-    }
-    
-    @Override
-    public void brainsElementChanged( BrainsEvent event )
-    {
-        Platform.runLater( new Changer( event.элемент(), event.группа() ) );
-    }
-    
-    @Override
-    public void brainsElementRemoved( BrainsEvent event )
-    {
-        Platform.runLater( new Remover( event.элемент(), event.группа() ) );
-    }
-    
-    //</editor-fold>
-
     //<editor-fold defaultstate="collapsed" desc="utilities">
     
     /**
@@ -165,7 +154,7 @@ class BrowserNodeBuilder implements BrainsListener
             }
         return кандидат;
     }
-    
+
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="classes">
@@ -199,269 +188,6 @@ class BrowserNodeBuilder implements BrainsListener
                 }
             }
         }
-    
-    /**
-     * Узел дерева для произвольного объекта.
-     */
-    static private class Узел extends TreeItem<Элемент>
-    {
-        private final String метка;
-        private PropertyChangeListener монитор;
-        
-        Узел( Элемент элемент, String метка, Node image )
-        {
-            super( элемент, image );
-            this.метка = метка;
-        }
-        
-        void addMonitor( BrowserNodeBuilder строитель )
-        {
-            Элемент элемент = getValue();
-            boolean структурный = элемент instanceof Структурный;
-            boolean property = элемент instanceof PropertyMonitor;
-            if( структурный || property )
-                монитор = new PropertyChangeListenerImpl( this, строитель );
-            
-            if( property )
-            {
-                ((PropertyMonitor)элемент).addPropertyChangeListener( монитор );
-            }
-            if( структурный )
-            {
-                Collection<Элемент> элементы = ((Структурный)элемент).элементы();
-                if( элементы instanceof PropertyMonitor )
-                {
-                    ((PropertyMonitor)элементы).addPropertyChangeListener( монитор );
-                }
-            }
-        }
-        
-        void removeMonitor()
-        {
-            if( монитор != null )
-            {
-                Элемент элемент = getValue();
-                
-                if( элемент instanceof PropertyMonitor )
-                {
-                    ((PropertyMonitor)элемент).removePropertyChangeListener( монитор );
-                }
-                if( элемент instanceof Структурный )
-                {
-                    Collection<Элемент> элементы = ((Структурный)элемент).элементы();
-                    if( элементы instanceof PropertyMonitor )
-                    {
-                        ((PropertyMonitor)элементы).removePropertyChangeListener( монитор );
-                    }
-                }
-                монитор = null;
-            }
-        }
-        
-        @Override
-        public boolean equals( Object o )
-        {
-            return o instanceof Узел && getValue().equals( ((Узел)o).getValue() );
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int hash = 7 ^ getValue().hashCode();
-            return hash;
-        }
-
-        @Override
-        public String toString()
-        {
-            return метка;
-        }
-
-    }
-    
-    private static class PropertyChangeListenerImpl implements PropertyChangeListener
-    {
-        private final Узел УЗЕЛ;
-        private final BrowserNodeBuilder СТРОИТЕЛЬ;
-
-        PropertyChangeListenerImpl( Узел узел, BrowserNodeBuilder строитель )
-        {
-            УЗЕЛ = узел;
-            СТРОИТЕЛЬ = строитель;
-        }
-
-        @Override
-        public void propertyChange( PropertyChangeEvent evt )
-        {
-            switch( evt.getPropertyName() )
-            {
-                case MonitoredSet.PROPERTY_ADDED:
-                    Platform.runLater( new OnElementAdded( (Элемент)evt.getNewValue() ) );
-                    break;
-                
-                case MonitoredSet.PROPERTY_REMOVED:
-                    Platform.runLater( new OnElementRemoved( (Элемент)evt.getOldValue() ) );
-                    break;
-                
-                case Процесс.СОСТОЯНИЕ:
-                    Platform.runLater( new OnStatusChangeded( (Процесс.Состояние)evt.getNewValue() ) );
-                    break;
-                    
-                default:
-                    LOGGER.log( Level.SEVERE, "Unsupported change to node received: {0}", evt.getPropertyName() );
-            }            
-        }
-
-        private class OnStatusChangeded implements Runnable
-        {
-            final Процесс.Состояние СОСТОЯНИЕ;
-
-            OnStatusChangeded( Процесс.Состояние состояние )
-            {
-                СОСТОЯНИЕ = состояние;
-            }
-
-            @Override
-            public void run()
-            {
-                СТРОИТЕЛЬ.фабрикаКартинок.setBgColor( УЗЕЛ.getGraphic(), СОСТОЯНИЕ );
-            }
-        }
-
-        private class OnElementAdded implements Runnable
-        {
-            private final Элемент ЭЛЕМЕНТ;
-
-            OnElementAdded( Элемент элемент )
-            {
-                ЭЛЕМЕНТ = элемент;
-            }
-
-            @Override
-            public void run()
-            {
-                УЗЕЛ.getChildren().add( СТРОИТЕЛЬ.узел( ЭЛЕМЕНТ ) );
-            }
-        };
-
-        private class OnElementRemoved implements Runnable
-        {
-            private final Элемент ЭЛЕМЕНТ;
-
-            OnElementRemoved( Элемент элемент )
-            {
-                ЭЛЕМЕНТ = элемент;
-            }
-
-            @Override
-            public void run()
-            {
-                TreeItem<Элемент> удаляемый = null;
-                for( TreeItem<Элемент> узел : УЗЕЛ.getChildren() )
-                    if( ЭЛЕМЕНТ.equals( узел.getValue() ) )
-                    {
-                        удаляемый = узел;
-                        break;
-                    }
-                if( удаляемый != null )
-                {
-                    removeTreeItemChildren( удаляемый );
-                    УЗЕЛ.getChildren().remove( удаляемый );
-                }
-            }
-        };
-
-    }
-    
-    private static <T> void removeTreeItemChildren( TreeItem<T> ti )
-    {
-        if( !ti.isLeaf() )
-        {
-            for( TreeItem<T> c : ti.getChildren() )
-                removeTreeItemChildren( c );
-            ti.getChildren().clear();
-            if( ti instanceof Узел )
-                ((Узел)ti).removeMonitor();
-        }
-    }
-
-    private class Appender implements Runnable
-    {
-        private final Элемент элемент;
-        private final Элемент[] группа;
-        
-        Appender( Элемент элемент, Элемент... группа )
-        {
-            this.элемент = элемент;
-            this.группа = группа;
-        }
-        
-        @Override
-        public void run()
-        {
-            TreeItem<Элемент> список = список( true, группа );
-            if( список != null )
-            {
-                TreeItem<Элемент> узел = узел( элемент );
-                int позиция = позиция( узел.toString(), список );
-                список.getChildren().add( позиция, узел );
-            }
-            else
-                LOGGER.log( Level.SEVERE, словарь.текст( "add.orphan", элемент ) );
-        }
-        
-    }
-    
-    private class Changer implements Runnable
-    {
-        private final Элемент элемент;
-        private final Элемент[] группа;
-        
-        Changer( Элемент элемент, Элемент... группа )
-        {
-            this.элемент = элемент;
-            this.группа = группа;
-        }
-        
-        @Override
-        public void run()
-        {
-            TreeItem<Элемент> список = список( false, группа );
-            TreeItem<Элемент> кандидат = найти( элемент, список );
-            if( кандидат != null )
-            {
-                //TODO список.getChildren().remove( кандидат );
-            }
-            else
-                LOGGER.log( Level.WARNING, словарь.текст( "change.missing", элемент ) );
-        }
-        
-    }
-    
-    private class Remover implements Runnable
-    {
-        private final Элемент элемент;
-        private final Элемент[] группа;
-        
-        Remover( Элемент элемент, Элемент... группа )
-        {
-            this.элемент = элемент;
-            this.группа = группа;
-        }
-        
-        @Override
-        public void run()
-        {
-            TreeItem<Элемент> список = список( false, группа );
-            TreeItem<Элемент> кандидат = найти( элемент, список );
-            if( кандидат != null )
-            {
-                список.getChildren().remove( кандидат );
-            }
-            else
-                LOGGER.log( Level.WARNING, словарь.текст( "remove.missing", элемент ) );
-        }
-    }
     
     //</editor-fold>
     
