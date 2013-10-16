@@ -32,7 +32,7 @@ class BrowserNode extends TreeItem<Элемент>
         {
             if( наблюдатель != null )
             {
-                pmp.addPropertyChangeListener( наблюдатель );
+                pmp.наблюдатели().add( наблюдатель );
                 this.наблюдатель = наблюдатель;
             }
             наблюдатель = строитель.фабрикаМониторов().создать( this );
@@ -85,8 +85,8 @@ class BrowserNode extends TreeItem<Элемент>
         if( pme != null || pmc != null )
         {
             монитор = фабрика.создать( this );
-            if( pme != null ) pme.addPropertyChangeListener( монитор );
-            if( pmc != null ) pmc.addPropertyChangeListener( монитор );
+            if( pme != null ) pme.наблюдатели().add( монитор );
+            if( pmc != null ) pmc.наблюдатели().add( монитор );
         }
     }
 
@@ -102,15 +102,15 @@ class BrowserNode extends TreeItem<Элемент>
         if( property )
         {
             PropertyMonitor pm = (PropertyMonitor)элемент;
-            pm.addPropertyChangeListener( монитор );
+            pm.наблюдатели().add( монитор );
             if( process && наблюдатель != null )
-                pm.addPropertyChangeListener( this.наблюдатель = наблюдатель );
+                pm.наблюдатели().add( this.наблюдатель = наблюдатель );
         }
         if( структурный )
         {
             Collection<Элемент> элементы = ( (Структурный)элемент ).элементы();
             if( элементы instanceof PropertyMonitor )
-                ( (PropertyMonitor)элементы ).addPropertyChangeListener( монитор );
+                ( (PropertyMonitor)элементы ).наблюдатели().add( монитор );
         }
     }
 
@@ -120,19 +120,19 @@ class BrowserNode extends TreeItem<Элемент>
         if( монитор != null )
         {
             if( элемент instanceof PropertyMonitor )
-                ( (PropertyMonitor)элемент ).removePropertyChangeListener( монитор );
+                ( (PropertyMonitor)элемент ).наблюдатели().remove( монитор );
             if( элемент instanceof Структурный )
             {
                 Collection<Элемент> элементы = ( (Структурный)элемент ).элементы();
                 if( элементы instanceof PropertyMonitor )
-                    ( (PropertyMonitor)элементы ).removePropertyChangeListener( монитор );
+                    ( (PropertyMonitor)элементы ).наблюдатели().remove( монитор );
             }
             монитор = null;
         }
         if( наблюдатель != null )
         {
             if( элемент instanceof PropertyMonitor )
-                ( (PropertyMonitor)элемент ).removePropertyChangeListener( наблюдатель );
+                ( (PropertyMonitor)элемент ).наблюдатели().remove( наблюдатель );
             наблюдатель = null;
         }
     }
