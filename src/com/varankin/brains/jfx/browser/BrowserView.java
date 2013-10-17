@@ -1,4 +1,4 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.browser;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.Мыслитель;
@@ -9,6 +9,13 @@ import com.varankin.brains.appl.УправлениеПроцессом;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
+import com.varankin.brains.jfx.AbstractContextJfxAction;
+import com.varankin.brains.jfx.AbstractJfxAction;
+import com.varankin.brains.jfx.ApplicationActionWorker;
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.MenuFactory;
+import com.varankin.brains.jfx.ObservableListMirror;
+import com.varankin.brains.jfx.ThresholdChecker;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
 import java.util.*;
@@ -24,7 +31,7 @@ import javafx.scene.control.*;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class BrowserView extends TreeView<Элемент> 
+public class BrowserView extends TreeView<Элемент> 
 {
     private static final Logger LOGGER = Logger.getLogger( BrowserView.class.getName() );
     
@@ -34,7 +41,7 @@ class BrowserView extends TreeView<Элемент>
     private final ReadOnlyStringProperty title;
     private final List<AbstractJfxAction> actions;
 
-    BrowserView( JavaFX jfx )
+    public BrowserView( JavaFX jfx )
     {
         JFX = jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
@@ -89,12 +96,12 @@ class BrowserView extends TreeView<Элемент>
         return selectionModelProperty().getValue().getSelectedItems();
     }
     
-    final ReadOnlyStringProperty titleProperty()
+    public final ReadOnlyStringProperty titleProperty()
     {
         return title;
     }
     
-    final List<AbstractJfxAction> getActions()
+    public final List<AbstractJfxAction> getActions()
     {
         return actions;
     }
@@ -109,7 +116,7 @@ class BrowserView extends TreeView<Элемент>
         {
             super( JFX, словарь );
             ДЕЙСТВИЕ = new ДействияПоПорядку( JFX.контекст, Приоритет.КОНТЕКСТ, действия );
-            disableProperty().bind( монитор );
+            ActionProcessControl.this.disableProperty().bind( монитор );
         }
         
         @Override
@@ -121,7 +128,7 @@ class BrowserView extends TreeView<Элемент>
         private List<T> ceлектор()
         {
             List<T> список = new ArrayList<>();
-            for( TreeItem<Элемент> ti : getSelectionModel().getSelectedItems() )
+            for( TreeItem<Элемент> ti : BrowserView.this.getSelectionModel().getSelectedItems() )
             {
                 T элемент = convert( ti.getValue() );
                 if( элемент != null )
@@ -205,7 +212,7 @@ class BrowserView extends TreeView<Элемент>
         ActionProperties( ThresholdChecker монитор )
         {
             super( JFX, JFX.словарь( ActionProperties.class ) );
-            disableProperty().bind( монитор );
+            ActionProperties.this.disableProperty().bind( монитор );
         }
         
         @Override

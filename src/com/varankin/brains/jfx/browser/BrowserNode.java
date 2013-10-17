@@ -1,4 +1,4 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.factory.structured.Структурный;

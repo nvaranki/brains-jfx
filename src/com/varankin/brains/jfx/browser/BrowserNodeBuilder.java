@@ -1,4 +1,4 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
@@ -16,7 +16,7 @@ import javafx.util.Callback;
  * Контроллер обозревателя объектов.
  * Управляет структурой узлов модели в {@linkplain BrowserView форме просмотра структуры объектов}.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
 final class BrowserNodeBuilder
 {

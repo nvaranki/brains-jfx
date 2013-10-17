@@ -1,6 +1,7 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.Элемент;
+import com.varankin.brains.jfx.ObservableListMirror;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

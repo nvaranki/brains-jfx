@@ -1,4 +1,4 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Элемент;
@@ -14,7 +14,7 @@ import javafx.scene.control.TreeItem;
  *
  * @author Николай
  */
-public class BrowserMonitor implements PropertyChangeListener
+class BrowserMonitor implements PropertyChangeListener
 {
     private static final Logger LOGGER = Logger.getLogger( BrowserMonitor.class.getName() );
     

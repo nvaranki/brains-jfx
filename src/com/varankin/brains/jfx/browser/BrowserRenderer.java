@@ -1,4 +1,4 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.appl.AbstractIconLocator;
 import com.varankin.brains.artificial.async.Процесс;
@@ -16,9 +16,9 @@ import javafx.scene.paint.Color;
 /**
  *
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2013 Николай Варанкин
  */
-public class BrowserRenderer 
+class BrowserRenderer 
 {
     private static final Map<Процесс.Состояние,Color> ФОН;
     static

@@ -10,7 +10,7 @@ import javafx.scene.control.*;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class MenuFactory 
+public class MenuFactory 
 {
     /**
      * Создает всплывающее меню по модели.
@@ -18,7 +18,7 @@ class MenuFactory
      * @param модель окончательная модель меню.
      * @return всплывающее меню.
      */
-    static ContextMenu createContextMenu( MenuNode модель )
+    public static ContextMenu createContextMenu( MenuNode модель )
     {
         ContextMenu menu = new ContextMenu();
         модель.populate( menu.getItems() );
@@ -31,7 +31,7 @@ class MenuFactory
      * @param модель окончательная модель меню.
      * @return стандартное меню.
      */
-    static Menu createMenu( MenuNode модель )
+    public static Menu createMenu( MenuNode модель )
     {
         Menu menu = new Menu( модель.node.textProperty().getValue() );
         модель.populate( menu.getItems() );
@@ -41,12 +41,12 @@ class MenuFactory
     /**
      * Узел модели иерархического меню.
      */
-    static class MenuNode
+    public static class MenuNode
     {
         private final AbstractJfxAction node;
         private final MenuNode childs[];
 
-        MenuNode( AbstractJfxAction node, MenuNode... childs )
+        public MenuNode( AbstractJfxAction node, MenuNode... childs )
         {
             this.node = node;
             this.childs = childs;

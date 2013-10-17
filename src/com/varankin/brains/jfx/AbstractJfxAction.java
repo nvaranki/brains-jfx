@@ -70,28 +70,28 @@ public abstract class AbstractJfxAction implements EventHandler<ActionEvent>
         return value.trim().isEmpty() ? null : new KeyCharacterCombination( value.trim().substring( 0, 1 ) );
     }
     
-    final Property<Boolean> disableProperty()
+    public final Property<Boolean> disableProperty()
     {
         return DISABLE;
     }
 
     @Deprecated // historical from Swing
-    void setEnabled( boolean value )
+    public void setEnabled( boolean value )
     {
         DISABLE.setValue( !value );
     }
 
-    final Property<String> textProperty()
+    public final Property<String> textProperty()
     {
         return TEXT;
     }
     
-    final Property<Tooltip> tooltipProperty()
+    public final Property<Tooltip> tooltipProperty()
     {
         return TOOLTIP;
     }
     
-    final Property<ImageView> iconProperty()
+    public final Property<ImageView> iconProperty()
     {
         return ICON;
     }

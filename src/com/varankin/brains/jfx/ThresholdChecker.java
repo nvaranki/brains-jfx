@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class ThresholdChecker extends BooleanBinding 
+public class ThresholdChecker extends BooleanBinding 
 {
     private final int LOW;
     private final int HIGH;
@@ -21,7 +21,7 @@ class ThresholdChecker extends BooleanBinding
      * @param low      нижняя граница диапазона.
      * @param high     верхняя граница диапазона.
      */
-    ThresholdChecker( ObservableList<?> list, boolean direct, int low, int high )
+    public ThresholdChecker( ObservableList<?> list, boolean direct, int low, int high )
     {
         LOW = low;
         HIGH = high;

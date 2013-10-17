@@ -23,7 +23,7 @@ import javafx.stage.Stage;
  *
  * @author &copy; 2012 Николай Варанкин
  */
-final class JavaFX 
+public final class JavaFX 
 {
     public final Контекст контекст;
     public final Stage платформа;
@@ -110,7 +110,7 @@ final class JavaFX
         платформа.hide();
     }
     
-    Текст словарь( Class<?> c )
+    public Текст словарь( Class<?> c )
     {
         return Текст.ПАКЕТЫ.словарь( c, контекст.специфика );
     }

@@ -8,13 +8,13 @@ import com.varankin.util.Текст;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-abstract class AbstractContextJfxAction<КОНТЕКСТ> 
+public abstract class AbstractContextJfxAction<КОНТЕКСТ> 
         extends AbstractJfxAction
 {
     protected final КОНТЕКСТ контекст;
     protected final Текст словарь;
 
-    AbstractContextJfxAction( КОНТЕКСТ контекст, Текст словарь )
+    protected AbstractContextJfxAction( КОНТЕКСТ контекст, Текст словарь )
     {
         super( словарь );
         this.контекст = контекст;
