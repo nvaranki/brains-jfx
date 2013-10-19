@@ -2,11 +2,7 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
-import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.property.PropertyMonitor;
-import com.varankin.util.Текст;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import javafx.scene.control.*;
@@ -21,7 +17,6 @@ import javafx.util.Callback;
 final class BrowserNodeBuilder
 {
     private final TreeView<Элемент> модель;
-    private final Текст словарь;
     private final ФабрикаНазваний фабрикаНазваний;
     private final BrowserRenderer фабрикаКартинок;
     private final Фабрика<BrowserNode,PropertyChangeListener> фабрикаМониторов;
@@ -29,7 +24,6 @@ final class BrowserNodeBuilder
     BrowserNodeBuilder( TreeView<Элемент> модель, Map<Locale.Category,Locale> специфика )
     {
         this.модель = модель;
-        this.словарь = Текст.ПАКЕТЫ.словарь( BrowserNodeBuilder.class, специфика );
         this.фабрикаНазваний = new ФабрикаНазваний( специфика );
         this.фабрикаКартинок = new BrowserRenderer();
         this.фабрикаМониторов = new Фабрика<BrowserNode,PropertyChangeListener>() 
@@ -61,6 +55,25 @@ final class BrowserNodeBuilder
         return узел;
     }
 
+    //<editor-fold defaultstate="collapsed" desc="interface Callback">
+
+    Callback<TreeView<Элемент>,TreeCell<Элемент>> фабрика()
+    {
+        return new Callback<TreeView<Элемент>,TreeCell<Элемент>>()
+        {
+            @Override
+            public TreeCell<Элемент> call( TreeView<Элемент> treeView )
+            {
+                return new BrowserTreeCell( treeView );
+            }
+            
+        };
+    }
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="utilities">
+    
     /**
      * Возвращает узел для структуры, заданной последовательностью объектов.
      *
@@ -102,25 +115,6 @@ final class BrowserNodeBuilder
         return узел;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="interface Callback">
-
-    Callback<TreeView<Элемент>,TreeCell<Элемент>> фабрика()
-    {
-        return new Callback<TreeView<Элемент>,TreeCell<Элемент>>()
-        {
-            @Override
-            public TreeCell<Элемент> call( TreeView<Элемент> treeView )
-            {
-                return new BrowserTreeCell( treeView );
-            }
-            
-        };
-    }
-    
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="utilities">
-    
     /**
      *
      * @param string

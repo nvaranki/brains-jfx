@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Элемент;
-import com.varankin.property.MonitoredSet;
+import com.varankin.property.MonitoredCollection;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
@@ -11,8 +11,9 @@ import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 
 /**
- *
- * @author Николай
+ * Монитор {@linkplain BrowserNode узла}.
+ * 
+ * @author &copy; 2013 Николай Варанкин
  */
 class BrowserMonitor implements PropertyChangeListener
 {
@@ -32,28 +33,18 @@ class BrowserMonitor implements PropertyChangeListener
     {
         switch( evt.getPropertyName() )
         {
-            case MonitoredSet.PROPERTY_ADDED:
+            case MonitoredCollection.PROPERTY_ADDED:
                 Platform.runLater( new OnElementAdded( (Элемент)evt.getNewValue() ) );
                 break;
 
-            case MonitoredSet.PROPERTY_REMOVED:
+            case MonitoredCollection.PROPERTY_REMOVED:
                 Platform.runLater( new OnElementRemoved( (Элемент)evt.getOldValue() ) );
                 break;
 
             case Процесс.СОСТОЯНИЕ:
-                Элемент элемент = УЗЕЛ.getValue();
-                Object source = evt.getSource();
-                Процесс.Состояние состояние;
-                if( !элемент.equals( source ) && элемент instanceof Процесс )
-                {
-                    состояние = ((Процесс)элемент).getPropertyValue( Процесс.СОСТОЯНИЕ );
-                    PropertyChangeListener наблюдатель = УЗЕЛ.наблюдатель();
-//                    if( наблюдатель != null )
-//                        наблюдатель.propertyChange( evt );
-                }
-                else
-                    состояние = (Процесс.Состояние)evt.getNewValue();
-                Platform.runLater( new OnStatusChangeded( состояние ) );
+                if( УЗЕЛ.getValue() instanceof Процесс )
+                    Platform.runLater( new OnStatusChangeded( 
+                            (Процесс.Состояние)evt.getNewValue() ) );
                 break;
 
             default:
@@ -91,7 +82,7 @@ class BrowserMonitor implements PropertyChangeListener
         {
             BrowserNode узел = СТРОИТЕЛЬ.узел( ЭЛЕМЕНТ );
             УЗЕЛ.getChildren().add( узел );
-            узел.expand( СТРОИТЕЛЬ, узел.addMonitor( СТРОИТЕЛЬ, УЗЕЛ.наблюдатель() ) );
+            узел.expand( СТРОИТЕЛЬ );
         }
 
     };

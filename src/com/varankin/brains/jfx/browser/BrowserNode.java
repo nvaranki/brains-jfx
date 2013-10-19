@@ -1,12 +1,10 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.property.PropertyMonitor;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 
@@ -17,7 +15,6 @@ class BrowserNode extends TreeItem<Элемент>
 {
     private final String метка;
     private PropertyChangeListener монитор;
-    private PropertyChangeListener наблюдатель;
 
     BrowserNode( Элемент элемент, String метка, Node image )
     {
@@ -25,22 +22,7 @@ class BrowserNode extends TreeItem<Элемент>
         this.метка = метка;
     }
     
-    PropertyChangeListener addMonitor( BrowserNodeBuilder строитель, PropertyChangeListener наблюдатель )
-    {
-        PropertyMonitor pmp = getMonitoredProcess();
-        if( pmp != null )
-        {
-            if( наблюдатель != null )
-            {
-                pmp.наблюдатели().add( наблюдатель );
-                this.наблюдатель = наблюдатель;
-            }
-            наблюдатель = строитель.фабрикаМониторов().создать( this );
-        }
-        return наблюдатель;
-    }
-    
-    void expand( BrowserNodeBuilder строитель, PropertyChangeListener наблюдатель )
+    void expand( BrowserNodeBuilder строитель )
     {
         Элемент элемент = getValue();
         if( элемент instanceof Структурный )
@@ -49,68 +31,18 @@ class BrowserNode extends TreeItem<Элемент>
             {
                 BrowserNode вставка = строитель.узел( э );
                 getChildren().add( вставка );
-                вставка.expand( строитель, вставка.addMonitor( строитель, наблюдатель ) );
+                вставка.expand( строитель );
             }
         }
     }
     
-    PropertyMonitor getMonitoredProcess()
-    {
-        Элемент элемент = getValue();
-        return элемент instanceof Процесс && элемент instanceof PropertyMonitor ? 
-                (PropertyMonitor)элемент : null;
-    }
-
-    private PropertyMonitor getMonitoredElement()
-    {
-        Элемент элемент = getValue();
-        return элемент instanceof PropertyMonitor ? (PropertyMonitor)элемент : null;
-    }
-
-    private PropertyMonitor getMonitoredCollection()
-    {
-        Элемент элемент = getValue();
-        if( элемент instanceof Структурный )
-        {
-            Collection<Элемент> элементы = ( (Структурный)элемент ).элементы();
-            return элементы instanceof PropertyMonitor ? (PropertyMonitor)элементы : null;
-        }
-        return null;
-    }
-
     void addMonitor( Фабрика<BrowserNode,PropertyChangeListener> фабрика )
     {
-        PropertyMonitor pme = getMonitoredElement();
-        PropertyMonitor pmc = getMonitoredCollection();
-        if( pme != null || pmc != null )
+        Элемент элемент = getValue();
+        if( элемент instanceof PropertyMonitor )
         {
             монитор = фабрика.создать( this );
-            if( pme != null ) pme.наблюдатели().add( монитор );
-            if( pmc != null ) pmc.наблюдатели().add( монитор );
-        }
-    }
-
-    @Deprecated
-    void _addMonitor( BrowserNodeBuilder строитель, PropertyChangeListener наблюдатель )
-    {
-        Элемент элемент = getValue();
-        boolean структурный = элемент instanceof Структурный;
-        boolean property = элемент instanceof PropertyMonitor;
-        boolean process = элемент instanceof Процесс;
-        if( структурный || property )
-            монитор = new BrowserMonitor( this, строитель );
-        if( property )
-        {
-            PropertyMonitor pm = (PropertyMonitor)элемент;
-            pm.наблюдатели().add( монитор );
-            if( process && наблюдатель != null )
-                pm.наблюдатели().add( this.наблюдатель = наблюдатель );
-        }
-        if( структурный )
-        {
-            Collection<Элемент> элементы = ( (Структурный)элемент ).элементы();
-            if( элементы instanceof PropertyMonitor )
-                ( (PropertyMonitor)элементы ).наблюдатели().add( монитор );
+            ( (PropertyMonitor)элемент ).наблюдатели().add( монитор );
         }
     }
 
@@ -121,36 +53,8 @@ class BrowserNode extends TreeItem<Элемент>
         {
             if( элемент instanceof PropertyMonitor )
                 ( (PropertyMonitor)элемент ).наблюдатели().remove( монитор );
-            if( элемент instanceof Структурный )
-            {
-                Collection<Элемент> элементы = ( (Структурный)элемент ).элементы();
-                if( элементы instanceof PropertyMonitor )
-                    ( (PropertyMonitor)элементы ).наблюдатели().remove( монитор );
-            }
             монитор = null;
         }
-        if( наблюдатель != null )
-        {
-            if( элемент instanceof PropertyMonitor )
-                ( (PropertyMonitor)элемент ).наблюдатели().remove( наблюдатель );
-            наблюдатель = null;
-        }
-    }
-
-    PropertyChangeListener наблюдатель()
-    {
-        PropertyChangeListener н = наблюдатель;
-        TreeItem<Элемент> item = this;
-        while( н == null && item != null )
-        {
-            TreeItem<Элемент> parent = item.getParent();
-            if( parent instanceof BrowserNode )
-                н = ( (BrowserNode)parent ).наблюдатель;
-            else if( parent == null )
-                н = ((BrowserNode)item).монитор;
-            item = parent;
-        }
-        return н;
     }
 
     @Override
