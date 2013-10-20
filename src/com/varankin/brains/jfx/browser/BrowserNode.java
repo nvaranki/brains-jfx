@@ -9,7 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 
 /**
- * Узел дерева для произвольного объекта.
+ * Узел дерева для произвольного {@linkplain Элемент элемента}.
  */
 class BrowserNode extends TreeItem<Элемент>
 {
@@ -22,18 +22,21 @@ class BrowserNode extends TreeItem<Элемент>
         this.метка = метка;
     }
     
+    /**
+     * Строит поддерево от данного узла.
+     * 
+     * @param строитель построитель узлов.
+     */
     void expand( BrowserNodeBuilder строитель )
     {
         Элемент элемент = getValue();
         if( элемент instanceof Структурный )
-        {
             for( Элемент э : ((Структурный)элемент).элементы() )
             {
                 BrowserNode вставка = строитель.узел( э );
-                getChildren().add( вставка );
+                getChildren().add( строитель.позиция( вставка, getChildren() ), вставка );
                 вставка.expand( строитель );
             }
-        }
     }
     
     void addMonitor( Фабрика<BrowserNode,PropertyChangeListener> фабрика )
@@ -56,7 +59,7 @@ class BrowserNode extends TreeItem<Элемент>
             монитор = null;
         }
     }
-
+    
     @Override
     public boolean equals( Object o )
     {

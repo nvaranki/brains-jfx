@@ -48,7 +48,7 @@ class BrowserMonitor implements PropertyChangeListener
                 break;
 
             default:
-                LOGGER.log( Level.SEVERE, "Unsupported change to node received: {0}", evt.getPropertyName() );
+                LOGGER.log( Level.FINE, "Unsupported change to node received: {0}", evt.getPropertyName() );
         }            
     }
 
@@ -81,7 +81,7 @@ class BrowserMonitor implements PropertyChangeListener
         public void run()
         {
             BrowserNode узел = СТРОИТЕЛЬ.узел( ЭЛЕМЕНТ );
-            УЗЕЛ.getChildren().add( узел );
+            УЗЕЛ.getChildren().add( СТРОИТЕЛЬ.позиция( узел, УЗЕЛ.getChildren() ), узел );
             узел.expand( СТРОИТЕЛЬ );
         }
 
@@ -114,16 +114,16 @@ class BrowserMonitor implements PropertyChangeListener
         }
     };
 
-    private static <T> void removeTreeItemChildren( TreeItem<T> ti )
+    private static <T> void removeTreeItemChildren( TreeItem<T> узел )
     {
-        if( !ti.isLeaf() )
+        if( !узел.isLeaf() )
         {
-            for( TreeItem<T> c : ti.getChildren() )
+            for( TreeItem<T> c : узел.getChildren() )
                 removeTreeItemChildren( c );
-            ti.getChildren().clear();
-            if( ti instanceof BrowserNode )
-                ((BrowserNode)ti).removeMonitor();
+            узел.getChildren().clear();
         }
+        if( узел instanceof BrowserNode )
+            ((BrowserNode)узел).removeMonitor();
     }
 
 }

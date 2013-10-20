@@ -36,7 +36,6 @@ public class BrowserView extends TreeView<Элемент>
     
     private final JavaFX JFX;
     private final Контекст КОНТЕКСТ;
-    private final BrowserNodeBuilder СТРОИТЕЛЬ;
     private final ReadOnlyStringProperty title;
     private final List<AbstractJfxAction> actions;
 
@@ -45,14 +44,14 @@ public class BrowserView extends TreeView<Элемент>
         JFX = jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
         КОНТЕКСТ = jfx.контекст;
-        СТРОИТЕЛЬ = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
 
-        setCellFactory( СТРОИТЕЛЬ.фабрика() );
-        BrowserNode узел = СТРОИТЕЛЬ.узел( КОНТЕКСТ.мыслитель );
+        BrowserNodeBuilder строитель = new BrowserNodeBuilder( (TreeView<Элемент>)this, специфика );
+        setCellFactory( строитель.фабрика() );
+        BrowserNode узел = строитель.узел( КОНТЕКСТ.мыслитель );
         setRoot( узел );
-        узел.expand( СТРОИТЕЛЬ );
+        узел.expand( строитель );
         setShowRoot( true );
         setEditable( false );
         int w = Integer.valueOf( КОНТЕКСТ.параметр( Контекст.Параметры.BROWSER_WIDTH ) );

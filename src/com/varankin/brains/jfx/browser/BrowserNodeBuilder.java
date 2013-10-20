@@ -46,6 +46,12 @@ final class BrowserNodeBuilder
         return фабрикаМониторов;
     }
     
+    /**
+     * Создает новый узел дерева для элемента.
+     * 
+     * @param элемент элемент узла.
+     * @return созданный узел.
+     */
     BrowserNode узел( Элемент элемент )
     {
         BrowserNode узел = new BrowserNode( элемент, 
@@ -54,8 +60,22 @@ final class BrowserNodeBuilder
         узел.addMonitor( фабрикаМониторов );
         return узел;
     }
-
-    //<editor-fold defaultstate="collapsed" desc="interface Callback">
+    
+    /**
+     * Вычисляет рекомендуемую позицию для вставки узла в список.
+     * 
+     * @param узел   вставляемый узел.
+     * @param список список, куда будет вставлен узел.
+     * @return позиция для вставки узла.
+     */
+    int позиция( TreeItem<Элемент> узел, List<TreeItem<Элемент>> список )
+    {
+        int позиция = 0;
+        for( int max = список.size(); позиция < max; позиция++ )
+            if( список.get( позиция ).toString().compareTo( узел.toString() ) > 0 )
+                break;
+        return позиция;
+    }
 
     Callback<TreeView<Элемент>,TreeCell<Элемент>> фабрика()
     {
@@ -69,89 +89,6 @@ final class BrowserNodeBuilder
             
         };
     }
-    
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="utilities">
-    
-    /**
-     * Возвращает узел для структуры, заданной последовательностью объектов.
-     *
-     * @param создать {@code true} для создания отсутствующих узлов.
-     * @param путь    обратный путь (лист,...,корень) по дереву отображаемых объектов.
-     * @return узел, соответствующий {@code путь[0]}, или {@code null}, если такового нет,
-     *              а автоматическое создание узлов не предусмотрено.
-     */
-    @Deprecated
-    TreeItem<Элемент> список( boolean создать, Элемент... путь )
-    {
-        TreeItem<Элемент> узел = null;
-
-        if( путь.length == 0 )
-        {
-            TreeItem<Элемент> root = модель.getRoot();
-            if( root != null )
-                узел = root;
-            else if( создать )
-                модель.setRoot( узел = узел( Элемент.ВСЕ_МЫСЛИТЕЛИ ) );
-        }
-        else
-        {
-            // определить базу - узел владельца элемента
-            Элемент[] путь1 = new Элемент[путь.length - 1];
-            System.arraycopy( путь, 1, путь1, 0, путь1.length );
-            TreeItem<Элемент> база = список( создать, путь1 );
-            // найти/содать узел для элемента
-            Элемент элемент = путь[0];
-            узел = найти( элемент, база );
-            if( узел == null && база != null && создать )
-            {
-                узел = узел( элемент );
-                int позиция = позиция( фабрикаНазваний.метка( элемент ), база );
-                база.getChildren().add( позиция, узел );
-            }            
-        }
-        
-        return узел;
-    }
-
-    /**
-     *
-     * @param string
-     * @param список
-     * @return
-     */
-    static private int позиция( String string, TreeItem<Элемент> список )
-    {
-        int позиция = 0;
-        List<TreeItem<Элемент>> children = список.getChildren();
-        for( int max = children.size(); позиция < max; позиция++ )
-            if( children.get( позиция ).toString().compareTo( string ) > 0 )
-                break;
-        return позиция;
-    }
-    
-    static private TreeItem<Элемент> найти(
-            Элемент элемент, TreeItem<Элемент> список )
-    {
-        TreeItem<Элемент> кандидат = null;
-        if( список != null )
-            for( int i = 0, max = список.getChildren().size(); i < max; i++ )
-            {
-                TreeItem<Элемент> node = список.getChildren().get( i );
-                Элемент тест = node.getValue();
-                if( тест == null && элемент == null || тест != null && тест.equals( элемент ) )
-                {
-                    кандидат = node;
-                    break;
-                }
-            }
-        return кандидат;
-    }
-
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="classes">
     
     /**
      * Элемент отображения произвольного узла дерева.
@@ -182,7 +119,5 @@ final class BrowserNodeBuilder
                 }
             }
         }
-    
-    //</editor-fold>
     
 }
