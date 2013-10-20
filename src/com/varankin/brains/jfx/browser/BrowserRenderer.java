@@ -60,7 +60,7 @@ class BrowserRenderer
             }
             view.setEffect( blend );
         }
-}
+    }
 
     static private class IconLocator extends AbstractIconLocator<Image>
     {
@@ -75,7 +75,7 @@ class BrowserRenderer
         {
             return new Image( url.toExternalForm() );
         }
-
+        
     }
     
 }

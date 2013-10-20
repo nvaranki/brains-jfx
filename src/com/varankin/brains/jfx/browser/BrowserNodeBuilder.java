@@ -70,10 +70,16 @@ final class BrowserNodeBuilder
      */
     int позиция( TreeItem<Элемент> узел, List<TreeItem<Элемент>> список )
     {
+        int индексУзла = фабрикаНазваний.индекс( узел.getValue().getClass() );
         int позиция = 0;
         for( int max = список.size(); позиция < max; позиция++ )
-            if( список.get( позиция ).toString().compareTo( узел.toString() ) > 0 )
-                break;
+        {
+            TreeItem<Элемент> тест = список.get( позиция );
+            int индексТеста = фабрикаНазваний.индекс( тест.getValue().getClass() );
+            if( индексТеста < индексУзла ) continue;
+            if( индексТеста > индексУзла ) break;
+            if( тест.toString().compareTo( узел.toString() ) > 0 ) break;
+        }
         return позиция;
     }
 
