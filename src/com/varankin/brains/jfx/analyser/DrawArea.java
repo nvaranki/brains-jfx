@@ -18,6 +18,7 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
     private double t0, tx, v0, vx;
     private int xAdopted, offset;
     private int pixelWidth, pixelHeight;
+    private Color timeAxisColor, valueAxisColor, zeroValueAxisColor;
 
     DrawArea( int width, int height, float vMin, float vMax, long tMin, long tMax )
     {
@@ -25,26 +26,28 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         pixelWidth = width;
         pixelHeight = height;
         buffer = new int[pixelWidth*pixelHeight];
+        timeAxisColor = Color.BLACK;
+        valueAxisColor = Color.BLACK;
+        zeroValueAxisColor = Color.GRAY;
         xAdopted = width - 10;
         t0 = tMin;
         tx = Double.valueOf( width )/(tMax - tMin);
         v0 = vMax;
         vx = Double.valueOf( height )/(vMin - vMax);
-        axes( width, height, vMin < 0f && vMax > 0f );
+        axes( width, height, valueToImage( 0.0F ) );
     }
 
-    final void axes( int width, int height, boolean zero )
+    final void axes( int width, int height, int zero )
     {
         PixelWriter writer = getPixelWriter();
         for( int i = 0; i < width; i++ ) 
-            writer.setColor( i, 0, Color.BLACK ); // timeline
+            writer.setColor( i, 0, getTimeAxisColor() ); // timeline
         for( int i = 0; i < height; i++ ) 
-            writer.setColor( 0, i, Color.BLACK ); // value
-        if( zero )
+            writer.setColor( 0, i, getValueAxisColor() ); // value
+        if( 0 < zero && zero < pixelHeight )
         {
-            int z = valueToImage( 0f );
             for( int i = 1; i < width; i += 2 ) 
-                writer.setColor( i, z, Color.GRAY ); // zero value
+                writer.setColor( i, zero, getZeroValueAxisColor() ); // zero value
         }
     }
 
@@ -87,6 +90,36 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
             getPixelWriter().setPixels( 1, 0, pixelWidth - shift - 1, pixelHeight, pf, buffer, 0, pixelWidth );
             offset -= shift;
         }
+    }
+
+    public Color getTimeAxisColor()
+    {
+        return timeAxisColor;
+    }
+
+    public void setTimeAxisPaint( Color color )
+    {
+        timeAxisColor = color;
+    }
+
+    public Color getValueAxisColor()
+    {
+        return valueAxisColor;
+    }
+
+    public void setValueAxisPaint( Color color )
+    {
+        valueAxisColor = color;
+    }
+
+    public Color getZeroValueAxisColor()
+    {
+        return zeroValueAxisColor;
+    }
+
+    public void setZeroValueAxisPaint( Color color )
+    {
+        zeroValueAxisColor = color;
     }
 
 }
