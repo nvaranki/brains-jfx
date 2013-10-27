@@ -15,8 +15,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 /**
- *
- * @author Николай
+ * График динамического отображения изменения значений по времени. 
+ * 
+ * @author &copy; 2013 Николай Варанкин
  */
 public class TimeLine extends VBox
 {
@@ -71,7 +72,7 @@ public class TimeLine extends VBox
         setPadding( new Insets( 5, 0, 5, 0 ) );
         setSpacing( 5 );
         getChildren().add( buildGraphGrid( daWidth, daHeight, graph, valueRuler, timeRuler ) );
-        getChildren().addAll( buildLabelGrid( daWidth, labelsValue, labelTime ) );
+        getChildren().add( buildLabelGrid( daWidth, labelsValue, labelTime ) );
         
         // DEBUG START
         Runnable observerService = new Runnable()
