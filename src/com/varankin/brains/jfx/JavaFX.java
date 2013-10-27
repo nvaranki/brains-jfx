@@ -30,6 +30,7 @@ public final class JavaFX
     //public final Позиционер позиционер;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
+    private final ScheduledExecutorService ses;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -44,6 +45,7 @@ public final class JavaFX
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>() );
+        ses = new ScheduledThreadPoolExecutor( 10 ); //TODO appl config
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
     }
     
@@ -82,9 +84,17 @@ public final class JavaFX
     /**
      * @return сервис для запуска {@linkplain Task задач}.
      */
-    ExecutorService getExecutorService()
+    public ExecutorService getExecutorService()
     {
         return es;
+    }
+    
+    /**
+     * @return сервис для запуска повторяющихся {@linkplain Task задач}.
+     */
+    public final ScheduledExecutorService getScheduledExecutorService()
+    {
+        return ses;
     }
     
     void старт()
@@ -107,6 +117,7 @@ public final class JavaFX
     void стоп()
     {
         es.shutdown();
+        ses.shutdown();
         платформа.hide();
     }
     
