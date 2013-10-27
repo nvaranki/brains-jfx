@@ -5,6 +5,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 /**
  * Процесс динамического рисования отметок в графической зоне. 
@@ -15,22 +19,35 @@ import javafx.concurrent.Task;
 final class DrawAreaPainter implements Runnable
 {
     private static final Logger LOGGER = Logger.getLogger( DrawAreaPainter.class.getName() );
+    public static final int[][] DOT     = new int[][]{{0,0}};
+    public static final int[][] CROSS   = new int[][]{{0,0},{0,1},{1,0},{0,-1},{-1,0}};
+    public static final int[][] CROSS45 = new int[][]{{0,0},{1,1},{1,-1},{-1,-1},{-1,1}};
     private static long id = 0L;
 
-    private final DrawArea drawArea;
+    private final WritableImage image;
+    private final TimeConvertor timeConvertor;
+    private final ValueConvertor valueConvertor;
     private final BlockingQueue<Dot> очередь;
     private final int fragmentSize;
     private final long fragmentTimeout;
     private final TimeUnit fragmentUnits;
     private volatile Thread thread;
+    private final Color color;
+    private final int[][] pattern;
 
     /**
      * @param drawArea графическая зона.
+     * @param color    цвет рисования шаблона.
+     * @param pattern  шаблон для рисования как массив точек (x,y).
      * @param очередь  очередь отметок для прорисовки.
      */
-    DrawAreaPainter( DrawArea drawArea, BlockingQueue<Dot> очередь )
+    DrawAreaPainter( DrawArea drawArea, Color color, int[][] pattern, BlockingQueue<Dot> очередь )
     {
-        this.drawArea = drawArea;
+        this.image = drawArea;
+        this.timeConvertor = drawArea;
+        this.valueConvertor = drawArea;
+        this.color = color;
+        this.pattern = pattern;
         this.очередь = очередь;
         //TODO appl. setup
         fragmentUnits = TimeUnit.MILLISECONDS;
@@ -83,6 +100,34 @@ final class DrawAreaPainter implements Runnable
         if( thread != null ) thread.interrupt();
     }
 
+    ImageView createSample( int width, int height )
+    {
+        WritableImage sample = new WritableImage( width, height );
+        paint( width/2, height/2, sample );
+        return new ImageView( sample );
+    }
+
+    private void paint( Dot dot )
+    {
+        int x = timeConvertor.timeToImage( dot.t );
+        int y = valueConvertor.valueToImage( dot.v );
+        paint( x, y, image );
+    }
+
+    private void paint( int x, int y, WritableImage image )
+    {
+        int width  = (int)Math.round( image.getWidth() );
+        int height = (int)Math.round( image.getHeight() );
+        PixelWriter writer = image.getPixelWriter();
+        for( int[] offsets : pattern )
+        {
+            int xo = x + offsets[0];
+            int yo = y + offsets[1];
+            if( 0 <= xo && xo < width && 0 <= yo && yo < height )
+                writer.setColor( xo, yo, color );
+        }
+    }
+
     /**
      * Рисовальщик блока отметок.
      */
@@ -106,10 +151,7 @@ final class DrawAreaPainter implements Runnable
         {
             LOGGER.log( Level.FINEST, "Drawing {0} dots.", количество );
             for( int i = 0; i < количество; i++ )
-            {
-                Dot dot = блок[i];
-                DrawAreaPainter.this.drawArea.mark( dot.v, dot.t, dot.color, dot.pattern );
-            }
+                DrawAreaPainter.this.paint( блок[i] );
             return null;
         }
         

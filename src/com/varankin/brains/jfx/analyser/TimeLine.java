@@ -2,13 +2,8 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import java.util.Queue;
-import java.util.Timer;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,8 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 
 /**
  *
@@ -27,20 +20,23 @@ import javafx.scene.transform.Translate;
  */
 public class TimeLine extends VBox
 {
-    private final BlockingQueue<Dot> queue;
     private final DrawArea drawArea;
     private final TimeRuler timeRuler;
     private final ValueRuler valueRuler;
+    private final FlowPane labelsValue;
+    private final ExecutorService executorService;
     
     private ScheduledFuture refreshService;
 
     public TimeLine( final JavaFX jfx )
     {
         //TODO appl param
-        long refreshRate = 200L; // ms
+        long refreshRate = 10L; // ms
         TimeUnit refreshRateUnit = TimeUnit.MILLISECONDS;
 //        setPrefHeight( 100 );
 //        setPrefWidth( 600 );
+        
+        executorService = jfx.getExecutorService();
         
         // DEBUG START
         float vMin = -1f;
@@ -65,39 +61,29 @@ public class TimeLine extends VBox
         Label labelTime = new Label("Time");
         labelTime.setAlignment( Pos.BASELINE_RIGHT );
         
-        FlowPane labelsValue = new FlowPane();
+        labelsValue = new FlowPane();
         labelsValue.setHgap( 5 );
         labelsValue.setPadding( new Insets( 0, 5, 0, 5 ) );
         labelsValue.setAlignment( Pos.CENTER );
         labelsValue.setMinHeight( labelTime.getMinHeight() );
         labelsValue.setPrefHeight( labelTime.getPrefHeight() );
 
-        // DEBUG START
-        Label labelValue1 = new Label("Value 1");
-        Label labelValue2 = new Label("Value 2");
-        Label labelValue3 = new Label("Value 3");
-        Label labelValue4 = new Label("Value 4");
-        labelsValue.getChildren().addAll( labelValue1, labelValue2, labelValue3, labelValue4 );
-        // DEBUG END
-        
         setPadding( new Insets( 5, 0, 5, 0 ) );
         setSpacing( 5 );
         getChildren().add( buildGraphGrid( daWidth, daHeight, graph, valueRuler, timeRuler ) );
         getChildren().addAll( buildLabelGrid( daWidth, labelsValue, labelTime ) );
         
-        queue = new LinkedBlockingQueue<>();
-        jfx.getExecutorService().submit( new DrawAreaPainter( drawArea, queue ) );
-        
         // DEBUG START
         Runnable observerService = new Runnable()
         {
+            Queue<Dot> queue1 = TimeLine.this.addValue( "Value 1", Color.RED,  DrawAreaPainter.CROSS );
+            Queue<Dot> queue2 = TimeLine.this.addValue( "Value 2", Color.BLUE, DrawAreaPainter.CROSS45 );
+            
             @Override
             public void run()
             {
-                queue.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis(), 
-                        Color.RED, Dot.CROSS ) );
-                queue.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis(), 
-                        Color.BLUE, Dot.CROSS45 ) );
+                queue1.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
+                queue2.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
             }
         };
         jfx.getScheduledExecutorService()
@@ -108,7 +94,7 @@ public class TimeLine extends VBox
 //            queue.add( new Dot( (float)Math.random() * 2f - 1f, tMin + i * 1000L, Color.BLUE, Dot.CROSS45 ) );
 //        queue.add( new Dot( 0f, tMin, Color.GREEN, Dot.DOT ) );
         // DEBUG END
-        
+
         refreshService = jfx.getScheduledExecutorService().scheduleAtFixedRate( 
                 new RefreshService(), 0L, refreshRate, refreshRateUnit );
     }
@@ -166,8 +152,15 @@ public class TimeLine extends VBox
         return grid;
     }
     
-    public final Queue<Dot> getQueue()
+    public final Queue<Dot> addValue( String name, Color color, int[][] pattern )
     {
+        Label label = new Label( name );
+        labelsValue.getChildren().add( label );
+        BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
+        DrawAreaPainter painter = new DrawAreaPainter( drawArea, color, pattern, queue );
+        executorService.submit( painter );
+        label.setGraphic( painter.createSample( 16, 16 ) );
+        label.setGraphicTextGap( 0 );
         return queue;
     }
 

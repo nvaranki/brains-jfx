@@ -63,22 +63,6 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         return (int)Math.round( ( v - v0 ) * vx );
     }
     
-    void mark( float v, long t, Color color, int[][] pattern )
-    {
-        int x = timeToImage( t );
-        int y = valueToImage( v );
-        double width = getWidth();
-        double height = getHeight();
-        PixelWriter writer = getPixelWriter();
-        for( int[] offsets : pattern )
-        {
-            int xo = x + offsets[0];
-            int yo = y + offsets[1];
-            if( 0 <= xo && xo < width && 0 <= yo && yo < height )
-                writer.setColor( xo, yo, color );
-        }
-    }
-
     void adopt( long now )
     {
         int shift = timeToImage( now ) - xAdopted;
