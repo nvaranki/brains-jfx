@@ -14,18 +14,20 @@ import javafx.scene.paint.Color;
  */
 final class DrawArea extends WritableImage implements TimeConvertor, ValueConvertor
 {
-    private final int[] buffer;
+    private final int blank[][];
     private double t0, tx, v0, vx;
     private int xAdopted, offset;
-    private int pixelWidth, pixelHeight;
+    private int pixelWidth, pixelHeight, zero;
     private Color timeAxisColor, valueAxisColor, zeroValueAxisColor;
+    private final WritablePixelFormat<IntBuffer> pixelFormat;
 
     DrawArea( int width, int height, float vMin, float vMax, long tMin, long tMax )
     {
         super( width, height );
+        pixelFormat = PixelFormat.getIntArgbInstance();
         pixelWidth = width;
         pixelHeight = height;
-        buffer = new int[pixelWidth*pixelHeight];
+        blank = new int[][]{ new int[pixelHeight], new int[pixelHeight] };
         timeAxisColor = Color.BLACK;
         valueAxisColor = Color.BLACK;
         zeroValueAxisColor = Color.GRAY;
@@ -34,10 +36,11 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         tx = Double.valueOf( width )/(tMax - tMin);
         v0 = vMax;
         vx = Double.valueOf( height )/(vMin - vMax);
-        axes( width, height, valueToImage( 0.0F ) );
+        zero = valueToImage( 0.0F );
+        axes( width, height );
     }
 
-    final void axes( int width, int height, int zero )
+    final void axes( int width, int height )
     {
         PixelWriter writer = getPixelWriter();
         for( int i = 0; i < width; i++ ) 
@@ -46,8 +49,26 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
             writer.setColor( 0, i, getValueAxisColor() ); // value
         if( 0 < zero && zero < pixelHeight )
         {
-            for( int i = 1; i < width; i += 2 ) 
+            for( int i = 2; i < width; i += 2 ) 
                 writer.setColor( i, zero, getZeroValueAxisColor() ); // zero value
+        }
+        getPixelReader().getPixels( 2, 0, 1, pixelHeight, pixelFormat, blank[0], 0, 1 );
+        getPixelReader().getPixels( 1, 0, 1, pixelHeight, pixelFormat, blank[1], 0, 1 );
+    }
+
+    void adopt( long now )
+    {
+        int shift = timeToImage( now ) - xAdopted;
+        if( shift > 0 )
+        {
+            // подправить расчет
+            offset -= shift;
+            // смещение всей зоны; +-1 для сохранения оси значений
+            PixelWriter writer = getPixelWriter();
+            writer.setPixels( 1, 0, pixelWidth - shift - 1, pixelHeight, getPixelReader(), shift + 1, 0 );
+            // очистить справа от скопированной зоны
+            for( int i = pixelWidth - shift; i < pixelWidth; i++ )
+                writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[(-offset%2)^(i%2)], 0, 1 );
         }
     }
 
@@ -63,19 +84,6 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         return (int)Math.round( ( v - v0 ) * vx );
     }
     
-    void adopt( long now )
-    {
-        int shift = timeToImage( now ) - xAdopted;
-        shift -= shift %2; // ensures dotted axis copied well  TODO verify approach;
-        if( shift > 0 )
-        {
-            WritablePixelFormat<IntBuffer> pf = PixelFormat.getIntArgbInstance();
-            getPixelReader().getPixels( shift + 1, 0, pixelWidth - shift - 1, pixelHeight, pf, buffer, 0, pixelWidth );
-            getPixelWriter().setPixels( 1, 0, pixelWidth - shift - 1, pixelHeight, pf, buffer, 0, pixelWidth );
-            offset -= shift;
-        }
-    }
-
     public Color getTimeAxisColor()
     {
         return timeAxisColor;

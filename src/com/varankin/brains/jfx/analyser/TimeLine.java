@@ -28,18 +28,19 @@ final class TimeLine extends VBox
     private final ValueRuler valueRuler;
     private final FlowPane labelsValue;
     private final ExecutorService executorService;
+    private final ScheduledExecutorService scheduledExecutorService;
     
-    private ScheduledFuture refreshService;
-
+    private long refreshRate;
+    private TimeUnit refreshRateUnit;
+    
     TimeLine( final JavaFX jfx )
     {
         //TODO appl param
-        long refreshRate = 10L; // ms
-        TimeUnit refreshRateUnit = TimeUnit.MILLISECONDS;
-//        setPrefHeight( 100 );
-//        setPrefWidth( 600 );
+        refreshRate = 100L; // ms
+        refreshRateUnit = TimeUnit.MILLISECONDS;
         
         executorService = jfx.getExecutorService();
+        scheduledExecutorService = jfx.getScheduledExecutorService();
         
         // DEBUG START
         float vMin = -1f;
@@ -60,9 +61,10 @@ final class TimeLine extends VBox
         timeRuler = new TimeRuler( daWidth, tMin, tMax, drawArea );
         valueRuler = new ValueRuler( daHeight, vMin, vMax, drawArea );
 
-        
-        Label labelTime = new Label("Time");
-        labelTime.setAlignment( Pos.BASELINE_RIGHT );
+        CheckBox labelTime = new CheckBox( "Time" );
+        labelTime.setSelected( true );
+        labelTime.setOnAction( new Holder( labelTime, scheduledExecutorService.scheduleAtFixedRate( 
+                new RefreshService(), 0L, refreshRate, refreshRateUnit ) ) );
         
         labelsValue = new FlowPane();
         labelsValue.setHgap( 30 );
@@ -91,17 +93,8 @@ final class TimeLine extends VBox
                 queue3.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
             }
         };
-        jfx.getScheduledExecutorService()
-                .scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
-//        for( int i = 1; i < 60; i++ )
-//            queue.add( new Dot( (float)Math.random() * 2f - 1f, tMin + i * 1000L, Color.RED, Dot.CROSS ) );
-//        for( int i = 1; i < 60; i++ ) 
-//            queue.add( new Dot( (float)Math.random() * 2f - 1f, tMin + i * 1000L, Color.BLUE, Dot.CROSS45 ) );
-//        queue.add( new Dot( 0f, tMin, Color.GREEN, Dot.DOT ) );
+        scheduledExecutorService.scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
         // DEBUG END
-
-        refreshService = jfx.getScheduledExecutorService().scheduleAtFixedRate( 
-                new RefreshService(), 0L, refreshRate, refreshRateUnit );
     }
     
     private static GridPane buildGraphGrid( int daWidth, int daHeight, 
@@ -171,19 +164,56 @@ final class TimeLine extends VBox
         DrawAreaPainter painter = new DrawAreaPainter( drawArea, color, pattern, queue );
         
         WritableImage sample = new WritableImage( 16, 16 );
+        Color outlineColor = Color.LIGHTGRAY;
+        for( int i = 1; i < 15; i ++ )
+        {
+            sample.getPixelWriter().setColor( i,  0, outlineColor );
+            sample.getPixelWriter().setColor( i, 15, outlineColor );
+            sample.getPixelWriter().setColor(  0, i, outlineColor );
+            sample.getPixelWriter().setColor( 15, i, outlineColor );
+        }
         painter.paint( 7, 7, sample );
 
         CheckBox label = new CheckBox( name );
         label.setGraphic( new ImageView( sample ) );
-        label.setGraphicTextGap( 0 );
-        label.setOnAction( new Selector( label, painter, executorService.submit( painter ) ) );
+        label.setGraphicTextGap( 3 );
         label.setSelected( true );
+        label.setOnAction( new Selector( label, painter, executorService.submit( painter ) ) );
         
         labelsValue.getChildren().add( label );
         
         return queue;
     }
     
+    /**
+     * Контроллер движения временной шкалы.
+     */
+    private class Holder implements EventHandler<ActionEvent>
+    {
+        private final CheckBox cb;
+        private Future<?> process;
+
+        Holder( CheckBox cb, Future<?> process )
+        {
+            this.cb = cb;
+            this.process = process;
+        }
+        
+        @Override
+        public void handle( ActionEvent t )
+        {
+            if( cb.selectedProperty().get() )
+                process = scheduledExecutorService.scheduleAtFixedRate( 
+                        new RefreshService(), 0L, refreshRate, refreshRateUnit );
+            else
+                process.cancel( true );
+        }
+        
+    }
+    
+    /**
+     * Контроллер видимости значений.
+     */
     private class Selector implements EventHandler<ActionEvent>
     {
         private final CheckBox cb;
@@ -207,6 +237,9 @@ final class TimeLine extends VBox
         }
     }
 
+    /**
+     * Сервис движения временной шкалы.
+     */
     private class RefreshService implements Runnable
     {
         @Override
@@ -216,6 +249,9 @@ final class TimeLine extends VBox
         }
     }
     
+    /**
+     * Контроллер сдвига временной шкалы.
+     */
     private class Adopter implements Runnable
     {
         private final long moment;
