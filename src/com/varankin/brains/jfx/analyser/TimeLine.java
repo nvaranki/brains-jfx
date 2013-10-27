@@ -4,6 +4,8 @@ import com.varankin.brains.jfx.JavaFX;
 import java.util.Queue;
 import java.util.concurrent.*;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -63,7 +65,7 @@ final class TimeLine extends VBox
         labelTime.setAlignment( Pos.BASELINE_RIGHT );
         
         labelsValue = new FlowPane();
-        labelsValue.setHgap( 5 );
+        labelsValue.setHgap( 30 );
         labelsValue.setPadding( new Insets( 0, 5, 0, 5 ) );
         labelsValue.setAlignment( Pos.CENTER );
         labelsValue.setMinHeight( labelTime.getMinHeight() );
@@ -79,12 +81,14 @@ final class TimeLine extends VBox
         {
             Queue<Dot> queue1 = TimeLine.this.addValue( "Value 1", Color.RED,  DrawAreaPainter.CROSS );
             Queue<Dot> queue2 = TimeLine.this.addValue( "Value 2", Color.BLUE, DrawAreaPainter.CROSS45 );
+            Queue<Dot> queue3 = TimeLine.this.addValue( "Value 3", Color.GREEN, DrawAreaPainter.BOX );
             
             @Override
             public void run()
             {
                 queue1.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
                 queue2.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
+                queue3.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
             }
         };
         jfx.getScheduledExecutorService()
@@ -154,7 +158,7 @@ final class TimeLine extends VBox
     }
     
     /**
-     * Добавляет отображаемое значение и создает очередь для рисуемых отметок на графике.
+     * Добавляет отображаемое значение и создает очередь для отметок, рисуемых на графике.
      * 
      * @param name    название значения.
      * @param color   цвет рисования шаблона.
@@ -167,16 +171,40 @@ final class TimeLine extends VBox
         DrawAreaPainter painter = new DrawAreaPainter( drawArea, color, pattern, queue );
         
         WritableImage sample = new WritableImage( 16, 16 );
-        painter.paint( 8, 8, sample );
+        painter.paint( 7, 7, sample );
 
-        Label label = new Label( name );
+        CheckBox label = new CheckBox( name );
         label.setGraphic( new ImageView( sample ) );
         label.setGraphicTextGap( 0 );
+        label.setOnAction( new Selector( label, painter, executorService.submit( painter ) ) );
+        label.setSelected( true );
         
         labelsValue.getChildren().add( label );
-        executorService.submit( painter );
         
         return queue;
+    }
+    
+    private class Selector implements EventHandler<ActionEvent>
+    {
+        private final CheckBox cb;
+        private final DrawAreaPainter painter;
+        private Future<?> process;
+
+        Selector( CheckBox cb, DrawAreaPainter painter, Future<?> process ) 
+        {
+            this.cb = cb;
+            this.painter = painter;
+            this.process = process;
+        }
+        
+        @Override
+        public void handle( ActionEvent _ ) 
+        {
+            if( cb.selectedProperty().get() )
+                process = executorService.submit( painter );
+            else
+                process.cancel( true );
+        }
     }
 
     private class RefreshService implements Runnable

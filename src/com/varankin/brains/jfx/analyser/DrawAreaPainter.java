@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -20,6 +19,7 @@ final class DrawAreaPainter implements Runnable
 {
     private static final Logger LOGGER = Logger.getLogger( DrawAreaPainter.class.getName() );
     public static final int[][] DOT     = new int[][]{{0,0}};
+    public static final int[][] BOX     = new int[][]{{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,0},{-1,1}};
     public static final int[][] CROSS   = new int[][]{{0,0},{0,1},{1,0},{0,-1},{-1,0}};
     public static final int[][] CROSS45 = new int[][]{{0,0},{1,1},{1,-1},{-1,-1},{-1,1}};
     private static long id = 0L;
