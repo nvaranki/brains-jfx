@@ -10,7 +10,10 @@ import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
@@ -22,7 +25,7 @@ import javafx.scene.transform.Translate;
  *
  * @author Николай
  */
-public class TimeLine extends Pane
+public class TimeLine extends VBox
 {
     private final BlockingQueue<Dot> queue;
     private final DrawArea drawArea;
@@ -58,37 +61,29 @@ public class TimeLine extends Pane
         timeRuler = new TimeRuler( daWidth, tMin, tMax, drawArea );
         valueRuler = new ValueRuler( daHeight, vMin, vMax, drawArea );
 
-        Label label = new Label("Value label");
-        label.setLayoutY( daHeight );
-        label.rotateProperty().setValue( -90 );
         
-        Label labelTime = new Label("Time axis");
-        //labelTime.setAlignment( Pos.BASELINE_RIGHT );
-        Label labelValue = new Label("Value axis");
-        //labelValue.setLayoutY( 100 );
-        labelValue.getTransforms().add( new Translate( 0, 100 ) );//setRotate( -90 );
-        labelValue.getTransforms().add( new Rotate( -90 ) );//setRotate( -90 );
-        labelValue.autosize();
+        Label labelTime = new Label("Time");
+        labelTime.setAlignment( Pos.BASELINE_RIGHT );
         
-        GridPane grid = new GridPane();
-        GridPane.setValignment( labelValue, VPos.TOP );
-        GridPane.setHalignment( labelTime, HPos.RIGHT );
-        grid.add( label, 0, 0, 1, 3 );
-        grid.add( labelValue, 1, 0 );
-        grid.add( valueRuler, 2, 0 );
-        grid.add( timeRuler, 3, 1 );
-        grid.add( labelTime, 3, 2 );
-        grid.add( graph, 3, 0 );
-//        grid.setGridLinesVisible( true );
-//        ColumnConstraints cc1 = new ColumnConstraints();//Builder.create().prefWidth( 25d );
-//        cc1.setPrefWidth( 25d );
-//        cc1.setHgrow( Priority.NEVER );
-//        ColumnConstraints cc0 = new ColumnConstraints();//Builder.create().prefWidth( 25d );
-//        cc0.setPrefWidth( 35d );
-//        cc0.setHgrow( Priority.NEVER );
-//        grid.getColumnConstraints().addAll( cc0, cc1 );
+        FlowPane labelsValue = new FlowPane();
+        labelsValue.setHgap( 5 );
+        labelsValue.setPadding( new Insets( 0, 5, 0, 5 ) );
+        labelsValue.setAlignment( Pos.CENTER );
+        labelsValue.setMinHeight( labelTime.getMinHeight() );
+        labelsValue.setPrefHeight( labelTime.getPrefHeight() );
+
+        // DEBUG START
+        Label labelValue1 = new Label("Value 1");
+        Label labelValue2 = new Label("Value 2");
+        Label labelValue3 = new Label("Value 3");
+        Label labelValue4 = new Label("Value 4");
+        labelsValue.getChildren().addAll( labelValue1, labelValue2, labelValue3, labelValue4 );
+        // DEBUG END
         
-        getChildren().add( grid );
+        setPadding( new Insets( 5, 0, 5, 0 ) );
+        setSpacing( 5 );
+        getChildren().add( buildGraphGrid( daWidth, daHeight, graph, valueRuler, timeRuler ) );
+        getChildren().addAll( buildLabelGrid( daWidth, labelsValue, labelTime ) );
         
         queue = new LinkedBlockingQueue<>();
         jfx.getExecutorService().submit( new DrawAreaPainter( drawArea, queue ) );
@@ -118,11 +113,64 @@ public class TimeLine extends Pane
                 new RefreshService(), 0L, refreshRate, refreshRateUnit );
     }
     
+    private static GridPane buildGraphGrid( int daWidth, int daHeight, 
+            Node graph, Node valueRuler, Node timeRuler )
+    {
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 45d );
+        cc0.setHgrow( Priority.NEVER );
+        cc0.setHalignment( HPos.RIGHT );
+        
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setPrefWidth( daWidth );
+        cc1.setMinWidth( daWidth );
+        cc1.setHgrow( Priority.ALWAYS );
+        cc1.setHalignment( HPos.LEFT );
+        
+        RowConstraints rc0 = new RowConstraints();
+        rc0.setPrefHeight( daHeight );
+        rc0.setMinHeight( daHeight );
+        rc0.setVgrow( Priority.ALWAYS );
+        rc0.setValignment( VPos.BOTTOM );
+        
+        RowConstraints rc1 = new RowConstraints();
+        rc1.setMinHeight( 25d );
+        rc1.setVgrow( Priority.NEVER );
+        rc1.setValignment( VPos.TOP );
+
+        GridPane grid = new GridPane();
+        grid.getColumnConstraints().addAll( cc0, cc1 );
+        grid.getRowConstraints().addAll( rc0, rc1 );
+        grid.add( valueRuler, 0, 0 );
+        grid.add( timeRuler, 1, 1 );
+        grid.add( graph, 1, 0 );
+        return grid;
+    }
+    
+    private static GridPane buildLabelGrid( int daWidth, Node labelsValue, Node labelTime )
+    {
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setHgrow( Priority.ALWAYS );
+        cc0.setHalignment( HPos.CENTER );
+        
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.NEVER );
+        cc1.setHalignment( HPos.RIGHT );
+        
+        GridPane grid = new GridPane();
+        grid.setPrefWidth( daWidth + 45 );
+        grid.setMaxWidth( daWidth + 45 );
+        grid.getColumnConstraints().addAll( cc0, cc1 );
+        grid.add( labelsValue, 0, 0 );
+        grid.add( labelTime, 1, 0 );
+        return grid;
+    }
+    
     public final Queue<Dot> getQueue()
     {
         return queue;
     }
-    
+
     private class RefreshService implements Runnable
     {
         @Override
