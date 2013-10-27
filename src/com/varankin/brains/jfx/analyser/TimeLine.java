@@ -19,7 +19,7 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public class TimeLine extends VBox
+final class TimeLine extends VBox
 {
     private final DrawArea drawArea;
     private final TimeRuler timeRuler;
@@ -29,7 +29,7 @@ public class TimeLine extends VBox
     
     private ScheduledFuture refreshService;
 
-    public TimeLine( final JavaFX jfx )
+    TimeLine( final JavaFX jfx )
     {
         //TODO appl param
         long refreshRate = 10L; // ms
@@ -153,15 +153,29 @@ public class TimeLine extends VBox
         return grid;
     }
     
-    public final Queue<Dot> addValue( String name, Color color, int[][] pattern )
+    /**
+     * Добавляет отображаемое значение и создает очередь для рисуемых отметок на графике.
+     * 
+     * @param name    название значения.
+     * @param color   цвет рисования шаблона.
+     * @param pattern шаблон отметки на графике.
+     * @return очередь точек для рисования отметок на графике.
+     */
+    Queue<Dot> addValue( String name, Color color, int[][] pattern )
     {
-        Label label = new Label( name );
-        labelsValue.getChildren().add( label );
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DrawAreaPainter painter = new DrawAreaPainter( drawArea, color, pattern, queue );
-        executorService.submit( painter );
-        label.setGraphic( painter.createSample( 16, 16 ) );
+        
+        WritableImage sample = new WritableImage( 16, 16 );
+        painter.paint( 8, 8, sample );
+
+        Label label = new Label( name );
+        label.setGraphic( new ImageView( sample ) );
         label.setGraphicTextGap( 0 );
+        
+        labelsValue.getChildren().add( label );
+        executorService.submit( painter );
+        
         return queue;
     }
 

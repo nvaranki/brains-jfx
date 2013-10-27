@@ -100,13 +100,6 @@ final class DrawAreaPainter implements Runnable
         if( thread != null ) thread.interrupt();
     }
 
-    ImageView createSample( int width, int height )
-    {
-        WritableImage sample = new WritableImage( width, height );
-        paint( width/2, height/2, sample );
-        return new ImageView( sample );
-    }
-
     private void paint( Dot dot )
     {
         int x = timeConvertor.timeToImage( dot.t );
@@ -114,7 +107,7 @@ final class DrawAreaPainter implements Runnable
         paint( x, y, image );
     }
 
-    private void paint( int x, int y, WritableImage image )
+    void paint( int x, int y, WritableImage image )
     {
         int width  = (int)Math.round( image.getWidth() );
         int height = (int)Math.round( image.getHeight() );
