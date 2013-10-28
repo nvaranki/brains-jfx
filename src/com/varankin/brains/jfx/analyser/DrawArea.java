@@ -57,7 +57,7 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         getPixelReader().getPixels( 1, 0, 1, pixelHeight, pixelFormat, blank[1], 0, 1 );
     }
 
-    void adopt( long now )
+    private void adopt( long now )
     {
         int shift = timeToImage( now ) - xAdopted;
         if( shift > 0 )
