@@ -13,18 +13,21 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class DrawArea extends WritableImage implements TimeConvertor, ValueConvertor
+final class DrawArea extends WritableImage
 {
     private final int blank[][];
-    private double t0, tx, v0, vx;
-    private int xAdopted, offset;
-    private int pixelWidth, pixelHeight, zero;
+    private final TimeConvertor timeConvertor;
+    private final ValueConvertor valueConvertor;
+    private int xAdopted;
+    private int pixelWidth, pixelHeight;//, zero;
     private Color timeAxisColor, valueAxisColor, zeroValueAxisColor;
     private final WritablePixelFormat<IntBuffer> pixelFormat;
 
-    DrawArea( int width, int height, float vMin, float vMax, long tMin, long tMax )
+    DrawArea( int width, int height, TimeConvertor tc, ValueConvertor vc )
     {
         super( width, height );
+        timeConvertor = tc;
+        valueConvertor = vc;
         pixelFormat = PixelFormat.getIntArgbInstance();
         pixelWidth = width;
         pixelHeight = height;
@@ -33,12 +36,6 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         zeroValueAxisColor = Color.GRAY;
         xAdopted = width - 10;
 
-        t0 = tMin;
-        tx = Double.valueOf( width )/(tMax - tMin);
-        v0 = vMax;
-        vx = Double.valueOf( height )/(vMin - vMax);
-        zero = valueToImage( 0.0F );
-        
         axes( width, height );
 
         blank = new int[][]{ new int[pixelHeight], new int[pixelHeight] };
@@ -53,6 +50,7 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
             writer.setColor( i, 0, getTimeAxisColor() ); // timeline
         for( int i = 0; i < height; i++ ) 
             writer.setColor( 0, i, getValueAxisColor() ); // value
+        int zero = valueConvertor.valueToImage( 0.0F );
         if( 0 < zero && zero < pixelHeight )
         {
             for( int i = 2; i < width; i += 2 ) 
@@ -62,11 +60,12 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
 
     private void adopt( long now )
     {
-        int shift = timeToImage( now ) - xAdopted;
+        int shift = timeConvertor.timeToImage( now ) - xAdopted;
         if( shift > 0 )
         {
             // подправить расчет
-            offset -= shift;
+            long offset = timeConvertor.getOffset() - shift;
+            timeConvertor.setOffset( offset );
             // смещение всей зоны; +-1 для сохранения оси значений
             PixelWriter writer = getPixelWriter();
             int width = pixelWidth - shift - 1;
@@ -74,22 +73,10 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
                 writer.setPixels( 1, 0, width, pixelHeight, getPixelReader(), shift + 1, 0 );
             // очистить справа от скопированной зоны
             for( int i = Math.max( 1, pixelWidth - shift ); i < pixelWidth; i++ )
-                writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[(-offset%2)^(i%2)], 0, 1 );
+                writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[(int)(-offset%2)^(i%2)], 0, 1 );
         }
     }
 
-    @Override
-    public int timeToImage( long t )
-    {
-        return offset + (int)Math.round( ( t - t0 ) * tx );
-    }
-
-    @Override
-    public int valueToImage( float v )
-    {
-        return (int)Math.round( ( v - v0 ) * vx );
-    }
-    
     Runnable newRefreshServiceInstance()
     {
         return new RefreshService();

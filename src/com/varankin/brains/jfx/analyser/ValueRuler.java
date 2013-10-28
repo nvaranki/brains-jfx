@@ -11,21 +11,25 @@ import javafx.scene.transform.Translate;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class ValueRuler extends AbstractRuler
+class ValueRuler extends AbstractRuler implements ValueConvertor
 {
     private final double tickShift;
+    private double v0, vx;
 
-    ValueRuler( int daHeight, float vMin, float vMax, ValueConvertor convertor )
+    ValueRuler( int height, float vMin, float vMax )
     {
         //TODO appl. param.
         tickShift = 35d;
         double factor = 1d; // 1, 2, 5
         int daStepMin = 5; // min 5 pixels in between ticks
-        float step = (float)roundToFactor( ( vMax - vMin ) / ( daHeight / daStepMin ), factor );
-        generate( daHeight, vMin, vMax, step, convertor );
+        
+        v0 = vMax;
+        vx = Double.valueOf( height )/(vMin - vMax);
+        float step = (float)roundToFactor( ( vMax - vMin ) / ( height / daStepMin ), factor );
+        generate( height, vMin, vMax, step );
     }
 
-    private void generate( int daHeight, float vMin, float vMax, float step, ValueConvertor convertor )
+    private void generate( int daHeight, float vMin, float vMax, float step )
     {
         float size = vMax - vMin;
         float offset = vMin % step;
@@ -33,7 +37,7 @@ class ValueRuler extends AbstractRuler
         for( int i = 0; i <= stepCount; i++ )
         {
             float v = vMin - offset + step * i;
-            int y = convertor.valueToImage( v );
+            int y = valueToImage( v );
             long f = Math.round( (double)v / step );
             if( 0 <= y && y < daHeight )
                 generate( y, Float.toString( f * step ), f );
@@ -68,6 +72,12 @@ class ValueRuler extends AbstractRuler
         double blank = valueBounds.getMaxY(); //TODO verify approach
         double shift = tickRight - 10d - valueRight - blank;
         return shift;
+    }
+    
+    @Override
+    public int valueToImage( float v )
+    {
+        return (int)Math.round( ( v - v0 ) * vx );
     }
     
 }

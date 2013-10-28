@@ -34,15 +34,14 @@ final class TimeLine extends VBox
         int daHeight = 100;
         // DEBUG END
         
-        drawArea = new DrawArea( daWidth, daHeight, vMin, vMax, tMin, tMax );
+        timeRuler = new TimeRuler( daWidth, tMin, tMax );
+        valueRuler = new ValueRuler( daHeight, vMin, vMax );
+        drawArea = new DrawArea( daWidth, daHeight, timeRuler, valueRuler );
         ImageView graph = new ImageView();
         graph.setLayoutY( daHeight - 1 );
         graph.setScaleY( -1 );
         graph.setPreserveRatio( true );
         graph.setImage( drawArea );
-
-        timeRuler = new TimeRuler( daWidth, tMin, tMax, drawArea );
-        valueRuler = new ValueRuler( daHeight, vMin, vMax, drawArea );
 
         setPadding( new Insets( 5, 0, 5, 0 ) );
         setSpacing( 5 );
@@ -113,7 +112,8 @@ final class TimeLine extends VBox
     Queue<Dot> addValue( String name, Color color, int[][] pattern )
     {
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
-        DrawAreaPainter painter = new DrawAreaPainter( drawArea, color, pattern, queue );
+        DrawAreaPainter painter = new DrawAreaPainter( drawArea, timeRuler, valueRuler, 
+                color, pattern, queue );
         controlBar.addValue( name, painter );
         return queue;
     }

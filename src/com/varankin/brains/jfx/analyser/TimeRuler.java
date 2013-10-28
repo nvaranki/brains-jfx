@@ -9,19 +9,24 @@ import javafx.scene.text.Text;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class TimeRuler extends AbstractRuler
+class TimeRuler extends AbstractRuler implements TimeConvertor
 {
+    private double t0, tx;
+    private long offset;
 
-    TimeRuler( int daWidth, long tMin, long tMax, TimeConvertor convertor )
+    TimeRuler( int width, long tMin, long tMax )
     {
         //TODO appl. param.
         double factor = 2d; // 1, 2, 5
         int daStepMin = 10; // min 10 pixels in between ticks
-        long step = (long)roundToFactor( ( tMax - tMin ) / ( daWidth / daStepMin ), factor );
-        generate( daWidth, tMin, tMax, step, convertor );
+        
+        t0 = tMin;
+        tx = Double.valueOf( width )/(tMax - tMin);
+        long step = (long)roundToFactor( ( tMax - tMin ) / ( width / daStepMin ), factor );
+        generate( width, tMin, tMax, step );
     }
 
-    private void generate( int daWidth, long tMin, long tMax, long step, TimeConvertor convertor )
+    private void generate( int daWidth, long tMin, long tMax, long step )
     {
         long size = tMax - tMin;
         long offset = tMin % step;
@@ -29,7 +34,7 @@ class TimeRuler extends AbstractRuler
         for( int i = 0; i <= stepCount; i++ )
         {
             long t = tMin - offset + step * i;
-            int x = convertor.timeToImage( t );
+            int x = timeToImage( t );
             if( 0 <= x && x < daWidth )
                 generate( x, Integer.toString( new Date( t ).getSeconds() ), t / step );
         }
@@ -52,4 +57,22 @@ class TimeRuler extends AbstractRuler
         }
     }
     
+    @Override
+    public int timeToImage( long t )
+    {
+        return (int)( offset + Math.round( ( t - t0 ) * tx ) );
+    }
+
+    @Override
+    public void setOffset( long value )
+    {
+        offset = value;
+    }
+
+    @Override
+    public long getOffset()
+    {
+        return offset;
+    }
+
 }

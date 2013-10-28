@@ -31,21 +31,23 @@ final class DrawAreaPainter implements Runnable
     private final int fragmentSize;
     private final long fragmentTimeout;
     private final TimeUnit fragmentUnits;
-    private volatile Thread thread;
     private final Color color;
     private final int[][] pattern;
 
     /**
-     * @param drawArea графическая зона.
+     * @param image    графическая зона.
+     * @param tc       функция X-координаты отметки от времени.
+     * @param vc       функция Y-координаты отметки от значения.
      * @param color    цвет рисования шаблона.
      * @param pattern  шаблон для рисования как массив точек (x,y).
      * @param очередь  очередь отметок для прорисовки.
      */
-    DrawAreaPainter( DrawArea drawArea, Color color, int[][] pattern, BlockingQueue<Dot> очередь )
+    DrawAreaPainter( WritableImage image, TimeConvertor tc, ValueConvertor vc, 
+            Color color, int[][] pattern, BlockingQueue<Dot> очередь )
     {
-        this.image = drawArea;
-        this.timeConvertor = drawArea;
-        this.valueConvertor = drawArea;
+        this.image = image;
+        this.timeConvertor = tc;
+        this.valueConvertor = vc;
         this.color = color;
         this.pattern = pattern;
         this.очередь = очередь;
@@ -60,10 +62,9 @@ final class DrawAreaPainter implements Runnable
     {
         LOGGER.log( Level.FINE, "DrawAreaPainter started: pool={0}, timeout={1} {2}", 
                 new Object[]{ fragmentSize, fragmentTimeout, fragmentUnits.name() } );
-        thread = Thread.currentThread();
         try
         {
-            thread.setName( getClass().getSimpleName() + id++ );
+            Thread.currentThread().setName( getClass().getSimpleName() + id++ );
         }
         catch( SecurityException ex )
         {
@@ -95,11 +96,6 @@ final class DrawAreaPainter implements Runnable
         }
     }
     
-    void interrupt()
-    {
-        if( thread != null ) thread.interrupt();
-    }
-
     private void paint( Dot dot )
     {
         int x = timeConvertor.timeToImage( dot.t );
