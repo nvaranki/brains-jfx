@@ -28,17 +28,22 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         pixelFormat = PixelFormat.getIntArgbInstance();
         pixelWidth = width;
         pixelHeight = height;
-        blank = new int[][]{ new int[pixelHeight], new int[pixelHeight] };
         timeAxisColor = Color.BLACK;
         valueAxisColor = Color.BLACK;
         zeroValueAxisColor = Color.GRAY;
         xAdopted = width - 10;
+
         t0 = tMin;
         tx = Double.valueOf( width )/(tMax - tMin);
         v0 = vMax;
         vx = Double.valueOf( height )/(vMin - vMax);
         zero = valueToImage( 0.0F );
+        
         axes( width, height );
+
+        blank = new int[][]{ new int[pixelHeight], new int[pixelHeight] };
+        getPixelReader().getPixels( 2, 0, 1, pixelHeight, pixelFormat, blank[0], 0, 1 );
+        getPixelReader().getPixels( 1, 0, 1, pixelHeight, pixelFormat, blank[1], 0, 1 );
     }
 
     final void axes( int width, int height )
@@ -53,8 +58,6 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
             for( int i = 2; i < width; i += 2 ) 
                 writer.setColor( i, zero, getZeroValueAxisColor() ); // zero value
         }
-        getPixelReader().getPixels( 2, 0, 1, pixelHeight, pixelFormat, blank[0], 0, 1 );
-        getPixelReader().getPixels( 1, 0, 1, pixelHeight, pixelFormat, blank[1], 0, 1 );
     }
 
     private void adopt( long now )
