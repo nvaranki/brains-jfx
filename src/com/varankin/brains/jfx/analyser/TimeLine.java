@@ -3,15 +3,10 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.JavaFX;
 import java.util.Queue;
 import java.util.concurrent.*;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -26,22 +21,10 @@ final class TimeLine extends VBox
     private final DrawArea drawArea;
     private final TimeRuler timeRuler;
     private final ValueRuler valueRuler;
-    private final FlowPane labelsValue;
-    private final ExecutorService executorService;
-    private final ScheduledExecutorService scheduledExecutorService;
-    
-    private long refreshRate;
-    private TimeUnit refreshRateUnit;
+    private final ControlBar controlBar;
     
     TimeLine( final JavaFX jfx )
     {
-        //TODO appl param
-        refreshRate = 100L; // ms
-        refreshRateUnit = TimeUnit.MILLISECONDS;
-        
-        executorService = jfx.getExecutorService();
-        scheduledExecutorService = jfx.getScheduledExecutorService();
-        
         // DEBUG START
         float vMin = -1f;
         float vMax = +1f;
@@ -61,22 +44,10 @@ final class TimeLine extends VBox
         timeRuler = new TimeRuler( daWidth, tMin, tMax, drawArea );
         valueRuler = new ValueRuler( daHeight, vMin, vMax, drawArea );
 
-        CheckBox labelTime = new CheckBox( "Time" );
-        labelTime.setSelected( true );
-        labelTime.setOnAction( new Holder( labelTime, scheduledExecutorService.scheduleAtFixedRate( 
-                new RefreshService(), 0L, refreshRate, refreshRateUnit ) ) );
-        
-        labelsValue = new FlowPane();
-        labelsValue.setHgap( 30 );
-        labelsValue.setPadding( new Insets( 0, 5, 0, 5 ) );
-        labelsValue.setAlignment( Pos.CENTER );
-        labelsValue.setMinHeight( labelTime.getMinHeight() );
-        labelsValue.setPrefHeight( labelTime.getPrefHeight() );
-
         setPadding( new Insets( 5, 0, 5, 0 ) );
         setSpacing( 5 );
         getChildren().add( buildGraphGrid( daWidth, daHeight, graph, valueRuler, timeRuler ) );
-        getChildren().add( buildLabelGrid( daWidth, labelsValue, labelTime ) );
+        getChildren().add( controlBar = new ControlBar( jfx, drawArea.newRefreshServiceInstance() ) );// buildLabelGrid( daWidth, labelsValue, labelTime ) );
         
         // DEBUG START
         Runnable observerService = new Runnable()
@@ -93,7 +64,7 @@ final class TimeLine extends VBox
                 queue3.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
             }
         };
-        scheduledExecutorService.scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
+        jfx.getScheduledExecutorService().scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
         // DEBUG END
     }
     
@@ -131,25 +102,6 @@ final class TimeLine extends VBox
         return grid;
     }
     
-    private static GridPane buildLabelGrid( int daWidth, Node labelsValue, Node labelTime )
-    {
-        ColumnConstraints cc0 = new ColumnConstraints();
-        cc0.setHgrow( Priority.ALWAYS );
-        cc0.setHalignment( HPos.CENTER );
-        
-        ColumnConstraints cc1 = new ColumnConstraints();
-        cc1.setHgrow( Priority.NEVER );
-        cc1.setHalignment( HPos.RIGHT );
-        
-        GridPane grid = new GridPane();
-        grid.setPrefWidth( daWidth + 45 );
-        grid.setMaxWidth( daWidth + 45 );
-        grid.getColumnConstraints().addAll( cc0, cc1 );
-        grid.add( labelsValue, 0, 0 );
-        grid.add( labelTime, 1, 0 );
-        return grid;
-    }
-    
     /**
      * Добавляет отображаемое значение и создает очередь для отметок, рисуемых на графике.
      * 
@@ -162,112 +114,8 @@ final class TimeLine extends VBox
     {
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DrawAreaPainter painter = new DrawAreaPainter( drawArea, color, pattern, queue );
-        
-        WritableImage sample = new WritableImage( 16, 16 );
-        Color outlineColor = Color.LIGHTGRAY;
-        for( int i = 1; i < 15; i ++ )
-        {
-            sample.getPixelWriter().setColor( i,  0, outlineColor );
-            sample.getPixelWriter().setColor( i, 15, outlineColor );
-            sample.getPixelWriter().setColor(  0, i, outlineColor );
-            sample.getPixelWriter().setColor( 15, i, outlineColor );
-        }
-        painter.paint( 7, 7, sample );
-
-        CheckBox label = new CheckBox( name );
-        label.setGraphic( new ImageView( sample ) );
-        label.setGraphicTextGap( 3 );
-        label.setSelected( true );
-        label.setOnAction( new Selector( label, painter, executorService.submit( painter ) ) );
-        
-        labelsValue.getChildren().add( label );
-        
+        controlBar.addValue( name, painter );
         return queue;
-    }
-    
-    /**
-     * Контроллер движения временной шкалы.
-     */
-    private class Holder implements EventHandler<ActionEvent>
-    {
-        private final CheckBox cb;
-        private Future<?> process;
-
-        Holder( CheckBox cb, Future<?> process )
-        {
-            this.cb = cb;
-            this.process = process;
-        }
-        
-        @Override
-        public void handle( ActionEvent t )
-        {
-            if( cb.selectedProperty().get() )
-                process = scheduledExecutorService.scheduleAtFixedRate( 
-                        new RefreshService(), 0L, refreshRate, refreshRateUnit );
-            else
-                process.cancel( true );
-        }
-        
-    }
-    
-    /**
-     * Контроллер видимости значений.
-     */
-    private class Selector implements EventHandler<ActionEvent>
-    {
-        private final CheckBox cb;
-        private final DrawAreaPainter painter;
-        private Future<?> process;
-
-        Selector( CheckBox cb, DrawAreaPainter painter, Future<?> process ) 
-        {
-            this.cb = cb;
-            this.painter = painter;
-            this.process = process;
-        }
-        
-        @Override
-        public void handle( ActionEvent _ ) 
-        {
-            if( cb.selectedProperty().get() )
-                process = executorService.submit( painter );
-            else
-                process.cancel( true );
-        }
-    }
-
-    /**
-     * Сервис движения временной шкалы.
-     */
-    private class RefreshService implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            Platform.runLater( new Adopter( System.currentTimeMillis() ) ); 
-        }
-    }
-    
-    /**
-     * Контроллер сдвига временной шкалы.
-     */
-    private class Adopter implements Runnable
-    {
-        private final long moment;
-
-        Adopter( long moment )
-        {
-            this.moment = moment;
-        }
-        
-        @Override
-        public void run()
-        {
-            drawArea.adopt( moment );
-            //timeRuler.adopt( moment );
-        }
-        
     }
     
 }

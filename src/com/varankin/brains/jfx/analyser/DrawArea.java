@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import java.nio.IntBuffer;
+import javafx.application.Platform;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -65,9 +66,11 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
             offset -= shift;
             // смещение всей зоны; +-1 для сохранения оси значений
             PixelWriter writer = getPixelWriter();
-            writer.setPixels( 1, 0, pixelWidth - shift - 1, pixelHeight, getPixelReader(), shift + 1, 0 );
+            int width = pixelWidth - shift - 1;
+            if( width > 0 )
+                writer.setPixels( 1, 0, width, pixelHeight, getPixelReader(), shift + 1, 0 );
             // очистить справа от скопированной зоны
-            for( int i = pixelWidth - shift; i < pixelWidth; i++ )
+            for( int i = Math.max( 1, pixelWidth - shift ); i < pixelWidth; i++ )
                 writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[(-offset%2)^(i%2)], 0, 1 );
         }
     }
@@ -82,6 +85,11 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
     public int valueToImage( float v )
     {
         return (int)Math.round( ( v - v0 ) * vx );
+    }
+    
+    Runnable newRefreshServiceInstance()
+    {
+        return new RefreshService();
     }
     
     public Color getTimeAxisColor()
@@ -114,4 +122,37 @@ final class DrawArea extends WritableImage implements TimeConvertor, ValueConver
         zeroValueAxisColor = color;
     }
 
+    /**
+     * Сервис движения временной шкалы.
+     */
+    private class RefreshService implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            Platform.runLater( new Adopter( System.currentTimeMillis() ) ); 
+        }
+    }
+    
+    /**
+     * Контроллер сдвига временной шкалы.
+     */
+    private class Adopter implements Runnable
+    {
+        private final long moment;
+
+        Adopter( long moment )
+        {
+            this.moment = moment;
+        }
+        
+        @Override
+        public void run()
+        {
+            adopt( moment );
+            //timeRuler.adopt( moment );
+        }
+        
+    }
+    
 }
