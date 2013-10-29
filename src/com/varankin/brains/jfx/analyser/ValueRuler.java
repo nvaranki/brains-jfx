@@ -1,5 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
+import static com.varankin.brains.jfx.analyser.AbstractRuler.roundToFactor;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.geometry.Bounds;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -14,32 +17,50 @@ import javafx.scene.transform.Translate;
 class ValueRuler extends AbstractRuler implements ValueConvertor
 {
     private final double tickShift;
+    private final double factor = 1d; // 1, 2, 5
+    private final int pixelStepMin = 5; // min 5 pixels in between ticks
     private double v0, vx;
 
-    ValueRuler( int height, float vMin, float vMax )
+    ValueRuler( final float vMin, final float vMax )
     {
         //TODO appl. param.
         tickShift = 35d;
-        double factor = 1d; // 1, 2, 5
-        int daStepMin = 5; // min 5 pixels in between ticks
         
+        setMinHeight( 100d );
+        heightProperty().addListener( new InvalidationListener() 
+        {
+            @Override
+            public void invalidated( Observable o )
+            {
+                int height = (int)Math.round( heightProperty().get() );
+                if( height > 0 )
+                {
+                    resetConvertor( vMin, vMax );
+                    getChildren().clear();
+                    generate( vMin, vMax );
+                }
+            }
+        } );
+    }
+    
+    private void resetConvertor( float vMin, float vMax )
+    {
         v0 = vMax;
-        vx = Double.valueOf( height )/(vMin - vMax);
-        float step = (float)roundToFactor( ( vMax - vMin ) / ( height / daStepMin ), factor );
-        generate( height, vMin, vMax, step );
+        vx = Double.valueOf( getHeight() )/( vMin - vMax );
     }
 
-    private void generate( int daHeight, float vMin, float vMax, float step )
+    private void generate( float vMin, float vMax )
     {
+        float step = (float)roundToFactor( ( vMax - vMin ) / ( getHeight() / pixelStepMin ), factor );
         float size = vMax - vMin;
-        float offset = vMin % step;
+        float vStart = vMin - vMin % step;
         int stepCount = (int)Math.ceil( size / step );
         for( int i = 0; i <= stepCount; i++ )
         {
-            float v = vMin - offset + step * i;
+            float v = vStart + step * i;
             int y = valueToImage( v );
             long f = Math.round( (double)v / step );
-            if( 0 <= y && y < daHeight )
+            if( 0 <= y && y < getHeight() )
                 generate( y, Float.toString( f * step ), f );
         }
     }
@@ -59,7 +80,8 @@ class ValueRuler extends AbstractRuler implements ValueConvertor
             Text value = new Text( text );
             value.relocate( shiftToRightAlign( value ), y );
             value.setFill( getValuePaint() );
-            getChildren().add( value );
+            if( y + value.boundsInLocalProperty().get().getMaxY() < getHeight() )
+                getChildren().add( value );
         }
     }
 

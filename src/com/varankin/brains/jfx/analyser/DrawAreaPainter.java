@@ -24,7 +24,7 @@ final class DrawAreaPainter implements Runnable
     public static final int[][] CROSS45 = new int[][]{{0,0},{1,1},{1,-1},{-1,-1},{-1,1}};
     private static long id = 0L;
 
-    private final WritableImage image;
+    private final DrawArea drawArea;
     private final TimeConvertor timeConvertor;
     private final ValueConvertor valueConvertor;
     private final BlockingQueue<Dot> очередь;
@@ -35,17 +35,17 @@ final class DrawAreaPainter implements Runnable
     private final int[][] pattern;
 
     /**
-     * @param image    графическая зона.
+     * @param drawArea графическая зона.
      * @param tc       функция X-координаты отметки от времени.
      * @param vc       функция Y-координаты отметки от значения.
      * @param color    цвет рисования шаблона.
      * @param pattern  шаблон для рисования как массив точек (x,y).
      * @param очередь  очередь отметок для прорисовки.
      */
-    DrawAreaPainter( WritableImage image, TimeConvertor tc, ValueConvertor vc, 
+    DrawAreaPainter( DrawArea drawArea, TimeConvertor tc, ValueConvertor vc, 
             Color color, int[][] pattern, BlockingQueue<Dot> очередь )
     {
-        this.image = image;
+        this.drawArea = drawArea;
         this.timeConvertor = tc;
         this.valueConvertor = vc;
         this.color = color;
@@ -100,13 +100,13 @@ final class DrawAreaPainter implements Runnable
     {
         int x = timeConvertor.timeToImage( dot.t );
         int y = valueConvertor.valueToImage( dot.v );
-        paint( x, y, image );
+        paint( x, y, drawArea.getWritableImage() );
     }
 
     void paint( int x, int y, WritableImage image )
     {
-        int width  = (int)Math.round( image.getWidth() );
-        int height = (int)Math.round( image.getHeight() );
+        int width  = image.widthProperty().intValue();
+        int height = image.heightProperty().intValue();
         PixelWriter writer = image.getPixelWriter();
         for( int[] offsets : pattern )
         {

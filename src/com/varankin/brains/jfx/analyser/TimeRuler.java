@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
-import java.util.Date;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
@@ -11,32 +12,48 @@ import javafx.scene.text.Text;
  */
 class TimeRuler extends AbstractRuler implements TimeConvertor
 {
+    private final double factor = 1d; // 1, 2, 5
+    private final int pixelStepMin = 10; // min 10 pixels in between ticks
+    @Deprecated private long offset;
     private double t0, tx;
-    private long offset;
 
-    TimeRuler( int width, long tMin, long tMax )
+    TimeRuler( final long tMin, final long tMax )
     {
-        //TODO appl. param.
-        double factor = 2d; // 1, 2, 5
-        int daStepMin = 10; // min 10 pixels in between ticks
-        
-        t0 = tMin;
-        tx = Double.valueOf( width )/(tMax - tMin);
-        long step = (long)roundToFactor( ( tMax - tMin ) / ( width / daStepMin ), factor );
-        generate( width, tMin, tMax, step );
+        setMinWidth( 100d );
+        widthProperty().addListener( new InvalidationListener() 
+        {
+            @Override
+            public void invalidated( Observable o )
+            {
+                int width  = (int)Math.round( widthProperty().get() );
+                if( width > 0 )
+                {
+                    resetConvertor( tMin, tMax );
+                    getChildren().clear();
+                    generate( tMin, tMax );
+                }
+            }
+    } );
     }
 
-    private void generate( int daWidth, long tMin, long tMax, long step )
+    private void resetConvertor( long tMin, long tMax )
     {
+        t0 = tMin;
+        tx = Double.valueOf( getWidth() )/( tMax - tMin );
+    }
+
+    private void generate( long tMin, long tMax )
+    {
+        long step = (long)roundToFactor( ( tMax - tMin ) / ( getWidth() / pixelStepMin ), factor );
         long size = tMax - tMin;
-        long offset = tMin % step;
+        long tStart = tMin - tMin % step;
         int stepCount = (int)Math.ceil( size / step );
         for( int i = 0; i <= stepCount; i++ )
         {
-            long t = tMin - offset + step * i;
+            long t = tStart + step * i;
             int x = timeToImage( t );
-            if( 0 <= x && x < daWidth )
-                generate( x, Integer.toString( new Date( t ).getSeconds() ), t / step );
+            if( 0 <= x && x < getWidth() )
+                generate( x, Long.toString( (t%60000L)/1L/*new Date( t ).getSeconds()*/ ), t / step );
         }
     }
 
@@ -53,7 +70,8 @@ class TimeRuler extends AbstractRuler implements TimeConvertor
             Text value = new Text( text );
             value.relocate( x, 10d );
             value.setFill( getValuePaint() );
-            getChildren().add( value );
+            if( x + value.boundsInLocalProperty().get().getMaxX() < getWidth() )
+                getChildren().add( value );
         }
     }
     

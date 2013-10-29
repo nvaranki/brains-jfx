@@ -65,13 +65,13 @@ final class ControlBar extends GridPane
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setHgrow( Priority.ALWAYS );
         cc0.setHalignment( HPos.CENTER );
+        cc0.setMinWidth( 110d );
         
         ColumnConstraints cc1 = new ColumnConstraints();
         cc1.setHgrow( Priority.NEVER );
         cc1.setHalignment( HPos.RIGHT );
+        cc1.setMinWidth( 100d );
         
-//        setPrefWidth( daWidth + 45 );
-        setMaxWidth( 600 + 45 ); //TODO DEBUG
         getColumnConstraints().addAll( cc0, cc1 );
         add( valuesPane, 0, 0 );
         add( labelTime, 1, 0 );
@@ -83,7 +83,7 @@ final class ControlBar extends GridPane
      * @param name    название значения.
      * @param painter сервис рисования отметок.
      */
-    void addValue( String name, DrawAreaPainter painter )
+    void addValueControl( String name, DrawAreaPainter painter )
     {
         WritableImage sample = new WritableImage( 16, 16 );
         Color outlineColor = Color.LIGHTGRAY;
