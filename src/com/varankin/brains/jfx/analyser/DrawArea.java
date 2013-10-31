@@ -24,17 +24,16 @@ import javafx.scene.transform.Translate;
 class DrawArea extends ImageView
 {
     private final DoubleProperty widthProperty, heightProperty;
-    private final TimeConvertor timeConvertor;
+    private final TimeRuler timeConvertor;
     private final ValueConvertor valueConvertor;
     private final WritablePixelFormat<IntBuffer> pixelFormat;
     private final int blank[][];
     private WritableImage writableImage;
     private Color timeAxisColor, valueAxisColor, zeroValueAxisColor;
-    @Deprecated private int xAdopted;
+    private int timeAxisOffset;
 
     DrawArea( TimeRuler timeRuler, ValueRuler valueRuler )
     {
-        setPreserveRatio( true );
         //DEBUG START
         timeAxisColor = Color.BLACK;
         valueAxisColor = Color.BLACK;
@@ -71,34 +70,57 @@ class DrawArea extends ImageView
     {
         if( width > 0 && height > 0 )
         {
-            //TODO copy drawn area
-            setImage( writableImage = new WritableImage( width, height ) );
+            // заменить, т.к. другие размеры
+            WritableImage newWritableImage = new WritableImage( width, height );
+            // нарисовать оси 
+            int zero = valueConvertor.valueToImage( 0.0F );
+            drawAxes( newWritableImage, width, height, zero );
+            snapshotBlankPatterns( newWritableImage, height, zero, 2, 1 );
+            setImage( null );
+            setPreserveRatio( true );
             getTransforms().clear();
             getTransforms().add( new Translate( 0, height ) );
             getTransforms().add( new Scale( 1, -1 ) );
-            xAdopted = width - 10;
-            axes( width, height );
+            setImage( writableImage = newWritableImage );
         }
     }
     
-    final void axes( int width, int height )
+    private void drawAxes( WritableImage writableImage, int width, int height, int zero )
     {
         PixelWriter writer = writableImage.getPixelWriter();
         for( int i = 0; i < width; i++ ) 
             writer.setColor( i, 0, getTimeAxisColor() ); // timeline
         for( int i = 0; i < height; i++ ) 
             writer.setColor( 0, i, getValueAxisColor() ); // value
-        int zero = valueConvertor.valueToImage( 0.0F );
         if( 0 < zero && zero < heightProperty.intValue() )
         {
             for( int i = 2; i < width; i += 2 ) 
                 writer.setColor( i, zero, getZeroValueAxisColor() ); // zero value
         }
+    }
+    
+    private void snapshotBlankPatterns( WritableImage writableImage, int height, int zero, int... ys )
+    {
         PixelReader reader = writableImage.getPixelReader();
-        reader.getPixels( 2, 0, 1, height, pixelFormat, blank[0] = new int[height], 0, 1 );
-        reader.getPixels( 1, 0, 1, height, pixelFormat, blank[1] = new int[height], 0, 1 );
+        for( int i = 0; i < blank.length && i < ys.length; i++ )
+            reader.getPixels( ys[i], 0, 1, height, pixelFormat, blank[i] = new int[height], 0, 1 );
     }
 
+    private void shiftImage( int shift )
+    {
+        PixelWriter writer = writableImage.getPixelWriter();
+        int pixelWidth = widthProperty.intValue();
+        int pixelHeight = heightProperty.intValue();
+        int width = pixelWidth - shift - 1;
+        if( width > 0 )
+            writer.setPixels( 1, 0, width, pixelHeight, writableImage.getPixelReader(), shift + 1, 0 );
+        // очистить справа от скопированной зоны
+        timeAxisOffset += shift;
+        timeAxisOffset %= 2;
+        for( int i = Math.max( 1, pixelWidth - shift ); i < pixelWidth; i++ )
+            writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[timeAxisOffset^(i%2)], 0, 1 );
+    }
+    
     final WritableImage getWritableImage()
     {
         return writableImage;
@@ -166,22 +188,13 @@ class DrawArea extends ImageView
         @Override
         public void run()
         {
-            int shift = timeConvertor.timeToImage( moment ) - xAdopted;
+            int shift = timeConvertor.evaluateImageShiftTo( moment );
             if( shift > 0 )
             {
                 // подправить расчет
-                long offset = timeConvertor.getOffset() - shift;
-                timeConvertor.setOffset( offset );
+                timeConvertor.resetConvertor( timeConvertor.widthProperty().doubleValue(), moment );
                 // смещение всей зоны; +-1 для сохранения оси значений
-                PixelWriter writer = writableImage.getPixelWriter();
-                int pixelWidth = widthProperty.intValue();
-                int pixelHeight = heightProperty.intValue();
-                int width = pixelWidth - shift - 1;
-                if( width > 0 )
-                    writer.setPixels( 1, 0, width, pixelHeight, writableImage.getPixelReader(), shift + 1, 0 );
-                // очистить справа от скопированной зоны
-                for( int i = Math.max( 1, pixelWidth - shift ); i < pixelWidth; i++ )
-                    writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[(int)(-offset%2)^(i%2)], 0, 1 );
+                shiftImage( shift );
             }
         }
     }

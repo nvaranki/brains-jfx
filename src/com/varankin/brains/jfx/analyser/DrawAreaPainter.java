@@ -15,14 +15,16 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class DrawAreaPainter implements Runnable
+class DrawAreaPainter implements Runnable
 {
     private static final Logger LOGGER = Logger.getLogger( DrawAreaPainter.class.getName() );
+    private static long idThread = 0L;
+    
     public static final int[][] DOT     = new int[][]{{0,0}};
-    public static final int[][] BOX     = new int[][]{{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,0},{-1,1}};
+    public static final int[][] BOX     = new int[][]{{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1}};
+    public static final int[][] SPOT    = new int[][]{{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1},{0,0}};
     public static final int[][] CROSS   = new int[][]{{0,0},{0,1},{1,0},{0,-1},{-1,0}};
     public static final int[][] CROSS45 = new int[][]{{0,0},{1,1},{1,-1},{-1,-1},{-1,1}};
-    private static long id = 0L;
 
     private final DrawArea drawArea;
     private final TimeConvertor timeConvertor;
@@ -58,13 +60,13 @@ final class DrawAreaPainter implements Runnable
     }
 
     @Override
-    public void run()
+    public final void run()
     {
         LOGGER.log( Level.FINE, "DrawAreaPainter started: pool={0}, timeout={1} {2}", 
                 new Object[]{ fragmentSize, fragmentTimeout, fragmentUnits.name() } );
         try
         {
-            Thread.currentThread().setName( getClass().getSimpleName() + id++ );
+            Thread.currentThread().setName( getClass().getSimpleName() + idThread++ );
         }
         catch( SecurityException ex )
         {
@@ -96,7 +98,7 @@ final class DrawAreaPainter implements Runnable
         }
     }
     
-    private void paint( Dot dot )
+    protected void paint( Dot dot )
     {
         int x = timeConvertor.timeToImage( dot.t );
         int y = valueConvertor.valueToImage( dot.v );

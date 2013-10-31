@@ -6,7 +6,6 @@ import java.util.concurrent.*;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
-import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -15,52 +14,21 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class TimeLine extends VBox
+final class TimeLine extends GridPane
 {
     private final DrawArea drawArea;
     private final TimeRuler timeRuler;
     private final ValueRuler valueRuler;
     private final ControlBar controlBar;
     
-    TimeLine( final JavaFX jfx )
+    TimeLine( JavaFX jfx, float vMin, float vMax, int tDuration, int tExcess )
     {
-        // DEBUG START
-        float vMin = -1f;
-        float vMax = +1f;
-        long tMax = System.currentTimeMillis() + 1*1000L;
-        long tMin = tMax - 60*1000L;
-        // DEBUG END
-        
-        timeRuler = new TimeRuler( tMin, tMax );
+        timeRuler = new TimeRuler( tDuration, tExcess, TimeUnit.SECONDS );
         valueRuler = new ValueRuler( vMin, vMax );
         drawArea = new DrawArea( timeRuler, valueRuler );
+        controlBar = new ControlBar( jfx, drawArea.newRefreshServiceInstance() );
+        timeRuler.relativeProperty().bind( controlBar.dynamicProperty() );
 
-        setPadding( new Insets( 5, 0, 5, 0 ) );
-        setSpacing( 5 );
-        getChildren().add( buildGraphGrid( drawArea, valueRuler, timeRuler ) );
-        getChildren().add( controlBar = new ControlBar( jfx, drawArea.newRefreshServiceInstance() ) );
-        
-        // DEBUG START
-        Runnable observerService = new Runnable()
-        {
-            Queue<Dot> queue1 = TimeLine.this.createValueQueue( "Value 1", Color.RED,  DrawAreaPainter.CROSS );
-            Queue<Dot> queue2 = TimeLine.this.createValueQueue( "Value 2", Color.BLUE, DrawAreaPainter.CROSS45 );
-            Queue<Dot> queue3 = TimeLine.this.createValueQueue( "Value 3", Color.GREEN, DrawAreaPainter.BOX );
-            
-            @Override
-            public void run()
-            {
-                queue1.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
-                queue2.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
-                queue3.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
-            }
-        };
-        jfx.getScheduledExecutorService().scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
-        // DEBUG END
-    }
-    
-    private static GridPane buildGraphGrid( Node graph, Node valueRuler, Node timeRuler )
-    {
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth( 45d );
         cc0.setHgrow( Priority.NEVER );
@@ -81,13 +49,18 @@ final class TimeLine extends VBox
         rc1.setVgrow( Priority.NEVER );
         rc1.setValignment( VPos.TOP );
 
-        GridPane grid = new GridPane();
-        grid.getColumnConstraints().addAll( cc0, cc1 );
-        grid.getRowConstraints().addAll( rc0, rc1 );
-        grid.add( valueRuler, 0, 0 );
-        grid.add( timeRuler, 1, 1 );
-        grid.add( graph, 1, 0 );
-        return grid;
+        RowConstraints rc2 = new RowConstraints();
+        rc2.setFillHeight( false );
+        rc2.setVgrow( Priority.NEVER );
+        
+        getColumnConstraints().addAll( cc0, cc1 );
+        getRowConstraints().addAll( rc0, rc1, rc2 );
+        setPadding( new Insets( 5, 5, 5, 0 ) );
+        
+        add( valueRuler, 0, 0 );
+        add( timeRuler, 1, 1 );
+        add( drawArea, 1, 0 );
+        add( controlBar, 0, 2, 2, 1 );
     }
     
     /**
@@ -101,8 +74,8 @@ final class TimeLine extends VBox
     Queue<Dot> createValueQueue( String name, Color color, int[][] pattern )
     {
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
-        DrawAreaPainter painter = new DrawAreaPainter( drawArea, timeRuler, valueRuler, 
-                color, pattern, queue );
+        DrawAreaPainter painter = new BufferedDrawAreaPainter( drawArea, timeRuler, valueRuler, 
+                color, pattern, queue, 1000 );
         controlBar.addValueControl( name, painter );
         return queue;
     }

@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -36,6 +38,7 @@ final class ControlBar extends GridPane
     private final ExecutorService executorService;
     private final ScheduledExecutorService scheduledExecutorService;
     private final Runnable refreshService;
+    private final SimpleBooleanProperty dynamicProperty;
 
     private long refreshRate;
     private TimeUnit refreshRateUnit;
@@ -54,6 +57,9 @@ final class ControlBar extends GridPane
         labelTime.setSelected( true );
         labelTime.setOnAction( new Holder( labelTime, scheduledExecutorService.scheduleAtFixedRate( 
                 refreshService, 0L, refreshRate, refreshRateUnit ) ) );
+        
+        dynamicProperty = new SimpleBooleanProperty(); //TODO ReadOnlyBooleanWrapper().;
+        dynamicProperty.bind( labelTime.selectedProperty() );
         
         valuesPane = new FlowPane();
         valuesPane.setHgap( 30 );
@@ -103,6 +109,11 @@ final class ControlBar extends GridPane
         label.setOnAction( new Selector( label, painter, executorService.submit( painter ) ) );
         
         valuesPane.getChildren().add( label );
+    }
+
+    BooleanProperty dynamicProperty()
+    {
+        return dynamicProperty;
     }
     
     long getRefreshRate()

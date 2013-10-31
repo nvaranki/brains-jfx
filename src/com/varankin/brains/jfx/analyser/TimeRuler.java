@@ -1,7 +1,14 @@
 package com.varankin.brains.jfx.analyser;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
@@ -10,54 +17,87 @@ import javafx.scene.text.Text;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class TimeRuler extends AbstractRuler implements TimeConvertor
+final class TimeRuler extends AbstractRuler implements TimeConvertor
 {
     private final double factor = 1d; // 1, 2, 5
     private final int pixelStepMin = 10; // min 10 pixels in between ticks
-    @Deprecated private long offset;
     private double t0, tx;
+    private long tSize, tEntry, tExcess;
+    private final SimpleBooleanProperty relativeProperty;
 
-    TimeRuler( final long tMin, final long tMax )
+    TimeRuler( long duration, long excess, TimeUnit unit )
     {
         setMinWidth( 100d );
+        tSize = TimeUnit.MILLISECONDS.convert( duration, unit );
+        tExcess = TimeUnit.MILLISECONDS.convert( excess, unit );
+        relativeProperty = new SimpleBooleanProperty();
+        relativeProperty.addListener( new ChangeListener<Boolean>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue )
+            {
+                double width = widthProperty().doubleValue();
+                if( width > 0d ) 
+                {
+                    getChildren().clear();
+                    generateRuler( width );
+                }
+            }
+        } );
         widthProperty().addListener( new InvalidationListener() 
         {
             @Override
             public void invalidated( Observable o )
             {
-                int width  = (int)Math.round( widthProperty().get() );
+                int width  = widthProperty().intValue();
                 if( width > 0 )
                 {
-                    resetConvertor( tMin, tMax );
+                    resetConvertor( width, relativeProperty.get() ? System.currentTimeMillis() : tEntry );
                     getChildren().clear();
-                    generate( tMin, tMax );
+                    generateRuler( width );
                 }
             }
     } );
     }
-
-    private void resetConvertor( long tMin, long tMax )
+    
+    int evaluateImageShiftTo( long moment )
     {
-        t0 = tMin;
-        tx = Double.valueOf( getWidth() )/( tMax - tMin );
+        return (int)Math.round(  tx * ( moment - tEntry ) );
     }
 
-    private void generate( long tMin, long tMax )
+    void resetConvertor( double width, long moment )
     {
-        long step = (long)roundToFactor( ( tMax - tMin ) / ( getWidth() / pixelStepMin ), factor );
-        long size = tMax - tMin;
-        long tStart = tMin - tMin % step;
-        int stepCount = (int)Math.ceil( size / step );
-        for( int i = 0; i <= stepCount; i++ )
+        tEntry = moment;
+        t0 = tEntry + tExcess - tSize;
+        tx = width / tSize;
+    }
+
+    private void generateRuler( double width )
+    {
+        boolean relative = relativeProperty.get();
+        DateFormat formatter = DateFormat.getTimeInstance();
+        long step = (long)roundToFactor( tSize / ( width / pixelStepMin ), factor );
+        for( int i = 1, count = (int)Math.ceil( tExcess / step ); i <= count; i++ )
         {
-            long t = tStart + step * i;
-            int x = timeToImage( t );
+            long t = step * i;
+            int x = timeToImage( tEntry + t );
             if( 0 <= x && x < getWidth() )
-                generate( x, Long.toString( (t%60000L)/1L/*new Date( t ).getSeconds()*/ ), t / step );
+                generateTickAndText( x, relative ?
+                        Long.toString( t/1000L/*new Date( t ).getSeconds()*/ ) :
+                        formatter.format( new Date( tEntry + t ) ), i, relative );
+        }
+        for( int i = 0, count = (int)Math.ceil( ( tSize - tExcess ) / step ); i <= count; i++ )
+        {
+            long t = - step * i;
+            int x = timeToImage( tEntry + t );
+            if( 0 <= x && x < getWidth() )
+                generateTickAndText( x, relative ?
+                        Long.toString( t/1000L/*new Date( t ).getSeconds()*/ ) :
+                        formatter.format( new Date( tEntry + t ) ), i, relative );
         }
     }
 
-    private void generate( int x, String text, long s )
+    private void generateTickAndText( int x, String text, long s, boolean relative )
     {
         int length = s % 10 == 0 ? getTickSizeLarge() : 
                 s % 5 == 0 ? getTickSizeMedium() : getTickSizeSmall();
@@ -65,7 +105,7 @@ class TimeRuler extends AbstractRuler implements TimeConvertor
         tick.setStroke( getTickPaint() );
         tick.relocate( x, 0d );
         getChildren().add( tick );
-        if( s % 10 == 0 || s % 5 == 0 )
+        if( s % 10 == 0 || ( s % 5 == 0 && relative ) )
         {
             Text value = new Text( text );
             value.relocate( x, 10d );
@@ -78,19 +118,12 @@ class TimeRuler extends AbstractRuler implements TimeConvertor
     @Override
     public int timeToImage( long t )
     {
-        return (int)( offset + Math.round( ( t - t0 ) * tx ) );
+        return (int)Math.round( ( t - t0 ) * tx );
     }
 
-    @Override
-    public void setOffset( long value )
+    BooleanProperty relativeProperty()
     {
-        offset = value;
+        return relativeProperty;
     }
-
-    @Override
-    public long getOffset()
-    {
-        return offset;
-    }
-
+    
 }

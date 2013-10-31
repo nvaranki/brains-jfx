@@ -14,7 +14,7 @@ import javafx.scene.transform.Translate;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class ValueRuler extends AbstractRuler implements ValueConvertor
+final class ValueRuler extends AbstractRuler implements ValueConvertor
 {
     private final double tickShift;
     private final double factor = 1d; // 1, 2, 5
