@@ -6,6 +6,7 @@ import com.varankin.util.Текст;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -16,6 +17,12 @@ import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.Node;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -129,6 +136,53 @@ public final class JavaFX
     File getCurrentLocalDirectory()
     {
         return new File( System.getProperty( "user.dir" ) );
+    }
+
+    public static ImageView icon( String path )
+    {
+        InputStream stream = path.isEmpty() ? null : JavaFX.class.getClassLoader().getResourceAsStream( path );
+        return stream != null ? new ImageView( new Image( stream ) ) : null;
+    }
+
+    public static void copyMenuItems( List<MenuItem> from, List<MenuItem> to )
+    {
+        for( MenuItem оригинал : from )
+        {
+            Node graphic = оригинал.getGraphic();
+            if( graphic instanceof ImageView )
+                graphic = new ImageView( ((ImageView)graphic).getImage() );
+
+            if( оригинал instanceof SeparatorMenuItem )
+            {
+                to.add( new SeparatorMenuItem() );
+            }
+            else if( оригинал instanceof Menu )
+            {
+                Menu копия = new Menu();
+                копия.setText( оригинал.getText() );
+                копия.setGraphic( graphic );
+                copyMenuItems( ((Menu)оригинал).getItems(), копия.getItems() );
+                to.add( копия );
+            }
+            else
+            {
+                MenuItem копия = new MenuItem();
+                копия.setText( оригинал.getText() );
+                копия.setGraphic( graphic );
+                копия.setOnAction( оригинал.getOnAction() );
+                to.add( копия );
+            }
+        }
+    }
+
+    public static void copyMenuItems( List<MenuItem> from, List<MenuItem> to, boolean separate )
+    {
+        if( from != null && !from.isEmpty() && to != null ) 
+        {
+            if( !to.isEmpty() && separate )
+                to.add( new SeparatorMenuItem() );
+            copyMenuItems( from, to );
+        }
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">
