@@ -2,14 +2,9 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import java.util.List;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -17,6 +12,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.ColumnConstraints;
@@ -35,31 +32,30 @@ final class ControlBar extends GridPane
     private static final LoggerX LOGGER = LoggerX.getLogger( ControlBar.class );
     
     private final FlowPane valuesPane;
-    private final ExecutorService executorService;
-    private final ScheduledExecutorService scheduledExecutorService;
-    private final Runnable refreshService;
-    private final SimpleBooleanProperty dynamicProperty;
-
-    private long refreshRate;
-    private TimeUnit refreshRateUnit;
+    private final TimeLineController controller;
     
-    ControlBar( JavaFX jfx, Runnable service )
+    ControlBar( TimeLineController controller )
     {
-        //TODO appl param
-        refreshRate = 100L; // ms
-        refreshRateUnit = TimeUnit.MILLISECONDS;
-        
-        refreshService = service;
-        executorService = jfx.getExecutorService();
-        scheduledExecutorService = jfx.getScheduledExecutorService();
+        this.controller = controller;
         
         CheckBox labelTime = new CheckBox( LOGGER.text( "ControlBar.axis.time.name" ) );
-        labelTime.setSelected( true );
-        labelTime.setOnAction( new Holder( labelTime, scheduledExecutorService.scheduleAtFixedRate( 
-                refreshService, 0L, refreshRate, refreshRateUnit ) ) );
-        
-        dynamicProperty = new SimpleBooleanProperty(); //TODO ReadOnlyBooleanWrapper().;
-        dynamicProperty.bind( labelTime.selectedProperty() );
+        labelTime.setSelected( false );
+        labelTime.setContextMenu( new ContextMenu( 
+                new MenuItem( "Возобновить движение" ), new MenuItem( "Остановить движение" ) ) );
+        labelTime.selectedProperty().bindBidirectional( controller.dynamicProperty() );
+
+        controller.dynamicProperty().addListener( new ChangeListener<Boolean>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Boolean> observable, 
+                                Boolean oldValue, Boolean newValue )
+            {
+                if( newValue != null && newValue )
+                    resumeAllFlows();
+                else
+                    stopAllFlows();
+            }
+        } );
         
         valuesPane = new FlowPane();
         valuesPane.setHgap( 30 );
@@ -82,14 +78,14 @@ final class ControlBar extends GridPane
         add( valuesPane, 0, 0 );
         add( labelTime, 1, 0 );
     }
-
+    
     /**
      * Добавляет отображаемое значение.
      * 
      * @param name    название значения.
      * @param painter сервис рисования отметок.
      */
-    void addValueControl( String name, DrawAreaPainter painter )
+    void addValueControl( String name, final DotPainter painter, List<MenuItem> parentPopupMenu )
     {
         WritableImage sample = new WritableImage( 16, 16 );
         Color outlineColor = Color.LIGHTGRAY;
@@ -102,120 +98,83 @@ final class ControlBar extends GridPane
         }
         painter.paint( 7, 7, sample );
 
-        CheckBox label = new CheckBox( name );
+        final CheckBox label = new CheckBox( name );
+        label.setUserData( name ); //TODO DEBUG
         label.setGraphic( new ImageView( sample ) );
         label.setGraphicTextGap( 3 );
+        label.setSelected( false );
+        label.selectedProperty().addListener( new ChangeListener<Boolean>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Boolean> observable, 
+                                Boolean oldValue, Boolean newValue )
+            {
+                Object id = label.getUserData();
+                if( newValue != null && newValue )
+                    controller.startFlow( id, painter );
+                else
+                    controller.stopFlow( id );
+            }
+        } );
         label.setSelected( true );
-        label.setOnAction( new Selector( label, painter, executorService.submit( painter ) ) );
-        
         valuesPane.getChildren().add( label );
-    }
-
-    BooleanProperty dynamicProperty()
-    {
-        return dynamicProperty;
-    }
-    
-    long getRefreshRate()
-    {
-        return refreshRate;
-    }
-
-    void setRefreshRate( long rate )
-    {
-        refreshRate = rate;
-    }
-
-    TimeUnit getRefreshRateUnit()
-    {
-        return refreshRateUnit;
-    }
-
-    void setRefreshRateUnit( TimeUnit unit )
-    {
-        refreshRateUnit = unit;
-    }
-    
-    /**
-     * Контроллер движения временной шкалы.
-     */
-    private class Holder implements EventHandler<ActionEvent>
-    {
-        private final CheckBox cb;
-        private final Map<CheckBox,Boolean> state;
-        private Future<?> process;
-
-        Holder( CheckBox cb, Future<?> process )
-        {
-            this.cb = cb;
-            this.process = process;
-            state = new HashMap<>();
-        }
         
-        @Override
-        public void handle( ActionEvent _ )
-        {
-            if( cb.selectedProperty().get() )
+        ContextMenu popup = new ContextMenu( new MenuItem( "Удалить " + name ) );
+        JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
+        label.setContextMenu( popup);
+    }
+
+    private void resumeAllFlows()
+    {
+        // возобновить рисование отметок
+        for( Node node : valuesPane.getChildren() )
+            if( node instanceof CheckBox )
             {
-                // возобновить движение графической зоны
-                process = scheduledExecutorService.scheduleAtFixedRate( 
-                        refreshService, 0L, refreshRate, refreshRateUnit );
-                // возобновить рисование отметок
-                for( Node node : valuesPane.getChildren() )
-                    if( node instanceof CheckBox )
-                    {
-                        CheckBox vcb = (CheckBox)node;
-                        Boolean selected = state.get( vcb );
-                        vcb.selectedProperty().setValue( selected != null ? selected : true );
-                        vcb.disableProperty().setValue( false );
-                        // имитировать клик
-                        vcb.fireEvent( new ActionEvent( this, null ) ); // DO NOT vcb.fire()!
-                    }
+                CheckBox vcb = (CheckBox)node;
+                vcb.selectedProperty().setValue( controller.getFlowState( vcb.getUserData() ) );
+                vcb.disableProperty().setValue( false );
             }
-            else
-            {
-                // остановить движение графической зоны
-                process.cancel( true );
-                // остановить рисование отметок
-                for( Node node : valuesPane.getChildren() )
-                    if( node instanceof CheckBox )
-                    {
-                        CheckBox vcb = (CheckBox)node;
-                        state.put( vcb, vcb.selectedProperty().getValue() );
-                        vcb.selectedProperty().setValue( false );
-                        vcb.disableProperty().setValue( true );
-                        // имитировать клик
-                        vcb.fireEvent( new ActionEvent( this, null ) ); // DO NOT vcb.fire()!
-                    }
-            }
-        }
-        
     }
     
-    /**
-     * Контроллер видимости значений.
-     */
-    private class Selector implements EventHandler<ActionEvent>
+    private void stopAllFlows()
     {
-        private final CheckBox cb;
-        private final DrawAreaPainter painter;
-        private Future<?> process;
-
-        Selector( CheckBox cb, DrawAreaPainter painter, Future<?> process ) 
-        {
-            this.cb = cb;
-            this.painter = painter;
-            this.process = process;
-        }
-        
-        @Override
-        public void handle( ActionEvent _ ) 
-        {
-            if( cb.selectedProperty().get() )
-                process = executorService.submit( painter );
-            else
-                process.cancel( true );
-        }
+        // остановить рисование отметок
+        for( Node node : valuesPane.getChildren() )
+            if( node instanceof CheckBox )
+            {
+                CheckBox vcb = (CheckBox)node;
+                controller.setFlowState( vcb.getUserData(), vcb.selectedProperty().get() );
+                vcb.selectedProperty().setValue( false );
+                vcb.disableProperty().setValue( true );
+            }
+    }
+    
+    EventHandler<ActionEvent> createActionStartAllFlows()
+    {
+        return new ActionStartAllFlows();
     }
 
+    EventHandler<ActionEvent> createActionStopAllFlows()
+    {
+        return new ActionStopAllFlows();
+    }
+
+    private class ActionStartAllFlows implements EventHandler<ActionEvent>
+    {
+        @Override
+        public void handle( ActionEvent event )
+        {
+            controller.dynamicProperty().setValue( true );
+        }
+    }
+    
+    private class ActionStopAllFlows implements EventHandler<ActionEvent>
+    {
+        @Override
+        public void handle( ActionEvent event )
+        {
+            controller.dynamicProperty().setValue( false );
+        }
+    }
+    
 }

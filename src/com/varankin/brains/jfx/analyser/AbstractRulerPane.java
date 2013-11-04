@@ -1,5 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -9,12 +12,12 @@ import javafx.scene.paint.Paint;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-abstract class AbstractRuler extends Pane
+abstract class AbstractRulerPane extends Pane
 {
     private int tickSizeLarge, tickSizeMedium, tickSizeSmall;
     private Paint tickPaint, valuePaint;
 
-    protected AbstractRuler()
+    protected AbstractRulerPane()
     {
         //TODO appl. param.
         tickSizeLarge = 9;
@@ -23,6 +26,19 @@ abstract class AbstractRuler extends Pane
         tickPaint = Color.BLACK;
         valuePaint = Color.BLACK;
     }
+    
+    protected class SizeChangeListener implements ChangeListener<Number>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Number> observable, 
+                            Number oldValue, Number newValue )
+        {
+            if( newValue.intValue() > 0 )
+                generateRuler();
+        }
+    }
+    
+    abstract protected void generateRuler();
 
     final int getTickSizeLarge()
     {

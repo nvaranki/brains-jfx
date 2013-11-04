@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
-import static com.varankin.brains.jfx.analyser.AbstractRuler.roundToFactor;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
+import com.varankin.brains.jfx.JavaFX;
+import java.util.List;
 import javafx.geometry.Bounds;
+import javafx.scene.control.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
@@ -14,58 +14,61 @@ import javafx.scene.transform.Translate;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class ValueRuler extends AbstractRuler implements ValueConvertor
+final class ValueRulerPane extends AbstractRulerPane
 {
     private final double tickShift;
     private final double factor = 1d; // 1, 2, 5
     private final int pixelStepMin = 5; // min 5 pixels in between ticks
-    private double v0, vx;
+    private final ValueConvertor convertor;
+    @Deprecated private final ContextMenu popup;
 
-    ValueRuler( final float vMin, final float vMax )
+    ValueRulerPane( ValueConvertor convertor )
     {
+        this.convertor = convertor;
         //TODO appl. param.
         tickShift = 35d;
         
+        popup = new ContextMenu();
+        popup.getItems().addAll( new MenuItem("ValueRuler action") );
+        
         setMinHeight( 100d );
-        heightProperty().addListener( new InvalidationListener() 
-        {
-            @Override
-            public void invalidated( Observable o )
-            {
-                int height = (int)Math.round( heightProperty().get() );
-                if( height > 0 )
-                {
-                    resetConvertor( vMin, vMax );
-                    getChildren().clear();
-                    generate( vMin, vMax );
-                }
-            }
-        } );
+        setOnMouseClicked( new ContextMenuRaiser( popup, ValueRulerPane.this ) );
+        heightProperty().addListener( new SizeChangeListener() );
     }
     
-    private void resetConvertor( float vMin, float vMax )
+    @Deprecated
+    void appendToPopup( List<MenuItem> items ) 
     {
-        v0 = vMax;
-        vx = Double.valueOf( getHeight() )/( vMin - vMax );
+        if( items != null && !items.isEmpty() )
+        {
+            popup.getItems().add( new SeparatorMenuItem() );
+            JavaFX.copyMenuItems( items, popup.getItems() );
+        }
     }
-
-    private void generate( float vMin, float vMax )
+    
+    @Override
+    protected void generateRuler()
     {
-        float step = (float)roundToFactor( ( vMax - vMin ) / ( getHeight() / pixelStepMin ), factor );
-        float size = vMax - vMin;
-        float vStart = vMin - vMin % step;
+        getChildren().clear();
+        
+        float size = convertor.getSize();
+        float step = (float)roundToFactor( size / ( getHeight() / pixelStepMin ), factor );
+        float vStart = convertor.getMin();
+        float offset = vStart % step;
+        if( offset < 0 ) offset += step; // float!!! step = 0.1 => offset = -0.099999999
+        vStart -= offset;
         int stepCount = (int)Math.ceil( size / step );
         for( int i = 0; i <= stepCount; i++ )
         {
             float v = vStart + step * i;
-            int y = valueToImage( v );
+            int y = convertor.valueToImage( v );
             long f = Math.round( (double)v / step );
             if( 0 <= y && y < getHeight() )
-                generate( y, Float.toString( f * step ), f );
+                generateTickAndText( y, Float.toString( f * step ), f );
         }
     }
 
-    private void generate( int y, String text, long s )
+    private void generateTickAndText( int y, String text, long s )
     {
         int length = s % 10 == 0 ? getTickSizeLarge() : 
                 s % 5 == 0 ? getTickSizeMedium() : getTickSizeSmall();
@@ -94,12 +97,6 @@ final class ValueRuler extends AbstractRuler implements ValueConvertor
         double blank = valueBounds.getMaxY(); //TODO verify approach
         double shift = tickRight - 10d - valueRight - blank;
         return shift;
-    }
-    
-    @Override
-    public int valueToImage( float v )
-    {
-        return (int)Math.round( ( v - v0 ) * vx );
     }
     
 }

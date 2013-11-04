@@ -4,6 +4,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -15,18 +17,20 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class DrawAreaPainter implements Runnable
+class DotPainter implements Runnable
 {
-    private static final Logger LOGGER = Logger.getLogger( DrawAreaPainter.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger( DotPainter.class.getName() );
     private static long idThread = 0L;
     
     public static final int[][] DOT     = new int[][]{{0,0}};
     public static final int[][] BOX     = new int[][]{{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1}};
     public static final int[][] SPOT    = new int[][]{{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1},{0,0}};
+    public static final int[][] TEE2H   = new int[][]{{1,1},{1,0},{1,-1},{0,0},{-1,1},{-1,0},{-1,-1}};
+    public static final int[][] TEE2V   = new int[][]{{-1,1},{0,1},{1,1},{0,0},{-1,-1},{0,-1},{1,-1}};
     public static final int[][] CROSS   = new int[][]{{0,0},{0,1},{1,0},{0,-1},{-1,0}};
     public static final int[][] CROSS45 = new int[][]{{0,0},{1,1},{1,-1},{-1,-1},{-1,1}};
 
-    private final DrawArea drawArea;
+    private final ObjectProperty<WritableImage> writableImage;
     private final TimeConvertor timeConvertor;
     private final ValueConvertor valueConvertor;
     private final BlockingQueue<Dot> очередь;
@@ -37,17 +41,16 @@ class DrawAreaPainter implements Runnable
     private final int[][] pattern;
 
     /**
-     * @param drawArea графическая зона.
      * @param tc       функция X-координаты отметки от времени.
      * @param vc       функция Y-координаты отметки от значения.
      * @param color    цвет рисования шаблона.
      * @param pattern  шаблон для рисования как массив точек (x,y).
      * @param очередь  очередь отметок для прорисовки.
      */
-    DrawAreaPainter( DrawArea drawArea, TimeConvertor tc, ValueConvertor vc, 
+    DotPainter( TimeConvertor tc, ValueConvertor vc, 
             Color color, int[][] pattern, BlockingQueue<Dot> очередь )
     {
-        this.drawArea = drawArea;
+        this.writableImage = new SimpleObjectProperty<>();
         this.timeConvertor = tc;
         this.valueConvertor = vc;
         this.color = color;
@@ -59,6 +62,11 @@ class DrawAreaPainter implements Runnable
         fragmentSize = 50;
     }
 
+    ObjectProperty<WritableImage> writableImageProperty()
+    {
+        return writableImage;
+    }
+    
     @Override
     public final void run()
     {
@@ -102,7 +110,7 @@ class DrawAreaPainter implements Runnable
     {
         int x = timeConvertor.timeToImage( dot.t );
         int y = valueConvertor.valueToImage( dot.v );
-        paint( x, y, drawArea.getWritableImage() );
+        paint( x, y, writableImage.get() );
     }
 
     void paint( int x, int y, WritableImage image )
@@ -122,7 +130,7 @@ class DrawAreaPainter implements Runnable
     /**
      * Рисовальщик блока отметок.
      */
-    private class MultiDotTask extends Task<Void>
+    protected class MultiDotTask extends Task<Void>
     {
         private final Dot[] блок;
         private final int количество;
@@ -142,7 +150,7 @@ class DrawAreaPainter implements Runnable
         {
             LOGGER.log( Level.FINEST, "Drawing {0} dots.", количество );
             for( int i = 0; i < количество; i++ )
-                DrawAreaPainter.this.paint( блок[i] );
+                DotPainter.this.paint( блок[i] );
             return null;
         }
         
