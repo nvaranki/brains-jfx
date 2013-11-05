@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 public class Application extends javafx.application.Application
 {
     private volatile Контекст контекст;
-    private JavaFX jfx;
     
     public Application() {}
     
@@ -28,14 +27,13 @@ public class Application extends javafx.application.Application
     public void start( Stage primaryStage )
     {
         контекст.старт();
-        jfx = new JavaFX( primaryStage, контекст );
-        jfx.старт();
+        JavaFX.newInstance( primaryStage, контекст ).старт();
     }
     
     @Override
     public void stop() throws Exception
     {
-        jfx.стоп();
+        JavaFX.getInstance().стоп();
         контекст.стоп( "main", "JavaFX-Launcher", "JavaFX Application Thread" );
     }
     

@@ -32,6 +32,18 @@ import javafx.stage.Stage;
  */
 public final class JavaFX 
 {
+    private static JavaFX JFX;
+    
+    public static JavaFX getInstance()
+    {
+        return JFX;
+    }
+    
+    static JavaFX newInstance( Stage платформа, Контекст контекст )
+    {
+        return JFX = new JavaFX( платформа, контекст );
+    }
+    
     public final Контекст контекст;
     public final Stage платформа;
     //public final Позиционер позиционер;
@@ -43,7 +55,7 @@ public final class JavaFX
      * @param платформа первичная платформа приложения JavaFX.
      * @param контекст  контекст приложения.
      */
-    JavaFX( Stage платформа, Контекст контекст )
+    private JavaFX( Stage платформа, Контекст контекст )
     {
         this.платформа = платформа;
         this.контекст = контекст;
@@ -83,7 +95,7 @@ public final class JavaFX
         }
     }
 
-    double getDefaultGap()
+    public double getDefaultGap()
     {
         return 10; //TODO params
     }
