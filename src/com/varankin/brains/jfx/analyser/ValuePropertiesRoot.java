@@ -109,6 +109,16 @@ public final class ValuePropertiesRoot extends BorderPane
     final void setPainter( DotPainter painter )
     {
         this.painter = painter;
+        properties.setColor( painter.getColor() );
+        properties.setScale( 3 );
+        int[][] painterPattern = painter.getPattern();
+        for( Marker m : Marker.values() )
+            if( Arrays.deepEquals( painterPattern, m.pattern ) )
+            {
+                properties.setMarker( m );
+                break;
+            }
+        properties.changedProperty().setValue( Boolean.FALSE );
     }
 
     @FXML
@@ -144,19 +154,4 @@ public final class ValuePropertiesRoot extends BorderPane
             painter.setPattern( newPattern );
     }
 
-    @FXML
-    void onShowing( WindowEvent event )
-    {
-        properties.setColor( painter.getColor() );
-        properties.setScale( 3 );
-        int[][] painterPattern = painter.getPattern();
-        for( Marker m : Marker.values() )
-            if( Arrays.deepEquals( painterPattern, m.pattern ) )
-            {
-                properties.setMarker( m );
-                break;
-            }
-        properties.changedProperty().setValue( Boolean.FALSE );
-    }
-    
 }
