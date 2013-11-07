@@ -20,11 +20,10 @@
 <?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
 
 <fx:root type="javafx.scene.layout.GridPane" 
-         id="valuePropertiesPane"
          xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
   <stylesheets>
-    <URL value="@value-properties-pane.css"/>
+    <URL value="@ValuePropertiesPane.css"/>
   </stylesheets>
     
   <children>

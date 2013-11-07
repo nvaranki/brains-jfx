@@ -1,0 +1,19 @@
+/* 
+    Document   : ValuePropertiesRoot.css
+    Created on : Nov 7, 2013
+    Author     : Николай Варанкин
+    Description: Панель диалога для выбора и установки параметров прорисовки отметок.
+*/
+
+.value-properties-root HBox
+{
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+    -fx-alignment: baseline-right;
+}
+
+.value-properties-root
+{
+}
+
+

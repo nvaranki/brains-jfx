@@ -1,17 +1,12 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.InverseBooleanBinding;
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.util.Arrays;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import java.util.*;
+import javafx.event.*;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.WindowEvent;
 
@@ -20,19 +15,24 @@ import javafx.stage.WindowEvent;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class ValuePropertiesRoot extends BorderPane
+public final class ValuePropertiesRoot extends BorderPane
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRoot.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesRoot.css";
+    private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesRoot.fxml";
+    private static final String CSS_CLASS = "value-properties-root";
 
-    @FXML private final ValuePropertiesPane properties;
+    @FXML private ValuePropertiesPane properties;
+    @FXML private Button buttonApply;
+    
     private DotPainter painter;
 
-    ValuePropertiesRoot()
+    public ValuePropertiesRoot()
     {
+        //<editor-fold defaultstate="collapsed" desc="API Loader">
+/*       
         properties = new ValuePropertiesPane();
         properties.setId( "properties" );
-
-        double gap = JavaFX.getInstance().getDefaultGap();
 
         Button buttonOK = new Button( LOGGER.text( "button.ok" ) );
         buttonOK.setOnAction( new EventHandler<ActionEvent>() 
@@ -45,7 +45,7 @@ class ValuePropertiesRoot extends BorderPane
         } );
         buttonOK.setDefaultButton( true );
 
-        Button buttonApply = new Button( LOGGER.text( "button.apply" ) );
+        buttonApply = new Button( LOGGER.text( "button.apply" ) );
         buttonApply.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -54,7 +54,7 @@ class ValuePropertiesRoot extends BorderPane
                 onActionApply( event );
             }
         } );
-        buttonApply.disableProperty().bind( new InverseBooleanBinding( properties.changedProperty() ) );
+        buttonApply.setId( "buttonApply" );
 
         Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
         buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
@@ -69,12 +69,42 @@ class ValuePropertiesRoot extends BorderPane
 
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonApply, buttonCancel );
-        buttonBar.setAlignment( Pos.BASELINE_RIGHT );
-        buttonBar.setPadding( new Insets( gap ) );
-        buttonBar.setSpacing( gap );
 
         setCenter( properties );
         setBottom( buttonBar );
+
+        getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
+        initialize();
+ */       
+        //</editor-fold>
+
+        //<editor-fold defaultstate="collapsed" desc="FXML Loader">
+/**/
+        java.net.URL location = getClass().getResource( RESOURCE_FXML );
+        ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
+        javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader( location, resources );
+        fxmlLoader.setRoot( ValuePropertiesRoot.this );
+        fxmlLoader.setController( ValuePropertiesRoot.this );
+
+        try 
+        {
+            fxmlLoader.load();
+        } 
+        catch( java.io.IOException exception ) 
+        {
+            throw new RuntimeException( exception );
+        }
+        
+        //</editor-fold>
+    }
+    
+    @FXML
+    protected void initialize()
+    {
+        getStyleClass().add( CSS_CLASS );
+
+        buttonApply.disableProperty().bind( 
+                new InverseBooleanBinding( properties.changedProperty() ) );
     }
     
     final void setPainter( DotPainter painter )
