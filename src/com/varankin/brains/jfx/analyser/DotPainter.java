@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
+import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -37,8 +38,8 @@ class DotPainter implements Runnable
     private final int fragmentSize;
     private final long fragmentTimeout;
     private final TimeUnit fragmentUnits;
-    private final Color color;
-    private final int[][] pattern;
+    private Color color;
+    private int[][] pattern;
 
     /**
      * @param tc       функция X-координаты отметки от времени.
@@ -67,6 +68,26 @@ class DotPainter implements Runnable
         return writableImage;
     }
     
+    final Color getColor()
+    {
+        return color;
+    }
+    
+    final void setColor( Color color )
+    {
+        this.color = color;
+    }
+
+    final int[][] getPattern()
+    {
+        return pattern;
+    }
+    
+    final void setPattern( int[][] pattern )
+    {
+        this.pattern = pattern;
+    }
+
     @Override
     public final void run()
     {
@@ -110,10 +131,10 @@ class DotPainter implements Runnable
     {
         int x = timeConvertor.timeToImage( dot.t );
         int y = valueConvertor.valueToImage( dot.v );
-        paint( x, y, writableImage.get() );
+        paint( x, y, writableImage.get(), color, pattern );
     }
 
-    void paint( int x, int y, WritableImage image )
+    static void paint( int x, int y, WritableImage image, Color color, int[][] pattern )
     {
         int width  = image.widthProperty().intValue();
         int height = image.heightProperty().intValue();
@@ -125,6 +146,28 @@ class DotPainter implements Runnable
             if( 0 <= xo && xo < width && 0 <= yo && yo < height )
                 writer.setColor( xo, yo, color );
         }
+    }
+    
+    Image sample()
+    {
+        return sample( color, pattern );
+    }
+    
+    static Image sample( Color color, int[][] pattern )
+    {
+        Color outlineColor = Color.LIGHTGRAY;
+        
+        WritableImage sample = new WritableImage( 16, 16 );
+        for( int i = 1; i < 15; i ++ )
+        {
+            sample.getPixelWriter().setColor( i,  0, outlineColor );
+            sample.getPixelWriter().setColor( i, 15, outlineColor );
+            sample.getPixelWriter().setColor(  0, i, outlineColor );
+            sample.getPixelWriter().setColor( 15, i, outlineColor );
+        }
+        paint( 7, 7, sample, color, pattern );
+
+        return sample;        
     }
 
     /**

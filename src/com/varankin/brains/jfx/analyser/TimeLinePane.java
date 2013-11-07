@@ -24,7 +24,7 @@ final class TimeLinePane extends GridPane
     private final DrawAreaPane drawArea;
     private final TimeRulerPane timeRuler;
     private final ValueRulerPane valueRuler;
-    private final ControlBar controlBar;
+    private final ControlBarPane controlBar;
     private final TimeLineController controller;
     @Deprecated private final ContextMenu popup;
     
@@ -33,7 +33,7 @@ final class TimeLinePane extends GridPane
         controller = timeLineController;
         timeRuler = new TimeRulerPane( controller.getTimeConvertor() );
         valueRuler = new ValueRulerPane( controller.getValueConvertor() );
-        controlBar = new ControlBar( controller );
+        controlBar = new ControlBarPane( controller );
         drawArea = new DrawAreaPane( controller );
 
         ColumnConstraints cc0 = new ColumnConstraints();

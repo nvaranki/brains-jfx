@@ -15,26 +15,24 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
 
 /**
  * Управление прорисовкой отметок.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class ControlBar extends GridPane
+final class ControlBarPane extends GridPane
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ControlBar.class );
+    private static final LoggerX LOGGER = LoggerX.getLogger( ControlBarPane.class );
     
     private final FlowPane valuesPane;
     private final TimeLineController controller;
     
-    ControlBar( TimeLineController controller )
+    ControlBarPane( TimeLineController controller )
     {
         this.controller = controller;
         
@@ -85,22 +83,11 @@ final class ControlBar extends GridPane
      * @param name    название значения.
      * @param painter сервис рисования отметок.
      */
-    void addValueControl( String name, final DotPainter painter, List<MenuItem> parentPopupMenu )
+    void addValueControl( final String name, final DotPainter painter, List<MenuItem> parentPopupMenu )
     {
-        WritableImage sample = new WritableImage( 16, 16 );
-        Color outlineColor = Color.LIGHTGRAY;
-        for( int i = 1; i < 15; i ++ )
-        {
-            sample.getPixelWriter().setColor( i,  0, outlineColor );
-            sample.getPixelWriter().setColor( i, 15, outlineColor );
-            sample.getPixelWriter().setColor(  0, i, outlineColor );
-            sample.getPixelWriter().setColor( 15, i, outlineColor );
-        }
-        painter.paint( 7, 7, sample );
-
         final CheckBox label = new CheckBox( name );
         label.setUserData( name ); //TODO DEBUG
-        label.setGraphic( new ImageView( sample ) );
+        label.setGraphic( new ImageView( painter.sample() ) );
         label.setGraphicTextGap( 3 );
         label.setSelected( false );
         label.selectedProperty().addListener( new ChangeListener<Boolean>() 
@@ -117,9 +104,31 @@ final class ControlBar extends GridPane
             }
         } );
         label.setSelected( true );
+        // TODO bind painter color and pattern to sample replacement
         valuesPane.getChildren().add( label );
         
-        ContextMenu popup = new ContextMenu( new MenuItem( "Удалить " + name ) );
+        MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            ValuePropertiesStage properties;
+            
+            @Override
+            public void handle( ActionEvent event )
+            {
+                if( properties == null )
+                {
+                    properties = new ValuePropertiesStage( painter );
+                    properties.initOwner( JavaFX.getInstance().платформа );
+                    properties.setTitle( LOGGER.text( "properties.value.title", name ) );
+                }
+                properties.show();
+                properties.toFront();
+            }
+        } );
+        ContextMenu popup = new ContextMenu( 
+                new MenuItem( LOGGER.text( "control.popup.add" ) ), 
+                new MenuItem( LOGGER.text( "control.popup.remove", name ) ), 
+                menuItemProperties );
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
         label.setContextMenu( popup);
     }
