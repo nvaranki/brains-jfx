@@ -1,25 +1,16 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import java.util.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
+import javafx.util.*;
 
 /**
  * Панель выбора параметров прорисовки отметок.
@@ -29,6 +20,8 @@ import javafx.util.StringConverter;
 public final class ValuePropertiesPane extends GridPane
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPane.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyzer/value-properties-pane.css";
+    private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesPane.fxml";
 
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
@@ -42,8 +35,9 @@ public final class ValuePropertiesPane extends GridPane
         changedProperty = new SimpleBooleanProperty( false );
        
         //<editor-fold defaultstate="collapsed" desc="API Loader">
-/*        
+/*       
         preview = new ImageView();
+        preview.setId( "preview" );
         preview.setPreserveRatio( true );
 
         colorPicker = new ColorPicker();
@@ -56,10 +50,10 @@ public final class ValuePropertiesPane extends GridPane
         scalePicker = new ComboBox<>();
         scalePicker.setId( "scalePicker" );
         
-        double gap = getDefaultGap();
+        double gap = com.varankin.brains.jfx.JavaFX.getInstance().getDefaultGap();
         setHgap( gap );
         setVgap( gap );
-        setPadding( new Insets( gap ) );
+        setPadding( new javafx.geometry.Insets( gap ) );
         add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 0 );
         add( colorPicker, 1, 0 );
         add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 1 );
@@ -68,15 +62,16 @@ public final class ValuePropertiesPane extends GridPane
         add( scalePicker, 2, 1 );
         add( preview, 3, 0, 1, 2 );
         
+        getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
         initialize();
 */
         //</editor-fold>
 
-        //<editor-fold defaultstate="collapsed" desc="FXMLLoader">
-
-        URL location = getClass().getResource( "/fxml/analyzer/ValuePropertiesPane.fxml" );
+        //<editor-fold defaultstate="collapsed" desc="FXML Loader">
+/**/
+        java.net.URL location = getClass().getResource( RESOURCE_FXML );
         ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-        FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
+        javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader( location, resources );
         fxmlLoader.setRoot( ValuePropertiesPane.this );
         fxmlLoader.setController( ValuePropertiesPane.this );
 
@@ -84,7 +79,7 @@ public final class ValuePropertiesPane extends GridPane
         {
             fxmlLoader.load();
         } 
-        catch( IOException exception ) 
+        catch( java.io.IOException exception ) 
         {
             throw new RuntimeException( exception );
         }
@@ -93,8 +88,10 @@ public final class ValuePropertiesPane extends GridPane
     }
     
     @FXML
-    private void initialize()
+    protected void initialize()
     {
+        getStyleClass().add( "value-properties-pane" );
+
         colorPicker.valueProperty().addListener( new ColorPickerChangeListener() );
 
         markerPicker.getSelectionModel().selectedItemProperty()
@@ -111,12 +108,6 @@ public final class ValuePropertiesPane extends GridPane
             scalePicker.getItems().add( i );
     }
             
-    @FXML
-    private double getDefaultGap()
-    {
-        return JavaFX.getInstance().getDefaultGap();
-    }
-    
     BooleanProperty changedProperty()
     {
         return changedProperty;

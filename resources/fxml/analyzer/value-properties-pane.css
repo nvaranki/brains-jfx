@@ -1,0 +1,33 @@
+/* 
+    Document   : value-properties-pane.css
+    Created on : Nov 7, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Панель выбора параметров прорисовки отметок.
+*/
+
+.value-properties-pane #colorPicker
+{
+    -fx-cursor: hand;
+}
+
+.value-properties-pane #markerPicker
+{
+    -fx-cursor: hand;
+}
+
+.value-properties-pane #scalePicker
+{
+    -fx-cursor: hand;
+}
+
+.value-properties-pane #preview 
+{
+}
+
+.value-properties-pane
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
+

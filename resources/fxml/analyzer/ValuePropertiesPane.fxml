@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.collections.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
+<!-- 
+    Document   : ValuePropertiesPane.fxml
+    Created on : Nov 7, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Панель выбора параметров прорисовки отметок.
+-->
+  
+<?import java.lang.* ?>
+<?import java.net.URL ?>
+<?import java.util.* ?>
+<?import javafx.collections.* ?>
+<?import javafx.geometry.* ?>
+<?import javafx.scene.control.* ?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.layout.* ?>
+<?import javafx.scene.paint.* ?>
+
 <?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
 
 <fx:root type="javafx.scene.layout.GridPane" 
-         fx:id="valuePropertiesPane" 
-         hgap="10" vgap="10" 
+         id="valuePropertiesPane"
          xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
-
-  <padding>
-    <Insets 
-        bottom="10" 
-        left="10" 
-        right="10" 
-        top="10" 
-    />
-  </padding>
-  
+    
+  <stylesheets>
+    <URL value="@value-properties-pane.css"/>
+  </stylesheets>
+    
   <children>
     <Label 
         text="%properties.value.color" 

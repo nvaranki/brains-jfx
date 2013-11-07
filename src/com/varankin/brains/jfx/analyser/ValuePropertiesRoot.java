@@ -119,7 +119,7 @@ class ValuePropertiesRoot extends BorderPane
     void onShowing( WindowEvent event )
     {
         properties.setColor( painter.getColor() );
-        properties.setScale( 1 );
+        properties.setScale( 3 );
         int[][] painterPattern = painter.getPattern();
         for( Marker m : Marker.values() )
             if( Arrays.deepEquals( painterPattern, m.pattern ) )
