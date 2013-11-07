@@ -5,6 +5,11 @@
     Description: Панель диалога для выбора и установки параметров прорисовки отметок.
 */
 
+.value-properties-root HBox Button
+{
+    -fx-cursor: hand;
+}
+
 .value-properties-root HBox
 {
     -fx-padding: 10px;
