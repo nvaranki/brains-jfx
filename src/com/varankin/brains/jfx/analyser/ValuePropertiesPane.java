@@ -59,6 +59,7 @@ public final class ValuePropertiesPane extends GridPane
         add( scalePicker, 2, 1 );
         add( preview, 3, 0, 1, 2 );
         
+        getStyleClass().add( CSS_CLASS );
         getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
         initialize();
 */
@@ -87,8 +88,6 @@ public final class ValuePropertiesPane extends GridPane
     @FXML
     protected void initialize()
     {
-        getStyleClass().add( CSS_CLASS );
-
         colorPicker.valueProperty().addListener( new ColorPickerChangeListener() );
 
         markerPicker.getSelectionModel().selectedItemProperty()

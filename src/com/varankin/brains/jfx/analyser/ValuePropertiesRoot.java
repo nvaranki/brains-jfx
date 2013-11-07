@@ -74,6 +74,7 @@ public final class ValuePropertiesRoot extends BorderPane
         setBottom( buttonBar );
 
         getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
+        getStyleClass().add( CSS_CLASS );
         initialize();
  */       
         //</editor-fold>
@@ -101,8 +102,6 @@ public final class ValuePropertiesRoot extends BorderPane
     @FXML
     protected void initialize()
     {
-        getStyleClass().add( CSS_CLASS );
-
         buttonApply.disableProperty().bind( 
                 new InverseBooleanBinding( properties.changedProperty() ) );
     }
