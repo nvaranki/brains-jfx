@@ -51,10 +51,6 @@ public final class ValuePropertiesPane extends GridPane
         scalePicker = new ComboBox<>();
         scalePicker.setId( "scalePicker" );
         
-        double gap = com.varankin.brains.jfx.JavaFX.getInstance().getDefaultGap();
-        setHgap( gap );
-        setVgap( gap );
-        setPadding( new javafx.geometry.Insets( gap ) );
         add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 0 );
         add( colorPicker, 1, 0 );
         add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 1 );
