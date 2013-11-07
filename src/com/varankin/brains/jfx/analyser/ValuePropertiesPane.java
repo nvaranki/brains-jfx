@@ -20,8 +20,9 @@ import javafx.util.*;
 public final class ValuePropertiesPane extends GridPane
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPane.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyzer/value-properties-pane.css";
+    private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesPane.css";
     private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesPane.fxml";
+    private static final String CSS_CLASS = "value-properties-pane";
 
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
@@ -90,7 +91,7 @@ public final class ValuePropertiesPane extends GridPane
     @FXML
     protected void initialize()
     {
-        getStyleClass().add( "value-properties-pane" );
+        getStyleClass().add( CSS_CLASS );
 
         colorPicker.valueProperty().addListener( new ColorPickerChangeListener() );
 
