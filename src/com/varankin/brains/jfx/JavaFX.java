@@ -197,6 +197,11 @@ public final class JavaFX
         }
     }
 
+    public boolean useFxmlLoader()
+    {
+        return false; //TODO appl. setup
+    }
+
     //<editor-fold defaultstate="collapsed" desc="классы">
     
     private class ObservableObjectList<T> extends ObservableValueBase<ObservableList<T>>

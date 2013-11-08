@@ -117,9 +117,10 @@ final class ControlBarPane extends GridPane
             {
                 if( properties == null )
                 {
-                    properties = new ValuePropertiesStage( painter );
+                    properties = new ValuePropertiesStage();
                     properties.initOwner( JavaFX.getInstance().платформа );
                     properties.setTitle( LOGGER.text( "properties.value.title", name ) );
+                    properties.setPainter( painter );
                 }
                 properties.show();
                 properties.toFront();

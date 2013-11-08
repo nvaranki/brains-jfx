@@ -1,14 +1,15 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.InverseBooleanBinding;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.*;
 import javafx.event.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.stage.WindowEvent;
 
 /**
  * Панель диалога для выбора и установки параметров прорисовки отметок.
@@ -29,8 +30,14 @@ public final class ValuePropertiesRoot extends BorderPane
 
     public ValuePropertiesRoot()
     {
-        //<editor-fold defaultstate="collapsed" desc="API Loader">
-/*       
+        if( JavaFX.getInstance().useFxmlLoader() )
+            loadByFxml();
+        else
+            loadByApi();
+    }
+    
+    private void loadByApi()
+    {
         properties = new ValuePropertiesPane();
         properties.setId( "properties" );
 
@@ -76,14 +83,13 @@ public final class ValuePropertiesRoot extends BorderPane
         getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
         getStyleClass().add( CSS_CLASS );
         initialize();
- */       
-        //</editor-fold>
+    }       
 
-        //<editor-fold defaultstate="collapsed" desc="FXML Loader">
-/**/
+    private void loadByFxml()
+    {
         java.net.URL location = getClass().getResource( RESOURCE_FXML );
         ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-        javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader( location, resources );
+        FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
         fxmlLoader.setRoot( ValuePropertiesRoot.this );
         fxmlLoader.setController( ValuePropertiesRoot.this );
 
@@ -95,8 +101,6 @@ public final class ValuePropertiesRoot extends BorderPane
         {
             throw new RuntimeException( exception );
         }
-        
-        //</editor-fold>
     }
     
     @FXML

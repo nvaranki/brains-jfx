@@ -1,11 +1,13 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.GridPane;
@@ -35,8 +37,14 @@ public final class ValuePropertiesPane extends GridPane
     {
         changedProperty = new SimpleBooleanProperty( false );
        
-        //<editor-fold defaultstate="collapsed" desc="API Loader">
-/*       
+        if( JavaFX.getInstance().useFxmlLoader() )
+            loadByFxml();
+        else
+            loadByApi();
+    }
+    
+    private void loadByApi()
+    {
         preview = new ImageView();
         preview.setId( "preview" );
         preview.setPreserveRatio( true );
@@ -62,14 +70,13 @@ public final class ValuePropertiesPane extends GridPane
         getStyleClass().add( CSS_CLASS );
         getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
         initialize();
-*/
-        //</editor-fold>
+    }       
 
-        //<editor-fold defaultstate="collapsed" desc="FXML Loader">
-/**/
+    private void loadByFxml()
+    {
         java.net.URL location = getClass().getResource( RESOURCE_FXML );
         ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-        javafx.fxml.FXMLLoader fxmlLoader = new javafx.fxml.FXMLLoader( location, resources );
+        FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
         fxmlLoader.setRoot( ValuePropertiesPane.this );
         fxmlLoader.setController( ValuePropertiesPane.this );
 
@@ -81,8 +88,6 @@ public final class ValuePropertiesPane extends GridPane
         {
             throw new RuntimeException( exception );
         }
-        
-        //</editor-fold>
     }
     
     @FXML

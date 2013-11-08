@@ -13,10 +13,11 @@ import javafx.stage.StageStyle;
  */
 class ValuePropertiesStage extends Stage
 {
-    ValuePropertiesStage( DotPainter painter )
+    private ValuePropertiesRoot root;
+    
+    ValuePropertiesStage()
     {
-        ValuePropertiesRoot root = new ValuePropertiesRoot();
-        root.setPainter( painter );
+        root = new ValuePropertiesRoot();
         
         initStyle( StageStyle.DECORATED );
         initModality( Modality.NONE );
@@ -27,6 +28,11 @@ class ValuePropertiesStage extends Stage
         setWidth( 350d );
         setScene( new Scene( root ) );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+    }
+
+    void setPainter( DotPainter painter )
+    {
+        root.setPainter( painter );
     }
     
 }
