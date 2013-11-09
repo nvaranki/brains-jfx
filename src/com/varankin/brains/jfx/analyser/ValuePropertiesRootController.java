@@ -21,7 +21,7 @@ import javafx.scene.paint.Color;
 public class ValuePropertiesRootController
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesRoot.css";
+    private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
     private static final String CSS_CLASS = "value-properties-root";
     
     private DotPainter painter;

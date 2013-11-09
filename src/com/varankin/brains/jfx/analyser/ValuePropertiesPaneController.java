@@ -20,7 +20,7 @@ import javafx.util.*;
 public class ValuePropertiesPaneController
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesPane.css";
+    private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
     private static final String CSS_CLASS = "value-properties-pane";
 
     private final BooleanProperty changedProperty;

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    Document   : ValuePropertiesRoot.fxml
+    Created on : Nov 7, 2013
+    Author     : Николай Варанкин
+    Description: Панель диалога для выбора и установки параметров прорисовки отметок.
+-->
+  
+<?import java.lang.* ?>
+<?import java.net.URL ?>
+<?import java.util.* ?>
+<?import javafx.geometry.* ?>
+<?import javafx.scene.control.* ?>
+<?import javafx.scene.layout.* ?>
+<?import javafx.scene.paint.* ?>
+
+<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
+
+<fx:root type="javafx.scene.layout.BorderPane" 
+    fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesRootController" 
+    styleClass="value-properties-root"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+  <stylesheets>
+    <URL value="@ValuePropertiesRoot.css"/>
+  </stylesheets>
+  
+  <center>
+      <fx:include source="ValuePropertiesPane.fxml" fx:id="properties"/>
+  </center>  
+  
+  <bottom>
+    <HBox>
+      <children>
+        <Button 
+            text="%button.ok" 
+            onAction="#onActionOK" 
+            defaultButton="true" 
+        />
+        <Button 
+            text="%button.apply" 
+            onAction="#onActionApply"
+            fx:id="buttonApply"  
+        />
+        <Button 
+            text="%button.cancel" 
+            onAction="#onActionCancel" 
+            cancelButton="true" 
+        />
+      </children>
+    </HBox>
+  </bottom>
+  
+</fx:root>

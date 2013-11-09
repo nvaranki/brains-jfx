@@ -19,7 +19,7 @@ import javafx.stage.StageStyle;
 class ValuePropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
-    private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesRoot.fxml";
+    private static final String RESOURCE_FXML = "/fxml/analyser/ValuePropertiesRoot.fxml";
 
     ValuePropertiesStage( DotPainter painter )
     {

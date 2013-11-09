@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    Document   : ValuePropertiesPane.fxml
+    Created on : Nov 7, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Панель выбора параметров прорисовки отметок.
+-->
+  
+<?import java.lang.* ?>
+<?import java.net.URL ?>
+<?import java.util.* ?>
+<?import javafx.collections.* ?>
+<?import javafx.geometry.* ?>
+<?import javafx.scene.control.* ?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.layout.* ?>
+<?import javafx.scene.paint.* ?>
+
+<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
+
+<fx:root type="javafx.scene.layout.GridPane"
+    fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesPaneController" 
+    styleClass="value-properties-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+  <stylesheets>
+    <URL value="@ValuePropertiesPane.css"/>
+  </stylesheets>
+    
+  <children>
+    <Label 
+        text="%properties.value.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <ColorPicker 
+        fx:id="colorPicker" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0" 
+    />
+    <Label 
+        text="%properties.value.marker" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <ComboBox 
+        fx:id="markerPicker" 
+        visibleRowCount="7" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"
+    />
+    <Label 
+        text="%properties.value.pattern" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="0" 
+    />
+    <ComboBox 
+        fx:id="scalePicker" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="1"
+    />
+    <ImageView 
+        fx:id="preview"
+        preserveRatio="true" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="0" 
+        GridPane.rowSpan="2" 
+    />
+  </children>
+  
+</fx:root>
