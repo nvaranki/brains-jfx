@@ -23,27 +23,75 @@ public class ValuePropertiesPaneController
     private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesPane.css";
     private static final String CSS_CLASS = "value-properties-pane";
 
-    @FXML protected ImageView preview;
-    @FXML protected ColorPicker colorPicker;
-    @FXML protected ComboBox<Marker> markerPicker;
-    @FXML protected ComboBox<Integer> scalePicker;
+    private final BooleanProperty changedProperty;
+    private final ColorPickerChangeListener colorPickerListener;
+    private final MarkerPickerChangeListener markerPickerChangeListener;
+    private final ScalePickerChangeListener scalePickerChangeListener;
     
-    private final BooleanProperty changedProperty = new SimpleBooleanProperty( false );
+    @FXML private ImageView preview;
+    @FXML private ColorPicker colorPicker;
+    @FXML private ComboBox<Marker> markerPicker;
+    @FXML private ComboBox<Integer> scalePicker;
     
+    public ValuePropertiesPaneController()
+    {
+        changedProperty = new SimpleBooleanProperty( false );
+        colorPickerListener = new ColorPickerChangeListener();
+        markerPickerChangeListener = new MarkerPickerChangeListener();
+        scalePickerChangeListener = new ScalePickerChangeListener();
+    }
+    
+    /**
+     * Создает панель выбора параметров прорисовки отметок.
+     * Применяется в конфигурации без FXML.
+     */
+    GridPane build()
+    {
+        preview = new ImageView();
+        preview.setId( "preview" );
+        preview.setPreserveRatio( true );
+
+        colorPicker = new ColorPicker();
+        colorPicker.setId( "colorPicker" );
+        
+        markerPicker = new ComboBox<>();
+        markerPicker.setId( "markerPicker" );
+        markerPicker.setVisibleRowCount( 7 );
+        
+        scalePicker = new ComboBox<>();
+        scalePicker.setId( "scalePicker" );
+        
+        GridPane pane = new GridPane();
+        pane.add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 0 );
+        pane.add( colorPicker, 1, 0 );
+        pane.add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 1 );
+        pane.add( markerPicker, 1, 1 );
+        pane.add( new Label( LOGGER.text( "properties.value.pattern" ) ), 2, 0 );
+        pane.add( scalePicker, 2, 1 );
+        pane.add( preview, 3, 0, 1, 2 );
+        
+        pane.getStyleClass().add( CSS_CLASS );
+        pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
+
+        initialize();
+        
+        return pane;
+    }
+        
     @FXML
     protected void initialize()
-    {
-        colorPicker.valueProperty().addListener( new ColorPickerChangeListener() );
+    {   
+        colorPicker.valueProperty().addListener( new WeakChangeListener<>( colorPickerListener ) );
 
         markerPicker.getSelectionModel().selectedItemProperty()
-                .addListener( new MarkerPickerChangeListener() );
+                .addListener( new WeakChangeListener<>( markerPickerChangeListener ) );
         CellFactory cellFactory = new CellFactory();
         markerPicker.setCellFactory( cellFactory );
         markerPicker.setButtonCell( cellFactory.call( null ) );
         markerPicker.getItems().addAll( Arrays.asList( Marker.values() ) );
 
         scalePicker.getSelectionModel().selectedItemProperty()
-                .addListener( new ScalePickerChangeListener() );
+                .addListener( new WeakChangeListener<>( scalePickerChangeListener ) );
         scalePicker.setConverter( new ScalePickerConverter() );
         for( int i : new int[]{1,2,3,4,5,10} )
             scalePicker.getItems().add( i );
@@ -116,42 +164,6 @@ public class ValuePropertiesPaneController
         return sample;
     }
     
-    /**
-     * Создает панель выбора параметров прорисовки отметок.
-     */
-    GridPane build()
-    {
-        preview = new ImageView();
-        preview.setId( "preview" );
-        preview.setPreserveRatio( true );
-
-        colorPicker = new ColorPicker();
-        colorPicker.setId( "colorPicker" );
-        
-        markerPicker = new ComboBox<>();
-        markerPicker.setId( "markerPicker" );
-        markerPicker.setVisibleRowCount( 7 );
-        
-        scalePicker = new ComboBox<>();
-        scalePicker.setId( "scalePicker" );
-        
-        GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 0 );
-        pane.add( colorPicker, 1, 0 );
-        pane.add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 1 );
-        pane.add( markerPicker, 1, 1 );
-        pane.add( new Label( LOGGER.text( "properties.value.pattern" ) ), 2, 0 );
-        pane.add( scalePicker, 2, 1 );
-        pane.add( preview, 3, 0, 1, 2 );
-        
-        pane.getStyleClass().add( CSS_CLASS );
-        pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
-
-        initialize();
-        
-        return pane;
-    }
-        
     //<editor-fold defaultstate="collapsed" desc="классы">
     
     private static class CellFactory 
