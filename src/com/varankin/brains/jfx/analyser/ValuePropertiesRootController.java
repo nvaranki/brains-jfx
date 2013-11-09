@@ -120,7 +120,7 @@ public class ValuePropertiesRootController
     {
         Color oldColor = painter.getColor();
         Color newColor = propertiesController.getColor();
-        if( newColor != null && !oldColor.equals( newColor ) )
+        if( newColor != null && !newColor.equals( oldColor ) )
             painter.setColor( newColor );
         
         int[][] oldPattern = painter.getPattern();
