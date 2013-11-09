@@ -21,10 +21,9 @@ class ValuePropertiesStage extends Stage
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
     private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesRoot.fxml";
 
-    private ValuePropertiesRootController rootController;
-    
-    ValuePropertiesStage()
+    ValuePropertiesStage( DotPainter painter )
     {
+        ValuePropertiesRootController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -40,7 +39,11 @@ class ValuePropertiesStage extends Stage
                 throw new RuntimeException( ex );
             }
         else
-            root = new ValuePropertiesRoot( rootController = new ValuePropertiesRootController() );
+        {
+            rootController = new ValuePropertiesRootController();
+            root = rootController.build();
+        }
+        rootController.setPainter( painter );
         
         initStyle( StageStyle.DECORATED );
         initModality( Modality.NONE );
@@ -53,9 +56,4 @@ class ValuePropertiesStage extends Stage
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
     }
 
-    void setPainter( DotPainter painter )
-    {
-        rootController.setPainter( painter );
-    }
-    
 }

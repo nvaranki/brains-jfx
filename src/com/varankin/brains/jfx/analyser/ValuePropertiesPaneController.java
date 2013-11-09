@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
@@ -7,16 +8,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.util.*;
 
 /**
- * Контроллер панели выбора параметров прорисовки отметок.
+ * FXML-контроллер панели выбора параметров прорисовки отметок.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
 public class ValuePropertiesPaneController
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesPane.css";
+    private static final String CSS_CLASS = "value-properties-pane";
+
     @FXML protected ImageView preview;
     @FXML protected ColorPicker colorPicker;
     @FXML protected ComboBox<Marker> markerPicker;
@@ -108,6 +114,42 @@ public class ValuePropertiesPaneController
         }
         
         return sample;
+    }
+    
+    /**
+     * Создает панель выбора параметров прорисовки отметок.
+     */
+    GridPane build()
+    {
+        preview = new ImageView();
+        preview.setId( "preview" );
+        preview.setPreserveRatio( true );
+
+        colorPicker = new ColorPicker();
+        colorPicker.setId( "colorPicker" );
+        
+        markerPicker = new ComboBox<>();
+        markerPicker.setId( "markerPicker" );
+        markerPicker.setVisibleRowCount( 7 );
+        
+        scalePicker = new ComboBox<>();
+        scalePicker.setId( "scalePicker" );
+        
+        GridPane pane = new GridPane();
+        pane.add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 0 );
+        pane.add( colorPicker, 1, 0 );
+        pane.add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 1 );
+        pane.add( markerPicker, 1, 1 );
+        pane.add( new Label( LOGGER.text( "properties.value.pattern" ) ), 2, 0 );
+        pane.add( scalePicker, 2, 1 );
+        pane.add( preview, 3, 0, 1, 2 );
+        
+        pane.getStyleClass().add( CSS_CLASS );
+        pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
+
+        initialize();
+        
+        return pane;
     }
         
     //<editor-fold defaultstate="collapsed" desc="классы">

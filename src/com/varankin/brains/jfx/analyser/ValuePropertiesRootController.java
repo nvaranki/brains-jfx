@@ -1,21 +1,29 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.InverseBooleanBinding;
+import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 /**
 /**
- * Контроллер панели диалога для выбора и установки параметров прорисовки отметок.
+ * FXML-контроллер панели диалога для выбора и установки параметров прорисовки отметок.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
 public class ValuePropertiesRootController
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesRoot.css";
+    private static final String CSS_CLASS = "value-properties-root";
+    
     @FXML protected Pane properties;
     @FXML protected Button buttonApply;
     @FXML protected ValuePropertiesPaneController propertiesController;
@@ -75,6 +83,64 @@ public class ValuePropertiesRootController
                 break;
             }
         propertiesController.changedProperty().setValue( Boolean.FALSE );
+    }
+    
+    /**
+     * Создает панель диалога для выбора и установки параметров прорисовки отметок.
+     */
+    BorderPane build()
+    {
+        propertiesController = new ValuePropertiesPaneController();
+        
+        properties = propertiesController.build();
+        properties.setId( "properties" );
+
+        Button buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionOK( event );
+            }
+        } );
+        buttonOK.setDefaultButton( true );
+
+        buttonApply = new Button( LOGGER.text( "button.apply" ) );
+        buttonApply.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionApply( event );
+            }
+        } );
+        buttonApply.setId( "buttonApply" );
+
+        Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
+        buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionCancel( event );
+            }
+        } );
+        buttonCancel.setCancelButton( true );
+
+        HBox buttonBar = new HBox();
+        buttonBar.getChildren().addAll( buttonOK, buttonApply, buttonCancel );
+
+        BorderPane pane = new BorderPane();
+        pane.setCenter( properties );
+        pane.setBottom( buttonBar );
+
+        pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
+        pane.getStyleClass().add( CSS_CLASS );
+        
+        initialize();
+        
+        return pane;
     }
 
 }
