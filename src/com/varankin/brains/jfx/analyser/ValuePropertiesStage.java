@@ -1,6 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.util.LoggerX;
+import java.io.IOException;
+import java.util.ResourceBundle;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -13,11 +18,29 @@ import javafx.stage.StageStyle;
  */
 class ValuePropertiesStage extends Stage
 {
-    private ValuePropertiesRoot root;
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
+    private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesRoot.fxml";
+
+    private ValuePropertiesRootController rootController;
     
     ValuePropertiesStage()
     {
-        root = new ValuePropertiesRoot();
+        Parent root;
+        if( JavaFX.getInstance().useFxmlLoader() )
+            try
+            {
+                java.net.URL location = getClass().getResource( RESOURCE_FXML );
+                ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
+                FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
+                root = (Parent)fxmlLoader.load();
+                rootController = fxmlLoader.getController();
+            }
+            catch( IOException ex )
+            {
+                throw new RuntimeException( ex );
+            }
+        else
+            root = new ValuePropertiesRoot( rootController = new ValuePropertiesRootController() );
         
         initStyle( StageStyle.DECORATED );
         initModality( Modality.NONE );
@@ -32,7 +55,7 @@ class ValuePropertiesStage extends Stage
 
     void setPainter( DotPainter painter )
     {
-        root.setPainter( painter );
+        rootController.setPainter( painter );
     }
     
 }

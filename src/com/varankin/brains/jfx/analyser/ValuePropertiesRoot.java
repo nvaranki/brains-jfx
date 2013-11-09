@@ -1,44 +1,26 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.InverseBooleanBinding;
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.util.*;
 import javafx.event.*;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 
 /**
  * Панель диалога для выбора и установки параметров прорисовки отметок.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class ValuePropertiesRoot extends BorderPane
+final class ValuePropertiesRoot extends BorderPane
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRoot.class );
     private static final String RESOURCE_CSS  = "/fxml/analyzer/ValuePropertiesRoot.css";
-    private static final String RESOURCE_FXML = "/fxml/analyzer/ValuePropertiesRoot.fxml";
     private static final String CSS_CLASS = "value-properties-root";
 
-    @FXML private ValuePropertiesPane properties;
-    @FXML private Button buttonApply;
-    
-    private DotPainter painter;
-
-    public ValuePropertiesRoot()
+    ValuePropertiesRoot( final ValuePropertiesRootController controller )
     {
-        if( JavaFX.getInstance().useFxmlLoader() )
-            loadByFxml();
-        else
-            loadByApi();
-    }
-    
-    private void loadByApi()
-    {
-        properties = new ValuePropertiesPane();
+        ValuePropertiesPaneController propertiesController = new ValuePropertiesPaneController();
+        
+        ValuePropertiesPane properties = new ValuePropertiesPane( propertiesController );
         properties.setId( "properties" );
 
         Button buttonOK = new Button( LOGGER.text( "button.ok" ) );
@@ -47,18 +29,18 @@ public final class ValuePropertiesRoot extends BorderPane
             @Override
             public void handle( ActionEvent event )
             {
-                onActionOK( event );
+                controller.onActionOK( event );
             }
         } );
         buttonOK.setDefaultButton( true );
 
-        buttonApply = new Button( LOGGER.text( "button.apply" ) );
+        Button buttonApply = new Button( LOGGER.text( "button.apply" ) );
         buttonApply.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
             public void handle( ActionEvent event )
             {
-                onActionApply( event );
+                controller.onActionApply( event );
             }
         } );
         buttonApply.setId( "buttonApply" );
@@ -69,7 +51,7 @@ public final class ValuePropertiesRoot extends BorderPane
             @Override
             public void handle( ActionEvent event )
             {
-                onActionCancel( event );
+                controller.onActionCancel( event );
             }
         } );
         buttonCancel.setCancelButton( true );
@@ -82,80 +64,11 @@ public final class ValuePropertiesRoot extends BorderPane
 
         getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
         getStyleClass().add( CSS_CLASS );
-        initialize();
-    }       
-
-    private void loadByFxml()
-    {
-        java.net.URL location = getClass().getResource( RESOURCE_FXML );
-        ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-        FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
-        fxmlLoader.setRoot( ValuePropertiesRoot.this );
-        fxmlLoader.setController( ValuePropertiesRoot.this );
-
-        try 
-        {
-            fxmlLoader.load();
-        } 
-        catch( java.io.IOException exception ) 
-        {
-            throw new RuntimeException( exception );
-        }
-    }
-    
-    @FXML
-    protected void initialize()
-    {
-        buttonApply.disableProperty().bind( 
-                new InverseBooleanBinding( properties.changedProperty() ) );
-    }
-    
-    final void setPainter( DotPainter painter )
-    {
-        this.painter = painter;
-        properties.setColor( painter.getColor() );
-        properties.setScale( 3 );
-        int[][] painterPattern = painter.getPattern();
-        for( Marker m : Marker.values() )
-            if( Arrays.deepEquals( painterPattern, m.pattern ) )
-            {
-                properties.setMarker( m );
-                break;
-            }
-        properties.changedProperty().setValue( Boolean.FALSE );
-    }
-
-    @FXML
-    void onActionOK( ActionEvent event )
-    {
-        applyChanges();
-        getScene().getWindow().hide();
-    }
-    
-    @FXML
-    void onActionApply( ActionEvent event )
-    {
-        applyChanges();
-        properties.changedProperty().setValue( Boolean.FALSE );
-    }
-    
-    @FXML
-    void onActionCancel( ActionEvent event )
-    {
-        getScene().getWindow().hide();
-    }
-    
-    private void applyChanges()
-    {
-        Color oldColor = painter.getColor();
-        Color newColor = properties.getColor();
-        if( newColor != null && !oldColor.equals( newColor ) )
-            painter.setColor( newColor );
         
-        int[][] oldPattern = painter.getPattern();
-        int[][] newPattern = properties.getMarker().pattern;
-        if( newPattern != null && !Arrays.deepEquals( oldPattern, newPattern ) )
-            painter.setPattern( newPattern );
-    }
+        controller.propertiesController = propertiesController;
+        controller.properties = properties;
+        controller.buttonApply = buttonApply;
+        controller.initialize();
+    }       
 
 }
