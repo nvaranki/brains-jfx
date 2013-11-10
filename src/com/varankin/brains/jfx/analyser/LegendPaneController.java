@@ -109,9 +109,9 @@ public final class LegendPaneController implements Builder<Pane>
     void addValueControl( final String name, final DotPainter painter, List<MenuItem> parentPopupMenu )
     {
         LegendValueController legendValueController = new LegendValueController();
+        legendValueController.setPainter( painter );
         CheckBox label = legendValueController.build();
         label.setText( name );
-        legendValueController.setPainter( painter ); //TODO why after .build() ?!
         label.setSelected( true ); // запуск прорисовки
         // TODO bind painter color and pattern to sample replacement
         valuesPane.getChildren().add( label );

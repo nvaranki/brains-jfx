@@ -56,6 +56,7 @@ public final class LegendValueController implements Builder<Control>
     protected void initialize()
     { 
         legend.selectedProperty().addListener( new WeakChangeListener<>( selectedPropertyChangeListener ) );
+        resample( painter.colorProperty().getValue(), painter.patternProperty().getValue() );
     }
 
     private void resample( Color color, int[][] pattern )
@@ -82,7 +83,6 @@ public final class LegendValueController implements Builder<Control>
         this.painter = painter;
         painter.colorProperty().addListener( new WeakChangeListener<>( colorPropertyChangeListener ) );
         painter.patternProperty().addListener( new WeakChangeListener<>( patternPropertyChangeListener ) );
-        resample( painter.colorProperty().getValue(), painter.patternProperty().getValue() );
     }
         
     private class ColorPropertyChangeListener implements ChangeListener<Color>
