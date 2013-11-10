@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.util.Builder;
 
 /**
 /**
@@ -18,7 +19,7 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public class ValuePropertiesRootController
+public class ValuePropertiesRootController implements Builder<Pane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
@@ -34,7 +35,8 @@ public class ValuePropertiesRootController
      * Создает панель диалога для выбора и установки параметров прорисовки отметок.
      * Применяется в конфигурации без FXML.
      */
-    BorderPane build()
+    @Override
+    public BorderPane build()
     {
         propertiesController = new ValuePropertiesPaneController();
         

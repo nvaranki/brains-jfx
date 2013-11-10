@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.*;
 
@@ -17,7 +18,7 @@ import javafx.util.*;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public class ValuePropertiesPaneController
+public class ValuePropertiesPaneController implements Builder<Pane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
@@ -45,7 +46,8 @@ public class ValuePropertiesPaneController
      * Создает панель выбора параметров прорисовки отметок.
      * Применяется в конфигурации без FXML.
      */
-    GridPane build()
+    @Override
+    public GridPane build()
     {
         preview = new ImageView();
         preview.setId( "preview" );
