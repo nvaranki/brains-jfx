@@ -27,4 +27,11 @@
         <URL value="@LegendValue.css"/>
     </stylesheets>
     
+    <ContextMenu fx:id="popup" >
+        <items>
+            <MenuItem fx:id="menuItemRemove" onAction="#onActionRemove" />  
+            <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" /> 
+        </items>
+    </ContextMenu> 
+    
 </CheckBox>

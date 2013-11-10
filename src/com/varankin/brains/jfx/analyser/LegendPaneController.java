@@ -2,9 +2,11 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,10 +14,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.event.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.util.Builder;
 
@@ -55,9 +58,6 @@ public final class LegendPaneController implements Builder<Pane>
         
         valuesPane = new FlowPane();
         valuesPane.setId( "valuesPane" );
-////        valuesPane.setHgap( 30 );
-//        valuesPane.setPadding( new Insets( 0, 5, 0, 5 ) );
-////        valuesPane.setAlignment( Pos.CENTER );
         
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setHgrow( Priority.ALWAYS );
@@ -74,6 +74,8 @@ public final class LegendPaneController implements Builder<Pane>
         pane.add( valuesPane, 0, 0 );
         pane.add( labelTime, 1, 0 );
 
+//        new MenuItem( LOGGER.text( "control.popup.add" ) ), 
+        
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
 
@@ -100,46 +102,41 @@ public final class LegendPaneController implements Builder<Pane>
         return dynamicProperty;
     }
     
+    private static final String RESOURCE_FXML_VALUE = "/fxml/analyser/LegendValue.fxml";
     /**
      * Добавляет отображаемое значение.
      * 
      * @param name    название значения.
      * @param painter сервис рисования отметок.
      */
-    void addValueControl( final String name, final DotPainter painter, List<MenuItem> parentPopupMenu )
+    void addValueControl( String name, DotPainter painter, List<MenuItem> parentPopupMenu )
     {
-        LegendValueController legendValueController = new LegendValueController();
+        LegendValueController legendValueController;
+        CheckBox label;
+        if( JavaFX.getInstance().useFxmlLoader() )
+            try
+            {
+                java.net.URL location = getClass().getResource( RESOURCE_FXML_VALUE );
+                ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
+                FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
+                label = (CheckBox)fxmlLoader.load();
+                legendValueController = fxmlLoader.getController();
+            }
+            catch( IOException ex )
+            {
+                throw new RuntimeException( ex );
+            }
+        else
+        {
+            legendValueController = new LegendValueController();
+            label = legendValueController.build();
+        }
         legendValueController.setPainter( painter );
-        CheckBox label = legendValueController.build();
         label.setText( name );
         label.setSelected( true ); // запуск прорисовки
-        // TODO bind painter color and pattern to sample replacement
-        valuesPane.getChildren().add( label );
+        JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
         
-        MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
-        menuItemProperties.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            ValuePropertiesStage properties;
-            
-            @Override
-            public void handle( ActionEvent event )
-            {
-                if( properties == null )
-                {
-                    properties = new ValuePropertiesStage( painter );
-                    properties.initOwner( JavaFX.getInstance().платформа );
-                    properties.setTitle( LOGGER.text( "properties.value.title", name ) );
-                }
-                properties.show();
-                properties.toFront();
-            }
-        } );
-        ContextMenu popup = new ContextMenu( 
-                new MenuItem( LOGGER.text( "control.popup.add" ) ), 
-                new MenuItem( LOGGER.text( "control.popup.remove", name ) ), 
-                menuItemProperties );
-        JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
-        label.setContextMenu( popup);
+        valuesPane.getChildren().add( label );
     }
 
 //    EventHandler<ActionEvent> createActionStartAllFlows()

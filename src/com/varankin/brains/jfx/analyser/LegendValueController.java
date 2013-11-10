@@ -1,11 +1,17 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.util.LoggerX;
 import java.util.concurrent.Future;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.value.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
@@ -16,6 +22,7 @@ import javafx.util.Builder;
  */
 public final class LegendValueController implements Builder<Control>
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( LegendValueController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/LegendValue.css";
     private static final String CSS_CLASS = "legend-value";
     
@@ -24,8 +31,12 @@ public final class LegendValueController implements Builder<Control>
     private final SelectedPropertyChangeListener selectedPropertyChangeListener;
 
     private DotPainter painter;
+    private ValuePropertiesStage properties;
     
     @FXML private CheckBox legend;
+    @FXML private ContextMenu popup;
+    @FXML private MenuItem menuItemRemove;
+    @FXML private MenuItem menuItemProperties;
 
     public LegendValueController()
     {
@@ -42,7 +53,32 @@ public final class LegendValueController implements Builder<Control>
     public CheckBox build()
     {
         legend = new CheckBox();
+        legend.setId( "legend" );
         legend.setSelected( false );
+        
+        menuItemRemove = new MenuItem();
+        menuItemRemove.setOnAction( new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionRemove( event );
+            }
+        } );
+        
+        menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionProperties( event );
+            }
+        } );
+        
+        popup = new ContextMenu();
+        popup.setId( "popup" );
+        popup.getItems().addAll( menuItemRemove, menuItemProperties );
 
         legend.getStyleClass().add( CSS_CLASS );
         legend.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -54,9 +90,25 @@ public final class LegendValueController implements Builder<Control>
     
     @FXML
     protected void initialize()
-    { 
+    {
+        legend.setContextMenu( popup );
         legend.selectedProperty().addListener( new WeakChangeListener<>( selectedPropertyChangeListener ) );
-        resample( painter.colorProperty().getValue(), painter.patternProperty().getValue() );
+        
+        //menuItemRemove.setGraphic( JavaFX.icon( "icons16x16/remove.png" ) );
+        menuItemRemove.textProperty().bind( new StringBinding()
+        {
+            {
+                super.bind( legend.textProperty() );
+            }
+            
+            @Override
+            protected String computeValue()
+            {
+                return LOGGER.text( "control.popup.remove", legend.textProperty().getValue() );
+            }
+        } );
+        
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
 
     private void resample( Color color, int[][] pattern )
@@ -81,8 +133,43 @@ public final class LegendValueController implements Builder<Control>
     void setPainter( DotPainter painter )
     {
         this.painter = painter;
+        
         painter.colorProperty().addListener( new WeakChangeListener<>( colorPropertyChangeListener ) );
         painter.patternProperty().addListener( new WeakChangeListener<>( patternPropertyChangeListener ) );
+        
+        resample( painter.colorProperty().getValue(), painter.patternProperty().getValue() );
+    }
+    
+    ContextMenu getContextMenu() 
+    {
+        return popup;
+    }
+    
+    @FXML
+    private void onActionRemove( ActionEvent _ )
+    {
+        // остановить прорисовку
+        legend.selectedProperty().setValue( Boolean.FALSE );
+        // убрать с экрана
+        Parent parent = legend.getParent();
+        if( parent instanceof Pane )
+            ((Pane)parent).getChildren().remove( legend );
+        else
+            LOGGER.log( "001002002W", legend.getText() );
+        // TODO what to do with open queue?
+    }
+        
+    @FXML
+    private void onActionProperties( ActionEvent _ )
+    {
+        if( properties == null )
+        {
+            properties = new ValuePropertiesStage( painter );
+            properties.initOwner( JavaFX.getInstance().платформа );
+            properties.setTitle( LOGGER.text( "properties.value.title", legend.getText() ) );
+        }
+        properties.show();
+        properties.toFront();
     }
         
     private class ColorPropertyChangeListener implements ChangeListener<Color>
