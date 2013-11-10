@@ -24,16 +24,21 @@ final class TimeLinePane extends GridPane
     private final DrawAreaPane drawArea;
     private final TimeRulerPane timeRuler;
     private final ValueRulerPane valueRuler;
-    private final ControlBarPane controlBar;
+    private final Pane controlBar;
     private final TimeLineController controller;
     @Deprecated private final ContextMenu popup;
+    private final LegendPaneController legendPaneController;
     
     TimeLinePane( TimeLineController timeLineController )
     {
         controller = timeLineController;
+        
+        legendPaneController = new LegendPaneController();
+        timeLineController.dynamicProperty().bindBidirectional( legendPaneController.dynamicProperty() );
+        
         timeRuler = new TimeRulerPane( controller.getTimeConvertor() );
         valueRuler = new ValueRulerPane( controller.getValueConvertor() );
-        controlBar = new ControlBarPane( controller );
+        controlBar = legendPaneController.build();
         drawArea = new DrawAreaPane( controller );
 
         ColumnConstraints cc0 = new ColumnConstraints();
@@ -97,12 +102,12 @@ final class TimeLinePane extends GridPane
             List<MenuItem> itemsDrawArea = new ArrayList<>();
             MenuItem menuItemStart = new MenuItem( LOGGER.text( "timeline.popup.start" ) );
             menuItemStart.setGraphic( JavaFX.icon( "icons16x16/start.png" ) );
-            menuItemStart.setOnAction( controlBar.createActionStartAllFlows() );
+//            menuItemStart.setOnAction( legendPaneController.createActionStartAllFlows() );
             menuItemStart.disableProperty().bind( controller.dynamicProperty() );
 
             MenuItem menuItemStop = new MenuItem( LOGGER.text( "timeline.popup.stop" ) );
             menuItemStop.setGraphic( JavaFX.icon( "icons16x16/stop.png" ) );
-            menuItemStop.setOnAction( controlBar.createActionStopAllFlows() );
+//            menuItemStop.setOnAction( legendPaneController.createActionStopAllFlows() );
             menuItemStop.disableProperty().bind( new InverseBooleanBinding( controller.dynamicProperty() ) );
 
             itemsDrawArea.add( menuItemStart );
@@ -126,10 +131,11 @@ final class TimeLinePane extends GridPane
     {
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DotPainter painter = new BufferedDotPainter( 
-                controller.getTimeConvertor(), controller.getValueConvertor(), 
-                color, pattern, queue, 1000 );
+                controller.getTimeConvertor(), controller.getValueConvertor(), queue, 1000 );
         painter.writableImageProperty().bind( controller.writableImageProperty() );
-        controlBar.addValueControl( name, painter, popup.getItems() );
+        painter.colorProperty().setValue( color );
+        painter.patternProperty().setValue( pattern );
+        legendPaneController.addValueControl( name, painter, popup.getItems() );
         return queue;
     }
     

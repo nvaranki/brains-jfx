@@ -1,15 +1,15 @@
 package com.varankin.brains.jfx.analyser;
 
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.*;
 import javafx.concurrent.Task;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 
 /**
@@ -38,24 +38,35 @@ class DotPainter implements Runnable
     private final int fragmentSize;
     private final long fragmentTimeout;
     private final TimeUnit fragmentUnits;
-    private Color color;
-    private int[][] pattern;
+    private final ColorProperty colorProperty;
+    private final PatternProperty patternProperty;
+
+    private PixelWriter writer;
+    private int width, height;
 
     /**
      * @param tc       функция X-координаты отметки от времени.
      * @param vc       функция Y-координаты отметки от значения.
-     * @param color    цвет рисования шаблона.
-     * @param pattern  шаблон для рисования как массив точек (x,y).
      * @param очередь  очередь отметок для прорисовки.
      */
-    DotPainter( TimeConvertor tc, ValueConvertor vc, 
-            Color color, int[][] pattern, BlockingQueue<Dot> очередь )
+    DotPainter( TimeConvertor tc, ValueConvertor vc, BlockingQueue<Dot> очередь )
     {
-        this.writableImage = new SimpleObjectProperty<>();
-        this.timeConvertor = tc;
-        this.valueConvertor = vc;
-        this.color = color;
-        this.pattern = pattern;
+        writableImage = new SimpleObjectProperty<>();
+        timeConvertor = tc;
+        valueConvertor = vc;
+        colorProperty = new ColorProperty();
+        patternProperty = new PatternProperty();
+        writableImage.addListener( new ChangeListener<WritableImage>() {
+
+            @Override
+            public void changed( ObservableValue<? extends WritableImage> observable, 
+                                WritableImage oldValue, WritableImage newValue )
+            {
+                width  = newValue.widthProperty().intValue();
+                height = newValue.heightProperty().intValue();
+                writer = newValue.getPixelWriter();
+            }
+        } );
         this.очередь = очередь;
         //TODO appl. setup
         fragmentUnits = TimeUnit.MILLISECONDS;
@@ -63,31 +74,27 @@ class DotPainter implements Runnable
         fragmentSize = 50;
     }
 
-    ObjectProperty<WritableImage> writableImageProperty()
+    final ObjectProperty<WritableImage> writableImageProperty()
     {
         return writableImage;
     }
     
-    final Color getColor()
+    /**
+     * @return свойство "цвет рисования шаблона".
+     */
+    final WritableObservableValue<Color> colorProperty()
     {
-        return color;
-    }
-    
-    final void setColor( Color color )
-    {
-        this.color = color;
+        return colorProperty;
     }
 
-    final int[][] getPattern()
+    /**
+     * @return свойство "шаблон для рисования как массив точек (x,y)".
+     */
+    final WritableObservableValue<int[][]> patternProperty()
     {
-        return pattern;
+        return patternProperty;
     }
     
-    final void setPattern( int[][] pattern )
-    {
-        this.pattern = pattern;
-    }
-
     @Override
     public final void run()
     {
@@ -127,18 +134,31 @@ class DotPainter implements Runnable
         }
     }
     
+    /**
+     * Рисует отметку в графической зоне.  
+     * 
+     * @param dot отметка.
+     */
     protected void paint( Dot dot )
     {
         int x = timeConvertor.timeToImage( dot.t );
         int y = valueConvertor.valueToImage( dot.v );
-        paint( x, y, writableImage.get(), color, pattern );
+        paint( x, y, colorProperty.value, patternProperty.value, writer, width, height );
     }
 
-    static void paint( int x, int y, WritableImage image, Color color, int[][] pattern )
+    /**
+     * Рисует отметку в графической зоне.  
+     * 
+     * @param x       координата X центра отметки в графической зоне.
+     * @param y       координата Y центра отметки в графической зоне.
+     * @param color   цвет отметки.
+     * @param pattern шаблон рисунка отметки.
+     * @param writer  пиксельный рисовальщик графической зоны.
+     * @param width   ширина графической зоны.
+     * @param height  высота графической зоны.
+     */
+    static void paint( int x, int y, Color color, int[][] pattern, PixelWriter writer, int width, int height )
     {
-        int width  = image.widthProperty().intValue();
-        int height = image.heightProperty().intValue();
-        PixelWriter writer = image.getPixelWriter();
         for( int[] offsets : pattern )
         {
             int xo = x + offsets[0];
@@ -148,28 +168,6 @@ class DotPainter implements Runnable
         }
     }
     
-    Image sample()
-    {
-        return sample( color, pattern );
-    }
-    
-    static Image sample( Color color, int[][] pattern )
-    {
-        Color outlineColor = Color.LIGHTGRAY;
-        
-        WritableImage sample = new WritableImage( 16, 16 );
-        for( int i = 1; i < 15; i ++ )
-        {
-            sample.getPixelWriter().setColor( i,  0, outlineColor );
-            sample.getPixelWriter().setColor( i, 15, outlineColor );
-            sample.getPixelWriter().setColor(  0, i, outlineColor );
-            sample.getPixelWriter().setColor( 15, i, outlineColor );
-        }
-        paint( 7, 7, sample, color, pattern );
-
-        return sample;        
-    }
-
     /**
      * Рисовальщик блока отметок.
      */
@@ -199,4 +197,53 @@ class DotPainter implements Runnable
         
     }
     
+    interface WritableObservableValue<T> extends ObservableValue<T>, WritableValue<T> {}
+    
+    private static final class ColorProperty 
+            extends ObservableValueBase<Color>
+            implements WritableObservableValue<Color>
+    {
+        Color value;
+
+        @Override
+        public Color getValue()
+        {
+            return value;
+        }
+
+        @Override
+        public void setValue( Color newValue )
+        {
+            Color oldValue = value;
+            value = newValue;
+            if( newValue != null && !newValue.equals( oldValue ) || newValue == null && oldValue != null )
+                fireValueChangedEvent();
+        }
+        
+    }
+    
+    private static final class PatternProperty 
+            extends ObservableValueBase<int[][]>
+            implements WritableObservableValue<int[][]>
+    {
+        int[][] value;
+        
+        @Override
+        public int[][] getValue()
+        {
+            return value;
+        }
+
+        @Override
+        public void setValue( int[][] newValue )
+        {
+            int[][] oldValue = value;
+            value = newValue;
+            if( newValue != null && oldValue != null && !Arrays.deepEquals( newValue, oldValue ) 
+                    || newValue == null && oldValue != null || newValue != null && oldValue == null )
+                fireValueChangedEvent();
+        }
+        
+    }
+
 }

@@ -1,0 +1,23 @@
+/* 
+    Document   : LegendPane.css
+    Created on : Nov 9, 2013
+    Author     : Николай Варанкин
+    Description: Панель управления прорисовкой отметок.
+*/
+
+.legend-pane #valuesPane
+{
+    -fx-hgap: 30px;
+    -fx-alignment: center;
+    -fx-padding: 0 5px 0 5px;
+}
+
+.legend-pane #labelTime
+{
+    
+}
+
+.legend-pane 
+{ 
+}
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    Document   : LegendValue.fxml
+    Created on : Nov 10, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Элемент управления прорисовкой отметок.
+-->
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
+
+<CheckBox 
+        fx:controller="com.varankin.brains.jfx.analyser.LegendValueController"
+        styleClass="legend-value" 
+        fx:id="legend" 
+        selected="false"
+        xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" >
+    
+    <stylesheets>
+        <URL value="@LegendValue.css"/>
+    </stylesheets>
+    
+</CheckBox>

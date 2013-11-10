@@ -18,7 +18,7 @@ import javafx.util.*;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public class ValuePropertiesPaneController implements Builder<Pane>
+public final class ValuePropertiesPaneController implements Builder<Pane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
@@ -190,19 +190,29 @@ public class ValuePropertiesPaneController implements Builder<Pane>
                     }
                     else if( param != null )
                     {
-                        Image sample = DotPainter.sample( Color.BLACK, item.pattern );
+                        int width = 16, height = 16, s = 15, z = s/2;
+                        Color outlineColor = Color.LIGHTGRAY;
+                        WritableImage sample = new WritableImage( width, height );
+                        PixelWriter pixelWriter = sample.getPixelWriter();
+                        for( int i = 1; i < s; i ++ )
+                        {
+                            pixelWriter.setColor( i, 0, outlineColor );
+                            pixelWriter.setColor( i, s, outlineColor );
+                            pixelWriter.setColor( 0, i, outlineColor );
+                            pixelWriter.setColor( s, i, outlineColor );
+                        }
+                        DotPainter.paint( z, z, Color.BLACK, item.pattern, pixelWriter, width, height );
                         setGraphic( new ImageView( sample ) );
                     }
                     else
                     {
-                        WritableImage sample = new WritableImage( 16, 16 );
-                        int width  = sample.widthProperty().intValue();
-                        int height = sample.heightProperty().intValue();
+                        int width  = 16, height = 16;
+                        WritableImage sample = new WritableImage( width, height );
                         PixelWriter writer = sample.getPixelWriter();
                         for( int x = 0; x < width; x++ )
                             for( int y = 0; y < height; y++ )
                                 writer.setColor( x, y, Color.WHITE );
-                        DotPainter.paint( 7, 7, sample, Color.BLACK, item.pattern );
+                        DotPainter.paint( 7, 7, Color.BLACK, item.pattern, writer, width, height );
                         setGraphic( new ImageView( sample ) );
                     }
                 }

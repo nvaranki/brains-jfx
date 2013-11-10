@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    Document   : ValuePropertiesPane.fxml
+    Created on : Nov 9, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Панель управления прорисовкой отметок.
+-->
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
+
+<fx:root type="javafx.scene.layout.GridPane"
+        fx:controller="com.varankin.brains.jfx.analyser.LegendPaneController"
+        styleClass="legend-pane" 
+        xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" >
+    
+    <stylesheets>
+        <URL value="@LegendPane.css"/>
+    </stylesheets>
+    
+    <FlowPane fx:id="valuesPane" >
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+    </FlowPane>
+
+    <CheckBox fx:id="labelTime" selected="false" >
+        <GridPane.columnIndex>1</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+    </CheckBox>
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER" minWidth="110" ></ColumnConstraints>
+        <ColumnConstraints hgrow="NEVER"  halignment="RIGHT"  minWidth="100" ></ColumnConstraints>
+    </columnConstraints>
+    
+</fx:root>

@@ -19,7 +19,7 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public class ValuePropertiesRootController implements Builder<Pane>
+public final class ValuePropertiesRootController implements Builder<Pane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
@@ -120,23 +120,23 @@ public class ValuePropertiesRootController implements Builder<Pane>
     
     private void applyChanges()
     {
-        Color oldColor = painter.getColor();
+        Color oldColor = painter.colorProperty().getValue();
         Color newColor = propertiesController.getColor();
         if( newColor != null && !newColor.equals( oldColor ) )
-            painter.setColor( newColor );
+            painter.colorProperty().setValue( newColor );
         
-        int[][] oldPattern = painter.getPattern();
+        int[][] oldPattern = painter.patternProperty().getValue();
         int[][] newPattern = propertiesController.getMarker().pattern;
         if( newPattern != null && !Arrays.deepEquals( oldPattern, newPattern ) )
-            painter.setPattern( newPattern );
+            painter.patternProperty().setValue( newPattern );
     }
 
     final void setPainter( DotPainter painter )
     {
         this.painter = painter;
-        propertiesController.setColor( painter.getColor() );
+        propertiesController.setColor( painter.colorProperty().getValue() );
         propertiesController.setScale( 3 );
-        int[][] painterPattern = painter.getPattern();
+        int[][] painterPattern = painter.patternProperty().getValue();
         for( Marker m : Marker.values() )
             if( Arrays.deepEquals( painterPattern, m.pattern ) )
             {

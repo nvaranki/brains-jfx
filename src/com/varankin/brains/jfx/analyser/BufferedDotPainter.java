@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 /**
  * Процесс динамического рисования отметок в графической зоне. 
@@ -27,15 +26,12 @@ class BufferedDotPainter extends DotPainter
     /**
      * @param tc       функция X-координаты отметки от времени.
      * @param vc       функция Y-координаты отметки от значения.
-     * @param color    цвет рисования шаблона.
-     * @param pattern  шаблон для рисования как массив точек (x,y).
      * @param очередь  очередь отметок для прорисовки.
      * @param size     размер буфера.
      */
-    BufferedDotPainter( TimeConvertor tc, ValueConvertor vc, 
-            Color color, int[][] pattern, BlockingQueue<Dot> очередь, int size )
+    BufferedDotPainter( TimeConvertor tc, ValueConvertor vc, BlockingQueue<Dot> очередь, int size )
     {
-        super( tc, vc, color, pattern, очередь );
+        super( tc, vc, очередь );
         буфер = new Dot[ Math.max( 1, size ) ];
         writableImageProperty().addListener( new ChangeListener<Image>() 
         {

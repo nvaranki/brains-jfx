@@ -45,8 +45,7 @@ final class TimeLineController
     private Color timeAxisColor, valueAxisColor, zeroValueAxisColor;
     private final WritablePixelFormat<IntBuffer> pixelFormat;
     private final int blank[][];
-    private final Map<Object,Boolean> flowState;
-    private final Map<Object,Future<?>> flowProcesses;
+//    private final Map<Object,Future<?>> flowProcesses;
 
     public TimeLineController( JavaFX jfx, TimeConvertor timeRuler, ValueConvertor valueRuler )
     {
@@ -111,8 +110,7 @@ final class TimeLineController
         blank = new int[2][];
         this.timeConvertor = timeRuler;
         this.valueConvertor = valueRuler;
-        flowState = new IdentityHashMap<>(); //TODO DEBUG Identity
-        flowProcesses = new IdentityHashMap<>(); //TODO DEBUG Identity        
+//        flowProcesses = new IdentityHashMap<>(); //TODO DEBUG Identity        
     }
 
     ReadOnlyObjectProperty<WritableImage> writableImageProperty()
@@ -190,34 +188,23 @@ final class TimeLineController
             reader.getPixels( ys[i], 0, 1, height, pixelFormat, blank[i] = new int[height], 0, 1 );
     }
     
-    boolean getFlowState( Object o )
-    {
-        Boolean flows = flowState.get( o );
-        return flows != null ? flows : true;
-    }
-
-    void setFlowState( Object o, boolean flows )
-    {
-        flowState.put( o, flows );
-    }
-
-    Future<?> startFlow( Object o, DotPainter painter )
-    {
-        Future<?> process = executorService.submit( painter );
-        flowProcesses.put( o, process );
-        return process;
-    }
-    
-    boolean stopFlow( Object o )
-    {
-        Future<?> process = flowProcesses.get( o );
-        return process == null || process.cancel( true );
-    }
-    
-    void removeFlow( Object o )
-    {
-        flowProcesses.remove( o );
-    }
+//    Future<?> startFlow( Object o, DotPainter painter )
+//    {
+//        Future<?> process = executorService.submit( painter );
+//        flowProcesses.put( o, process );
+//        return process;
+//    }
+//    
+//    boolean stopFlow( Object o )
+//    {
+//        Future<?> process = flowProcesses.get( o );
+//        return process == null || process.cancel( true );
+//    }
+//    
+//    void removeFlow( Object o )
+//    {
+//        flowProcesses.remove( o );
+//    }
     
     long getRefreshRate()
     {
