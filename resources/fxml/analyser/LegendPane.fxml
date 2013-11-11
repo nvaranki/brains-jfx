@@ -25,14 +25,20 @@
         <URL value="@LegendPane.css"/>
     </stylesheets>
     
-    <FlowPane fx:id="valuesPane" >
+    <FlowPane fx:id="values" >
         <GridPane.columnIndex>0</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
     </FlowPane>
 
-    <CheckBox fx:id="labelTime" selected="false" >
+    <CheckBox fx:id="time" selected="false" >
         <GridPane.columnIndex>1</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
+        <ContextMenu fx:id="timePopup" >
+            <items>
+                <MenuItem fx:id="menuItemResume" text="%control.popup.start" onAction="#onActionResume" />
+                <MenuItem fx:id="menuItemStop"   text="%control.popup.stop"  onAction="#onActionStop" />
+            </items>
+        </ContextMenu>
     </CheckBox>
 
     <columnConstraints>

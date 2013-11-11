@@ -5,14 +5,14 @@
     Description: Панель управления прорисовкой отметок.
 */
 
-.legend-pane #valuesPane
+.legend-pane #values
 {
     -fx-hgap: 30px;
     -fx-alignment: center;
     -fx-padding: 0 5px 0 5px;
 }
 
-.legend-pane #labelTime
+.legend-pane #time
 {
     
 }

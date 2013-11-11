@@ -116,6 +116,8 @@ final class TimeLinePane extends GridPane
                 itemsDrawArea.add( new SeparatorMenuItem() );
             itemsDrawArea.addAll( popup.getItems() );
             drawArea.appendToPopup( itemsDrawArea );
+            
+            legendPaneController.setParentPopupMenu( popup.getItems() );
         }
     }
     
@@ -135,7 +137,7 @@ final class TimeLinePane extends GridPane
         painter.writableImageProperty().bind( controller.writableImageProperty() );
         painter.colorProperty().setValue( color );
         painter.patternProperty().setValue( pattern );
-        legendPaneController.addValueControl( name, painter, popup.getItems() );
+        legendPaneController.addValueControl( name, painter );
         return queue;
     }
     

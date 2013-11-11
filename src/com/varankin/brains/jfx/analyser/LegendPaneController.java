@@ -1,23 +1,17 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WeakChangeListener;
+import java.util.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Builder;
@@ -32,17 +26,24 @@ public final class LegendPaneController implements Builder<Pane>
     private static final LoggerX LOGGER = LoggerX.getLogger( LegendPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/LegendPane.css";
     private static final String CSS_CLASS = "legend-pane";
+    private static final String RESOURCE_FXML_VALUE = "/fxml/analyser/LegendValue.fxml";
     
     //private final TimeLineController timeLineController;
     private final BooleanProperty dynamicProperty = new SimpleBooleanProperty();
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
+
+    private List<MenuItem> parentPopupMenu;
     
-    @FXML private CheckBox labelTime;
-    @FXML private FlowPane valuesPane;
+    @FXML private CheckBox time;
+    @FXML private ContextMenu timePopup;
+    @FXML private FlowPane values;
+    @FXML private MenuItem menuItemResume;
+    @FXML private MenuItem menuItemStop;
 
     public LegendPaneController()
     {
         dynamicPropertyChangeListener = new DynamicPropertyChangeListener();
+        parentPopupMenu = Collections.emptyList();
     }
     
     /**
@@ -52,12 +53,35 @@ public final class LegendPaneController implements Builder<Pane>
     @Override
     public GridPane build()
     {
-        labelTime = new CheckBox( LOGGER.text( "ControlBar.axis.time.name" ) );
-        labelTime.setId( "labelTime" );
-        labelTime.setSelected( false );
+        time = new CheckBox( LOGGER.text( "ControlBar.axis.time.name" ) );
+        time.setId( "time" );
+        time.setSelected( false );
         
-        valuesPane = new FlowPane();
-        valuesPane.setId( "valuesPane" );
+        menuItemResume = new MenuItem( LOGGER.text( "control.popup.start" ) );
+        menuItemResume.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionResume( event );
+            }
+        } );
+        
+        menuItemStop = new MenuItem( LOGGER.text( "control.popup.stop" ) );
+        menuItemStop.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionStop( event );
+            }
+        } );
+        
+        timePopup = new ContextMenu();
+        timePopup.getItems().addAll( menuItemResume, menuItemStop );
+        
+        values = new FlowPane();
+        values.setId( "values" );
         
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setHgrow( Priority.ALWAYS );
@@ -71,8 +95,8 @@ public final class LegendPaneController implements Builder<Pane>
         
         GridPane pane = new GridPane();
         pane.getColumnConstraints().addAll( cc0, cc1 );
-        pane.add( valuesPane, 0, 0 );
-        pane.add( labelTime, 1, 0 );
+        pane.add( values, 0, 0 );
+        pane.add( time, 1, 0 );
 
 //        new MenuItem( LOGGER.text( "control.popup.add" ) ), 
         
@@ -87,12 +111,14 @@ public final class LegendPaneController implements Builder<Pane>
     @FXML
     protected void initialize()
     {   
-        labelTime.setContextMenu( new ContextMenu( 
-                new MenuItem( "Возобновить движение" ), new MenuItem( "Остановить движение" ) ) );
-        labelTime.selectedProperty().bindBidirectional( dynamicProperty );
+        time.selectedProperty().bindBidirectional( dynamicProperty );
+        time.setContextMenu( timePopup );
+        
+        menuItemResume.disableProperty().bind( time.selectedProperty() );
+        menuItemStop.disableProperty().bind( new InverseBooleanBinding( time.selectedProperty() ) );
 
-        valuesPane.setMinHeight( labelTime.getMinHeight() );
-        valuesPane.setPrefHeight( labelTime.getPrefHeight() );
+        values.setMinHeight( time.getMinHeight() );
+        values.setPrefHeight( time.getPrefHeight() );
 
         dynamicProperty.addListener( new WeakChangeListener<>( dynamicPropertyChangeListener ) );
     }
@@ -102,14 +128,19 @@ public final class LegendPaneController implements Builder<Pane>
         return dynamicProperty;
     }
     
-    private static final String RESOURCE_FXML_VALUE = "/fxml/analyser/LegendValue.fxml";
+    void setParentPopupMenu( List<MenuItem> parentPopupMenu )
+    {
+        this.parentPopupMenu = parentPopupMenu;
+        JavaFX.copyMenuItems( parentPopupMenu, timePopup.getItems(), true );
+    }
+    
     /**
      * Добавляет отображаемое значение.
      * 
      * @param name    название значения.
      * @param painter сервис рисования отметок.
      */
-    void addValueControl( String name, DotPainter painter, List<MenuItem> parentPopupMenu )
+    void addValueControl( String name, DotPainter painter )
     {
         LegendValueController legendValueController;
         CheckBox label;
@@ -136,10 +167,22 @@ public final class LegendPaneController implements Builder<Pane>
         label.setSelected( true ); // запуск прорисовки
         JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
         
-        valuesPane.getChildren().add( label );
+        values.getChildren().add( label );
     }
 
-//    EventHandler<ActionEvent> createActionStartAllFlows()
+    @FXML
+    private void onActionResume( ActionEvent _ )
+    {
+        time.selectedProperty().setValue( Boolean.TRUE );
+    }
+
+    @FXML
+    private void onActionStop( ActionEvent _ )
+    {
+        time.selectedProperty().setValue( Boolean.FALSE );
+    }
+
+    //    EventHandler<ActionEvent> createActionStartAllFlows()
 //    {
 //        return new ActionStartAllFlows();
 //    }
@@ -176,7 +219,7 @@ public final class LegendPaneController implements Builder<Pane>
                             Boolean oldValue, Boolean newValue )
         {
             boolean resume = newValue != null && newValue;
-            for( Node node : valuesPane.getChildren() )
+            for( Node node : values.getChildren() )
                 if( node instanceof CheckBox )
                 {
                     CheckBox vcb = (CheckBox)node;
