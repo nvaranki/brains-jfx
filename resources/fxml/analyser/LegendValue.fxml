@@ -29,6 +29,8 @@
     
     <ContextMenu fx:id="popup" >
         <items>
+            <MenuItem fx:id="menuItemShow" onAction="#onActionShow" />  
+            <MenuItem fx:id="menuItemHide" onAction="#onActionHide" />  
             <MenuItem fx:id="menuItemRemove" onAction="#onActionRemove" />  
             <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" /> 
         </items>

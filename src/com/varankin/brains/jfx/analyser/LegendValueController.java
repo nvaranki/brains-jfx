@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.concurrent.Future;
@@ -35,6 +36,8 @@ public final class LegendValueController implements Builder<Control>
     
     @FXML private CheckBox legend;
     @FXML private ContextMenu popup;
+    @FXML private MenuItem menuItemShow;
+    @FXML private MenuItem menuItemHide;
     @FXML private MenuItem menuItemRemove;
     @FXML private MenuItem menuItemProperties;
 
@@ -55,6 +58,26 @@ public final class LegendValueController implements Builder<Control>
         legend = new CheckBox();
         legend.setId( "legend" );
         legend.setSelected( false );
+        
+        menuItemShow = new MenuItem();
+        menuItemShow.setOnAction( new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionShow( event );
+            }
+        } );
+        
+        menuItemHide = new MenuItem();
+        menuItemHide.setOnAction( new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionHide( event );
+            }
+        } );
         
         menuItemRemove = new MenuItem();
         menuItemRemove.setOnAction( new EventHandler<ActionEvent>()
@@ -78,7 +101,7 @@ public final class LegendValueController implements Builder<Control>
         
         popup = new ContextMenu();
         popup.setId( "popup" );
-        popup.getItems().addAll( menuItemRemove, menuItemProperties );
+        popup.getItems().addAll( menuItemShow, menuItemHide, menuItemRemove, menuItemProperties );
 
         legend.getStyleClass().add( CSS_CLASS );
         legend.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -94,23 +117,17 @@ public final class LegendValueController implements Builder<Control>
         legend.setContextMenu( popup );
         legend.selectedProperty().addListener( new WeakChangeListener<>( selectedPropertyChangeListener ) );
         
-        //menuItemRemove.setGraphic( JavaFX.icon( "icons16x16/remove.png" ) );
-        menuItemRemove.textProperty().bind( new StringBinding()
-        {
-            {
-                super.bind( legend.textProperty() );
-            }
-            
-            @Override
-            protected String computeValue()
-            {
-                return LOGGER.text( "control.popup.remove", legend.textProperty().getValue() );
-            }
-        } );
+        menuItemShow.textProperty().bind( new TextWithName( "control.popup.show" ) );
+        menuItemShow.disableProperty().bind( legend.selectedProperty() );
+
+        menuItemHide.textProperty().bind( new TextWithName( "control.popup.hide" ) );
+        menuItemHide.disableProperty().bind( new InverseBooleanBinding( legend.selectedProperty() ) );
+        
+        menuItemRemove.textProperty().bind( new TextWithName( "control.popup.remove" ) );
         
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
-
+    
     private void resample( Color color, int[][] pattern )
     {
         if( color != null && pattern != null )
@@ -143,6 +160,18 @@ public final class LegendValueController implements Builder<Control>
     ContextMenu getContextMenu() 
     {
         return popup;
+    }
+
+    @FXML
+    private void onActionShow( ActionEvent _ )
+    {
+        legend.selectedProperty().setValue( Boolean.TRUE );
+    }
+    
+    @FXML
+    private void onActionHide( ActionEvent _ )
+    {
+        legend.selectedProperty().setValue( Boolean.FALSE );
     }
     
     @FXML
@@ -213,4 +242,22 @@ public final class LegendValueController implements Builder<Control>
         }
     }
         
+    private class TextWithName extends StringBinding
+    {
+        final String msg;
+        
+        TextWithName( String msg )
+        {
+            super.bind( legend.textProperty() );
+            this.msg = msg;
+        }
+
+        @Override
+        protected String computeValue()
+        {
+            return LOGGER.text( msg, legend.textProperty().getValue() );
+        }
+        
+    }
+
 }
