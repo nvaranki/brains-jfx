@@ -28,20 +28,20 @@ public final class LegendPaneController implements Builder<Pane>
     private static final String CSS_CLASS = "legend-pane";
     private static final String RESOURCE_FXML_VALUE = "/fxml/analyser/LegendValue.fxml";
     
-    //private final TimeLineController timeLineController;
-    private final BooleanProperty dynamicProperty = new SimpleBooleanProperty();
+    private final BooleanProperty dynamicProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
 
     private List<MenuItem> parentPopupMenu;
     
     @FXML private CheckBox time;
-    @FXML private ContextMenu timePopup;
     @FXML private FlowPane values;
     @FXML private MenuItem menuItemResume;
     @FXML private MenuItem menuItemStop;
+    @FXML private ContextMenu timePopup;
 
     public LegendPaneController()
     {
+        dynamicProperty = new SimpleBooleanProperty();
         dynamicPropertyChangeListener = new DynamicPropertyChangeListener();
         parentPopupMenu = Collections.emptyList();
     }

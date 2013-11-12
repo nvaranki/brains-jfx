@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane id="Pane" 
+      styleClass="mainFxmlClass" 
+      xmlns:fx="http://javafx.com/fxml">
+    
+    <stylesheets>
+        <URL value="@GraphPane.css"/>
+    </stylesheets>
+    
+    <ImageView preserveRatio="true" >
+        
+    </ImageView>
+    
+    <ContextMenu>
+        <items>
+            
+        </items>
+    </ContextMenu>
+    
+</Pane>

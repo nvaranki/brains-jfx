@@ -21,12 +21,13 @@ final class TimeLinePane extends GridPane
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeLinePane.class );
 
-    private final DrawAreaPane drawArea;
+    private final Pane drawArea;
     private final TimeRulerPane timeRuler;
     private final ValueRulerPane valueRuler;
     private final Pane controlBar;
     private final TimeLineController controller;
     @Deprecated private final ContextMenu popup;
+    private final GraphPaneController graphPaneController;
     private final LegendPaneController legendPaneController;
     
     TimeLinePane( TimeLineController timeLineController )
@@ -36,10 +37,12 @@ final class TimeLinePane extends GridPane
         legendPaneController = new LegendPaneController();
         timeLineController.dynamicProperty().bindBidirectional( legendPaneController.dynamicProperty() );
         
+        graphPaneController = new GraphPaneController();
+        
         timeRuler = new TimeRulerPane( controller.getTimeConvertor() );
         valueRuler = new ValueRulerPane( controller.getValueConvertor() );
         controlBar = legendPaneController.build();
-        drawArea = new DrawAreaPane( controller );
+        drawArea = graphPaneController.build();
 
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth( 45d );
@@ -83,9 +86,14 @@ final class TimeLinePane extends GridPane
 
         controller.widthProperty().bind( timeRuler.widthProperty() );
         controller.heightProperty().bind( valueRuler.heightProperty() );
+        graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
+        graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
+        graphPaneController.dynamicProperty().bindBidirectional( controller.dynamicProperty() );
+        graphPaneController.setTimeConvertor( controller.getTimeConvertor() );
+        graphPaneController.setValueConvertor( controller.getValueConvertor() );
         timeRuler.relativeProperty().bind( controller.dynamicProperty() );
         
-        setOnMouseClicked( new ContextMenuRaiser( popup, TimeLinePane.this ) );
+        //TODO setOnMouseClicked( new ContextMenuRaiser( popup, TimeLinePane.this ) );
     }
     
     @Deprecated
@@ -115,8 +123,9 @@ final class TimeLinePane extends GridPane
             if( !popup.getItems().isEmpty() )
                 itemsDrawArea.add( new SeparatorMenuItem() );
             itemsDrawArea.addAll( popup.getItems() );
-            drawArea.appendToPopup( itemsDrawArea );
+//            drawArea.appendToPopup( itemsDrawArea );
             
+            graphPaneController.setParentPopupMenu( popup.getItems() );
             legendPaneController.setParentPopupMenu( popup.getItems() );
         }
     }
@@ -134,7 +143,7 @@ final class TimeLinePane extends GridPane
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DotPainter painter = new BufferedDotPainter( 
                 controller.getTimeConvertor(), controller.getValueConvertor(), queue, 1000 );
-        painter.writableImageProperty().bind( controller.writableImageProperty() );
+        painter.writableImageProperty().bind( graphPaneController.writableImageProperty() );
         painter.colorProperty().setValue( color );
         painter.patternProperty().setValue( pattern );
         legendPaneController.addValueControl( name, painter );
