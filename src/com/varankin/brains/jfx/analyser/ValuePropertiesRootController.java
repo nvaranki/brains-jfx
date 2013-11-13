@@ -6,6 +6,7 @@ import java.util.Arrays;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -19,7 +20,7 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class ValuePropertiesRootController implements Builder<Pane>
+public final class ValuePropertiesRootController implements Builder<Parent>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";

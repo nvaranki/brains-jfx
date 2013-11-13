@@ -12,11 +12,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- * Диалог для выбора и установки параметров прорисовки отметок.
+ * Диалог для выбора и установки параметров рисования отметок.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-class ValuePropertiesStage extends Stage
+final class ValuePropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
     private static final String RESOURCE_FXML = "/fxml/analyser/ValuePropertiesRoot.fxml";
