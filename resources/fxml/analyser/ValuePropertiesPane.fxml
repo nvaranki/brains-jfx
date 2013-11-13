@@ -19,7 +19,7 @@
 
 <?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
 
-<fx:root type="javafx.scene.layout.GridPane"
+<GridPane
     fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesPaneController" 
     styleClass="value-properties-pane"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
@@ -69,4 +69,4 @@
     />
   </children>
   
-</fx:root>
+</GridPane>

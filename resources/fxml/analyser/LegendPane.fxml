@@ -14,9 +14,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
-
-<fx:root type="javafx.scene.layout.GridPane"
+<GridPane
         fx:controller="com.varankin.brains.jfx.analyser.LegendPaneController"
         styleClass="legend-pane" 
         xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" >
@@ -30,15 +28,17 @@
         <GridPane.rowIndex>0</GridPane.rowIndex>
     </FlowPane>
 
-    <CheckBox fx:id="time" selected="false" >
+    <CheckBox fx:id="time" selected="false" text="%axis.time.name" >
         <GridPane.columnIndex>1</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
-        <ContextMenu fx:id="timePopup" >
-            <items>
-                <MenuItem fx:id="menuItemResume" text="%control.popup.start" onAction="#onActionResume" />
-                <MenuItem fx:id="menuItemStop"   text="%control.popup.stop"  onAction="#onActionStop" />
-            </items>
-        </ContextMenu>
+        <contextMenu>
+            <ContextMenu fx:id="timePopup" >
+                <items>
+                    <MenuItem fx:id="menuItemResume" text="%control.popup.start" onAction="#onActionResume" />
+                    <MenuItem fx:id="menuItemStop"   text="%control.popup.stop"  onAction="#onActionStop" />
+                </items>
+            </ContextMenu>
+        </contextMenu>
     </CheckBox>
 
     <columnConstraints>
@@ -46,4 +46,4 @@
         <ColumnConstraints hgrow="NEVER"  halignment="RIGHT"  minWidth="100" ></ColumnConstraints>
     </columnConstraints>
     
-</fx:root>
+</GridPane>

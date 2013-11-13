@@ -55,10 +55,6 @@ public final class LegendValueController implements Builder<Control>
     @Override
     public CheckBox build()
     {
-        legend = new CheckBox();
-        legend.setId( "legend" );
-        legend.setSelected( false );
-        
         menuItemShow = new MenuItem();
         menuItemShow.setOnAction( new EventHandler<ActionEvent>()
         {
@@ -103,6 +99,11 @@ public final class LegendValueController implements Builder<Control>
         popup.setId( "popup" );
         popup.getItems().addAll( menuItemShow, menuItemHide, menuItemRemove, menuItemProperties );
 
+        legend = new CheckBox();
+        legend.setId( "legend" );
+        legend.setSelected( false );
+        legend.setContextMenu( popup );
+        
         legend.getStyleClass().add( CSS_CLASS );
         legend.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
 
@@ -114,7 +115,6 @@ public final class LegendValueController implements Builder<Control>
     @FXML
     protected void initialize()
     {
-        legend.setContextMenu( popup );
         legend.selectedProperty().addListener( new WeakChangeListener<>( selectedPropertyChangeListener ) );
         
         menuItemShow.textProperty().bind( new TextWithName( "control.popup.show" ) );

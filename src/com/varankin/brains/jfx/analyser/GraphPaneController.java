@@ -23,7 +23,7 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class GraphPaneController implements Builder<Pane>
+public final class GraphPaneController implements Builder<Pane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( GraphPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPane.css";
@@ -47,7 +47,7 @@ final class GraphPaneController implements Builder<Pane>
     @FXML private MenuItem menuItemProperties;
     @FXML private ContextMenu popup;
     
-    GraphPaneController()
+    public GraphPaneController()
     {
         widthProperty = new SimpleDoubleProperty();
         heightProperty = new SimpleDoubleProperty();
@@ -100,7 +100,6 @@ final class GraphPaneController implements Builder<Pane>
         } );
         
         popup = new ContextMenu();
-        popup.setAutoHide( true );
         popup.getItems().addAll( menuItemResume, menuItemStop, menuItemProperties );
         
         imageView = new ImageView();
@@ -373,5 +372,5 @@ final class GraphPaneController implements Builder<Pane>
 
         }
     }
-    
+
 }

@@ -53,10 +53,6 @@ public final class LegendPaneController implements Builder<Pane>
     @Override
     public GridPane build()
     {
-        time = new CheckBox( LOGGER.text( "ControlBar.axis.time.name" ) );
-        time.setId( "time" );
-        time.setSelected( false );
-        
         menuItemResume = new MenuItem( LOGGER.text( "control.popup.start" ) );
         menuItemResume.setOnAction( new EventHandler<ActionEvent>() 
         {
@@ -79,6 +75,12 @@ public final class LegendPaneController implements Builder<Pane>
         
         timePopup = new ContextMenu();
         timePopup.getItems().addAll( menuItemResume, menuItemStop );
+        
+        time = new CheckBox();
+        time.setId( "time" );
+        time.setText( LOGGER.text( "axis.time.name" ) );
+        time.setSelected( false );
+        time.setContextMenu( timePopup );
         
         values = new FlowPane();
         values.setId( "values" );
@@ -112,7 +114,6 @@ public final class LegendPaneController implements Builder<Pane>
     protected void initialize()
     {   
         time.selectedProperty().bindBidirectional( dynamicProperty );
-        time.setContextMenu( timePopup );
         
         menuItemResume.disableProperty().bind( time.selectedProperty() );
         menuItemStop.disableProperty().bind( new InverseBooleanBinding( time.selectedProperty() ) );

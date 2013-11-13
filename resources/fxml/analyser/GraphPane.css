@@ -1,7 +1,16 @@
 /*
- * Empty Stylesheet file.
+    Document   : GraphPane.css
+    Created on : Nov 11, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Графическая зона для рисования  отметок.
  */
 
-.mainFxmlClass {
+.graph-pane #imageView
+{
+
+}
+
+.graph-pane 
+{
 
 }

@@ -14,8 +14,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
-
 <CheckBox 
         fx:controller="com.varankin.brains.jfx.analyser.LegendValueController"
         styleClass="legend-value" 
@@ -27,13 +25,15 @@
         <URL value="@LegendValue.css"/>
     </stylesheets>
     
-    <ContextMenu fx:id="popup" >
-        <items>
-            <MenuItem fx:id="menuItemShow" onAction="#onActionShow" />  
-            <MenuItem fx:id="menuItemHide" onAction="#onActionHide" />  
-            <MenuItem fx:id="menuItemRemove" onAction="#onActionRemove" />  
-            <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" /> 
-        </items>
-    </ContextMenu> 
+    <contextMenu>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem fx:id="menuItemShow" onAction="#onActionShow" />  
+                <MenuItem fx:id="menuItemHide" onAction="#onActionHide" />  
+                <MenuItem fx:id="menuItemRemove" onAction="#onActionRemove" />  
+                <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" /> 
+            </items>
+        </ContextMenu> 
+    </contextMenu>
     
 </CheckBox>

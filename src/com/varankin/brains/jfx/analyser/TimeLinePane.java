@@ -3,10 +3,13 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import javafx.event.*;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -20,11 +23,13 @@ import javafx.scene.paint.Color;
 final class TimeLinePane extends GridPane
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeLinePane.class );
+    private static final String RESOURCE_FXML_LEGEND = "/fxml/analyser/LegendPane.fxml";
+    private static final String RESOURCE_FXML_GRAPH = "/fxml/analyser/GraphPane.fxml";
 
-    private final Pane drawArea;
+    private final Node drawArea;
     private final TimeRulerPane timeRuler;
     private final ValueRulerPane valueRuler;
-    private final Pane controlBar;
+    private final Node controlBar;
     private final TimeLineController controller;
     @Deprecated private final ContextMenu popup;
     private final GraphPaneController graphPaneController;
@@ -34,15 +39,40 @@ final class TimeLinePane extends GridPane
     {
         controller = timeLineController;
         
-        legendPaneController = new LegendPaneController();
+        if( JavaFX.getInstance().useFxmlLoader() )
+            try
+            {
+                java.net.URL location;
+                FXMLLoader fxmlLoader;
+                ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
+                
+                location = getClass().getResource( RESOURCE_FXML_LEGEND );
+                fxmlLoader = new FXMLLoader( location, resources );
+                controlBar = (Node)fxmlLoader.load();
+                legendPaneController = fxmlLoader.getController();
+
+                location = getClass().getResource( RESOURCE_FXML_GRAPH );
+                fxmlLoader = new FXMLLoader( location, resources );
+                drawArea = (Node)fxmlLoader.load();
+                graphPaneController = fxmlLoader.getController();
+            }
+            catch( IOException | ClassCastException ex )
+            {
+                throw new RuntimeException( ex );
+            }
+        else
+        {
+            legendPaneController = new LegendPaneController();
+            graphPaneController = new GraphPaneController();
+
+            controlBar = legendPaneController.build();
+            drawArea = graphPaneController.build();
+        }
+
         timeLineController.dynamicProperty().bindBidirectional( legendPaneController.dynamicProperty() );
-        
-        graphPaneController = new GraphPaneController();
         
         timeRuler = new TimeRulerPane( controller.getTimeConvertor() );
         valueRuler = new ValueRulerPane( controller.getValueConvertor() );
-        controlBar = legendPaneController.build();
-        drawArea = graphPaneController.build();
 
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth( 45d );
