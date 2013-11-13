@@ -29,6 +29,8 @@ public final class GraphPaneController implements Builder<Pane>
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPane.css";
     private static final String CSS_CLASS = "graph-pane";
     
+    private static long idCounter;
+    
     private final DoubleProperty widthProperty, heightProperty;
     private final ReadOnlyObjectWrapper<WritableImage> writableImageProperty;
     private final SimpleBooleanProperty dynamicProperty;
@@ -39,6 +41,8 @@ public final class GraphPaneController implements Builder<Pane>
     private TimeConvertor timeConvertor;
     private ValueConvertor valueConvertor;
     private Color zeroValueAxisColor;
+    private GraphPropertiesStage properties;
+    private long id;
     
     @FXML private Pane pane;
     @FXML private ImageView imageView;
@@ -54,6 +58,7 @@ public final class GraphPaneController implements Builder<Pane>
         writableImageProperty = new ReadOnlyObjectWrapper<>();
         dynamicProperty = new SimpleBooleanProperty();
         refreshService = new ImageFlowService();
+        id = idCounter++;
         
         //TODO appl param
         refreshRate = 100L; // ms
@@ -199,15 +204,14 @@ public final class GraphPaneController implements Builder<Pane>
     @FXML
     private void onActionProperties( ActionEvent _ )
     {
-//        if( properties == null )
-//        {
-//            properties = new ValuePropertiesStage( painter );
-//            properties.initOwner( JavaFX.getInstance().платформа );
-//            properties.setTitle( LOGGER.text( "properties.value.title", legend.getText() ) );
-//        }
-//        properties.show();
-//        properties.toFront();
-        LOGGER.getLogger().warning( "Command is not implemented yet." );
+        if( properties == null )
+        {
+            properties = new GraphPropertiesStage();
+            properties.initOwner( JavaFX.getInstance().платформа );
+            properties.setTitle( LOGGER.text( "properties.graph.title", Long.toString( id ) ) );
+        }
+        properties.show();
+        properties.toFront();
     }
 
     ReadOnlyObjectProperty<WritableImage> writableImageProperty()
