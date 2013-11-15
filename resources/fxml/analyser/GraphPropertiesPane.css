@@ -1,0 +1,49 @@
+/* 
+    Document   : GraphPropertiesPane
+    Created on : Nov 14, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Панель выбора и установки параметров рисования графика.
+*/
+
+.graph-properties-pane #rateValue
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.graph-properties-pane #rateUnit
+{
+    -fx-cursor: hand;
+}
+
+.graph-properties-pane #borderDisplay
+{
+    -fx-cursor: hand;
+}
+
+.graph-properties-pane #borderColor
+{
+    -fx-cursor: hand;
+}
+
+.graph-properties-pane #zeroDisplay
+{
+    -fx-cursor: hand;
+}
+
+.graph-properties-pane #zeroColor
+{
+    -fx-cursor: hand;
+}
+
+.graph-properties-pane #timeFlow
+{
+    -fx-cursor: hand;
+}
+
+.graph-properties-pane 
+{ 
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
+

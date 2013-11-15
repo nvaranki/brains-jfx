@@ -34,13 +34,17 @@ public final class GraphPaneController implements Builder<Pane>
     private final DoubleProperty widthProperty, heightProperty;
     private final ReadOnlyObjectWrapper<WritableImage> writableImageProperty;
     private final SimpleBooleanProperty dynamicProperty;
+    private final ObjectProperty<Long> rateValueProperty;
+    private final ObjectProperty<TimeUnit> rateUnitProperty;
+    private final BooleanProperty borderDisplayProperty, zeroDisplayProperty;
+    private final ObjectProperty<Color> borderColorProperty, zeroColorProperty;
     private final ImageFlowService refreshService;
 
-    private long refreshRate;
-    private TimeUnit refreshRateUnit;
+//    private long refreshRate;
+//    private TimeUnit refreshRateUnit;
     private TimeConvertor timeConvertor;
     private ValueConvertor valueConvertor;
-    private Color zeroValueAxisColor;
+//    private Color zeroValueAxisColor;
     private GraphPropertiesStage properties;
     private long id;
     
@@ -57,13 +61,23 @@ public final class GraphPaneController implements Builder<Pane>
         heightProperty = new SimpleDoubleProperty();
         writableImageProperty = new ReadOnlyObjectWrapper<>();
         dynamicProperty = new SimpleBooleanProperty();
+        rateValueProperty = new SimpleObjectProperty<>();
+        rateUnitProperty = new SimpleObjectProperty<>();
+        borderDisplayProperty = new SimpleBooleanProperty();
+        borderColorProperty = new SimpleObjectProperty<>();
+        zeroDisplayProperty = new SimpleBooleanProperty();
+        zeroColorProperty = new SimpleObjectProperty<>();
+        
         refreshService = new ImageFlowService();
-        id = idCounter++;
+        id = ++idCounter;
         
         //TODO appl param
-        refreshRate = 100L; // ms
-        refreshRateUnit = TimeUnit.MILLISECONDS;
-        zeroValueAxisColor = Color.GRAY;
+        rateValueProperty.set( 100L );
+        rateUnitProperty.set( TimeUnit.MILLISECONDS );
+        borderDisplayProperty.set( false );
+        borderColorProperty.set( Color.GRAY );
+        zeroDisplayProperty.set( true );
+        zeroColorProperty.set( Color.GRAY );
     }
 
     /**
@@ -148,7 +162,7 @@ public final class GraphPaneController implements Builder<Pane>
                     {
                         // возобновить движение графической зоны
                         process = JavaFX.getInstance().getScheduledExecutorService().scheduleAtFixedRate( 
-                            refreshService, 0L, refreshRate, refreshRateUnit );
+                            refreshService, 0L, rateValueProperty.getValue(), rateUnitProperty.getValue() );
                     }
                     else
                     {
@@ -206,7 +220,11 @@ public final class GraphPaneController implements Builder<Pane>
     {
         if( properties == null )
         {
-            properties = new GraphPropertiesStage();
+            properties = new GraphPropertiesStage( 
+                    rateValueProperty, rateUnitProperty,
+                    borderDisplayProperty, borderColorProperty, 
+                    zeroDisplayProperty, zeroColorProperty, 
+                    dynamicProperty );
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.setTitle( LOGGER.text( "properties.graph.title", Long.toString( id ) ) );
         }
@@ -241,22 +259,22 @@ public final class GraphPaneController implements Builder<Pane>
 
     long getRefreshRate()
     {
-        return refreshRate;
+        return rateValueProperty.getValue();
     }
 
     void setRefreshRate( long rate )
     {
-        refreshRate = rate;
+        rateValueProperty.setValue( rate );
     }
 
     TimeUnit getRefreshRateUnit()
     {
-        return refreshRateUnit;
+        return rateUnitProperty.getValue();
     }
 
     void setRefreshRateUnit( TimeUnit unit )
     {
-        refreshRateUnit = unit;
+        rateUnitProperty.setValue( unit );
     }
 
     void setTimeConvertor( TimeConvertor convertor )
@@ -302,8 +320,9 @@ public final class GraphPaneController implements Builder<Pane>
 //            writer.setColor( 0, i, getValueAxisColor() ); // value
         if( 0 < zero && zero < heightProperty.intValue() )
         {
+            Color color = zeroColorProperty.getValue();
             for( int i = 2; i < width; i += 2 ) 
-                writer.setColor( i, zero, zeroValueAxisColor ); // zero value
+                writer.setColor( i, zero, color ); // zero value
         }
     }
     

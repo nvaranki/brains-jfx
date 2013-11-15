@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
+import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -185,6 +186,14 @@ public final class JavaFX
                 to.add( копия );
             }
         }
+    }
+    
+    public static <T> void setChangedValue( ObservableValue<T> source, WritableValue<T> target )
+    {
+        T oldValue = target.getValue();
+        T newValue = source.getValue();
+        if( newValue != null && !newValue.equals( oldValue ) )
+            target.setValue( newValue );
     }
 
     public static void copyMenuItems( List<MenuItem> from, List<MenuItem> to, boolean separate )

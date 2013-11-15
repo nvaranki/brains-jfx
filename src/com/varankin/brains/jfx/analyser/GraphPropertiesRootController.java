@@ -1,7 +1,15 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.ValueSetter;
 import com.varankin.brains.jfx.InverseBooleanBinding;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.util.concurrent.TimeUnit;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WritableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -24,6 +32,14 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPropertiesRoot.css";
     private static final String CSS_CLASS = "graph-properties-root";
 
+    private WritableValue<Long> rateValue;
+    private WritableValue<TimeUnit> rateUnit;
+    private WritableValue<Boolean> borderDisplay;
+    private WritableValue<Color> borderColor;
+    private WritableValue<Boolean> zeroDisplay;
+    private WritableValue<Color> zeroColor;
+    private WritableValue<Boolean> timeFlow;
+    
     @FXML private Node properties;
     @FXML private Button buttonApply;
     @FXML private GraphPropertiesPaneController propertiesController;
@@ -106,7 +122,6 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     void onActionApply( ActionEvent event )
     {
         applyChanges();
-        propertiesController.changedProperty().setValue( Boolean.FALSE );
     }
     
     @FXML
@@ -114,16 +129,77 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     {
         buttonApply.getScene().getWindow().hide();
     }
-    
+        
     private void applyChanges()
     {
-//        Color oldColor = painter.colorProperty().getValue();
-//        Color newColor = propertiesController.getColor();
-//        if( newColor != null && !newColor.equals( oldColor ) )
-//            painter.colorProperty().setValue( newColor );
-//        
-        //TODO
-        LOGGER.getLogger().warning( "Not implemented." );
+        JavaFX.setChangedValue( propertiesController.getRateValueConverted(), rateValue );
+        JavaFX.setChangedValue( propertiesController.getRateUnitProperty(), rateUnit );
+        JavaFX.setChangedValue( propertiesController.getBorderDisplayProperty(), borderDisplay );
+        JavaFX.setChangedValue( propertiesController.getBorderColorProperty(), borderColor );
+        JavaFX.setChangedValue( propertiesController.getZeroDisplayProperty(), zeroDisplay );
+        JavaFX.setChangedValue( propertiesController.getZeroColorProperty(), zeroColor );
+        JavaFX.setChangedValue( propertiesController.getTimeFlowProperty(), timeFlow );
+        propertiesController.changedProperty().setValue( Boolean.FALSE );
     }
     
+    void setRateValueProperty( final ObjectProperty<Long> property )
+    {
+        rateValue = property;
+        property.addListener( new ChangeListener<Long>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Long> observable, Long oldValue, Long newValue )
+            {
+                propertiesController.getRateValueProperty().setValue( Long.toString( property.getValue() ) );
+            }
+        } );
+    }
+
+    void setRateUnitProperty( ObjectProperty<TimeUnit> property )
+    {
+        rateUnit = property;
+        property.addListener( new ValueSetter<>( propertiesController.getRateUnitProperty() ) );
+    }
+
+    void setBorderDisplayProperty( BooleanProperty property )
+    {
+        borderDisplay = property;
+        property.addListener( new ValueSetter<>( propertiesController.getBorderDisplayProperty() ) );
+    }
+
+    void setBorderColorProperty( ObjectProperty<Color> property )
+    {
+        borderColor = property;
+        property.addListener( new ValueSetter<>( propertiesController.getBorderColorProperty() ) );
+    }
+
+    void setZeroDisplayProperty( BooleanProperty property )
+    {
+        zeroDisplay = property;
+        property.addListener( new ValueSetter<>( propertiesController.getZeroDisplayProperty() ) );
+    }
+
+    void setZeroColorProperty( ObjectProperty<Color> property )
+    {
+        zeroColor = property;
+        property.addListener( new ValueSetter<>( propertiesController.getZeroColorProperty() ) );
+    }
+
+    void setFlowModeProperty( BooleanProperty property )
+    {
+        timeFlow = property;
+        property.addListener( new ValueSetter<>( propertiesController.getTimeFlowProperty() ) );
+    }
+
+    void reset()
+    {
+        propertiesController.getRateValueProperty().setValue( Long.toString( rateValue.getValue() ) );
+        propertiesController.getRateUnitProperty().setValue( rateUnit.getValue() );
+        propertiesController.getBorderDisplayProperty().setValue( borderDisplay.getValue() );
+        propertiesController.getBorderColorProperty().setValue( borderColor.getValue() );
+        propertiesController.getZeroDisplayProperty().setValue( zeroDisplay.getValue() );
+        propertiesController.getZeroColorProperty().setValue( zeroColor.getValue() );
+        propertiesController.getTimeFlowProperty().setValue( timeFlow.getValue() );
+        propertiesController.reset();
+    }
 }
