@@ -45,6 +45,8 @@ public final class JavaFX
         return JFX = new JavaFX( платформа, контекст );
     }
     
+    public static final String STYLE_WRONG_TEXT_VALUE = "-fx-text-fill: red;";
+
     public final Контекст контекст;
     public final Stage платформа;
     //public final Позиционер позиционер;

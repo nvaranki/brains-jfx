@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
@@ -32,8 +32,9 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     private final ObjectProperty<TimeUnit> rateUnitProperty; // <--> selectionModel.selectedItemProperty
     private final ChangeListener<TimeUnit> rateUnitGetter;
     private final ChangeListener<TimeUnit> rateUnitSetter;
-    
-    private ObservableValue<Long> rateValueLong; // String <--> Long
+    private final ObjectProperty<Long> rateValueProperty;
+    private final ChangeListener<String> rateValueInputListener;
+    private final ChangeListener<Long> rateValuePropertyListener;
 
     @FXML private TextField rateValue;
     @FXML private ComboBox<TimeUnit> rateUnit;
@@ -45,8 +46,6 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     
     public GraphPropertiesPaneController()
     {
-        rateUnitSetter = new RateUnitSetter();
-        rateUnitGetter = new RateUnitGetter();
         changedProperty = new SimpleBooleanProperty( false );
         changedPropertyUpdater = new ChangeListener<Object>() 
         {
@@ -57,6 +56,11 @@ public final class GraphPropertiesPaneController implements Builder<Node>
                 changedProperty.set( true );
             }
         };
+        rateValuePropertyListener = new RateValuePropertyListener();
+        rateValueInputListener = new RateValueInputListener();
+        rateValueProperty = new SimpleObjectProperty<>();
+        rateUnitSetter = new RateUnitSetter();
+        rateUnitGetter = new RateUnitGetter();
         rateUnitProperty = new SimpleObjectProperty<>();
     }
 
@@ -124,33 +128,12 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     protected void initialize()
     {
         rateValue.textProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
-        
-        rateValueLong = new ObjectBinding<Long>() 
-        {
-            {
-                super.bind( rateValue.textProperty() );
-            }
-            
-            @Override
-            protected Long computeValue()
-            {
-                String text = rateValue.textProperty().getValue();
-                try
-                {
-                    return Long.valueOf( text );
-                }
-                catch( NumberFormatException _ )
-                {
-                    LOGGER.log( "001003001S", text );
-                    return null;
-                }
-            }
-        };
+        rateValue.textProperty().addListener( new WeakChangeListener<>( rateValueInputListener ) );
+        rateValueProperty.addListener( new WeakChangeListener<>( rateValuePropertyListener ) );
         
         rateUnit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         rateUnit.getSelectionModel().selectedItemProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
         rateUnit.getSelectionModel().selectedItemProperty().addListener( new WeakChangeListener<>( rateUnitGetter ) );
-        
         rateUnitProperty.addListener( new WeakChangeListener<>( rateUnitSetter ) );
         
         borderDisplay.selectedProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
@@ -171,14 +154,9 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         return changedProperty;
     }
 
-    StringProperty getRateValueProperty()
+    ObjectProperty<Long> getRateValueProperty()
     {
-        return rateValue.textProperty();
-    }
-
-    ObservableValue<Long> getRateValueConverted()
-    {
-        return rateValueLong;
+        return rateValueProperty;
     }
 
     ObjectProperty<TimeUnit> getRateUnitProperty()
@@ -219,6 +197,37 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         borderColor.fireEvent( new ActionEvent() );
         zeroColor.fireEvent( new ActionEvent() );
     }
+
+    private class RateValuePropertyListener implements ChangeListener<Long>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Long> observable, 
+                            Long oldValue, Long newValue )
+        {
+            rateValue.textProperty().setValue( newValue != null ? Long.toString( newValue ) : null );
+        }
+    }
+
+    private class RateValueInputListener implements ChangeListener<String>
+    {
+        @Override
+        public void changed( ObservableValue<? extends String> observable, 
+                            String oldValue, String newValue )
+        {
+            try
+            {
+                Long value = Long.valueOf( newValue );
+                if( value < 0 ) throw new NumberFormatException( "Negative" );
+                rateValueProperty.setValue( value );
+                rateValue.setStyle( null );
+            }
+            catch( NumberFormatException ex )
+            {
+                LOGGER.log( "001003001W", newValue, ex.getMessage() );
+                rateValue.setStyle( JavaFX.STYLE_WRONG_TEXT_VALUE );
+            }
+        }
+    }
     
     private class RateUnitSetter implements ChangeListener<TimeUnit>
     {
@@ -232,7 +241,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
                 if( index >= 0 )
                     rateUnit.getSelectionModel().select( index );
                 else
-                    LOGGER.getLogger().log( Level.FINE, "Unsupported TimeUnit.{}", newValue.name() );
+                    LOGGER.getLogger().log( Level.FINE, "Unsupported TimeUnit.{}", newValue != null ? newValue.name() : null );
             }
         }
     }

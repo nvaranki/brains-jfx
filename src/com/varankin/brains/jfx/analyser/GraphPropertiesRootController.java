@@ -128,7 +128,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
         
     private void applyChanges()
     {
-        JavaFX.setChangedValue( propertiesController.getRateValueConverted(), rateValue );
+        JavaFX.setChangedValue( propertiesController.getRateValueProperty(), rateValue );
         JavaFX.setChangedValue( propertiesController.getRateUnitProperty(), rateUnit );
         JavaFX.setChangedValue( propertiesController.getBorderDisplayProperty(), borderDisplay );
         JavaFX.setChangedValue( propertiesController.getBorderColorProperty(), borderColor );
@@ -141,14 +141,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     void setRateValueProperty( final ObjectProperty<Long> property )
     {
         rateValue = property;
-        property.addListener( new ChangeListener<Long>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Long> observable, Long oldValue, Long newValue )
-            {
-                propertiesController.getRateValueProperty().setValue( Long.toString( property.getValue() ) );
-            }
-        } );
+        property.addListener( new ValueSetter<>( propertiesController.getRateValueProperty() ) );
     }
 
     void setRateUnitProperty( ObjectProperty<TimeUnit> property )
@@ -189,7 +182,16 @@ public final class GraphPropertiesRootController implements Builder<Parent>
 
     void reset()
     {
-        propertiesController.getRateValueProperty().setValue( Long.toString( rateValue.getValue() ) );
+        // сбросить прежние значения
+        propertiesController.getRateValueProperty().setValue( null );
+        propertiesController.getRateUnitProperty().setValue( null );
+        propertiesController.getBorderDisplayProperty().setValue( null );
+        propertiesController.getBorderColorProperty().setValue( null );
+        propertiesController.getZeroDisplayProperty().setValue( null );
+        propertiesController.getZeroColorProperty().setValue( null );
+        propertiesController.getTimeFlowProperty().setValue( null );
+        // установить текущие значения
+        propertiesController.getRateValueProperty().setValue( rateValue.getValue() );
         propertiesController.getRateUnitProperty().setValue( rateUnit.getValue() );
         propertiesController.getBorderDisplayProperty().setValue( borderDisplay.getValue() );
         propertiesController.getBorderColorProperty().setValue( borderColor.getValue() );
@@ -197,5 +199,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
         propertiesController.getZeroColorProperty().setValue( zeroColor.getValue() );
         propertiesController.getTimeFlowProperty().setValue( timeFlow.getValue() );
         propertiesController.reset();
+        // установить статус
+        propertiesController.changedProperty().setValue( Boolean.FALSE );
     }
 }
