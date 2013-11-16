@@ -1,10 +1,10 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.*;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.*;
@@ -116,7 +116,7 @@ public final class LegendPaneController implements Builder<Pane>
         time.selectedProperty().bindBidirectional( dynamicProperty );
         
         menuItemResume.disableProperty().bind( time.selectedProperty() );
-        menuItemStop.disableProperty().bind( new InverseBooleanBinding( time.selectedProperty() ) );
+        menuItemStop.disableProperty().bind( Bindings.not( time.selectedProperty() ) );
 
         values.setMinHeight( time.getMinHeight() );
         values.setPrefHeight( time.getPrefHeight() );

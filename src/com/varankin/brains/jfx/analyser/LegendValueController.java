@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.concurrent.Future;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
@@ -121,7 +121,7 @@ public final class LegendValueController implements Builder<Control>
         menuItemShow.disableProperty().bind( legend.selectedProperty() );
 
         menuItemHide.textProperty().bind( new TextWithName( "control.popup.hide" ) );
-        menuItemHide.disableProperty().bind( new InverseBooleanBinding( legend.selectedProperty() ) );
+        menuItemHide.disableProperty().bind( Bindings.not( legend.selectedProperty() ) );
         
         menuItemRemove.textProperty().bind( new TextWithName( "control.popup.remove" ) );
         

@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -78,7 +78,7 @@ public final class ValuePropertiesRootController implements Builder<Parent>
         buttonCancel.setCancelButton( true );
 
         HBox buttonBar = new HBox();
-        buttonBar.getChildren().addAll( buttonOK, buttonApply, buttonCancel );
+        buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
 
         BorderPane pane = new BorderPane();
         pane.setCenter( properties );
@@ -95,8 +95,7 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        buttonApply.disableProperty().bind( 
-                new InverseBooleanBinding( propertiesController.changedProperty() ) );
+        buttonApply.disableProperty().bind( Bindings.not( propertiesController.changedProperty() ) );
     }
     
     @FXML

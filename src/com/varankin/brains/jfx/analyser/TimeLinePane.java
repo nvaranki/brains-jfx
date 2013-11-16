@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import javafx.beans.binding.Bindings;
 import javafx.event.*;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
@@ -146,7 +146,7 @@ final class TimeLinePane extends GridPane
             MenuItem menuItemStop = new MenuItem( LOGGER.text( "timeline.popup.stop" ) );
             menuItemStop.setGraphic( JavaFX.icon( "icons16x16/stop.png" ) );
 //            menuItemStop.setOnAction( legendPaneController.createActionStopAllFlows() );
-            menuItemStop.disableProperty().bind( new InverseBooleanBinding( controller.dynamicProperty() ) );
+            menuItemStop.disableProperty().bind( Bindings.not( controller.dynamicProperty() ) );
 
             itemsDrawArea.add( menuItemStart );
             itemsDrawArea.add( menuItemStop );

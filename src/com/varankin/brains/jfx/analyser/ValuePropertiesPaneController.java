@@ -6,10 +6,10 @@ import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.*;
 
@@ -18,7 +18,7 @@ import javafx.util.*;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class ValuePropertiesPaneController implements Builder<Pane>
+public final class ValuePropertiesPaneController implements Builder<Node>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";

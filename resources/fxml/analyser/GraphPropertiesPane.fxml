@@ -14,11 +14,80 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane 
-        id="AnchorPane" prefHeight="400.0" prefWidth="600.0" 
-        styleClass="graph-properties-pane" 
-        xmlns:fx="http://javafx.com/fxml" >
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.analyser.GraphPropertiesPaneController" 
+    styleClass="graph-properties-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
     <stylesheets>
         <URL value="@GraphPropertiesPane.css"/>
     </stylesheets>
-</AnchorPane>
+  
+  <children>
+    <Label 
+        text="%properties.graph.rate" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField
+        fx:id="rateValue"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0"  
+        prefColumnCount="6" 
+        focusTraversable="true"      
+    />
+    <ComboBox
+        fx:id="rateUnit"
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="0"  
+        focusTraversable="true"      
+    />
+    <Label 
+        text="%properties.graph.border" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <CheckBox
+        fx:id="borderDisplay"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
+        focusTraversable="true"      
+    />
+    <ColorPicker
+        fx:id="borderColor"
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="1"  
+        focusTraversable="false"      
+    /><!-- focusTraversable="true" RT-21549 -->
+    <Label 
+        text="%properties.graph.zero" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <CheckBox
+        fx:id="zeroDisplay"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2"  
+        focusTraversable="true"      
+    />
+    <ColorPicker
+        fx:id="zeroColor"
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2"  
+        focusTraversable="false"      
+    /><!-- focusTraversable="true" RT-21549 -->
+    <Label 
+        text="%properties.graph.flow" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="3" 
+    />
+    <CheckBox
+        fx:id="timeFlow"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="3"  
+        focusTraversable="true"      
+    />
+      
+  </children>
+      
+</GridPane>

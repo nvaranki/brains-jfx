@@ -15,8 +15,6 @@
 <?import javafx.scene.layout.* ?>
 <?import javafx.scene.paint.* ?>
 
-<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
-
 <BorderPane
     fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesRootController" 
     styleClass="value-properties-root"
@@ -39,14 +37,14 @@
             defaultButton="true" 
         />
         <Button 
-            text="%button.apply" 
-            onAction="#onActionApply"
-            fx:id="buttonApply"  
-        />
-        <Button 
             text="%button.cancel" 
             onAction="#onActionCancel" 
             cancelButton="true" 
+        />
+        <Button 
+            text="%button.apply" 
+            onAction="#onActionApply"
+            fx:id="buttonApply"  
         />
       </children>
     </HBox>

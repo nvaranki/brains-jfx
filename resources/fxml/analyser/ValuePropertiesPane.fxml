@@ -17,8 +17,6 @@
 <?import javafx.scene.layout.* ?>
 <?import javafx.scene.paint.* ?>
 
-<?scenebuilder-preview-i18n-resource ../../../src/com/varankin/brains/jfx/analyser/text_ru.properties?>
-
 <GridPane
     fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesPaneController" 
     styleClass="value-properties-pane"

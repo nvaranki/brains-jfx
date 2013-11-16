@@ -1,12 +1,12 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.nio.IntBuffer;
 import java.util.List;
 import java.util.concurrent.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.*;
@@ -192,7 +192,7 @@ public final class GraphPaneController implements Builder<Pane>
         } );
 
         menuItemResume.disableProperty().bind( dynamicProperty );
-        menuItemStop.disableProperty().bind( new InverseBooleanBinding( dynamicProperty ) );
+        menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty ) );
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
     

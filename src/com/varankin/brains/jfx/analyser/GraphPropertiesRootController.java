@@ -1,15 +1,12 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.ValueSetter;
-import com.varankin.brains.jfx.InverseBooleanBinding;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.concurrent.TimeUnit;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WritableValue;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -45,7 +42,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     @FXML private GraphPropertiesPaneController propertiesController;
     
     /**
-     * Создает панель для выбора и установки параметров рисования графика.
+     * Создает панель диалога для выбора и установки параметров рисования графика.
      * Применяется в конфигурации без FXML.
      */
     @Override
@@ -90,7 +87,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
         buttonCancel.setCancelButton( true );
 
         HBox buttonBar = new HBox();
-        buttonBar.getChildren().addAll( buttonOK, buttonApply, buttonCancel );
+        buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
 
         BorderPane pane = new BorderPane();
         pane.setCenter( properties );
@@ -107,8 +104,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        buttonApply.disableProperty().bind( 
-                new InverseBooleanBinding( propertiesController.changedProperty() ) );
+        buttonApply.disableProperty().bind( Bindings.not( propertiesController.changedProperty() ) );
     }
     
     @FXML
