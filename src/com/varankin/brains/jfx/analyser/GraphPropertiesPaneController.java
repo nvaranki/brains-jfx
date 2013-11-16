@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.ListeningComboBoxSetter;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.ValueSetter;
 import com.varankin.util.LoggerX;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.varankin.brains.jfx.analyser;
+package com.varankin.brains.jfx;
 
 import java.util.logging.*;
 import javafx.beans.value.ChangeListener;
