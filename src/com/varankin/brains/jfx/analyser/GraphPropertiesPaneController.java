@@ -223,7 +223,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
             }
             catch( NumberFormatException ex )
             {
-                LOGGER.log( "001003001W", newValue, ex.getMessage() );
+                if( newValue != null ) LOGGER.log( "001003001W", newValue, ex.getMessage() );
                 rateValue.setStyle( JavaFX.STYLE_WRONG_TEXT_VALUE );
             }
         }
