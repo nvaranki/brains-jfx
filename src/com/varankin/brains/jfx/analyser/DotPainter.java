@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
-import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.*;
 import javafx.concurrent.Task;
@@ -38,8 +38,8 @@ class DotPainter implements Runnable
     private final int fragmentSize;
     private final long fragmentTimeout;
     private final TimeUnit fragmentUnits;
-    private final ColorProperty colorProperty;
-    private final PatternProperty patternProperty;
+    private final ObjectProperty<Color> colorProperty;
+    private final ObjectProperty<int[][]> patternProperty;
 
     private PixelWriter writer;
     private int width, height;
@@ -54,8 +54,8 @@ class DotPainter implements Runnable
         writableImage = new SimpleObjectProperty<>();
         timeConvertor = tc;
         valueConvertor = vc;
-        colorProperty = new ColorProperty();
-        patternProperty = new PatternProperty();
+        colorProperty = new SimpleObjectProperty<>();
+        patternProperty = new SimpleObjectProperty<>();
         writableImage.addListener( new ChangeListener<WritableImage>() {
 
             @Override
@@ -74,7 +74,7 @@ class DotPainter implements Runnable
         fragmentSize = 50;
     }
 
-    final ObjectProperty<WritableImage> writableImageProperty()
+    final Property<WritableImage> writableImageProperty()
     {
         return writableImage;
     }
@@ -82,7 +82,7 @@ class DotPainter implements Runnable
     /**
      * @return свойство "цвет рисования шаблона".
      */
-    final WritableObservableValue<Color> colorProperty()
+    final Property<Color> colorProperty()
     {
         return colorProperty;
     }
@@ -90,7 +90,7 @@ class DotPainter implements Runnable
     /**
      * @return свойство "шаблон для рисования как массив точек (x,y)".
      */
-    final WritableObservableValue<int[][]> patternProperty()
+    final Property<int[][]> patternProperty()
     {
         return patternProperty;
     }
@@ -143,7 +143,7 @@ class DotPainter implements Runnable
     {
         int x = timeConvertor.timeToImage( dot.t );
         int y = valueConvertor.valueToImage( dot.v );
-        paint( x, y, colorProperty.value, patternProperty.value, writer, width, height );
+        paint( x, y, colorProperty.get(), patternProperty.get(), writer, width, height );
     }
 
     /**
@@ -197,53 +197,53 @@ class DotPainter implements Runnable
         
     }
     
-    interface WritableObservableValue<T> extends ObservableValue<T>, WritableValue<T> {}
-    
-    private static final class ColorProperty 
-            extends ObservableValueBase<Color>
-            implements WritableObservableValue<Color>
-    {
-        Color value;
-
-        @Override
-        public Color getValue()
-        {
-            return value;
-        }
-
-        @Override
-        public void setValue( Color newValue )
-        {
-            Color oldValue = value;
-            value = newValue;
-            if( newValue != null && !newValue.equals( oldValue ) || newValue == null && oldValue != null )
-                fireValueChangedEvent();
-        }
-        
-    }
-    
-    private static final class PatternProperty 
-            extends ObservableValueBase<int[][]>
-            implements WritableObservableValue<int[][]>
-    {
-        int[][] value;
-        
-        @Override
-        public int[][] getValue()
-        {
-            return value;
-        }
-
-        @Override
-        public void setValue( int[][] newValue )
-        {
-            int[][] oldValue = value;
-            value = newValue;
-            if( newValue != null && oldValue != null && !Arrays.deepEquals( newValue, oldValue ) 
-                    || newValue == null && oldValue != null || newValue != null && oldValue == null )
-                fireValueChangedEvent();
-        }
-        
-    }
+//    interface WritableObservableValue<T> extends ObservableValue<T>, WritableValue<T> {}
+//    
+//    private static final class ColorProperty 
+//            extends ObservableValueBase<Color>
+//            implements WritableObservableValue<Color>
+//    {
+//        Color value;
+//
+//        @Override
+//        public Color getValue()
+//        {
+//            return value;
+//        }
+//
+//        @Override
+//        public void setValue( Color newValue )
+//        {
+//            Color oldValue = value;
+//            value = newValue;
+//            if( newValue != null && !newValue.equals( oldValue ) || newValue == null && oldValue != null )
+//                fireValueChangedEvent();
+//        }
+//        
+//    }
+//    
+//    private static final class PatternProperty 
+//            extends ObservableValueBase<int[][]>
+//            implements WritableObservableValue<int[][]>
+//    {
+//        int[][] value;
+//        
+//        @Override
+//        public int[][] getValue()
+//        {
+//            return value;
+//        }
+//
+//        @Override
+//        public void setValue( int[][] newValue )
+//        {
+//            int[][] oldValue = value;
+//            value = newValue;
+//            if( newValue != null && oldValue != null && !Arrays.deepEquals( newValue, oldValue ) 
+//                    || newValue == null && oldValue != null || newValue != null && oldValue == null )
+//                fireValueChangedEvent();
+//        }
+//        
+//    }
 
 }

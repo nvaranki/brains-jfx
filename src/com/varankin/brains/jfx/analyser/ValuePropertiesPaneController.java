@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.ListeningComboBoxSetter;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
+import java.util.List;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
@@ -24,11 +26,16 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
     private static final String CSS_CLASS = "value-properties-pane";
 
-    private final BooleanProperty changedProperty;
+    private final ObjectProperty<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
+    private final ObjectProperty<Integer> scaleProperty;
     private final ColorPickerChangeListener colorPickerListener;
     private final MarkerPickerChangeListener markerPickerChangeListener;
     private final ScalePickerChangeListener scalePickerChangeListener;
+    private final ChangeListener<int[][]> markerSetter;
+    private final ChangeListener<Marker> patternSetter;
     
+    private ListeningComboBoxSetter<Integer> scaleSetter;
+
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
     @FXML private ComboBox<Marker> markerPicker;
@@ -36,10 +43,13 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     
     public ValuePropertiesPaneController()
     {
-        changedProperty = new SimpleBooleanProperty( false );
         colorPickerListener = new ColorPickerChangeListener();
         markerPickerChangeListener = new MarkerPickerChangeListener();
+        patternProperty = new SimpleObjectProperty<>();
         scalePickerChangeListener = new ScalePickerChangeListener();
+        scaleProperty = new SimpleObjectProperty<>();
+        markerSetter = new PatternResolver();
+        patternSetter = new MarkerResolver();
     }
     
     /**
@@ -87,53 +97,48 @@ public final class ValuePropertiesPaneController implements Builder<Node>
 
         markerPicker.getSelectionModel().selectedItemProperty()
                 .addListener( new WeakChangeListener<>( markerPickerChangeListener ) );
+        markerPicker.getSelectionModel().selectedItemProperty()
+                .addListener( new WeakChangeListener<>( patternSetter ) );
         CellFactory cellFactory = new CellFactory();
         markerPicker.setCellFactory( cellFactory );
         markerPicker.setButtonCell( cellFactory.call( null ) );
         markerPicker.getItems().addAll( Arrays.asList( Marker.values() ) );
+        
+        patternProperty.addListener( new WeakChangeListener<>( markerSetter ) );
 
         scalePicker.getSelectionModel().selectedItemProperty()
                 .addListener( new WeakChangeListener<>( scalePickerChangeListener ) );
         scalePicker.setConverter( new ScalePickerConverter() );
         for( int i : new int[]{1,2,3,4,5,10} )
             scalePicker.getItems().add( i );
-    }
-            
-    BooleanProperty changedProperty()
-    {
-        return changedProperty;
+
+        scaleSetter = new ListeningComboBoxSetter<>( scalePicker );
+        scaleProperty.addListener( new WeakChangeListener<>( scaleSetter ) );
     }
     
-    Color getColor()
+    Property<Color> colorProperty()
     {
-        return colorPicker.getValue();
+        return colorPicker.valueProperty();
+    }
+
+    Property<int[][]> patternProperty()
+    {
+        return patternProperty;
     }
     
-    void setColor( Color color )
+    Property<Integer> scaleProperty()
     {
-//        colorPicker.setValue( color );
-        // the call commented out above doesn't work for 
-        // (1) color reset
-        // (2) colorPicker.valueProperty() update
-        colorPicker.valueProperty().setValue( color );
-        colorPicker.fireEvent( new ActionEvent() ); //RT-34098
+        return scaleProperty;
     }
-    
-    Marker getMarker()
+
+    /**
+     * @deprecated RT-34098
+     */
+    void resetColorPicker()
     {
-        return markerPicker.getValue();
+        colorPicker.fireEvent( new ActionEvent() );
     }
-    
-    void setMarker( Marker marker )
-    {
-        markerPicker.setValue( marker );
-    }
-    
-    void setScale( Integer scale )
-    {
-        scalePicker.setValue( scale );
-    }
-    
+
     private static Image resample( Color color, int[][] pattern, int scale )
     {
         WritableImage sample = new WritableImage( 50, 50 );
@@ -224,7 +229,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     {
         @Override
         public void changed( ObservableValue<? extends Color> _,
-        Color oldValue, Color newValue )
+                            Color oldValue, Color newValue )
         {
             Color color = newValue;
             Marker marker = markerPicker.getSelectionModel().getSelectedItem();
@@ -232,7 +237,6 @@ public final class ValuePropertiesPaneController implements Builder<Node>
             if( color != null && marker != null && scale != null )
             {
                 preview.setImage( resample( color, marker.pattern, scale ) );
-                changedProperty.setValue( Boolean.TRUE );
             }
         }
     }
@@ -241,7 +245,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     {
         @Override
         public void changed( ObservableValue<? extends Marker> _,
-        Marker oldValue, Marker newValue )
+                            Marker oldValue, Marker newValue )
         {
             Color color = colorPicker.getValue();
             Marker marker = newValue;
@@ -249,7 +253,6 @@ public final class ValuePropertiesPaneController implements Builder<Node>
             if( color != null && marker != null && scale != null )
             {
                 preview.setImage( resample( color, marker.pattern, scale ) );
-                changedProperty.setValue( Boolean.TRUE );
             }
         }
     }
@@ -258,7 +261,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     {
         @Override
         public void changed( ObservableValue<? extends Integer> _,
-        Integer oldValue, Integer newValue )
+                            Integer oldValue, Integer newValue )
         {
             Color color = colorPicker.getValue();
             Marker marker = markerPicker.getSelectionModel().getSelectedItem();
@@ -283,6 +286,37 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         }
     }
     
+    private class MarkerResolver implements ChangeListener<Marker>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Marker> observable, 
+                            Marker oldValue, Marker newValue )
+        {
+            patternProperty.setValue( newValue != null ? newValue.pattern : null );
+        }
+    }
+    
+    private class PatternResolver implements ChangeListener<int[][]>
+    {
+        @Override
+        public void changed( ObservableValue<? extends int[][]> _, 
+                            int[][] oldValue, int[][] newValue )
+        {
+            List<Marker> items = markerPicker.getItems();
+
+            for( int i = 0, max = items.size(); i < max; i++ )
+                if( Arrays.deepEquals( newValue, items.get( i ).pattern ) )
+                {
+                    markerPicker.getSelectionModel().select( i );
+                    return;
+                }
+            
+            if( newValue != null )
+                LOGGER.getLogger().fine( "Custom pattern cannot be set." );
+            markerPicker.getSelectionModel().clearSelection();
+        }
+    }
+            
     //</editor-fold>
     
 }

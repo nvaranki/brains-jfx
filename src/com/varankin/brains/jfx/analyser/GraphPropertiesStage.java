@@ -5,8 +5,7 @@ import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,10 +24,10 @@ final class GraphPropertiesStage extends Stage
     private static final String RESOURCE_FXML = "/fxml/analyser/GraphPropertiesRoot.fxml";
 
     GraphPropertiesStage( 
-            ObjectProperty<Long> rateValueProperty, ObjectProperty<TimeUnit> rateUnitProperty, 
-            BooleanProperty borderDisplayProperty, ObjectProperty<Color> borderColorProperty, 
-            BooleanProperty zeroDisplayProperty, ObjectProperty<Color> zeroColorProperty, 
-            BooleanProperty flowModeProperty )
+            Property<Long> rateValueProperty, Property<TimeUnit> rateUnitProperty, 
+            Property<Boolean> borderDisplayProperty, Property<Color> borderColorProperty, 
+            Property<Boolean> zeroDisplayProperty, Property<Color> zeroColorProperty, 
+            Property<Boolean> flowModeProperty )
     {
         final GraphPropertiesRootController rootController;
         Parent root;
@@ -50,13 +49,13 @@ final class GraphPropertiesStage extends Stage
             rootController = new GraphPropertiesRootController();
             root = rootController.build();
         }
-        rootController.setRateValueProperty( rateValueProperty );
-        rootController.setRateUnitProperty( rateUnitProperty );
-        rootController.setBorderDisplayProperty( borderDisplayProperty );
-        rootController.setBorderColorProperty( borderColorProperty );
-        rootController.setZeroDisplayProperty( zeroDisplayProperty );
-        rootController.setZeroColorProperty( zeroColorProperty );
-        rootController.setFlowModeProperty( flowModeProperty );
+        rootController.bindRateValueProperty( rateValueProperty );
+        rootController.bindRateUnitProperty( rateUnitProperty );
+        rootController.bindBorderDisplayProperty( borderDisplayProperty );
+        rootController.bindBorderColorProperty( borderColorProperty );
+        rootController.bindZeroDisplayProperty( zeroDisplayProperty );
+        rootController.bindZeroColorProperty( zeroColorProperty );
+        rootController.bindFlowModeProperty( flowModeProperty );
         
         setOnShowing( new EventHandler<WindowEvent>() {
 

@@ -190,12 +190,19 @@ public final class JavaFX
         }
     }
     
-    public static <T> void setChangedValue( ObservableValue<T> source, WritableValue<T> target )
+    public static <T> void setDistinctValue( T value, WritableValue<T> target )
     {
         T oldValue = target.getValue();
-        T newValue = source.getValue();
-        if( newValue != null && !newValue.equals( oldValue ) )
-            target.setValue( newValue );
+        if( value != null && !value.equals( oldValue ) )
+            target.setValue( value );
+    }
+
+    public static <T> void resetValue( T value, WritableValue<T> target )
+    {
+        // сбросить прежнее значение
+        target.setValue( null );
+        // установить новое значение
+        target.setValue( value );
     }
 
     public static void copyMenuItems( List<MenuItem> from, List<MenuItem> to, boolean separate )

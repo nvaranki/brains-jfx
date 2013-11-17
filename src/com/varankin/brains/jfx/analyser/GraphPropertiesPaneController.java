@@ -28,14 +28,13 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPropertiesPane.css";
     private static final String CSS_CLASS = "graph-properties-pane";
 
-    private final BooleanProperty changedProperty;
-    private final ChangeListener<Object> changedPropertyUpdater;
     private final ObjectProperty<TimeUnit> rateUnitProperty; // <--> selectionModel.selectedItemProperty
     private final ObjectProperty<Long> rateValueProperty;
+    private final ChangeListener<TimeUnit> rateUnitSelectionListener;
     private final ChangeListener<String> rateValueInputListener;
     private final ChangeListener<Long> rateValuePropertyListener;
     
-    private ChangeListener<TimeUnit> rateUnitSetter;
+    private ChangeListener<TimeUnit> rateUnitPropertyListener;
 
     @FXML private TextField rateValue;
     @FXML private ComboBox<TimeUnit> rateUnit;
@@ -47,20 +46,11 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     
     public GraphPropertiesPaneController()
     {
-        changedProperty = new SimpleBooleanProperty( false );
-        changedPropertyUpdater = new ChangeListener<Object>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Object> observable, 
-                                Object oldValue, Object newValue )
-            {
-                changedProperty.set( true );
-            }
-        };
         rateValuePropertyListener = new RateValuePropertyListener();
         rateValueInputListener = new RateValueInputListener();
         rateValueProperty = new SimpleObjectProperty<>();
         rateUnitProperty = new SimpleObjectProperty<>();
+        rateUnitSelectionListener = new ValueSetter<>( rateUnitProperty );
     }
 
     /**
@@ -126,65 +116,51 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     @FXML
     protected void initialize()
     {
-        rateValue.textProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
         rateValue.textProperty().addListener( new WeakChangeListener<>( rateValueInputListener ) );
         rateValueProperty.addListener( new WeakChangeListener<>( rateValuePropertyListener ) );
         
         rateUnit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
-        rateUnit.getSelectionModel().selectedItemProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
-        rateUnit.getSelectionModel().selectedItemProperty().addListener( new ValueSetter<>( rateUnitProperty ) );
-        rateUnitSetter = new ListeningComboBoxSetter<>( rateUnit );
-        rateUnitProperty.addListener( new WeakChangeListener<>( rateUnitSetter ) );
+        rateUnit.getSelectionModel().selectedItemProperty()
+                .addListener( new WeakChangeListener<>( rateUnitSelectionListener ) );
+        rateUnitPropertyListener = new ListeningComboBoxSetter<>( rateUnit );
+        rateUnitProperty.addListener( new WeakChangeListener<>( rateUnitPropertyListener ) );
         
-        borderDisplay.selectedProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
-        
-        borderColor.valueProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
         borderColor.disableProperty().bind( Bindings.not( borderDisplay.selectedProperty() ) );
         
-        zeroDisplay.selectedProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
-        
-        zeroColor.valueProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
         zeroColor.disableProperty().bind( Bindings.not( zeroDisplay.selectedProperty() ) );
-        
-        timeFlow.selectedProperty().addListener( new WeakChangeListener<>( changedPropertyUpdater ) );
     }
     
-    BooleanProperty changedProperty()
-    {
-        return changedProperty;
-    }
-
-    ObjectProperty<Long> getRateValueProperty()
+    Property<Long> rateValueProperty()
     {
         return rateValueProperty;
     }
 
-    ObjectProperty<TimeUnit> getRateUnitProperty()
+    Property<TimeUnit> rateUnitProperty()
     {
         return rateUnitProperty;
     }
 
-    BooleanProperty getBorderDisplayProperty()
+    Property<Boolean> borderDisplayProperty()
     {
         return borderDisplay.selectedProperty();
     }
 
-    ObjectProperty<Color> getBorderColorProperty()
+    Property<Color> borderColorProperty()
     {
         return borderColor.valueProperty();
     }
 
-    BooleanProperty getZeroDisplayProperty()
+    Property<Boolean> zeroDisplayProperty()
     {
         return zeroDisplay.selectedProperty();
     }
 
-    ObjectProperty<Color> getZeroColorProperty()
+    Property<Color> zeroColorProperty()
     {
         return zeroColor.valueProperty();
     }
 
-    BooleanProperty getTimeFlowProperty()
+    Property<Boolean> timeFlowProperty()
     {
         return timeFlow.selectedProperty();
     }
@@ -192,7 +168,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     /**
      * @deprecated RT-34098
      */
-    void reset()
+    void resetColorPicker()
     {
         borderColor.fireEvent( new ActionEvent() );
         zeroColor.fireEvent( new ActionEvent() );

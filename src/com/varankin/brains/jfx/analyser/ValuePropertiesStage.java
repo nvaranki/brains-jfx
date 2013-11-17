@@ -4,12 +4,14 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.ResourceBundle;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 /**
  * Диалог для выбора и установки параметров рисования отметок.
@@ -23,7 +25,7 @@ final class ValuePropertiesStage extends Stage
 
     ValuePropertiesStage( DotPainter painter )
     {
-        ValuePropertiesRootController rootController;
+        final ValuePropertiesRootController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -43,7 +45,17 @@ final class ValuePropertiesStage extends Stage
             rootController = new ValuePropertiesRootController();
             root = rootController.build();
         }
-        rootController.setPainter( painter );
+        rootController.bindColorProperty( painter.colorProperty() );
+        rootController.bindPatternProperty( painter.patternProperty() );
+        
+        setOnShowing( new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle( WindowEvent event )
+            {
+                rootController.reset();
+            }
+        } );
         
         initStyle( StageStyle.DECORATED );
         initModality( Modality.NONE );

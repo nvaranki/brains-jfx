@@ -1,8 +1,14 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.BoundWritableValue;
+import com.varankin.brains.jfx.ChangedTrigger;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.util.Arrays;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.WritableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -26,11 +32,25 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
     private static final String CSS_CLASS = "value-properties-root";
     
-    private DotPainter painter;
+//    private DotPainter painter;
+    private final ChangedTrigger changedFunction;
+
+    private BooleanBinding changedBinding;
+    private WritableValue<Color> color;
+    private WritableValue<int[][]> pattern;
+    private WritableValue<Integer> scale;
     
     @FXML private Pane properties;
     @FXML private Button buttonApply;
     @FXML private ValuePropertiesPaneController propertiesController;
+
+    public ValuePropertiesRootController()
+    {
+        changedFunction = new ChangedTrigger();
+        color = new SimpleObjectProperty<>();
+        pattern = new SimpleObjectProperty<>();
+        scale = new SimpleObjectProperty<>( 3 );
+    }
     
     /**
      * Создает панель диалога для выбора и установки параметров прорисовки отметок.
@@ -95,7 +115,11 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        buttonApply.disableProperty().bind( Bindings.not( propertiesController.changedProperty() ) );
+        changedBinding = Bindings.createBooleanBinding( changedFunction, 
+                propertiesController.colorProperty(),
+                propertiesController.patternProperty(),
+                propertiesController.scaleProperty() );
+        buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
     }
     
     @FXML
@@ -109,7 +133,6 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     void onActionApply( ActionEvent event )
     {
         applyChanges();
-        propertiesController.changedProperty().setValue( Boolean.FALSE );
     }
     
     @FXML
@@ -118,32 +141,42 @@ public final class ValuePropertiesRootController implements Builder<Parent>
         buttonApply.getScene().getWindow().hide();
     }
     
-    private void applyChanges()
+    void bindColorProperty( Property<Color> property )
     {
-        Color oldColor = painter.colorProperty().getValue();
-        Color newColor = propertiesController.getColor();
-        if( newColor != null && !newColor.equals( oldColor ) )
-            painter.colorProperty().setValue( newColor );
-        
-        int[][] oldPattern = painter.patternProperty().getValue();
-        int[][] newPattern = propertiesController.getMarker().pattern;
-        if( newPattern != null && !Arrays.deepEquals( oldPattern, newPattern ) )
-            painter.patternProperty().setValue( newPattern );
+        color = new BoundWritableValue<>( property, propertiesController.colorProperty() );
     }
 
-    final void setPainter( DotPainter painter )
+    void bindPatternProperty( Property<int[][]> property )
     {
-        this.painter = painter;
-        propertiesController.setColor( painter.colorProperty().getValue() );
-        propertiesController.setScale( 3 );
-        int[][] painterPattern = painter.patternProperty().getValue();
-        for( Marker m : Marker.values() )
-            if( Arrays.deepEquals( painterPattern, m.pattern ) )
-            {
-                propertiesController.setMarker( m );
-                break;
-            }
-        propertiesController.changedProperty().setValue( Boolean.FALSE );
+        pattern = new BoundWritableValue<>( property, propertiesController.patternProperty() );
     }
-    
+
+    void bindScaleProperty( Property<Integer> property )
+    {
+        scale = new BoundWritableValue<>( property, propertiesController.scaleProperty() );
+    }
+
+    private void applyChanges()
+    {
+        // установить текущие значения, если они отличаются
+        JavaFX.setDistinctValue( propertiesController.colorProperty().getValue(), color );
+        JavaFX.setDistinctValue( propertiesController.patternProperty().getValue(), pattern );
+        JavaFX.setDistinctValue( propertiesController.scaleProperty().getValue(), scale );
+        // установить статус
+        changedFunction.setValue( false );
+        changedBinding.invalidate();
+    }
+
+    void reset()
+    {
+        // сбросить прежние значения и установить текущие значения
+        JavaFX.resetValue( color.getValue(), propertiesController.colorProperty() );
+        JavaFX.resetValue( pattern.getValue(), propertiesController.patternProperty() );
+        JavaFX.resetValue( scale.getValue(), propertiesController.scaleProperty() );
+        propertiesController.resetColorPicker();
+        // установить статус
+        changedFunction.setValue( false );
+        changedBinding.invalidate();
+    }
+
 }
