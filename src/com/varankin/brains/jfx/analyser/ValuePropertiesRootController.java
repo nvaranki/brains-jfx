@@ -113,8 +113,8 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     {
         changedBinding = Bindings.createBooleanBinding( changedFunction, 
                 propertiesController.colorProperty(),
-                propertiesController.patternProperty(),
-                propertiesController.scaleProperty() );
+                propertiesController.patternProperty() /*,
+                propertiesController.scaleProperty() is not relevant */ );
         buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
     }
     

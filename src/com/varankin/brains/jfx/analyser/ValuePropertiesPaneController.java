@@ -268,7 +268,6 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         public void changed( ObservableValue<? extends Integer> _,
                             Integer oldValue, Integer newValue )
         {
-            scaleProperty.setValue( newValue );
             Color color = colorPicker.getValue();
             Marker marker = markerPicker.getSelectionModel().getSelectedItem();
             Integer scale = newValue;
