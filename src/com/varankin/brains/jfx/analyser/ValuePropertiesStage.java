@@ -4,6 +4,8 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,6 +49,7 @@ final class ValuePropertiesStage extends Stage
         }
         rootController.bindColorProperty( painter.colorProperty() );
         rootController.bindPatternProperty( painter.patternProperty() );
+        rootController.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         
         setOnShowing( new EventHandler<WindowEvent>() {
 

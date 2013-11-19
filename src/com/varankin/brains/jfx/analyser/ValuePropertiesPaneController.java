@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.ListeningComboBoxSetter;
+import com.varankin.brains.jfx.ValueSetter;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.List;
@@ -26,15 +27,16 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
     private static final String CSS_CLASS = "value-properties-pane";
 
-    private final ObjectProperty<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
-    private final ObjectProperty<Integer> scaleProperty;
+    private final Property<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
+    private final Property<Integer> scaleProperty;
     private final ColorPickerChangeListener colorPickerListener;
     private final MarkerPickerChangeListener markerPickerChangeListener;
     private final ScalePickerChangeListener scalePickerChangeListener;
-    private final ChangeListener<int[][]> markerSetter;
-    private final ChangeListener<Marker> patternSetter;
+    private final ChangeListener<Integer> scalePropertySetter;
+    private final ChangeListener<int[][]> markerPickerSetter;
+    private final ChangeListener<Marker> patternPropertySetter;
     
-    private ListeningComboBoxSetter<Integer> scaleSetter;
+    private ListeningComboBoxSetter<Integer> scalePickerSetter;
 
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
@@ -48,8 +50,9 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         patternProperty = new SimpleObjectProperty<>();
         scalePickerChangeListener = new ScalePickerChangeListener();
         scaleProperty = new SimpleObjectProperty<>();
-        markerSetter = new PatternResolver();
-        patternSetter = new MarkerResolver();
+        scalePropertySetter = new ValueSetter<>( scaleProperty );
+        markerPickerSetter = new PatternResolver();
+        patternPropertySetter = new MarkerResolver();
     }
     
     /**
@@ -98,22 +101,24 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         markerPicker.getSelectionModel().selectedItemProperty()
                 .addListener( new WeakChangeListener<>( markerPickerChangeListener ) );
         markerPicker.getSelectionModel().selectedItemProperty()
-                .addListener( new WeakChangeListener<>( patternSetter ) );
+                .addListener( new WeakChangeListener<>( patternPropertySetter ) );
         CellFactory cellFactory = new CellFactory();
         markerPicker.setCellFactory( cellFactory );
         markerPicker.setButtonCell( cellFactory.call( null ) );
         markerPicker.getItems().addAll( Arrays.asList( Marker.values() ) );
         
-        patternProperty.addListener( new WeakChangeListener<>( markerSetter ) );
+        patternProperty.addListener( new WeakChangeListener<>( markerPickerSetter ) );
 
         scalePicker.getSelectionModel().selectedItemProperty()
                 .addListener( new WeakChangeListener<>( scalePickerChangeListener ) );
+        scalePicker.getSelectionModel().selectedItemProperty()
+                .addListener( new WeakChangeListener<>( scalePropertySetter ) );
         scalePicker.setConverter( new ScalePickerConverter() );
         for( int i : new int[]{1,2,3,4,5,10} )
             scalePicker.getItems().add( i );
 
-        scaleSetter = new ListeningComboBoxSetter<>( scalePicker );
-        scaleProperty.addListener( new WeakChangeListener<>( scaleSetter ) );
+        scalePickerSetter = new ListeningComboBoxSetter<>( scalePicker );
+        scaleProperty.addListener( new WeakChangeListener<>( scalePickerSetter ) );
     }
     
     Property<Color> colorProperty()
@@ -263,6 +268,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         public void changed( ObservableValue<? extends Integer> _,
                             Integer oldValue, Integer newValue )
         {
+            scaleProperty.setValue( newValue );
             Color color = colorPicker.getValue();
             Marker marker = markerPicker.getSelectionModel().getSelectedItem();
             Integer scale = newValue;

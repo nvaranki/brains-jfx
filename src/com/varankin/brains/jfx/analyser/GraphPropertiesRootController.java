@@ -1,14 +1,12 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.BoundWritableValue;
+import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
-import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -31,16 +29,16 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPropertiesRoot.css";
     private static final String CSS_CLASS = "graph-properties-root";
 
+    private final PropertyGate<Long> rateValueGate;
+    private final PropertyGate<TimeUnit> rateUnitGate;
+    private final PropertyGate<Boolean> borderDisplayGate;
+    private final PropertyGate<Color> borderColorGate;
+    private final PropertyGate<Boolean> zeroDisplayGate;
+    private final PropertyGate<Color> zeroColorGate;
+    private final PropertyGate<Boolean> timeFlowGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
-    private WritableValue<Long> rateValue;
-    private WritableValue<TimeUnit> rateUnit;
-    private WritableValue<Boolean> borderDisplay;
-    private WritableValue<Color> borderColor;
-    private WritableValue<Boolean> zeroDisplay;
-    private WritableValue<Color> zeroColor;
-    private WritableValue<Boolean> timeFlow;
     
     @FXML private Node properties;
     @FXML private Button buttonApply;
@@ -49,13 +47,13 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     public GraphPropertiesRootController()
     {
         changedFunction = new ChangedTrigger();
-        rateValue = new SimpleObjectProperty<>();
-        rateUnit = new SimpleObjectProperty<>();
-        borderDisplay = new SimpleObjectProperty<>();
-        borderColor = new SimpleObjectProperty<>();
-        zeroDisplay = new SimpleObjectProperty<>();
-        zeroColor = new SimpleObjectProperty<>();
-        timeFlow = new SimpleObjectProperty<>();
+        rateValueGate = new PropertyGate<>();
+        rateUnitGate = new PropertyGate<>();
+        borderDisplayGate = new PropertyGate<>();
+        borderColorGate = new PropertyGate<>();
+        zeroDisplayGate = new PropertyGate<>();
+        zeroColorGate = new PropertyGate<>();
+        timeFlowGate = new PropertyGate<>();
     }
     
     /**
@@ -153,49 +151,49 @@ public final class GraphPropertiesRootController implements Builder<Parent>
         
     void bindRateValueProperty( Property<Long> property )
     {
-        rateValue = new BoundWritableValue<>( property, propertiesController.rateValueProperty() );
+        rateValueGate.bind( property, propertiesController.rateValueProperty() );
     }
 
     void bindRateUnitProperty( Property<TimeUnit> property )
     {
-        rateUnit = new BoundWritableValue<>( property, propertiesController.rateUnitProperty() );
+        rateUnitGate.bind( property, propertiesController.rateUnitProperty() );
     }
 
     void bindBorderDisplayProperty( Property<Boolean> property )
     {
-        borderDisplay = new BoundWritableValue<>( property, propertiesController.borderDisplayProperty() );
+        borderDisplayGate.bind( property, propertiesController.borderDisplayProperty() );
     }
 
     void bindBorderColorProperty( Property<Color> property )
     {
-        borderColor = new BoundWritableValue<>( property, propertiesController.borderColorProperty() );
+        borderColorGate.bind( property, propertiesController.borderColorProperty() );
     }
 
     void bindZeroDisplayProperty( Property<Boolean> property )
     {
-        zeroDisplay = new BoundWritableValue<>( property, propertiesController.zeroDisplayProperty() );
+        zeroDisplayGate.bind( property, propertiesController.zeroDisplayProperty() );
     }
 
     void bindZeroColorProperty( Property<Color> property )
     {
-        zeroColor = new BoundWritableValue<>( property, propertiesController.zeroColorProperty() );
+        zeroColorGate.bind( property, propertiesController.zeroColorProperty() );
     }
 
     void bindFlowModeProperty( Property<Boolean> property )
     {
-        timeFlow = new BoundWritableValue<>( property, propertiesController.timeFlowProperty() );
+        timeFlowGate.bind( property, propertiesController.timeFlowProperty() );
     }
 
     private void applyChanges()
     {
         // установить текущие значения, если они отличаются
-        JavaFX.setDistinctValue( propertiesController.rateValueProperty().getValue(), rateValue );
-        JavaFX.setDistinctValue( propertiesController.rateUnitProperty().getValue(), rateUnit );
-        JavaFX.setDistinctValue( propertiesController.borderDisplayProperty().getValue(), borderDisplay );
-        JavaFX.setDistinctValue( propertiesController.borderColorProperty().getValue(), borderColor );
-        JavaFX.setDistinctValue( propertiesController.zeroDisplayProperty().getValue(), zeroDisplay );
-        JavaFX.setDistinctValue( propertiesController.zeroColorProperty().getValue(), zeroColor );
-        JavaFX.setDistinctValue( propertiesController.timeFlowProperty().getValue(), timeFlow );
+        rateValueGate.pullDistinctValue();
+        rateUnitGate.pullDistinctValue();
+        borderDisplayGate.pullDistinctValue();
+        borderColorGate.pullDistinctValue();
+        zeroDisplayGate.pullDistinctValue();
+        zeroColorGate.pullDistinctValue();
+        timeFlowGate.pullDistinctValue();
         // установить статус
         changedFunction.setValue( false );
         changedBinding.invalidate();
@@ -204,13 +202,13 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     void reset()
     {
         // сбросить прежние значения и установить текущие значения
-        JavaFX.resetValue( rateValue.getValue(), propertiesController.rateValueProperty() );
-        JavaFX.resetValue( rateUnit.getValue(), propertiesController.rateUnitProperty() );
-        JavaFX.resetValue( borderDisplay.getValue(), propertiesController.borderDisplayProperty() );
-        JavaFX.resetValue( borderColor.getValue(), propertiesController.borderColorProperty() );
-        JavaFX.resetValue( zeroDisplay.getValue(), propertiesController.zeroDisplayProperty() );
-        JavaFX.resetValue( zeroColor.getValue(), propertiesController.zeroColorProperty() );
-        JavaFX.resetValue( timeFlow.getValue(), propertiesController.timeFlowProperty() );
+        rateValueGate.forceReset();
+        rateUnitGate.forceReset();
+        borderDisplayGate.forceReset();
+        borderColorGate.forceReset();
+        zeroDisplayGate.forceReset();
+        zeroColorGate.forceReset();
+        timeFlowGate.forceReset();
         propertiesController.resetColorPicker();
         // установить статус
         changedFunction.setValue( false );

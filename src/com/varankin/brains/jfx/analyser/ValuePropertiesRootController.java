@@ -1,14 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.BoundWritableValue;
+import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.WritableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -32,13 +29,12 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
     private static final String CSS_CLASS = "value-properties-root";
     
-//    private DotPainter painter;
+    private final PropertyGate<Color> colorGate;
+    private final PropertyGate<int[][]> patternGate;
+    private final PropertyGate<Integer> scaleGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
-    private WritableValue<Color> color;
-    private WritableValue<int[][]> pattern;
-    private WritableValue<Integer> scale;
     
     @FXML private Pane properties;
     @FXML private Button buttonApply;
@@ -47,9 +43,9 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     public ValuePropertiesRootController()
     {
         changedFunction = new ChangedTrigger();
-        color = new SimpleObjectProperty<>();
-        pattern = new SimpleObjectProperty<>();
-        scale = new SimpleObjectProperty<>( 3 );
+        colorGate = new PropertyGate<>();
+        patternGate = new PropertyGate<>();
+        scaleGate = new PropertyGate<>();
     }
     
     /**
@@ -143,25 +139,25 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     
     void bindColorProperty( Property<Color> property )
     {
-        color = new BoundWritableValue<>( property, propertiesController.colorProperty() );
+        colorGate.bind( property, propertiesController.colorProperty() );
     }
 
     void bindPatternProperty( Property<int[][]> property )
     {
-        pattern = new BoundWritableValue<>( property, propertiesController.patternProperty() );
+        patternGate.bind( property, propertiesController.patternProperty() );
     }
 
     void bindScaleProperty( Property<Integer> property )
     {
-        scale = new BoundWritableValue<>( property, propertiesController.scaleProperty() );
+        scaleGate.bind( property, propertiesController.scaleProperty() );
     }
 
     private void applyChanges()
     {
         // установить текущие значения, если они отличаются
-        JavaFX.setDistinctValue( propertiesController.colorProperty().getValue(), color );
-        JavaFX.setDistinctValue( propertiesController.patternProperty().getValue(), pattern );
-        JavaFX.setDistinctValue( propertiesController.scaleProperty().getValue(), scale );
+        colorGate.pullDistinctValue();
+        patternGate.pullDistinctValue();
+        scaleGate.pullDistinctValue();
         // установить статус
         changedFunction.setValue( false );
         changedBinding.invalidate();
@@ -170,9 +166,9 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     void reset()
     {
         // сбросить прежние значения и установить текущие значения
-        JavaFX.resetValue( color.getValue(), propertiesController.colorProperty() );
-        JavaFX.resetValue( pattern.getValue(), propertiesController.patternProperty() );
-        JavaFX.resetValue( scale.getValue(), propertiesController.scaleProperty() );
+        colorGate.forceReset();
+        patternGate.forceReset();
+        scaleGate.forceReset();
         propertiesController.resetColorPicker();
         // установить статус
         changedFunction.setValue( false );
