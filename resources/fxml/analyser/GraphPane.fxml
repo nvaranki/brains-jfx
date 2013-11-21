@@ -27,7 +27,7 @@
         <URL value="@GraphPane.css"/>
     </stylesheets>
     
-    <ImageView fx:id="imageView" preserveRatio="true" />
+    <ImageView fx:id="imageView" preserveRatio="true" mouseTransparent="true" />
     
     <contextMenu>
         <ContextMenu fx:id="popup" >

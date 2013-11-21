@@ -31,6 +31,7 @@ public final class GraphPaneController implements Builder<Pane>
     
     private static long idCounter;
     
+    private final long id;
     private final DoubleProperty widthProperty, heightProperty;
     private final ReadOnlyObjectWrapper<WritableImage> writableImageProperty;
     private final SimpleBooleanProperty dynamicProperty;
@@ -38,15 +39,13 @@ public final class GraphPaneController implements Builder<Pane>
     private final ObjectProperty<TimeUnit> rateUnitProperty;
     private final BooleanProperty borderDisplayProperty, zeroDisplayProperty;
     private final ObjectProperty<Color> borderColorProperty, zeroColorProperty;
-    private final ImageFlowService refreshService;
+    private final ImageChanger imageChanger;
+    private final DynamicSwitch dynamicSwitch;
+    private final DynamicParametersChanger dynamicChanger;
 
-//    private long refreshRate;
-//    private TimeUnit refreshRateUnit;
     private TimeConvertor timeConvertor;
     private ValueConvertor valueConvertor;
-//    private Color zeroValueAxisColor;
     private GraphPropertiesStage properties;
-    private long id;
     
     @FXML private Pane pane;
     @FXML private ImageView imageView;
@@ -57,27 +56,34 @@ public final class GraphPaneController implements Builder<Pane>
     
     public GraphPaneController()
     {
+        id = ++idCounter;
+
+        //TODO appl params
         widthProperty = new SimpleDoubleProperty();
         heightProperty = new SimpleDoubleProperty();
         writableImageProperty = new ReadOnlyObjectWrapper<>();
-        dynamicProperty = new SimpleBooleanProperty();
-        rateValueProperty = new SimpleObjectProperty<>();
-        rateUnitProperty = new SimpleObjectProperty<>();
-        borderDisplayProperty = new SimpleBooleanProperty();
-        borderColorProperty = new SimpleObjectProperty<>();
-        zeroDisplayProperty = new SimpleBooleanProperty();
-        zeroColorProperty = new SimpleObjectProperty<>();
         
-        refreshService = new ImageFlowService();
-        id = ++idCounter;
+        rateValueProperty = new SimpleObjectProperty<>( 100L );
+        rateUnitProperty = new SimpleObjectProperty<>( TimeUnit.MILLISECONDS );
+        borderDisplayProperty = new SimpleBooleanProperty( false );
+        borderColorProperty = new SimpleObjectProperty<>( Color.GRAY );
+        zeroDisplayProperty = new SimpleBooleanProperty( true );
+        zeroColorProperty = new SimpleObjectProperty<>( Color.GRAY );
         
-        //TODO appl param
-        rateValueProperty.set( 100L );
-        rateUnitProperty.set( TimeUnit.MILLISECONDS );
-        borderDisplayProperty.set( false );
-        borderColorProperty.set( Color.GRAY );
-        zeroDisplayProperty.set( true );
-        zeroColorProperty.set( Color.GRAY );
+        imageChanger = new ImageChanger();
+        widthProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        heightProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        borderDisplayProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        borderColorProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        zeroDisplayProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        zeroColorProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        
+        dynamicProperty = new SimpleBooleanProperty( false );
+        dynamicSwitch = new DynamicSwitch();
+        dynamicChanger = new DynamicParametersChanger();
+        dynamicProperty.addListener( new WeakChangeListener<>( dynamicSwitch ) );
+        rateValueProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
+        rateUnitProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
     }
 
     /**
@@ -123,6 +129,7 @@ public final class GraphPaneController implements Builder<Pane>
         
         imageView = new ImageView();
         imageView.setPreserveRatio( true );
+        imageView.setMouseTransparent( true );
 
         pane = new Pane();
         pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
@@ -149,48 +156,6 @@ public final class GraphPaneController implements Builder<Pane>
     {
         imageView.imageProperty().bind( writableImageProperty );
         
-        dynamicProperty.addListener( new ChangeListener<Boolean>() 
-        {
-            private Future<?> process;
-
-            @Override
-            public void changed( ObservableValue<? extends Boolean> observable, 
-                                Boolean oldValue, Boolean newValue ) 
-            {
-                if( newValue != null )
-                    if( newValue )
-                    {
-                        // возобновить движение графической зоны
-                        process = JavaFX.getInstance().getScheduledExecutorService().scheduleAtFixedRate( 
-                            refreshService, 0L, rateValueProperty.getValue(), rateUnitProperty.getValue() );
-                    }
-                    else
-                    {
-                    // остановить движение графической зоны
-                    if( process != null )
-                        process.cancel( true );
-                    }
-            }
-        } );
-        
-        widthProperty.addListener( new ChangeListener<Number>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Number> ov, Number oldValue, Number newValue )
-            {
-                replaceImage( newValue.intValue(), heightProperty.intValue() );
-            }
-        } );
-        
-        heightProperty.addListener( new ChangeListener<Number>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Number> ov, Number oldValue, Number newValue )
-            {
-                replaceImage( widthProperty.intValue(), newValue.intValue() );
-            }
-        } );
-
         menuItemResume.disableProperty().bind( dynamicProperty );
         menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty ) );
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
@@ -257,26 +222,6 @@ public final class GraphPaneController implements Builder<Pane>
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
     }
 
-    long getRefreshRate()
-    {
-        return rateValueProperty.getValue();
-    }
-
-    void setRefreshRate( long rate )
-    {
-        rateValueProperty.setValue( rate );
-    }
-
-    TimeUnit getRefreshRateUnit()
-    {
-        return rateUnitProperty.getValue();
-    }
-
-    void setRefreshRateUnit( TimeUnit unit )
-    {
-        rateUnitProperty.setValue( unit );
-    }
-
     void setTimeConvertor( TimeConvertor convertor )
     {
         timeConvertor = convertor;
@@ -291,34 +236,39 @@ public final class GraphPaneController implements Builder<Pane>
     {
         if( width > 0 && height > 0 )
         {
-            // заменить, т.к. другие размеры
+            // заменить, т.к. другие размеры или орнамент
             WritableImage newWritableImage = new WritableImage( width, height );
             // нарисовать оси 
-            int zero = valueConvertor.valueToImage( 0.0F );
-            drawAxes( newWritableImage, width, height, zero );
-            refreshService.snapshotBlankPatterns( newWritableImage, height, 2, 1 );
-            //setImage( null );
-//            getTransforms().clear();
-//            getChildren().clear();
-//            view.setImage( writableImage = newWritableImage );
-//            view.setPreserveRatio( true );
-//            getTransforms().add( new Translate( 0, height ) );
-//            getTransforms().add( new Scale( 1, -1 ) );
-////            setImage( writableImage = newWritableImage );
-//            getChildren().add( view );
+            drawAxes( newWritableImage.getPixelWriter(), width, height );
+            drawBorders( newWritableImage.getPixelWriter(), width, height );
+            dynamicSwitch.imageFlowService.snapShotBlankPatterns( newWritableImage, height, 2, 1, 0 );
+            // готово
             writableImageProperty.setValue( newWritableImage );
         }
     }
     
-    private void drawAxes( WritableImage writableImage, int width, int height, int zero )
+    private void drawBorders( PixelWriter writer, int width, int height )
     {
-        PixelWriter writer = writableImage.getPixelWriter();
-        //TODO option BORDER t,r,b,l
-//        for( int i = 0; i < width; i++ ) 
-//            writer.setColor( i, 0, getTimeAxisColor() ); // timeline
-//        for( int i = 0; i < height; i++ ) 
-//            writer.setColor( 0, i, getValueAxisColor() ); // value
-        if( 0 < zero && zero < heightProperty.intValue() )
+        if( borderDisplayProperty.get() )
+        {
+            Color color = borderColorProperty.getValue();
+            for( int i = 0; i < width; i++ )
+            {
+                writer.setColor( i, 0, color );
+                writer.setColor( i, height - 1, color );
+            }
+            for( int i = 0; i < height; i++ )
+            {
+                writer.setColor( 0, i, color );
+                writer.setColor( width - 1, i, color );
+            }
+        }
+    }
+    
+    private void drawAxes( PixelWriter writer, int width, int height )
+    {
+        int zero = valueConvertor.valueToImage( 0.0F );
+        if( zeroDisplayProperty.get() && 0 < zero && zero < heightProperty.intValue() )
         {
             Color color = zeroColorProperty.getValue();
             for( int i = 2; i < width; i += 2 ) 
@@ -326,74 +276,136 @@ public final class GraphPaneController implements Builder<Pane>
         }
     }
     
+    //<editor-fold defaultstate="collapsed" desc="классы">
+    
     /**
      * Сервис движения временной шкалы.
      */
     private class ImageFlowService implements Runnable
     {
         final WritablePixelFormat<IntBuffer> pixelFormat = PixelFormat.getIntArgbInstance();
-        final int blank[][] = new int[2][];
         
+        int[][] blank = new int[3][];
         int timeAxisOffset;
         
         @Override
         public void run()
         {
-            Platform.runLater( new Adopter( System.currentTimeMillis() ) ); 
+            Platform.runLater( new Adopter( System.currentTimeMillis() ) );
         }
-
-        private void snapshotBlankPatterns( WritableImage writableImage, int height, int... ys )
+        
+        private void snapShotBlankPatterns( WritableImage writableImage, int height, int... xs )
         {
+            blank = new int[xs.length][];
             PixelReader reader = writableImage.getPixelReader();
-            for( int i = 0; i < blank.length && i < ys.length; i++ )
-                reader.getPixels( ys[i], 0, 1, height, pixelFormat, blank[i] = new int[height], 0, 1 );
+            for( int i = 0; i < blank.length; i++ )
+                reader.getPixels( xs[i], 0, 1, height, pixelFormat, blank[i] = new int[height], 0, 1 );
             timeAxisOffset = 0;
         }
-
-        private void shiftImage( int shift, WritableImage image )
+        
+        private void shiftImage( int shift )
         {
+            WritableImage image = writableImageProperty.get();
             PixelWriter writer = image.getPixelWriter();
             int pixelWidth = widthProperty.intValue();
             int pixelHeight = heightProperty.intValue();
-            int width = pixelWidth - shift - 1;
+            int border = borderDisplayProperty.get() ? 1 : 0;
+            int width = pixelWidth - shift - border*2;
             if( width > 0 )
-                writer.setPixels( 1, 0, width, pixelHeight, image.getPixelReader(), shift + 1, 0 );
+                writer.setPixels( border, 0, width, pixelHeight, image.getPixelReader(), border + shift, 0 );
             // очистить справа от скопированной зоны
             timeAxisOffset += shift;
             timeAxisOffset %= 2;
-            for( int i = Math.max( 1, pixelWidth - shift ); i < pixelWidth; i++ )
+            for( int r = pixelWidth - border, i = Math.max( border, r - shift ); i < r; i++ )
                 writer.setPixels( i, 0, 1, pixelHeight, pixelFormat, blank[timeAxisOffset^(i%2)], 0, 1 );
         }
-
+        
         /**
          * Контроллер сдвига временной шкалы.
          */
         private class Adopter implements Runnable
         {
             private final long moment;
-
+            
             Adopter( long moment )
             {
                 this.moment = moment;
             }
-
+            
             @Override
             public void run()
             {
-                int shift = timeConvertor.reset( widthProperty().doubleValue(), moment );//timeConvertor.timeToImageShift( moment );
+                int shift = timeConvertor.reset( widthProperty().doubleValue(), moment );
                 if( shift > 0 )
-                {
-    //                System.out.println( "time shift=" +(moment -timeConvertor.getEntry()));
-    //                System.out.println( "area shift=" +(shift));
-    //                System.out.println( "time shift adj=" +(timeConvertor.imageToTimeShift(shift)));
-                    // подправить расчет
-                    //timeConvertor.reset( widthProperty().doubleValue(), moment );
-                    // смещение всей зоны; +-1 для сохранения оси значений
-                    shiftImage( shift, writableImageProperty.get() );
-                }
+                    shiftImage( shift );
             }
-
+            
         }
     }
-
+    
+    /**
+     * Контроллер замены графической зоны.
+     */
+    private class ImageChanger implements ChangeListener
+    {
+        @Override
+        public void changed( ObservableValue observable, Object oldValue, Object newValue )
+        {
+            replaceImage( widthProperty.intValue(), heightProperty.intValue() );
+        }
+    }
+    
+    /**
+     * Контроллер параметров движения графической зоны.
+     */
+    private class DynamicParametersChanger implements ChangeListener
+    {
+        @Override
+        public void changed( ObservableValue observable, Object oldValue, Object newValue )
+        {
+            if( newValue != null )
+            {
+                // остановить движение графической зоны
+                dynamicProperty.setValue( Boolean.FALSE );
+                // возобновить движение графической зоны с новыми параметрами
+                dynamicProperty.setValue( Boolean.TRUE );
+            }
+            else
+            {
+                // остановить движение графической зоны
+                dynamicProperty.setValue( Boolean.FALSE );
+            }
+        }
+    }
+    
+    /**
+     * Контроллер движения графической зоны.
+     */
+    private class DynamicSwitch implements ChangeListener<Boolean>
+    {
+        final ImageFlowService imageFlowService = new ImageFlowService();
+        Future<?> process;
+        
+        @Override
+        public void changed( ObservableValue<? extends Boolean> observable,
+        Boolean oldValue, Boolean newValue )
+        {
+            if( newValue != null )
+                if( newValue )
+                {
+                    // возобновить движение графической зоны
+                    process = JavaFX.getInstance().getScheduledExecutorService().scheduleAtFixedRate(
+                            imageFlowService, 0L, rateValueProperty.getValue(), rateUnitProperty.getValue() );
+                }
+                else
+                {
+                    // остановить движение графической зоны
+                    if( process != null )
+                        process.cancel( true );
+                }
+        }
+    }
+    
+    //</editor-fold>
+    
 }
