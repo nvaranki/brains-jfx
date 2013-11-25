@@ -1,11 +1,15 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.util.LoggerX;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -17,11 +21,14 @@ import javafx.scene.text.Text;
  */
 final class TimeRulerPane extends AbstractRulerPane
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPane.class );
     private final double factor = 1d; // 1, 2, 5
     private final int pixelStepMin = 10; // min 10 pixels in between ticks
     private final TimeConvertor convertor;
     private final SimpleBooleanProperty relativeProperty;
     @Deprecated private final ContextMenu popup;
+    private TimeRulerPropertiesStage properties;
+    @FXML private MenuItem menuItemProperties;
 
     TimeRulerPane( TimeConvertor convertor )
     {
@@ -37,14 +44,42 @@ final class TimeRulerPane extends AbstractRulerPane
             }
         } );
         
+        menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionProperties( event );
+            }
+        } );
+        
         popup = new ContextMenu();
-        popup.getItems().addAll( new MenuItem("TimeRuler action") );
+        popup.getItems().addAll( new MenuItem("TimeRuler action"), menuItemProperties );
         
         setMinWidth( 100d );
         setOnMouseClicked( new ContextMenuRaiser( popup, TimeRulerPane.this ) );
         widthProperty().addListener( new SizeChangeListener() );
     }
     
+    @FXML
+    private void onActionProperties( ActionEvent _ )
+    {
+        if( properties == null )
+        {
+            properties = new TimeRulerPropertiesStage( 
+//                    rateValueProperty, rateUnitProperty,
+//                    borderDisplayProperty, borderColorProperty, 
+//                    zeroDisplayProperty, zeroColorProperty, 
+//                    dynamicProperty 
+                    );
+            properties.initOwner( JavaFX.getInstance().платформа );
+            properties.setTitle( LOGGER.text( "properties.rule.value.title", "value" ) );
+        }
+        properties.show();
+        properties.toFront();
+    }
+
     BooleanProperty relativeProperty()
     {
         return relativeProperty;

@@ -1,0 +1,22 @@
+/* 
+    Document   : TimeRulerPropertiesRoot.css
+    Created on : Nov 24, 2013
+    Author     : Николай Варанкин
+    Description: Панель диалога для выбора и установки параметров параметров оси времени.
+*/
+
+.time-ruler-properties-root HBox Button
+{
+    -fx-cursor: hand;
+}
+
+.time-ruler-properties-root HBox
+{
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+    -fx-alignment: baseline-right;
+}
+
+.time-ruler-properties-root {
+
+}

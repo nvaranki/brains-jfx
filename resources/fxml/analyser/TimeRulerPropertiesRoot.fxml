@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-    Document   : ValuePropertiesRoot.fxml
-    Created on : Nov 7, 2013
+<!--
+    Document   : TimeRulerPropertiesRoot.fxml
+    Created on : Nov 24, 2013
     Author     : Николай Варанкин
-    Description: Панель диалога для выбора и установки параметров прорисовки отметок.
+    Description: Панель диалога для выбора и установки параметров параметров оси времени.
 -->
-<?import java.lang.* ?>
-<?import java.net.URL ?>
-<?import java.util.* ?>
-<?import javafx.geometry.* ?>
-<?import javafx.scene.control.* ?>
-<?import javafx.scene.layout.* ?>
-<?import javafx.scene.paint.* ?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
 <BorderPane
-    fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesRootController" 
-    styleClass="value-properties-root"
+    fx:controller="com.varankin.brains.jfx.analyser.TimeRulerPropertiesRootController" 
+    styleClass="time-ruler-properties-root"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
   <stylesheets>
-    <URL value="@ValuePropertiesRoot.css"/>
+    <URL value="@TimeRulerPropertiesRoot.css"/>
   </stylesheets>
   
   <center>

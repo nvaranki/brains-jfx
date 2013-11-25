@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- 
     Document   : ValuePropertiesPane.fxml
     Created on : Nov 7, 2013
     Author     : 2013 Николай Варанкин
     Description: Панель выбора параметров прорисовки отметок.
 -->
-  
 <?import java.lang.* ?>
 <?import java.net.URL ?>
 <?import java.util.* ?>

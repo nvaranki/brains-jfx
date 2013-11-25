@@ -1,11 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.util.LoggerX;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,47 +12,40 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
- * FXML-контроллер панели диалога для выбора и установки параметров прорисовки отметок.
+ * FXML-контроллер панели диалога для выбора и установки параметров оси значений.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class ValuePropertiesRootController implements Builder<Parent>
+public final class ValueRulerPropertiesRootController implements Builder<Parent>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
-    private static final String CSS_CLASS = "value-properties-root";
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPropertiesRootController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyser/ValueRulerPropertiesRoot.css";
+    private static final String CSS_CLASS = "value-ruler-properties-root";
     
-    private final PropertyGate<Color> colorGate;
-    private final PropertyGate<int[][]> patternGate;
-    private final PropertyGate<Integer> scaleGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
     
     @FXML private Pane properties;
     @FXML private Button buttonApply;
-    @FXML private ValuePropertiesPaneController propertiesController;
+    @FXML private ValueRulerPropertiesPaneController propertiesController;
 
-    public ValuePropertiesRootController()
+    public ValueRulerPropertiesRootController()
     {
         changedFunction = new ChangedTrigger();
-        colorGate = new PropertyGate<>();
-        patternGate = new PropertyGate<>();
-        scaleGate = new PropertyGate<>();
     }
     
     /**
-     * Создает панель диалога для выбора и установки параметров прорисовки отметок.
+     * Создает панель диалога для выбора и установки параметров оси значений.
      * Применяется в конфигурации без FXML.
      */
     @Override
     public BorderPane build()
     {
-        propertiesController = new ValuePropertiesPaneController();
+        propertiesController = new ValueRulerPropertiesPaneController();
         
         properties = propertiesController.build();
         properties.setId( "properties" );
@@ -110,11 +101,7 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        changedBinding = Bindings.createBooleanBinding( changedFunction, 
-                propertiesController.colorProperty(),
-                propertiesController.patternProperty() /*,
-                propertiesController.scaleProperty() is not relevant */ );
-        buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
+//        buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
     }
     
     @FXML
@@ -135,43 +122,21 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     {
         buttonApply.getScene().getWindow().hide();
     }
-    
-    void bindColorProperty( Property<Color> property )
-    {
-        colorGate.bind( property, propertiesController.colorProperty() );
-    }
-
-    void bindPatternProperty( Property<int[][]> property )
-    {
-        patternGate.bind( property, propertiesController.patternProperty() );
-    }
-
-    void bindScaleProperty( Property<Integer> property )
-    {
-        scaleGate.bind( property, propertiesController.scaleProperty() );
-    }
 
     private void applyChanges()
     {
         // установить текущие значения, если они отличаются
-        colorGate.pullDistinctValue();
-        patternGate.pullDistinctValue();
-        scaleGate.pullDistinctValue();
         // установить статус
         changedFunction.setValue( false );
-        changedBinding.invalidate();
+//        changedBinding.invalidate();
     }
 
     void reset()
     {
         // сбросить прежние значения и установить текущие значения
-        colorGate.forceReset();
-        patternGate.forceReset();
-        scaleGate.forceReset();
-        propertiesController.resetColorPicker();
         // установить статус
         changedFunction.setValue( false );
-        changedBinding.invalidate();
+//        changedBinding.invalidate();
     }
-
+    
 }

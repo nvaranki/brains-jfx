@@ -1,7 +1,12 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.util.LoggerX;
 import java.util.List;
+import java.util.logging.Logger;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.scene.shape.Line;
@@ -16,11 +21,14 @@ import javafx.scene.transform.Translate;
  */
 final class ValueRulerPane extends AbstractRulerPane
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPane.class );
     private final double tickShift;
     private final double factor = 1d; // 1, 2, 5
     private final int pixelStepMin = 5; // min 5 pixels in between ticks
     private final ValueConvertor convertor;
     @Deprecated private final ContextMenu popup;
+    private ValueRulerPropertiesStage properties;
+    @FXML private MenuItem menuItemProperties;
 
     ValueRulerPane( ValueConvertor convertor )
     {
@@ -28,14 +36,42 @@ final class ValueRulerPane extends AbstractRulerPane
         //TODO appl. param.
         tickShift = 35d;
         
+        menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionProperties( event );
+            }
+        } );
+        
         popup = new ContextMenu();
-        popup.getItems().addAll( new MenuItem("ValueRuler action") );
+        popup.getItems().addAll( new MenuItem("ValueRuler action"), menuItemProperties );
         
         setMinHeight( 100d );
         setOnMouseClicked( new ContextMenuRaiser( popup, ValueRulerPane.this ) );
         heightProperty().addListener( new SizeChangeListener() );
     }
     
+    @FXML
+    private void onActionProperties( ActionEvent _ )
+    {
+        if( properties == null )
+        {
+            properties = new ValueRulerPropertiesStage( 
+//                    rateValueProperty, rateUnitProperty,
+//                    borderDisplayProperty, borderColorProperty, 
+//                    zeroDisplayProperty, zeroColorProperty, 
+//                    dynamicProperty 
+                    );
+            properties.initOwner( JavaFX.getInstance().платформа );
+            properties.setTitle( LOGGER.text( "properties.rule.value.title", "value" ) );
+        }
+        properties.show();
+        properties.toFront();
+    }
+
     @Deprecated
     void appendToPopup( List<MenuItem> items ) 
     {

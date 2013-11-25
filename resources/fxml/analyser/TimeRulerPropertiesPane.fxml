@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Document   : ValuePropertiesPane.fxml
+    Created on : Nov 24, 2013
+    Author     : 2013 Николай Варанкин
+    Description: Панель выбора параметров оси времени.
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane
+    fx:controller="com.varankin.brains.jfx.analyser.TimeRulerPropertiesPaneController" 
+    styleClass="value-properties-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@TimeRulerPropertiesPane.css"/>
+    </stylesheets>
+    
+  <children>
+  </children>
+  
+</GridPane>

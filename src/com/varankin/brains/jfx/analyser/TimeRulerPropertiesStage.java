@@ -4,25 +4,24 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.*;
 
 /**
- * Диалог для выбора и установки параметров рисования отметок.
+ * Диалог для выбора и установки параметров оси времени.
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-final class ValuePropertiesStage extends Stage
+final class TimeRulerPropertiesStage extends Stage
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
-    private static final String RESOURCE_FXML = "/fxml/analyser/ValuePropertiesRoot.fxml";
+    private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPropertiesStage.class );
+    private static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerPropertiesRoot.fxml";
 
-    ValuePropertiesStage( DotPainter painter )
+    TimeRulerPropertiesStage()
     {
-        final ValuePropertiesRootController rootController;
+        final TimeRulerPropertiesRootController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -39,12 +38,9 @@ final class ValuePropertiesStage extends Stage
             }
         else
         {
-            rootController = new ValuePropertiesRootController();
+            rootController = new TimeRulerPropertiesRootController();
             root = rootController.build();
         }
-        rootController.bindColorProperty( painter.colorProperty() );
-        rootController.bindPatternProperty( painter.patternProperty() );
-        rootController.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         
         setOnShowing( new EventHandler<WindowEvent>() {
 
@@ -65,5 +61,5 @@ final class ValuePropertiesStage extends Stage
         setScene( new Scene( root ) );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
     }
-
+    
 }
