@@ -22,6 +22,69 @@
     </stylesheets>
     
   <children>
+    <Label 
+        text="%properties.ruler.time.duration" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField 
+        fx:id="duration"
+        prefColumnCount="6"
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0" 
+    />   
+    <Label 
+        text="%properties.ruler.time.excess" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <TextField 
+        fx:id="excess"
+        prefColumnCount="6"  
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1" 
+    />   
+    <ComboBox 
+        fx:id="unit" 
+        visibleRowCount="7" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="0"
+    />
+    <Label 
+        text="%properties.ruler.text.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <ColorPicker 
+        fx:id="textColor" 
+        focusTraversable="false"  
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2" 
+    />
+    <Label
+        text="%properties.ruler.text.font" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2" 
+    />
+    <TextField 
+        fx:id="textFont"
+        focusTraversable="true"   
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="2" 
+    />   
+    <Label 
+        text="%properties.ruler.tick.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="3" 
+    />
+    <ColorPicker 
+        fx:id="tickColor" 
+        focusTraversable="false"  
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="3" 
+    />
   </children>
   
 </GridPane>

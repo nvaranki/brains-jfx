@@ -31,7 +31,8 @@
         GridPane.rowIndex="0" 
     />
     <ColorPicker 
-        fx:id="colorPicker" 
+        fx:id="colorPicker"
+        focusTraversable="false"  
         GridPane.columnIndex="1" 
         GridPane.rowIndex="0" 
     />

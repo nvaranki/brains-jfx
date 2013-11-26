@@ -68,6 +68,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
 
         colorPicker = new ColorPicker();
         colorPicker.setId( "colorPicker" );
+        colorPicker.setFocusTraversable( false ); //TODO true RT-21549
         
         markerPicker = new ComboBox<>();
         markerPicker.setId( "markerPicker" );

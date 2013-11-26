@@ -52,12 +52,11 @@ final class TimeRulerPropertiesStage extends Stage
         } );
         
         initStyle( StageStyle.DECORATED );
-        initModality( Modality.NONE );
         setResizable( true );
-        setMinHeight( 150d );
-        setMinWidth( 350d );
-        setHeight( 150d ); //TODO save/restore size&pos
-        setWidth( 350d );
+        setMinHeight( 220d );
+        setMinWidth( 400d );
+        setHeight( 220d ); //TODO save/restore size&pos
+        setWidth( 400d );
         setScene( new Scene( root ) );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
     }

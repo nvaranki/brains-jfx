@@ -13,6 +13,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import javafx.stage.Modality;
 
 /**
  * Линейка по вертикальной оси значений. 
@@ -66,7 +67,8 @@ final class ValueRulerPane extends AbstractRulerPane
 //                    dynamicProperty 
                     );
             properties.initOwner( JavaFX.getInstance().платформа );
-            properties.setTitle( LOGGER.text( "properties.rule.value.title", "value" ) );
+            properties.initModality( Modality.NONE );
+            properties.setTitle( LOGGER.text( "properties.ruler.value.title", 0 ) );
         }
         properties.show();
         properties.toFront();

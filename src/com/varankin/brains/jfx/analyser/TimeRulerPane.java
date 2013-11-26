@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 
 /**
  * Линейка по горизонтальной оси времени. 
@@ -74,7 +75,8 @@ final class TimeRulerPane extends AbstractRulerPane
 //                    dynamicProperty 
                     );
             properties.initOwner( JavaFX.getInstance().платформа );
-            properties.setTitle( LOGGER.text( "properties.rule.value.title", "value" ) );
+            properties.initModality( Modality.NONE );
+            properties.setTitle( LOGGER.text( "properties.ruler.time.title", 0 ) );
         }
         properties.show();
         properties.toFront();

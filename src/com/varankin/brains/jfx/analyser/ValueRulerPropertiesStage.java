@@ -52,12 +52,11 @@ final class ValueRulerPropertiesStage extends Stage
         } );
         
         initStyle( StageStyle.DECORATED );
-        initModality( Modality.NONE );
         setResizable( true );
-        setMinHeight( 150d );
-        setMinWidth( 350d );
-        setHeight( 150d ); //TODO save/restore size&pos
-        setWidth( 350d );
+        setMinHeight( 190d );
+        setMinWidth( 420d );
+        setHeight( 190d ); //TODO save/restore size&pos
+        setWidth( 420d );
         setScene( new Scene( root ) );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
     }
