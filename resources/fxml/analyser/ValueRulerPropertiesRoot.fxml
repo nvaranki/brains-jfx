@@ -22,7 +22,7 @@
   </stylesheets>
   
   <center>
-      <fx:include source="ValuePropertiesPane.fxml" fx:id="properties"/>
+      <fx:include source="ValueRulerPropertiesPane.fxml" fx:id="properties"/>
   </center>  
   
   <bottom>

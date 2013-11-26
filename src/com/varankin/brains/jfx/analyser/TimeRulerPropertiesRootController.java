@@ -25,6 +25,8 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRulerPropertiesRoot.css";
     private static final String CSS_CLASS = "time-ruler-properties-root";
     
+    static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerPropertiesRoot.fxml";
+    
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;

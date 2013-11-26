@@ -14,7 +14,7 @@
 
 <GridPane
     fx:controller="com.varankin.brains.jfx.analyser.TimeRulerPropertiesPaneController" 
-    styleClass="value-properties-pane"
+    styleClass="time-ruler-properties-pane"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
     <stylesheets>

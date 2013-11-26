@@ -17,7 +17,6 @@ import javafx.stage.*;
 final class TimeRulerPropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPropertiesStage.class );
-    private static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerPropertiesRoot.fxml";
 
     TimeRulerPropertiesStage()
     {
@@ -26,7 +25,8 @@ final class TimeRulerPropertiesStage extends Stage
         if( JavaFX.getInstance().useFxmlLoader() )
             try
             {
-                java.net.URL location = getClass().getResource( RESOURCE_FXML );
+                java.net.URL location = getClass().getResource( 
+                            TimeRulerPropertiesRootController.RESOURCE_FXML );
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
@@ -42,8 +42,8 @@ final class TimeRulerPropertiesStage extends Stage
             root = rootController.build();
         }
         
-        setOnShowing( new EventHandler<WindowEvent>() {
-
+        setOnShowing( new EventHandler<WindowEvent>() 
+        {
             @Override
             public void handle( WindowEvent event )
             {

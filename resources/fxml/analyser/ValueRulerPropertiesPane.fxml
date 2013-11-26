@@ -14,7 +14,7 @@
 
 <GridPane
     fx:controller="com.varankin.brains.jfx.analyser.ValueRulerPropertiesPaneController" 
-    styleClass="value-properties-pane"
+    styleClass="value-ruler-properties-pane"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
     <stylesheets>
@@ -22,6 +22,63 @@
     </stylesheets>
     
   <children>
+    <Label 
+        text="%properties.ruler.value.min" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField 
+        fx:id="valueMin"
+        prefColumnCount="6"
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0" 
+    />   
+    <Label 
+        text="%properties.ruler.value.max" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField 
+        fx:id="valueMax"
+        prefColumnCount="6"  
+        focusTraversable="true"   
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="0" 
+    />   
+    <Label 
+        text="%properties.ruler.text.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <ColorPicker 
+        fx:id="textColor" 
+        focusTraversable="false"  
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2" 
+    />
+    <Label
+        text="%properties.ruler.text.font" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2" 
+    />
+    <TextField 
+        fx:id="textFont"
+        focusTraversable="true"   
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="2" 
+    />   
+    <Label 
+        text="%properties.ruler.tick.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="3" 
+    />
+    <ColorPicker 
+        fx:id="tickColor" 
+        focusTraversable="false"  
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="3" 
+    />
   </children>
   
 </GridPane>
