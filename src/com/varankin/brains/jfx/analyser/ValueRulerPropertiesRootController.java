@@ -24,6 +24,7 @@ public final class ValueRulerPropertiesRootController implements Builder<Parent>
     private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPropertiesRootController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValueRulerPropertiesRoot.css";
     private static final String CSS_CLASS = "value-ruler-properties-root";
+    
     static final String RESOURCE_FXML = "/fxml/analyser/ValueRulerPropertiesRoot.fxml";
     
     private final ChangedTrigger changedFunction;
