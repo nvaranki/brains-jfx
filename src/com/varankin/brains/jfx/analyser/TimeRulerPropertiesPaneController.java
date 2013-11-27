@@ -87,7 +87,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         pane.add( duration, 1, 0 );
         pane.add( new Label( LOGGER.text( "properties.ruler.time.excess" ) ), 0, 1 );
         pane.add( excess, 1, 1 );
-        pane.add( unit, 3, 0 );
+        pane.add( unit, 3, 0, 1, 2 );
         pane.add( new Label( LOGGER.text( "properties.ruler.text.color" ) ), 0, 2 );
         pane.add( textColor, 1, 2 );
         pane.add( new Label( LOGGER.text( "properties.ruler.text.font" ) ), 2, 2 );

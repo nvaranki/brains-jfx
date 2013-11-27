@@ -51,6 +51,8 @@
         visibleRowCount="7" 
         GridPane.columnIndex="3" 
         GridPane.rowIndex="0"
+        GridPane.columnSpan="1" 
+        GridPane.rowSpan="2" 
     />
     <Label 
         text="%properties.ruler.text.color" 
