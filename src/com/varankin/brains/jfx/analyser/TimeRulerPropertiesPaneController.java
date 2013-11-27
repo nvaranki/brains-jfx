@@ -1,11 +1,21 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.ListeningComboBoxSetter;
+import com.varankin.brains.jfx.ValueSetter;
 import com.varankin.util.LoggerX;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Builder;
 
 /**
@@ -19,6 +29,13 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRulerPropertiesPane.css";
     private static final String CSS_CLASS = "time-ruler-properties-pane";
 
+    private final ObjectProperty<Long> durationProperty, excessProperty;
+    private final ObjectProperty<TimeUnit> unitProperty; // <--> selectionModel.selectedItemProperty
+    private final ObjectProperty<Font> textFontProperty;
+    private final ChangeListener<TimeUnit> unitSelectionListener;
+    
+    private ChangeListener<TimeUnit> unitPropertyListener;
+
     @FXML private TextField duration, excess;
     @FXML private ComboBox<TimeUnit> unit;
     @FXML private ColorPicker textColor, tickColor;
@@ -26,6 +43,11 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     
     public TimeRulerPropertiesPaneController()
     {
+        durationProperty = new SimpleObjectProperty<>();
+        excessProperty = new SimpleObjectProperty<>();
+        unitProperty = new SimpleObjectProperty<>();
+        unitSelectionListener = new ValueSetter<>( unitProperty );
+        textFontProperty = new SimpleObjectProperty<>();
     }
     
     /**
@@ -84,6 +106,42 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     @FXML
     protected void initialize()
     {   
+        unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
+        unit.getSelectionModel().selectedItemProperty()
+                .addListener( new WeakChangeListener<>( unitSelectionListener ) );
+        unitPropertyListener = new ListeningComboBoxSetter<>( unit );
+        unitProperty.addListener( new WeakChangeListener<>( unitPropertyListener ) );
+        
+    }
+
+    Property<Long> durationProperty()
+    {
+        return durationProperty;
+    }
+
+    Property<Long> excessProperty()
+    {
+        return excessProperty;
+    }
+    
+    Property<TimeUnit> unitProperty()
+    {
+        return unitProperty;
+    }
+
+    Property<Color> textColorProperty()
+    {
+        return textColor.valueProperty();
+    }
+    
+    Property<Font> textFontProperty()
+    {
+        return textFontProperty;
+    }
+
+    Property<Color> tickColorProperty()
+    {
+        return tickColor.valueProperty();
     }
 
     /**

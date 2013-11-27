@@ -1,10 +1,15 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.util.LoggerX;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Builder;
 
 /**
@@ -12,18 +17,24 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public class ValueRulerPropertiesPaneController implements Builder<Node>
+public final class ValueRulerPropertiesPaneController implements Builder<Node>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValueRulerPropertiesPane.css";
     private static final String CSS_CLASS = "value-ruler-properties-pane";
 
+    private final ObjectProperty<Float> valueMinProperty, valueMaxProperty;
+    private final ObjectProperty<Font> textFontProperty;
+    
     @FXML private TextField valueMin, valueMax;
     @FXML private ColorPicker textColor, tickColor;
     @FXML private Control textFont;
     
     public ValueRulerPropertiesPaneController()
     {
+        valueMinProperty = new SimpleObjectProperty<>();
+        valueMaxProperty = new SimpleObjectProperty<>();
+        textFontProperty = new SimpleObjectProperty<>();
     }
     
     /**
@@ -78,6 +89,31 @@ public class ValueRulerPropertiesPaneController implements Builder<Node>
     @FXML
     protected void initialize()
     {   
+    }
+    
+    Property<Float> valueMinProperty()
+    {
+        return valueMinProperty;
+    }
+
+    Property<Float> valueMaxProperty()
+    {
+        return valueMaxProperty;
+    }
+
+    Property<Color> textColorProperty()
+    {
+        return textColor.valueProperty();
+    }
+    
+    Property<Font> textFontProperty()
+    {
+        return textFontProperty;
+    }
+
+    Property<Color> tickColorProperty()
+    {
+        return tickColor.valueProperty();
     }
 
     /**
