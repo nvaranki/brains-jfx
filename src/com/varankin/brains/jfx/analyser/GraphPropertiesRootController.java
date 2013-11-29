@@ -2,7 +2,9 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
+import com.varankin.brains.jfx.ObjectBindings;
 import com.varankin.util.LoggerX;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -41,7 +43,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     private BooleanBinding changedBinding;
     
     @FXML private Node properties;
-    @FXML private Button buttonApply;
+    @FXML private Button buttonOK, buttonApply;
     @FXML private GraphPropertiesPaneController propertiesController;
 
     public GraphPropertiesRootController()
@@ -68,7 +70,9 @@ public final class GraphPropertiesRootController implements Builder<Parent>
         properties = propertiesController.build();
         properties.setId( "properties" );
 
-        Button buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK.setId( "buttonOK" );
+        buttonOK.setDefaultButton( true );
         buttonOK.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -77,9 +81,9 @@ public final class GraphPropertiesRootController implements Builder<Parent>
                 onActionOK( event );
             }
         } );
-        buttonOK.setDefaultButton( true );
 
         buttonApply = new Button( LOGGER.text( "button.apply" ) );
+        buttonApply.setId( "buttonApply" );
         buttonApply.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -88,9 +92,9 @@ public final class GraphPropertiesRootController implements Builder<Parent>
                 onActionApply( event );
             }
         } );
-        buttonApply.setId( "buttonApply" );
 
         Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
+        buttonCancel.setCancelButton( true );
         buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -99,7 +103,6 @@ public final class GraphPropertiesRootController implements Builder<Parent>
                 onActionCancel( event );
             }
         } );
-        buttonCancel.setCancelButton( true );
 
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
@@ -127,7 +130,9 @@ public final class GraphPropertiesRootController implements Builder<Parent>
                 propertiesController.zeroDisplayProperty(),
                 propertiesController.zeroColorProperty(),
                 propertiesController.timeFlowProperty() );
-        buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
+        BooleanBinding validBinding = ObjectBindings.isNotNull( propertiesController.rateValueProperty() );
+        buttonOK.disableProperty().bind( Bindings.not( validBinding ) );
+        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validBinding ) ) );
     }
     
     @FXML

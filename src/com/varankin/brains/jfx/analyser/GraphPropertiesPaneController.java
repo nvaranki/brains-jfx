@@ -1,8 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.ListeningComboBoxSetter;
-import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.ValueSetter;
+import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -28,11 +26,9 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPropertiesPane.css";
     private static final String CSS_CLASS = "graph-properties-pane";
 
-    private final ObjectProperty<TimeUnit> rateUnitProperty; // <--> selectionModel.selectedItemProperty
     private final ObjectProperty<Long> rateValueProperty;
+    private final ObjectProperty<TimeUnit> rateUnitProperty; // <--> selectionModel.selectedItemProperty
     private final ChangeListener<TimeUnit> rateUnitSelectionListener;
-    private final ChangeListener<String> rateValueInputListener;
-    private final ChangeListener<Long> rateValuePropertyListener;
     
     private ChangeListener<TimeUnit> rateUnitPropertyListener;
 
@@ -46,8 +42,6 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     
     public GraphPropertiesPaneController()
     {
-        rateValuePropertyListener = new RateValuePropertyListener();
-        rateValueInputListener = new RateValueInputListener();
         rateValueProperty = new SimpleObjectProperty<>();
         rateUnitProperty = new SimpleObjectProperty<>();
         rateUnitSelectionListener = new ValueSetter<>( rateUnitProperty );
@@ -116,8 +110,8 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     @FXML
     protected void initialize()
     {
-        rateValue.textProperty().addListener( new WeakChangeListener<>( rateValueInputListener ) );
-        rateValueProperty.addListener( new WeakChangeListener<>( rateValuePropertyListener ) );
+        Bindings.bindBidirectional( rateValue.textProperty(), rateValueProperty, 
+                new PositiveLongConverter( rateValue ) );
         
         rateUnit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         rateUnit.getSelectionModel().selectedItemProperty()
@@ -172,37 +166,6 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     {
         borderColor.fireEvent( new ActionEvent() );
         zeroColor.fireEvent( new ActionEvent() );
-    }
-
-    private class RateValuePropertyListener implements ChangeListener<Long>
-    {
-        @Override
-        public void changed( ObservableValue<? extends Long> observable, 
-                            Long oldValue, Long newValue )
-        {
-            rateValue.textProperty().setValue( newValue != null ? Long.toString( newValue ) : null );
-        }
-    }
-
-    private class RateValueInputListener implements ChangeListener<String>
-    {
-        @Override
-        public void changed( ObservableValue<? extends String> observable, 
-                            String oldValue, String newValue )
-        {
-            try
-            {
-                Long value = Long.valueOf( newValue );
-                if( value < 0 ) throw new NumberFormatException( "Negative" );
-                rateValueProperty.setValue( value );
-                rateValue.setStyle( null );
-            }
-            catch( NumberFormatException ex )
-            {
-                if( newValue != null ) LOGGER.log( "001003001W", newValue, ex.getMessage() );
-                rateValue.setStyle( JavaFX.STYLE_WRONG_TEXT_VALUE );
-            }
-        }
     }
     
 }

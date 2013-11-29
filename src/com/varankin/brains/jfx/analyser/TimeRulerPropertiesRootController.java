@@ -1,7 +1,10 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.ChangedTrigger;
+import com.varankin.brains.jfx.ObjectBindings;
+import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.util.LoggerX;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -12,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Builder;
 
 /**
@@ -27,16 +32,28 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
     
     static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerPropertiesRoot.fxml";
     
+    private final PropertyGate<Long> durationGate;
+    private final PropertyGate<Long> excessGate;
+    private final PropertyGate<TimeUnit> unitGate;
+    private final PropertyGate<Color> textColorGate;
+    private final PropertyGate<Font> textFontGate;
+    private final PropertyGate<Color> tickColorGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
     
     @FXML private Pane properties;
-    @FXML private Button buttonApply;
+    @FXML private Button buttonOK, buttonApply;
     @FXML private TimeRulerPropertiesPaneController propertiesController;
 
     public TimeRulerPropertiesRootController()
     {
+        durationGate = new PropertyGate<>();
+        excessGate = new PropertyGate<>();
+        unitGate = new PropertyGate<>();
+        textColorGate = new PropertyGate<>();
+        textFontGate = new PropertyGate<>();
+        tickColorGate = new PropertyGate<>();
         changedFunction = new ChangedTrigger();
     }
     
@@ -52,7 +69,9 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
         properties = propertiesController.build();
         properties.setId( "properties" );
 
-        Button buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK.setId( "buttonOK" );
+        buttonOK.setDefaultButton( true );
         buttonOK.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -61,9 +80,9 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
                 onActionOK( event );
             }
         } );
-        buttonOK.setDefaultButton( true );
 
         buttonApply = new Button( LOGGER.text( "button.apply" ) );
+        buttonApply.setId( "buttonApply" );
         buttonApply.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -72,9 +91,9 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
                 onActionApply( event );
             }
         } );
-        buttonApply.setId( "buttonApply" );
 
         Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
+        buttonCancel.setCancelButton( true );
         buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
         {
             @Override
@@ -83,7 +102,6 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
                 onActionCancel( event );
             }
         } );
-        buttonCancel.setCancelButton( true );
 
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
@@ -103,7 +121,20 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-//        buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
+        changedBinding = Bindings.createBooleanBinding( changedFunction, 
+                propertiesController.durationProperty(),
+                propertiesController.excessProperty(),
+                propertiesController.unitProperty(),
+                propertiesController.textColorProperty(),
+                propertiesController.textFontProperty(),
+                propertiesController.tickColorProperty());
+        BooleanBinding validBinding = Bindings.and
+        ( 
+            ObjectBindings.isNotNull( propertiesController.durationProperty() ),
+            ObjectBindings.isNotNull( propertiesController.excessProperty() )
+        );
+        buttonOK.disableProperty().bind( Bindings.not( validBinding ) );
+        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validBinding ) ) );
     }
     
     @FXML
@@ -130,7 +161,7 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
         // установить текущие значения, если они отличаются
         // установить статус
         changedFunction.setValue( false );
-//        changedBinding.invalidate();
+        changedBinding.invalidate();
     }
 
     void reset()
@@ -138,7 +169,7 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
         // сбросить прежние значения и установить текущие значения
         // установить статус
         changedFunction.setValue( false );
-//        changedBinding.invalidate();
+        changedBinding.invalidate();
     }
     
 }

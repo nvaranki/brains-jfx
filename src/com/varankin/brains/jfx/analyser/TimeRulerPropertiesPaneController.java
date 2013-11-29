@@ -1,15 +1,16 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.ListeningComboBoxSetter;
-import com.varankin.brains.jfx.ValueSetter;
+import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -25,7 +26,7 @@ import javafx.util.Builder;
  */
 public class TimeRulerPropertiesPaneController implements Builder<Node>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesPaneController.class );
+    private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPropertiesPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRulerPropertiesPane.css";
     private static final String CSS_CLASS = "time-ruler-properties-pane";
 
@@ -105,7 +106,11 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         
     @FXML
     protected void initialize()
-    {   
+    {
+        Bindings.bindBidirectional( duration.textProperty(), durationProperty, 
+                new PositiveLongConverter( duration ) );
+        Bindings.bindBidirectional( excess.textProperty(), excessProperty, 
+                new ExcessConverter( excess ) );
         unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         unit.getSelectionModel().selectedItemProperty()
                 .addListener( new WeakChangeListener<>( unitSelectionListener ) );
@@ -149,7 +154,30 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
      */
     void resetColorPicker()
     {
+        textColor.fireEvent( new ActionEvent() );
+        tickColor.fireEvent( new ActionEvent() );
     }
 
+    private class ExcessConverter extends PositiveLongConverter
+    {
+
+        ExcessConverter( Node node )
+        {
+            super( node );
+        }
+
+        @Override
+        public Long fromString( String string )
+        {
+            Long value = super.fromString( string );
+            Long durationPropertyValue = durationProperty.getValue();
+            if( value != null && durationPropertyValue != null && value >= durationPropertyValue )
+            {
+                LOGGER.log( "001003003W", value, durationPropertyValue );
+                highlight( value = null );
+            }
+            return value;
+        }
+    }
     
 }
