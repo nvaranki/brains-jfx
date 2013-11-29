@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -89,6 +89,10 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     @FXML
     protected void initialize()
     {   
+        Bindings.bindBidirectional( valueMin.textProperty(), valueMinProperty, 
+                new RelativeFloatConverter( valueMin, valueMaxProperty, true ) );
+        Bindings.bindBidirectional( valueMax.textProperty(), valueMaxProperty, 
+                new RelativeFloatConverter( valueMax, valueMinProperty, false ) );
     }
     
     Property<Float> valueMinProperty()
@@ -123,5 +127,34 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     {
     }
 
+    private static class RelativeFloatConverter extends FloatConverter
+    {
+        final Property<Float> counterpart;
+        final boolean less;
+
+        RelativeFloatConverter( Node node, Property<Float> counterpart, boolean less )
+        {
+            super( node );
+            this.counterpart = counterpart;
+            this.less = less;
+        }
+
+        @Override
+        public Float fromString( String string )
+        {
+            Float value = super.fromString( string );
+            Float counterValue = counterpart.getValue();
+            if( value != null && counterValue != null 
+                    && ( less ? value > counterValue : value < counterValue ) )
+            {
+                if( less )
+                    LOGGER.log( "001003004W", value, counterValue );
+                else
+                    LOGGER.log( "001003004W", counterValue, value );
+                highlight( value = null );
+            }
+            return value;
+        }
+    }
     
 }
