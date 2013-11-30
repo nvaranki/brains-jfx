@@ -31,7 +31,8 @@
         <Button 
             text="%button.ok" 
             onAction="#onActionOK" 
-            defaultButton="true" 
+            defaultButton="true"
+            fx:id="buttonOK"  
         />
         <Button 
             text="%button.cancel" 

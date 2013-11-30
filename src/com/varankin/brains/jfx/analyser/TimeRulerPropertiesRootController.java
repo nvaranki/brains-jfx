@@ -1,12 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.ChangedTrigger;
-import com.varankin.brains.jfx.ObjectBindings;
-import com.varankin.brains.jfx.PropertyGate;
+import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -156,9 +155,45 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
         buttonApply.getScene().getWindow().hide();
     }
 
+    void bindDurationProperty( Property<Long> property )
+    {
+        durationGate.bind( property, propertiesController.durationProperty() );
+    }
+
+    void bindExcessProperty( Property<Long> property )
+    {
+        excessGate.bind( property, propertiesController.excessProperty() );
+    }
+
+    void bindUnitProperty( Property<TimeUnit> property )
+    {
+        unitGate.bind( property, propertiesController.unitProperty() );
+    }
+
+    void bindTextColorProperty( Property<Color> property )
+    {
+        textColorGate.bind( property, propertiesController.textColorProperty() );
+    }
+
+    void bindTextFontProperty( Property<Font> property )
+    {
+        textFontGate.bind( property, propertiesController.textFontProperty() );
+    }
+
+    void bindTickColorProperty( Property<Color> property )
+    {
+        tickColorGate.bind( property, propertiesController.tickColorProperty() );
+    }
+
     private void applyChanges()
     {
         // установить текущие значения, если они отличаются
+        durationGate.pullDistinctValue();
+        excessGate.pullDistinctValue();
+        unitGate.pullDistinctValue();
+        textColorGate.pullDistinctValue();
+        textFontGate.pullDistinctValue();
+        tickColorGate.pullDistinctValue();
         // установить статус
         changedFunction.setValue( false );
         changedBinding.invalidate();
@@ -167,6 +202,12 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
     void reset()
     {
         // сбросить прежние значения и установить текущие значения
+        durationGate.forceReset();
+        excessGate.forceReset();
+        unitGate.forceReset();
+        textColorGate.forceReset();
+        textFontGate.forceReset();
+        tickColorGate.forceReset();
         // установить статус
         changedFunction.setValue( false );
         changedBinding.invalidate();
