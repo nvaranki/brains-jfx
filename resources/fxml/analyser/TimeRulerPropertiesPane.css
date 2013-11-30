@@ -5,6 +5,34 @@
     Description: Панель выбора и установки параметров параметров оси времени.
 */
 
+.time-ruler-properties-pane #duration
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.time-ruler-properties-pane #excess
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.time-ruler-properties-pane #unit
+{
+}
+
+.time-ruler-properties-pane #textColor
+{
+    -fx-cursor: hand;
+}
+
+.time-ruler-properties-pane #textFont
+{
+}
+
+.time-ruler-properties-pane #tickColor 
+{
+    -fx-cursor: hand;
+}
+
 .time-ruler-properties-pane 
 {
     -fx-hgap: 10px;

@@ -46,12 +46,12 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     {
         valueMin = new TextField();
         valueMin.setId( "valueMin" );
-        valueMin.setPrefColumnCount( 6 );
+        valueMin.setPrefColumnCount( 9 );
         valueMin.setFocusTraversable( true );
         
         valueMax = new TextField();
         valueMax.setId( "valueMax" );
-        valueMax.setPrefColumnCount( 6 );
+        valueMax.setPrefColumnCount( 9 );
         valueMax.setFocusTraversable( true );
         
         textColor = new ColorPicker();

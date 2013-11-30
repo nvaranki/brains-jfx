@@ -61,10 +61,10 @@
     />
     <ColorPicker 
         fx:id="textColor" 
-        focusTraversable="false"  
         GridPane.columnIndex="1" 
         GridPane.rowIndex="2" 
-    />
+        focusTraversable="false"      
+    /><!-- focusTraversable="true" RT-21549 -->
     <Label
         text="%properties.ruler.text.font" 
         GridPane.columnIndex="2" 
@@ -83,10 +83,10 @@
     />
     <ColorPicker 
         fx:id="tickColor" 
-        focusTraversable="false"  
         GridPane.columnIndex="1" 
         GridPane.rowIndex="3" 
-    />
+        focusTraversable="false"      
+    /><!-- focusTraversable="true" RT-21549 -->
   </children>
   
 </GridPane>

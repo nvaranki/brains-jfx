@@ -64,7 +64,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         duration.setFocusTraversable( true );
         
         excess = new TextField();
-        excess.setId( "valueMax" );
+        excess.setId( "excess" );
         excess.setPrefColumnCount( 6 );
         excess.setFocusTraversable( true );
         

@@ -7,10 +7,12 @@
 
 .value-ruler-properties-pane #valueMin
 {
+    -fx-alignment: BASELINE_RIGHT;
 }
 
 .value-ruler-properties-pane #valueMax
 {
+    -fx-alignment: BASELINE_RIGHT;
 }
 
 .value-ruler-properties-pane #textColor
