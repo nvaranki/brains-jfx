@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.ListeningComboBoxSetter;
-import com.varankin.brains.jfx.ValueSetter;
+import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.List;
@@ -28,16 +27,12 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private static final String CSS_CLASS = "value-properties-pane";
 
     private final Property<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
-    private final Property<Integer> scaleProperty;
+    private final SingleSelectionProperty<Integer> scaleProperty;
     private final ColorPickerChangeListener colorPickerListener;
     private final MarkerPickerChangeListener markerPickerChangeListener;
-    private final ScalePickerChangeListener scalePickerChangeListener;
-    private final ChangeListener<Integer> scalePropertySetter;
     private final ChangeListener<int[][]> markerPickerSetter;
     private final ChangeListener<Marker> patternPropertySetter;
     
-    private ListeningComboBoxSetter<Integer> scalePickerSetter;
-
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
     @FXML private ComboBox<Marker> markerPicker;
@@ -48,9 +43,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         colorPickerListener = new ColorPickerChangeListener();
         markerPickerChangeListener = new MarkerPickerChangeListener();
         patternProperty = new SimpleObjectProperty<>();
-        scalePickerChangeListener = new ScalePickerChangeListener();
-        scaleProperty = new SimpleObjectProperty<>();
-        scalePropertySetter = new ValueSetter<>( scaleProperty );
+        scaleProperty = new SingleSelectionProperty<>();
         markerPickerSetter = new PatternResolver();
         patternPropertySetter = new MarkerResolver();
     }
@@ -110,16 +103,10 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         
         patternProperty.addListener( new WeakChangeListener<>( markerPickerSetter ) );
 
-        scalePicker.getSelectionModel().selectedItemProperty()
-                .addListener( new WeakChangeListener<>( scalePickerChangeListener ) );
-        scalePicker.getSelectionModel().selectedItemProperty()
-                .addListener( new WeakChangeListener<>( scalePropertySetter ) );
         scalePicker.setConverter( new ScalePickerConverter() );
-        for( int i : new int[]{1,2,3,4,5,10} )
-            scalePicker.getItems().add( i );
-
-        scalePickerSetter = new ListeningComboBoxSetter<>( scalePicker );
-        scaleProperty.addListener( new WeakChangeListener<>( scalePickerSetter ) );
+        scalePicker.getItems().addAll( new Integer[]{1,2,3,4,5,10} );
+        
+        scaleProperty.setModel( scalePicker.getSelectionModel() );
     }
     
     Property<Color> colorProperty()
