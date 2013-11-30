@@ -5,11 +5,7 @@ import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.WeakChangeListener;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -31,11 +27,8 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     private static final String CSS_CLASS = "time-ruler-properties-pane";
 
     private final ObjectProperty<Long> durationProperty, excessProperty;
-    private final ObjectProperty<TimeUnit> unitProperty; // <--> selectionModel.selectedItemProperty
+    private final SingleSelectionProperty<TimeUnit> unitProperty;
     private final ObjectProperty<Font> textFontProperty;
-    private final ChangeListener<TimeUnit> unitSelectionListener;
-    
-    private ChangeListener<TimeUnit> unitPropertyListener;
 
     @FXML private TextField duration, excess;
     @FXML private ComboBox<TimeUnit> unit;
@@ -46,8 +39,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     {
         durationProperty = new SimpleObjectProperty<>();
         excessProperty = new SimpleObjectProperty<>();
-        unitProperty = new SimpleObjectProperty<>();
-        unitSelectionListener = new ValueSetter<>( unitProperty );
+        unitProperty = new SingleSelectionProperty<>();
         textFontProperty = new SimpleObjectProperty<>();
     }
     
@@ -112,11 +104,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         Bindings.bindBidirectional( excess.textProperty(), excessProperty, 
                 new ExcessConverter( excess ) );
         unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
-        unit.getSelectionModel().selectedItemProperty()
-                .addListener( new WeakChangeListener<>( unitSelectionListener ) );
-        unitPropertyListener = new ListeningComboBoxSetter<>( unit );
-        unitProperty.addListener( new WeakChangeListener<>( unitPropertyListener ) );
-        
+        unitProperty.setModel( unit.getSelectionModel() );
     }
 
     Property<Long> durationProperty()

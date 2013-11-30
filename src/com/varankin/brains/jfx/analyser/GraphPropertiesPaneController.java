@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -27,10 +26,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     private static final String CSS_CLASS = "graph-properties-pane";
 
     private final ObjectProperty<Long> rateValueProperty;
-    private final ObjectProperty<TimeUnit> rateUnitProperty; // <--> selectionModel.selectedItemProperty
-    private final ChangeListener<TimeUnit> rateUnitSelectionListener;
-    
-    private ChangeListener<TimeUnit> rateUnitPropertyListener;
+    private final SingleSelectionProperty<TimeUnit> rateUnitProperty;
 
     @FXML private TextField rateValue;
     @FXML private ComboBox<TimeUnit> rateUnit;
@@ -43,8 +39,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     public GraphPropertiesPaneController()
     {
         rateValueProperty = new SimpleObjectProperty<>();
-        rateUnitProperty = new SimpleObjectProperty<>();
-        rateUnitSelectionListener = new ValueSetter<>( rateUnitProperty );
+        rateUnitProperty = new SingleSelectionProperty<>();
     }
 
     /**
@@ -112,15 +107,9 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     {
         Bindings.bindBidirectional( rateValue.textProperty(), rateValueProperty, 
                 new PositiveLongConverter( rateValue ) );
-        
         rateUnit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
-        rateUnit.getSelectionModel().selectedItemProperty()
-                .addListener( new WeakChangeListener<>( rateUnitSelectionListener ) );
-        rateUnitPropertyListener = new ListeningComboBoxSetter<>( rateUnit );
-        rateUnitProperty.addListener( new WeakChangeListener<>( rateUnitPropertyListener ) );
-        
+        rateUnitProperty.setModel( rateUnit.getSelectionModel() );
         borderColor.disableProperty().bind( Bindings.not( borderDisplay.selectedProperty() ) );
-        
         zeroColor.disableProperty().bind( Bindings.not( zeroDisplay.selectedProperty() ) );
     }
     
