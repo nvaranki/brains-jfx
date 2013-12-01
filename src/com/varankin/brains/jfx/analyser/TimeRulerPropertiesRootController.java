@@ -208,6 +208,7 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
         textColorGate.forceReset();
         textFontGate.forceReset();
         tickColorGate.forceReset();
+        propertiesController.resetColorPicker();
         // установить статус
         changedFunction.setValue( false );
         changedBinding.invalidate();

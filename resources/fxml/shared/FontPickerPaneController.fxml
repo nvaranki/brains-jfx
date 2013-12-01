@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<FlowPane 
+        fx:controller="com.varankin.brains.jfx.shared.FontPickerPaneController" 
+        styleClass="font-picker-pane" 
+        xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@FontPickerPane.css"/>
+    </stylesheets>
+
+</FlowPane>

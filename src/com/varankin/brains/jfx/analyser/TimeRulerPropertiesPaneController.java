@@ -1,9 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
+import com.varankin.brains.jfx.shared.FontPickerPaneController;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
@@ -11,9 +13,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Builder;
+import javafx.util.StringConverter;
 
 /**
  * FXML-контроллер панели выбора и установки параметров оси времени.
@@ -28,19 +33,19 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
 
     private final ObjectProperty<Long> durationProperty, excessProperty;
     private final SingleSelectionProperty<TimeUnit> unitProperty;
-    private final ObjectProperty<Font> textFontProperty;
+    private final FontPickerPaneController fontPickerPaneController;
 
     @FXML private TextField duration, excess;
     @FXML private ComboBox<TimeUnit> unit;
     @FXML private ColorPicker textColor, tickColor;
-    @FXML private Control textFont;
+    @FXML private Pane fontPane;
     
     public TimeRulerPropertiesPaneController()
     {
         durationProperty = new SimpleObjectProperty<>();
         excessProperty = new SimpleObjectProperty<>();
         unitProperty = new SingleSelectionProperty<>();
-        textFontProperty = new SimpleObjectProperty<>();
+        fontPickerPaneController = new FontPickerPaneController();
     }
     
     /**
@@ -67,26 +72,25 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         textColor.setId( "textColor" );
         textColor.setFocusTraversable( false ); //TODO true RT-21549
         
-        textFont = new TextField("Helvetica"); //TODO
-        textFont.setId( "textFont" );
-        textFont.setFocusTraversable( true );
-        
         tickColor = new ColorPicker();
         tickColor.setId( "tickColor" );
         tickColor.setFocusTraversable( false ); //TODO true RT-21549
+
+        fontPane = fontPickerPaneController.build();
+        fontPane.setId( "fontPane" );
+        fontPane.setStyle( "-fx-border: thin black;" );
         
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "properties.ruler.time.duration" ) ), 0, 0 );
         pane.add( duration, 1, 0 );
         pane.add( new Label( LOGGER.text( "properties.ruler.time.excess" ) ), 0, 1 );
         pane.add( excess, 1, 1 );
-        pane.add( unit, 3, 0, 1, 2 );
+        pane.add( unit, 2, 0, 2, 2 );
         pane.add( new Label( LOGGER.text( "properties.ruler.text.color" ) ), 0, 2 );
         pane.add( textColor, 1, 2 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.text.font" ) ), 2, 2 );
-        pane.add( textFont, 3, 2 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.tick.color" ) ), 0, 3 );
-        pane.add( tickColor, 1, 3 );
+        pane.add( new Label( LOGGER.text( "properties.ruler.tick.color" ) ), 2, 2 );
+        pane.add( tickColor, 3, 2 );
+        pane.add( fontPane, 0, 3, 4, 1 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -129,7 +133,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     
     Property<Font> textFontProperty()
     {
-        return textFontProperty;
+        return fontPickerPaneController.fontProperty();
     }
 
     Property<Color> tickColorProperty()

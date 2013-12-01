@@ -66,12 +66,13 @@
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
     <Label
-        text="%properties.ruler.text.font" 
+        text="%properties.ruler.font.family" 
         GridPane.columnIndex="2" 
         GridPane.rowIndex="2" 
     />
-    <TextField 
-        fx:id="textFont"
+    <ComboBox 
+        fx:id="textFontFamily"
+        visibleRowCount="7" 
         focusTraversable="true"   
         GridPane.columnIndex="3" 
         GridPane.rowIndex="2" 
@@ -87,6 +88,18 @@
         GridPane.rowIndex="3" 
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
+    <Label 
+        text="%properties.ruler.font.size" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="3" 
+    />
+    <TextField 
+        fx:id="fontSize"
+        prefColumnCount="2"
+        focusTraversable="true"   
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="3" 
+    />   
   </children>
   
 </GridPane>

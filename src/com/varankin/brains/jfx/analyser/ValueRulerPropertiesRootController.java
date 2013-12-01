@@ -197,6 +197,7 @@ public final class ValueRulerPropertiesRootController implements Builder<Parent>
         textColorGate.forceReset();
         textFontGate.forceReset();
         tickColorGate.forceReset();
+        propertiesController.resetColorPicker();
         // установить статус
         changedFunction.setValue( false );
         changedBinding.invalidate();

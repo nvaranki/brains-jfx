@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.text.Text;
 import javafx.stage.*;
 
 /**
@@ -41,6 +42,7 @@ final class ValueRulerPropertiesStage extends Stage
             rootController = new ValueRulerPropertiesRootController();
             root = rootController.build();
         }
+        rootController.bindTextFontProperty( new Text().fontProperty() ); //DEBUG
         
         setOnShowing( new EventHandler<WindowEvent>() 
         {

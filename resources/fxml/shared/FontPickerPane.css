@@ -1,0 +1,33 @@
+/* 
+    Document   : FontPickerPane.css
+    Created on : Dec 1, 2013
+    Author     : Николай Варанкин
+    Description: Панель для выбора и установки параметров шрифта.
+*/
+
+.font-picker-pane #family
+{
+    -fx-cursor: hand;
+}
+
+.font-picker-pane #weight
+{
+    -fx-cursor: hand;
+}
+
+.font-picker-pane #posture
+{
+    -fx-cursor: hand;
+}
+
+.font-picker-pane #size
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.font-picker-pane 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
