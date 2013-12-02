@@ -91,7 +91,8 @@ public final class FontPickerPaneController implements Builder<Pane>
         posture = new ComboBox<>();
         posture.setId( "posture" );
         
-        sample = new Label( "-12345.6789" );
+        sample = new Label();
+        sample.setId( "sample" );
         
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "properties.font.family" ) ), 0, 0 );
@@ -126,6 +127,8 @@ public final class FontPickerPaneController implements Builder<Pane>
         familyProperty.setModel( family.getSelectionModel() );
         weightProperty.setModel( weight.getSelectionModel() );
         postureProperty.setModel( posture.getSelectionModel() );
+        
+        sample.setText( "-12345.6789" );
     }
     
     public Property<Font> fontProperty()

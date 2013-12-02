@@ -17,6 +17,7 @@
 
 .time-ruler-properties-pane #unit
 {
+    -fx-cursor: hand;
 }
 
 .time-ruler-properties-pane #textColor
@@ -24,14 +25,14 @@
     -fx-cursor: hand;
 }
 
-.time-ruler-properties-pane #fontPane
-{
-    -fx-padding: 0px;
-}
-
 .time-ruler-properties-pane #tickColor 
 {
     -fx-cursor: hand;
+}
+
+.time-ruler-properties-pane #fontPicker
+{
+    -fx-padding: 0px;
 }
 
 .time-ruler-properties-pane 

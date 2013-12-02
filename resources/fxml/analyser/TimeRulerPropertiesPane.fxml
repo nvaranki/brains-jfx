@@ -51,7 +51,7 @@
         visibleRowCount="7" 
         GridPane.columnIndex="3" 
         GridPane.rowIndex="0"
-        GridPane.columnSpan="1" 
+        GridPane.columnSpan="2" 
         GridPane.rowSpan="2" 
     />
     <Label 
@@ -65,41 +65,21 @@
         GridPane.rowIndex="2" 
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
-    <Label
-        text="%properties.ruler.font.family" 
-        GridPane.columnIndex="2" 
-        GridPane.rowIndex="2" 
-    />
-    <ComboBox 
-        fx:id="textFontFamily"
-        visibleRowCount="7" 
-        focusTraversable="true"   
-        GridPane.columnIndex="3" 
-        GridPane.rowIndex="2" 
-    />   
     <Label 
         text="%properties.ruler.tick.color" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="3" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2" 
     />
     <ColorPicker 
         fx:id="tickColor" 
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="3" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="2" 
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
-    <Label 
-        text="%properties.ruler.font.size" 
-        GridPane.columnIndex="2" 
-        GridPane.rowIndex="3" 
+    <fx:include 
+        source="../shared/FontPickerPane.fxml" 
+        fx:id="fontPicker"
     />
-    <TextField 
-        fx:id="fontSize"
-        prefColumnCount="2"
-        focusTraversable="true"   
-        GridPane.columnIndex="3" 
-        GridPane.rowIndex="3" 
-    />   
   </children>
   
 </GridPane>
