@@ -129,8 +129,24 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
                 propertiesController.tickColorProperty());
         BooleanBinding validBinding = Bindings.and
         ( 
-            ObjectBindings.isNotNull( propertiesController.durationProperty() ),
-            ObjectBindings.isNotNull( propertiesController.excessProperty() )
+            Bindings.and
+            ( 
+                Bindings.and
+                ( 
+                    ObjectBindings.isNotNull( propertiesController.durationProperty() ),
+                    ObjectBindings.isNotNull( propertiesController.excessProperty() ) 
+                ),
+                Bindings.and
+                ( 
+                    ObjectBindings.isNotNull( propertiesController.unitProperty() ),
+                    ObjectBindings.isNotNull( propertiesController.textColorProperty() )
+                )
+            ),
+            Bindings.and
+            ( 
+                ObjectBindings.isNotNull( propertiesController.tickColorProperty() ),
+                ObjectBindings.isNotNull( propertiesController.textFontProperty() )
+            )
         );
         buttonOK.disableProperty().bind( Bindings.not( validBinding ) );
         buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validBinding ) ) );

@@ -24,8 +24,9 @@
     -fx-cursor: hand;
 }
 
-.time-ruler-properties-pane #textFont
+.time-ruler-properties-pane #fontPane
 {
+    -fx-padding: 0px;
 }
 
 .time-ruler-properties-pane #tickColor 
