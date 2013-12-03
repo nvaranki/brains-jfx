@@ -29,9 +29,10 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private final Property<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
     private final SingleSelectionProperty<Integer> scaleProperty;
     private final ColorPickerChangeListener colorPickerListener;
-    private final MarkerPickerChangeListener markerPickerChangeListener;
+    private final ChangeListener<Marker> markerPickerChangeListener;
     private final ChangeListener<int[][]> markerPickerSetter;
     private final ChangeListener<Marker> patternPropertySetter;
+    private final ChangeListener<Integer> scalePickerChangeListener;
     
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
@@ -42,6 +43,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     {
         colorPickerListener = new ColorPickerChangeListener();
         markerPickerChangeListener = new MarkerPickerChangeListener();
+        scalePickerChangeListener = new ScalePickerChangeListener();
         patternProperty = new SimpleObjectProperty<>();
         scaleProperty = new SingleSelectionProperty<>();
         markerPickerSetter = new PatternResolver();
@@ -107,6 +109,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         scalePicker.getItems().addAll( new Integer[]{1,2,3,4,5,10} );
         
         scaleProperty.setModel( scalePicker.getSelectionModel() );
+        scaleProperty.addListener( new WeakChangeListener<>( scalePickerChangeListener ) );
     }
     
     Property<Color> colorProperty()
