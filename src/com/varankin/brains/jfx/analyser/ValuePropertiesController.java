@@ -22,11 +22,13 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class ValuePropertiesRootController implements Builder<Parent>
+public final class ValuePropertiesController implements Builder<Parent>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesRootController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesRoot.css";
-    private static final String CSS_CLASS = "value-properties-root";
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyser/ValueProperties.css";
+    private static final String CSS_CLASS = "value-properties";
+    
+    static final String RESOURCE_FXML = "/fxml/analyser/ValueProperties.fxml";
     
     private final PropertyGate<Color> colorGate;
     private final PropertyGate<int[][]> patternGate;
@@ -39,7 +41,7 @@ public final class ValuePropertiesRootController implements Builder<Parent>
     @FXML private Button buttonApply;
     @FXML private ValuePropertiesPaneController propertiesController;
 
-    public ValuePropertiesRootController()
+    public ValuePropertiesController()
     {
         changedFunction = new ChangedTrigger();
         colorGate = new PropertyGate<>();

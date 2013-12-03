@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    Document   : TimeRulerPropertiesRoot.fxml
-    Created on : Nov 24, 2013
+<!-- 
     Author     : Николай Варанкин
-    Description: Панель диалога для выбора и установки параметров параметров оси времени.
+    Description: Панель диалога для выбора и установки параметров рисования графика.
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -12,17 +10,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane
-    fx:controller="com.varankin.brains.jfx.analyser.TimeRulerPropertiesRootController" 
-    styleClass="time-ruler-properties-root"
+<BorderPane 
+    fx:controller="com.varankin.brains.jfx.analyser.GraphPropertiesController" 
+    styleClass="graph-properties"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
-    
-  <stylesheets>
-    <URL value="@TimeRulerPropertiesRoot.css"/>
-  </stylesheets>
-  
+
+    <stylesheets>
+        <URL value="@GraphProperties.css"/>
+    </stylesheets>
+
   <center>
-      <fx:include source="TimeRulerPropertiesPane.fxml" fx:id="properties"/>
+      <fx:include source="GraphPropertiesPane.fxml" fx:id="properties"/>
   </center>  
   
   <bottom>

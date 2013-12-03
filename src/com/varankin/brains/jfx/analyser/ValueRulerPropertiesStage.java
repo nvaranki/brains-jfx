@@ -21,13 +21,13 @@ final class ValueRulerPropertiesStage extends Stage
 
     ValueRulerPropertiesStage()
     {
-        final ValueRulerPropertiesRootController rootController;
+        final ValueRulerPropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
             {
                 java.net.URL location = getClass().getResource( 
-                        ValueRulerPropertiesRootController.RESOURCE_FXML );
+                        ValueRulerPropertiesController.RESOURCE_FXML );
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
@@ -39,7 +39,7 @@ final class ValueRulerPropertiesStage extends Stage
             }
         else
         {
-            rootController = new ValueRulerPropertiesRootController();
+            rootController = new ValueRulerPropertiesController();
             root = rootController.build();
         }
         rootController.bindTextFontProperty( new Text().fontProperty() ); //DEBUG

@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    Document   : ValueRulerPropertiesRoot.css
-    Created on : Nov 24, 2013
+<!-- 
     Author     : Николай Варанкин
-    Description: Панель диалога для выбора и установки параметров оси значений.
+    Description: Панель диалога для выбора и установки параметров прорисовки отметок.
 -->
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.* ?>
+<?import java.net.URL ?>
+<?import java.util.* ?>
+<?import javafx.geometry.* ?>
+<?import javafx.scene.control.* ?>
+<?import javafx.scene.layout.* ?>
+<?import javafx.scene.paint.* ?>
 
 <BorderPane
-    fx:controller="com.varankin.brains.jfx.analyser.ValueRulerPropertiesRootController" 
-    styleClass="value-ruler-properties-root"
+    fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesController" 
+    styleClass="value-properties"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
   <stylesheets>
-    <URL value="@ValueRulerPropertiesRoot.css"/>
+    <URL value="@ValueProperties.css"/>
   </stylesheets>
   
   <center>
-      <fx:include source="ValueRulerPropertiesPane.fxml" fx:id="properties"/>
+      <fx:include source="ValuePropertiesPane.fxml" fx:id="properties"/>
   </center>  
   
   <bottom>
@@ -31,8 +30,7 @@
         <Button 
             text="%button.ok" 
             onAction="#onActionOK" 
-            defaultButton="true"
-            fx:id="buttonOK"  
+            defaultButton="true" 
         />
         <Button 
             text="%button.cancel" 

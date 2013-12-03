@@ -20,13 +20,13 @@ final class TimeRulerPropertiesStage extends Stage
 
     TimeRulerPropertiesStage()
     {
-        final TimeRulerPropertiesRootController rootController;
+        final TimeRulerPropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
             {
                 java.net.URL location = getClass().getResource( 
-                            TimeRulerPropertiesRootController.RESOURCE_FXML );
+                            TimeRulerPropertiesController.RESOURCE_FXML );
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
@@ -38,7 +38,7 @@ final class TimeRulerPropertiesStage extends Stage
             }
         else
         {
-            rootController = new TimeRulerPropertiesRootController();
+            rootController = new TimeRulerPropertiesController();
             root = rootController.build();
         }
         

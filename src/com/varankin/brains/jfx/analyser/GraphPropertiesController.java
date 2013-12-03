@@ -25,11 +25,11 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class GraphPropertiesRootController implements Builder<Parent>
+public final class GraphPropertiesController implements Builder<Parent>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( GraphPropertiesRootController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPropertiesRoot.css";
-    private static final String CSS_CLASS = "graph-properties-root";
+    private static final LoggerX LOGGER = LoggerX.getLogger( GraphPropertiesController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyser/GraphProperties.css";
+    private static final String CSS_CLASS = "graph-properties";
 
     private final PropertyGate<Long> rateValueGate;
     private final PropertyGate<TimeUnit> rateUnitGate;
@@ -46,7 +46,7 @@ public final class GraphPropertiesRootController implements Builder<Parent>
     @FXML private Button buttonOK, buttonApply;
     @FXML private GraphPropertiesPaneController propertiesController;
 
-    public GraphPropertiesRootController()
+    public GraphPropertiesController()
     {
         changedFunction = new ChangedTrigger();
         rateValueGate = new PropertyGate<>();

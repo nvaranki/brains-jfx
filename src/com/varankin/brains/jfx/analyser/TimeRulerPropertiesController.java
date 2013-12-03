@@ -23,13 +23,13 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class TimeRulerPropertiesRootController implements Builder<Parent>
+public final class TimeRulerPropertiesController implements Builder<Parent>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPropertiesRootController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRulerPropertiesRoot.css";
-    private static final String CSS_CLASS = "time-ruler-properties-root";
+    private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPropertiesController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRulerProperties.css";
+    private static final String CSS_CLASS = "time-ruler-properties";
     
-    static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerPropertiesRoot.fxml";
+    static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerProperties.fxml";
     
     private final PropertyGate<Long> durationGate;
     private final PropertyGate<Long> excessGate;
@@ -45,7 +45,7 @@ public final class TimeRulerPropertiesRootController implements Builder<Parent>
     @FXML private Button buttonOK, buttonApply;
     @FXML private TimeRulerPropertiesPaneController propertiesController;
 
-    public TimeRulerPropertiesRootController()
+    public TimeRulerPropertiesController()
     {
         durationGate = new PropertyGate<>();
         excessGate = new PropertyGate<>();

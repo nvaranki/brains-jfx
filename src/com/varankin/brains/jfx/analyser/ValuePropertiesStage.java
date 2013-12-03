@@ -18,16 +18,15 @@ import javafx.stage.*;
 final class ValuePropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
-    private static final String RESOURCE_FXML = "/fxml/analyser/ValuePropertiesRoot.fxml";
 
     ValuePropertiesStage( DotPainter painter )
     {
-        final ValuePropertiesRootController rootController;
+        final ValuePropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
             {
-                java.net.URL location = getClass().getResource( RESOURCE_FXML );
+                java.net.URL location = getClass().getResource( ValuePropertiesController.RESOURCE_FXML );
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
@@ -39,7 +38,7 @@ final class ValuePropertiesStage extends Stage
             }
         else
         {
-            rootController = new ValuePropertiesRootController();
+            rootController = new ValuePropertiesController();
             root = rootController.build();
         }
         rootController.bindColorProperty( painter.colorProperty() );

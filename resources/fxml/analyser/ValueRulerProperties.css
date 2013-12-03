@@ -1,23 +1,21 @@
 /* 
-    Document   : ValueRulerPropertiesRoot.css
-    Created on : Nov 14, 2013
     Author     : Николай Варанкин
     Description: Панель диалога для выбора и установки параметров оси значений.
 */
 
-.value-ruler-properties-root HBox Button
+.value-ruler-properties HBox Button
 {
     -fx-cursor: hand;
 }
 
-.value-ruler-properties-root HBox
+.value-ruler-properties HBox
 {
     -fx-padding: 10px;
     -fx-spacing: 10px;
     -fx-alignment: baseline-right;
 }
 
-.value-ruler-properties-root 
+.value-ruler-properties 
 {
 
 }

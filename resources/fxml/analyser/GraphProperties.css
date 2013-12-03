@@ -1,23 +1,21 @@
 /* 
-    Document   : GraphPropertiesRoot.css
-    Created on : Nov 14, 2013
     Author     : Николай Варанкин
     Description: Панель диалога для выбора и установки параметров рисования графика.
 */
 
-.graph-properties-root HBox Button
+.graph-properties HBox Button
 {
     -fx-cursor: hand;
 }
 
-.graph-properties-root HBox
+.graph-properties HBox
 {
     -fx-padding: 10px;
     -fx-spacing: 10px;
     -fx-alignment: baseline-right;
 }
 
-.graph-properties-root 
+.graph-properties 
 {
 
 }

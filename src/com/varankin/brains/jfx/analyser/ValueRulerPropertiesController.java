@@ -22,13 +22,13 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class ValueRulerPropertiesRootController implements Builder<Parent>
+public final class ValueRulerPropertiesController implements Builder<Parent>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPropertiesRootController.class );
-    private static final String RESOURCE_CSS  = "/fxml/analyser/ValueRulerPropertiesRoot.css";
-    private static final String CSS_CLASS = "value-ruler-properties-root";
+    private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPropertiesController.class );
+    private static final String RESOURCE_CSS  = "/fxml/analyser/ValueRulerProperties.css";
+    private static final String CSS_CLASS = "value-ruler-properties";
     
-    static final String RESOURCE_FXML = "/fxml/analyser/ValueRulerPropertiesRoot.fxml";
+    static final String RESOURCE_FXML = "/fxml/analyser/ValueRulerProperties.fxml";
     
     private final PropertyGate<Float> valueMinGate;
     private final PropertyGate<Float> valueMaxGate;
@@ -43,7 +43,7 @@ public final class ValueRulerPropertiesRootController implements Builder<Parent>
     @FXML private Button buttonOK, buttonApply;
     @FXML private ValueRulerPropertiesPaneController propertiesController;
 
-    public ValueRulerPropertiesRootController()
+    public ValueRulerPropertiesController()
     {
         valueMinGate = new PropertyGate<>();
         valueMaxGate = new PropertyGate<>();

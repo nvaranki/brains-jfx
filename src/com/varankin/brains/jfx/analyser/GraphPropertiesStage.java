@@ -29,7 +29,7 @@ final class GraphPropertiesStage extends Stage
             Property<Boolean> zeroDisplayProperty, Property<Color> zeroColorProperty, 
             Property<Boolean> flowModeProperty )
     {
-        final GraphPropertiesRootController rootController;
+        final GraphPropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -46,7 +46,7 @@ final class GraphPropertiesStage extends Stage
             }
         else
         {
-            rootController = new GraphPropertiesRootController();
+            rootController = new GraphPropertiesController();
             root = rootController.build();
         }
         rootController.bindRateValueProperty( rateValueProperty );

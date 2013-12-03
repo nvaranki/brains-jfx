@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- 
-    Document   : GraphPropertiesRoot.fxml
-    Created on : Nov 7, 2013
+<!--
     Author     : Николай Варанкин
-    Description: Панель диалога для выбора и установки параметров рисования графика.
+    Description: Панель диалога для выбора и установки параметров оси значений.
 -->
-  
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -14,17 +10,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane 
-    fx:controller="com.varankin.brains.jfx.analyser.GraphPropertiesRootController" 
-    styleClass="graph-properties-root"
+<BorderPane
+    fx:controller="com.varankin.brains.jfx.analyser.ValueRulerPropertiesController" 
+    styleClass="value-ruler-properties"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
-
-    <stylesheets>
-        <URL value="@GraphPropertiesRoot.css"/>
-    </stylesheets>
-
+    
+  <stylesheets>
+    <URL value="@ValueRulerProperties.css"/>
+  </stylesheets>
+  
   <center>
-      <fx:include source="GraphPropertiesPane.fxml" fx:id="properties"/>
+      <fx:include source="ValueRulerPropertiesPane.fxml" fx:id="properties"/>
   </center>  
   
   <bottom>
