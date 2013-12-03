@@ -21,7 +21,6 @@ import javafx.stage.*;
 final class GraphPropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( GraphPropertiesStage.class );
-    private static final String RESOURCE_FXML = "/fxml/analyser/GraphPropertiesRoot.fxml";
 
     GraphPropertiesStage( 
             Property<Long> rateValueProperty, Property<TimeUnit> rateUnitProperty, 
@@ -34,7 +33,7 @@ final class GraphPropertiesStage extends Stage
         if( JavaFX.getInstance().useFxmlLoader() )
             try
             {
-                java.net.URL location = getClass().getResource( RESOURCE_FXML );
+                java.net.URL location = getClass().getResource( GraphPropertiesController.RESOURCE_FXML );
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();

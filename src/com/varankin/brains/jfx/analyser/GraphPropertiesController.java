@@ -30,6 +30,8 @@ public final class GraphPropertiesController implements Builder<Parent>
     private static final LoggerX LOGGER = LoggerX.getLogger( GraphPropertiesController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphProperties.css";
     private static final String CSS_CLASS = "graph-properties";
+    
+    static final String RESOURCE_FXML = "/fxml/analyser/GraphProperties.fxml";
 
     private final PropertyGate<Long> rateValueGate;
     private final PropertyGate<TimeUnit> rateUnitGate;
