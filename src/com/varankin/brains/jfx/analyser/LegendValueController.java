@@ -5,6 +5,7 @@ import com.varankin.util.LoggerX;
 import java.util.concurrent.Future;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.util.Builder;
 
 /**
@@ -193,9 +195,14 @@ public final class LegendValueController implements Builder<Control>
     {
         if( properties == null )
         {
-            properties = new ValuePropertiesStage( painter );
+            properties = new ValuePropertiesStage();
+            properties.initModality( Modality.NONE );
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.setTitle( LOGGER.text( "properties.value.title", legend.getText() ) );
+            ValuePropertiesController controller = properties.getController();
+            controller.bindColorProperty( painter.colorProperty() );
+            controller.bindPatternProperty( painter.patternProperty() );
+            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         }
         properties.show();
         properties.toFront();

@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.text.Text;
 import javafx.stage.*;
 
 /**
@@ -18,10 +17,11 @@ import javafx.stage.*;
 final class ValueRulerPropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPropertiesStage.class );
+    
+    private final ValueRulerPropertiesController controller;
 
     ValueRulerPropertiesStage()
     {
-        final ValueRulerPropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -31,7 +31,7 @@ final class ValueRulerPropertiesStage extends Stage
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
-                rootController = fxmlLoader.getController();
+                controller = fxmlLoader.getController();
             }
             catch( IOException ex )
             {
@@ -39,28 +39,32 @@ final class ValueRulerPropertiesStage extends Stage
             }
         else
         {
-            rootController = new ValueRulerPropertiesController();
-            root = rootController.build();
+            controller = new ValueRulerPropertiesController();
+            root = controller.build();
         }
-        rootController.bindTextFontProperty( new Text().fontProperty() ); //DEBUG
-        
-        setOnShowing( new EventHandler<WindowEvent>() 
-        {
-            @Override
-            public void handle( WindowEvent event )
-            {
-                rootController.reset();
-            }
-        } );
-        
+
         initStyle( StageStyle.DECORATED );
+        getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+        
         setResizable( true );
         setMinHeight( 190d );
         setMinWidth( 420d );
         setHeight( 190d ); //TODO save/restore size&pos
         setWidth( 420d );
         setScene( new Scene( root ) );
-        getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+        setOnShowing( new EventHandler<WindowEvent>() 
+        {
+            @Override
+            public void handle( WindowEvent event )
+            {
+                controller.reset();
+            }
+        } );
+    }
+
+    ValueRulerPropertiesController getController()
+    {
+        return controller;
     }
     
 }

@@ -100,7 +100,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     protected void initialize()
     {
         Bindings.bindBidirectional( duration.textProperty(), durationProperty, 
-                new PositiveLongConverter( duration ) );
+                new DurationConverter( duration ) );
         Bindings.bindBidirectional( excess.textProperty(), excessProperty, 
                 new ExcessConverter( excess ) );
         unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
@@ -146,9 +146,29 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         tickColor.fireEvent( new ActionEvent() );
     }
 
+    private class DurationConverter extends PositiveLongConverter
+    {
+        DurationConverter( Node node )
+        {
+            super( node );
+        }
+
+        @Override
+        public Long fromString( String string )
+        {
+            Long value = super.fromString( string );
+            Long excessPropertyValue = excessProperty.getValue();
+            if( value != null && excessPropertyValue != null && value <= excessPropertyValue )
+            {
+                LOGGER.log( "001003005W", value, excessPropertyValue );
+                highlight( value = null );
+            }
+            return value;
+        }
+    }
+
     private class ExcessConverter extends PositiveLongConverter
     {
-
         ExcessConverter( Node node )
         {
             super( node );

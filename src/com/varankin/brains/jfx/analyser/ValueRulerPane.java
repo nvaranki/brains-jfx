@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
@@ -53,6 +54,9 @@ final class ValueRulerPane extends AbstractRulerPane
         setMinHeight( 100d );
         setOnMouseClicked( new ContextMenuRaiser( popup, ValueRulerPane.this ) );
         heightProperty().addListener( new SizeChangeListener() );
+        tickColorProperty().setValue( Color.BLACK );
+        textColorProperty().setValue( Color.BLACK );
+        fontProperty().setValue( new Text().getFont() );
     }
     
     @FXML
@@ -60,15 +64,12 @@ final class ValueRulerPane extends AbstractRulerPane
     {
         if( properties == null )
         {
-            properties = new ValueRulerPropertiesStage( 
-//                    rateValueProperty, rateUnitProperty,
-//                    borderDisplayProperty, borderColorProperty, 
-//                    zeroDisplayProperty, zeroColorProperty, 
-//                    dynamicProperty 
-                    );
+            properties = new ValueRulerPropertiesStage();
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.ruler.value.title", 0 ) );
+            ValueRulerPropertiesController controller = properties.getController();
+            controller.bindTextFontProperty( fontProperty() ); //DEBUG
         }
         properties.show();
         properties.toFront();
@@ -114,13 +115,13 @@ final class ValueRulerPane extends AbstractRulerPane
         tick.getTransforms().add( new Translate( getTickSizeLarge(), 0 ) );
         tick.getTransforms().add( new Scale( -1, 1 ) );
         tick.relocate( tickShift, y );
-        tick.setStroke( getTickPaint() );
+        tick.setStroke( tickColorProperty().getValue() );
         getChildren().add( tick );
         if( s % 10 == 0 || s % 5 == 0 )
         {
             Text value = new Text( text );
             value.relocate( shiftToRightAlign( value ), y );
-            value.setFill( getValuePaint() );
+            value.setFill( textColorProperty().getValue() );
             if( y + value.boundsInLocalProperty().get().getMaxY() < getHeight() )
                 getChildren().add( value );
         }

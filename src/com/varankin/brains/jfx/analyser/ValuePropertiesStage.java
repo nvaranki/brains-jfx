@@ -4,7 +4,6 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
@@ -18,10 +17,11 @@ import javafx.stage.*;
 final class ValuePropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ValuePropertiesStage.class );
+    
+    private final ValuePropertiesController controller;
 
-    ValuePropertiesStage( DotPainter painter )
+    ValuePropertiesStage()
     {
-        final ValuePropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -30,7 +30,7 @@ final class ValuePropertiesStage extends Stage
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
-                rootController = fxmlLoader.getController();
+                controller = fxmlLoader.getController();
             }
             catch( IOException ex )
             {
@@ -38,31 +38,32 @@ final class ValuePropertiesStage extends Stage
             }
         else
         {
-            rootController = new ValuePropertiesController();
-            root = rootController.build();
+            controller = new ValuePropertiesController();
+            root = controller.build();
         }
-        rootController.bindColorProperty( painter.colorProperty() );
-        rootController.bindPatternProperty( painter.patternProperty() );
-        rootController.bindScaleProperty( new SimpleObjectProperty( 3 ) );
-        
-        setOnShowing( new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle( WindowEvent event )
-            {
-                rootController.reset();
-            }
-        } );
         
         initStyle( StageStyle.DECORATED );
-        initModality( Modality.NONE );
+        getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+
         setResizable( true );
         setMinHeight( 150d );
         setMinWidth( 350d );
         setHeight( 150d ); //TODO save/restore size&pos
         setWidth( 350d );
         setScene( new Scene( root ) );
-        getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+        setOnShowing( new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle( WindowEvent event )
+            {
+                controller.reset();
+            }
+        } );
     }
 
+    ValuePropertiesController getController()
+    {
+        return controller;
+    }
+    
 }

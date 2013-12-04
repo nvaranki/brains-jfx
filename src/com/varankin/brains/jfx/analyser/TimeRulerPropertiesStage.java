@@ -17,10 +17,11 @@ import javafx.stage.*;
 final class TimeRulerPropertiesStage extends Stage
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerPropertiesStage.class );
+    
+    private final TimeRulerPropertiesController controller;
 
     TimeRulerPropertiesStage()
     {
-        final TimeRulerPropertiesController rootController;
         Parent root;
         if( JavaFX.getInstance().useFxmlLoader() )
             try
@@ -30,7 +31,7 @@ final class TimeRulerPropertiesStage extends Stage
                 ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
                 FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
                 root = (Parent)fxmlLoader.load();
-                rootController = fxmlLoader.getController();
+                controller = fxmlLoader.getController();
             }
             catch( IOException ex )
             {
@@ -38,27 +39,32 @@ final class TimeRulerPropertiesStage extends Stage
             }
         else
         {
-            rootController = new TimeRulerPropertiesController();
-            root = rootController.build();
+            controller = new TimeRulerPropertiesController();
+            root = controller.build();
         }
         
-        setOnShowing( new EventHandler<WindowEvent>() 
-        {
-            @Override
-            public void handle( WindowEvent event )
-            {
-                rootController.reset();
-            }
-        } );
-        
         initStyle( StageStyle.DECORATED );
+        getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+        
         setResizable( true );
         setMinHeight( 270d );
         setMinWidth( 380d );
         setHeight( 270d ); //TODO save/restore size&pos
         setWidth( 380d );
         setScene( new Scene( root ) );
-        getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+        setOnShowing( new EventHandler<WindowEvent>() 
+        {
+            @Override
+            public void handle( WindowEvent event )
+            {
+                controller.reset();
+            }
+        } );
+    }
+
+    TimeRulerPropertiesController getController()
+    {
+        return controller;
     }
     
 }

@@ -1,11 +1,14 @@
 package com.varankin.brains.jfx.analyser;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 /**
  * Заготовка линейки. 
@@ -15,7 +18,8 @@ import javafx.scene.paint.Paint;
 abstract class AbstractRulerPane extends Pane
 {
     private int tickSizeLarge, tickSizeMedium, tickSizeSmall;
-    private Paint tickPaint, valuePaint;
+    private final Property<Color> tickColorProperty, textColorProperty;
+    private final Property<Font> fontProperty;
 
     protected AbstractRulerPane()
     {
@@ -23,8 +27,10 @@ abstract class AbstractRulerPane extends Pane
         tickSizeLarge = 9;
         tickSizeMedium = 6;
         tickSizeSmall = 3;
-        tickPaint = Color.BLACK;
-        valuePaint = Color.BLACK;
+
+        fontProperty = new SimpleObjectProperty<>();
+        tickColorProperty = new SimpleObjectProperty<>();
+        textColorProperty = new SimpleObjectProperty<>();
     }
     
     protected class SizeChangeListener implements ChangeListener<Number>
@@ -70,26 +76,21 @@ abstract class AbstractRulerPane extends Pane
         tickSizeSmall = size;
     }
 
-    final Paint getTickPaint()
+    final Property<Font> fontProperty()
     {
-        return tickPaint;
+        return fontProperty;
     }
 
-    final void setTickPaint( Paint paint )
+    final Property<Color> tickColorProperty()
     {
-        tickPaint = paint;
+        return tickColorProperty;
     }
 
-    final Paint getValuePaint()
+    final Property<Color> textColorProperty()
     {
-        return valuePaint;
+        return textColorProperty;
     }
 
-    final void setValuePaint( Paint paint )
-    {
-        valuePaint = paint;
-    }
-    
     static double roundToFactor( double value, double factor )
     {
         double exp = Math.floor( Math.log10( value ) );

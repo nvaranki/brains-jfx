@@ -5,12 +5,15 @@ import com.varankin.util.LoggerX;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -29,11 +32,17 @@ final class TimeRulerPane extends AbstractRulerPane
     private final SimpleBooleanProperty relativeProperty;
     @Deprecated private final ContextMenu popup;
     private TimeRulerPropertiesStage properties;
+    private final Property<Long> sizeProperty, excessProperty;
+    private final Property<TimeUnit> unitProperty;
+    
     @FXML private MenuItem menuItemProperties;
 
     TimeRulerPane( TimeConvertor convertor )
     {
         this.convertor = convertor;
+        sizeProperty = new SimpleObjectProperty<>();
+        excessProperty = new SimpleObjectProperty<>();
+        unitProperty = new SimpleObjectProperty<>();
         relativeProperty = new SimpleBooleanProperty();
         relativeProperty.addListener( new ChangeListener<Boolean>() 
         {
@@ -61,6 +70,12 @@ final class TimeRulerPane extends AbstractRulerPane
         setMinWidth( 100d );
         setOnMouseClicked( new ContextMenuRaiser( popup, TimeRulerPane.this ) );
         widthProperty().addListener( new SizeChangeListener() );
+        sizeProperty.setValue( convertor.getSize() );
+        excessProperty.setValue( convertor.getExcess() );
+        unitProperty.setValue( TimeUnit.MILLISECONDS );
+        tickColorProperty().setValue( Color.BLACK );
+        textColorProperty().setValue( Color.BLACK );
+        fontProperty().setValue( new Text().getFont() );
     }
     
     @FXML
@@ -68,15 +83,17 @@ final class TimeRulerPane extends AbstractRulerPane
     {
         if( properties == null )
         {
-            properties = new TimeRulerPropertiesStage( 
-//                    rateValueProperty, rateUnitProperty,
-//                    borderDisplayProperty, borderColorProperty, 
-//                    zeroDisplayProperty, zeroColorProperty, 
-//                    dynamicProperty 
-                    );
+            properties = new TimeRulerPropertiesStage();
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.ruler.time.title", 0 ) );
+            TimeRulerPropertiesController controller = properties.getController();
+            controller.bindDurationProperty( sizeProperty );
+            controller.bindExcessProperty( excessProperty );
+            controller.bindUnitProperty( unitProperty );
+            controller.bindTickColorProperty( tickColorProperty() );
+            controller.bindTextColorProperty( textColorProperty() );
+            controller.bindTextFontProperty( fontProperty() );
         }
         properties.show();
         properties.toFront();
@@ -100,6 +117,16 @@ final class TimeRulerPane extends AbstractRulerPane
     @Override
     protected void generateRuler()
     {
+        for( Node node : getChildren() )
+            if( node instanceof Line )
+            {
+                ((Line)node).strokeProperty().unbind();
+            }
+            else if( node instanceof Text )
+            {
+                ((Text)node).fillProperty().unbind();
+                ((Text)node).fontProperty().unbind();
+            }
         getChildren().clear();
         
         boolean relative = relativeProperty.get();
@@ -130,14 +157,15 @@ final class TimeRulerPane extends AbstractRulerPane
         int length = s % 10 == 0 ? getTickSizeLarge() : 
                 s % 5 == 0 ? getTickSizeMedium() : getTickSizeSmall();
         Line tick = new Line( 0, 0, 0, length );
-        tick.setStroke( getTickPaint() );
+        tick.strokeProperty().bind( tickColorProperty() );
         tick.relocate( x, 0d );
         getChildren().add( tick );
         if( s % 10 == 0 || ( s % 5 == 0 && relative ) )
         {
             Text value = new Text( text );
             value.relocate( x, 10d );
-            value.setFill( getValuePaint() );
+            value.fillProperty().bind( textColorProperty() );
+            value.fontProperty().bind( fontProperty() );
             if( x + value.boundsInLocalProperty().get().getMaxX() < getWidth() )
                 getChildren().add( value );
         }

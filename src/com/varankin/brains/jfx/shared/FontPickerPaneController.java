@@ -128,7 +128,7 @@ public final class FontPickerPaneController implements Builder<Pane>
         weightProperty.setModel( weight.getSelectionModel() );
         postureProperty.setModel( posture.getSelectionModel() );
         
-        sample.setText( "-12345.6789" );
+        sample.setText( "-12345.67890" );
     }
     
     public Property<Font> fontProperty()
