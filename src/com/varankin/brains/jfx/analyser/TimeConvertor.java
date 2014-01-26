@@ -23,6 +23,12 @@ final class TimeConvertor
         return (int)Math.round( ( t - t0 ) * tx );
     }
 
+    void reset( long duration, long excess, TimeUnit unit )
+    {
+        tSize   = TimeUnit.MILLISECONDS.convert( duration, unit );
+        tExcess = TimeUnit.MILLISECONDS.convert( excess, unit );
+    }
+    
     int reset( double width, long t )
     {
         tx = width / tSize;

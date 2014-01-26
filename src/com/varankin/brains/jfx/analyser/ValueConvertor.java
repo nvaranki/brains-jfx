@@ -32,6 +32,11 @@ final class ValueConvertor
         return vMin;
     }
 
+    float getMax()
+    {
+        return vMin + vSize;
+    }
+
     float getSize()
     {
         return vSize;

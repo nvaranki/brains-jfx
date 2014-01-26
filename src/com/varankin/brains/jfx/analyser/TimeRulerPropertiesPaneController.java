@@ -127,14 +127,14 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         return textColor.valueProperty();
     }
     
-    Property<Font> textFontProperty()
-    {
-        return fontPickerController.fontProperty();
-    }
-
     Property<Color> tickColorProperty()
     {
         return tickColor.valueProperty();
+    }
+
+    Property<Font> textFontProperty()
+    {
+        return fontPickerController.fontProperty();
     }
 
     /**

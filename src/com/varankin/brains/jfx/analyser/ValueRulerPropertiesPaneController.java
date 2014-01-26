@@ -1,9 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
+import com.varankin.brains.jfx.shared.FontPickerPaneController;
 import com.varankin.util.LoggerX;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -25,17 +27,16 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     private static final String CSS_CLASS = "value-ruler-properties-pane";
 
     private final ObjectProperty<Float> valueMinProperty, valueMaxProperty;
-    private final ObjectProperty<Font> textFontProperty;
     
     @FXML private TextField valueMin, valueMax;
     @FXML private ColorPicker textColor, tickColor;
-    @FXML private Control textFont;
+    @FXML private Pane fontPicker;
+    @FXML private FontPickerPaneController fontPickerController;
     
     public ValueRulerPropertiesPaneController()
     {
         valueMinProperty = new SimpleObjectProperty<>();
         valueMaxProperty = new SimpleObjectProperty<>();
-        textFontProperty = new SimpleObjectProperty<>();
     }
     
     /**
@@ -59,25 +60,24 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
         textColor.setId( "textColor" );
         textColor.setFocusTraversable( false ); //TODO true RT-21549
         
-        textFont = new TextField("Helvetica"); //TODO
-        textFont.setId( "textFont" );
-        textFont.setFocusTraversable( true );
-        
         tickColor = new ColorPicker();
         tickColor.setId( "tickColor" );
         tickColor.setFocusTraversable( false ); //TODO true RT-21549
+
+        fontPickerController = new FontPickerPaneController();
+        fontPicker = fontPickerController.build();
+        fontPicker.setId( "fontPicker" );
         
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "properties.ruler.value.min" ) ), 0, 0 );
-        pane.add( valueMin, 1, 0 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.value.max" ) ), 2, 0 );
-        pane.add( valueMax, 3, 0 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.text.color" ) ), 0, 1 );
-        pane.add( textColor, 1, 1 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.text.font" ) ), 2, 1 );
-        pane.add( textFont, 3, 1 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.tick.color" ) ), 0, 2 );
-        pane.add( tickColor, 1, 2 );
+        pane.add( valueMin, 1, 0, 2, 1 );
+        pane.add( new Label( LOGGER.text( "properties.ruler.value.max" ) ), 0, 1 );
+        pane.add( valueMax, 1, 1, 2, 1 );
+        pane.add( new Label( LOGGER.text( "properties.ruler.text.color" ) ), 0, 2 );
+        pane.add( textColor, 1, 2 );
+        pane.add( new Label( LOGGER.text( "properties.ruler.tick.color" ) ), 2, 2 );
+        pane.add( tickColor, 3, 2 );
+        pane.add( fontPicker, 0, 3, 4, 1 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -111,14 +111,14 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
         return textColor.valueProperty();
     }
     
-    Property<Font> textFontProperty()
-    {
-        return textFontProperty;
-    }
-
     Property<Color> tickColorProperty()
     {
         return tickColor.valueProperty();
+    }
+
+    Property<Font> textFontProperty()
+    {
+        return fontPickerController.fontProperty();
     }
 
     /**
@@ -126,6 +126,8 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
      */
     void resetColorPicker()
     {
+        textColor.fireEvent( new ActionEvent() );
+        tickColor.fireEvent( new ActionEvent() );
     }
 
     private static class RelativeFloatConverter extends FloatConverter

@@ -32,7 +32,8 @@
         prefColumnCount="9"
         focusTraversable="true"   
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="0" 
+        GridPane.rowIndex="0"
+        GridPane.columnSpan="2"  
     />   
     <Label 
         text="%properties.ruler.value.max" 
@@ -45,6 +46,7 @@
         focusTraversable="true"   
         GridPane.columnIndex="3" 
         GridPane.rowIndex="0" 
+        GridPane.columnSpan="2"  
     />   
     <Label 
         text="%properties.ruler.text.color" 
@@ -57,28 +59,21 @@
         GridPane.rowIndex="2" 
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
-    <Label
-        text="%properties.ruler.text.font" 
+    <Label 
+        text="%properties.ruler.tick.color" 
         GridPane.columnIndex="2" 
         GridPane.rowIndex="2" 
     />
-    <TextField 
-        fx:id="textFont"
-        focusTraversable="true"   
-        GridPane.columnIndex="3" 
-        GridPane.rowIndex="2" 
-    />   
-    <Label 
-        text="%properties.ruler.tick.color" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="3" 
-    />
     <ColorPicker 
         fx:id="tickColor" 
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="3" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="2" 
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
+    <fx:include 
+        source="../shared/FontPickerPane.fxml" 
+        fx:id="fontPicker"
+    />
   </children>
   
 </GridPane>

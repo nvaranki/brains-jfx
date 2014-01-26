@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.jfx.analyser.AnalyserView;
 import com.varankin.brains.jfx.browser.BrowserView;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
@@ -7,6 +8,7 @@ import com.varankin.util.Текст;
 import java.util.List;
 import java.util.logging.*;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -55,10 +57,14 @@ class GuiBuilder
         TitledPane панель0 = навигаторПоРабочемуПроекту( spacing );
         TitledPane панель2 = навигаторПоАрхивуПроектов( spacing );
         TitledPane панель3 = навигаторПоАрхивуБиблиотек( spacing );
+        панель0.setPrefWidth( 250d );
+        панель2.setPrefWidth( 250d );
+        панель3.setPrefWidth( 250d );
         // панель обозревателей
         Accordion обозреватели = new Accordion();
         обозреватели.getPanes().addAll( панель0, панель2, панель3 );
         обозреватели.setExpandedPane( панель0 );
+        обозреватели.setPrefWidth( 250d );
         return обозреватели;
     }
 
@@ -73,6 +79,13 @@ class GuiBuilder
         views.addListener( new TabPaneContentManager( просмотр ) );
         //            Pane sppw = new StackPane();
         //            sppw.getChildren().add( просмотр );
+//        ScrollPane analyserViewScrolled = new ScrollPane();
+//        analyserViewScrolled.setContent( new AnalyserView( JFX ) );
+//        analyserViewScrolled.setHbarPolicy( ScrollPane.ScrollBarPolicy.NEVER );
+//        analyserViewScrolled.setVbarPolicy( ScrollPane.ScrollBarPolicy.ALWAYS );
+//        analyserViewScrolled.setFitToWidth( true );
+//        analyserViewScrolled.setStyle("-fx-background-color:transparent;");
+        views.add( new TitledSceneGraph( new AnalyserView( JFX ), new SimpleStringProperty( "Анализатор" ) ) );
         return просмотр; //sppw;
         //sppw;
     }
@@ -84,10 +97,12 @@ class GuiBuilder
         SplitPane блок1 = new SplitPane();
         блок1.setOrientation( Orientation.HORIZONTAL );
         блок1.setDividerPosition( 0, 0.3 );
+        блок1.setDividerPosition( 1, 0.7 );
         блок1.getItems().addAll( createLeftBlock(), createRightBlock() );
         SplitPane блок2 = new SplitPane();
         блок2.setOrientation( Orientation.VERTICAL );
         блок2.setDividerPosition( 0, 0.8 );
+        блок2.setDividerPosition( 1, 0.2 );
         блок2.getItems().addAll( блок1, createBottomBlock() );
         return блок2;
     }
@@ -129,7 +144,7 @@ class GuiBuilder
         return навигатор( view, spacing, view.getActions(), view.titleProperty() );
     }
 
-    private TitledPane навигатор( Node навигатор, int spacing, 
+    private TitledPane навигатор( Control навигатор, int spacing, 
             List<AbstractJfxAction> actions, ReadOnlyStringProperty title )
     {
         TitledPane панель = new TitledPane();
@@ -145,6 +160,7 @@ class GuiBuilder
                 else
                     toolbar.getItems().add( new Separator( Orientation.HORIZONTAL ) );
             Pane pane = new HBox( spacing );
+            pane.setPrefWidth( 250d );
             HBox.setHgrow( навигатор, Priority.ALWAYS );
             pane.getChildren().addAll( toolbar, навигатор );
             панель.setContent( pane );
@@ -153,6 +169,7 @@ class GuiBuilder
         {
             панель.setContent( навигатор );
         }
+        навигатор.setPrefWidth( 250d );
         return панель;
     }
 

@@ -20,13 +20,14 @@
     -fx-cursor: hand;
 }
 
-.value-ruler-properties-pane #textFont
-{
-}
-
 .value-ruler-properties-pane #tickColor 
 {
     -fx-cursor: hand;
+}
+
+.value-ruler-properties-pane #fontPicker
+{
+    -fx-padding: 0px;
 }
 
 .value-ruler-properties-pane 

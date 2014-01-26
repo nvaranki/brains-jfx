@@ -5,7 +5,12 @@ import com.varankin.util.LoggerX;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
@@ -17,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.util.Callback;
 
 /**
  * Линейка по горизонтальной оси времени. 
@@ -37,7 +43,7 @@ final class TimeRulerPane extends AbstractRulerPane
     
     @FXML private MenuItem menuItemProperties;
 
-    TimeRulerPane( TimeConvertor convertor )
+    TimeRulerPane( final TimeConvertor convertor )
     {
         this.convertor = convertor;
         sizeProperty = new SimpleObjectProperty<>();
@@ -76,6 +82,35 @@ final class TimeRulerPane extends AbstractRulerPane
         tickColorProperty().setValue( Color.BLACK );
         textColorProperty().setValue( Color.BLACK );
         fontProperty().setValue( new Text().getFont() );
+        //ChangeListener
+        BooleanBinding reconfigure = Bindings.createBooleanBinding( 
+                new Callable<Boolean>()
+                {
+                    @Override
+                    public Boolean call() throws Exception
+                    {
+                        return true;
+                    }
+                }, 
+                sizeProperty, excessProperty, unitProperty );
+        reconfigure.addListener( new InvalidationListener() 
+        {
+            @Override
+            public void invalidated( Observable _ )
+            {
+                Long duration = sizeProperty.getValue();
+                Long excess = excessProperty.getValue();
+                TimeUnit unit = unitProperty.getValue();
+                int width = widthProperty().intValue(); 
+                if( width > 0 
+                        && duration != null && duration > 0L 
+                        && excess != null && unit != null ) 
+                {
+                    convertor.reset( duration, excess, unit );
+                    generateRuler();
+                }
+            }
+        } );
     }
     
     @FXML

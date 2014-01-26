@@ -4,6 +4,8 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import java.util.logging.Logger;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -30,11 +32,15 @@ final class ValueRulerPane extends AbstractRulerPane
     private final ValueConvertor convertor;
     @Deprecated private final ContextMenu popup;
     private ValueRulerPropertiesStage properties;
+    private final Property<Float> valueMinProperty, valueMaxProperty;
+    
     @FXML private MenuItem menuItemProperties;
 
     ValueRulerPane( ValueConvertor convertor )
     {
         this.convertor = convertor;
+        valueMinProperty = new SimpleObjectProperty<>();
+        valueMaxProperty = new SimpleObjectProperty<>();
         //TODO appl. param.
         tickShift = 35d;
         
@@ -54,6 +60,8 @@ final class ValueRulerPane extends AbstractRulerPane
         setMinHeight( 100d );
         setOnMouseClicked( new ContextMenuRaiser( popup, ValueRulerPane.this ) );
         heightProperty().addListener( new SizeChangeListener() );
+        valueMinProperty.setValue( convertor.getMin() );
+        valueMaxProperty.setValue( convertor.getMax() );
         tickColorProperty().setValue( Color.BLACK );
         textColorProperty().setValue( Color.BLACK );
         fontProperty().setValue( new Text().getFont() );
@@ -69,7 +77,11 @@ final class ValueRulerPane extends AbstractRulerPane
             properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.ruler.value.title", 0 ) );
             ValueRulerPropertiesController controller = properties.getController();
-            controller.bindTextFontProperty( fontProperty() ); //DEBUG
+            controller.bindValueMinProperty( valueMinProperty );
+            controller.bindValueMaxProperty( valueMaxProperty );
+            controller.bindTickColorProperty( tickColorProperty() );
+            controller.bindTextColorProperty( textColorProperty() );
+            controller.bindTextFontProperty( fontProperty() );
         }
         properties.show();
         properties.toFront();
@@ -115,13 +127,14 @@ final class ValueRulerPane extends AbstractRulerPane
         tick.getTransforms().add( new Translate( getTickSizeLarge(), 0 ) );
         tick.getTransforms().add( new Scale( -1, 1 ) );
         tick.relocate( tickShift, y );
-        tick.setStroke( tickColorProperty().getValue() );
+        tick.strokeProperty().bind( tickColorProperty() );
         getChildren().add( tick );
         if( s % 10 == 0 || s % 5 == 0 )
         {
             Text value = new Text( text );
             value.relocate( shiftToRightAlign( value ), y );
-            value.setFill( textColorProperty().getValue() );
+            value.fillProperty().bind( textColorProperty() );
+            value.fontProperty().bind( fontProperty() );
             if( y + value.boundsInLocalProperty().get().getMaxY() < getHeight() )
                 getChildren().add( value );
         }
