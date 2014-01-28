@@ -24,6 +24,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -134,6 +135,17 @@ public final class JavaFX
                 return null;
             }
         } );
+        Runnable r = new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                Font.getFamilies(); // заполнит кэш этого метода
+            }
+        };
+        Thread t = new Thread( r, "Font Family loader" );
+        t.setPriority( Thread.currentThread().getPriority() - 1 );
+        t.start();
     }
 
     void стоп()
