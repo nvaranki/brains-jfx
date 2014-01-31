@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import javafx.beans.binding.Bindings;
 import javafx.event.*;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -18,7 +19,7 @@ import javafx.scene.paint.Color;
 /**
  * Управляемый график динамического изменения значений по времени. 
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 final class TimeLinePane extends GridPane
 {
@@ -27,14 +28,15 @@ final class TimeLinePane extends GridPane
     private static final String RESOURCE_FXML_GRAPH = "/fxml/analyser/GraphPane.fxml";
 
     private final Node drawArea;
-    private final TimeRulerPane timeRuler;
-    private final ValueRulerPane valueRuler;
     private final Node controlBar;
     private final TimeLineController controller;
     @Deprecated private final ContextMenu popup;
     private final GraphPaneController graphPaneController;
     private final LegendPaneController legendPaneController;
     
+    @FXML private TimeRulerController timeRulerController;
+    @FXML private ValueRulerController valueRulerController;
+
     TimeLinePane( TimeLineController timeLineController )
     {
         controller = timeLineController;
@@ -71,8 +73,10 @@ final class TimeLinePane extends GridPane
 
         timeLineController.dynamicProperty().bindBidirectional( legendPaneController.dynamicProperty() );
         
-        timeRuler = new TimeRulerPane( controller.getTimeConvertor() );
-        valueRuler = new ValueRulerPane( controller.getValueConvertor() );
+        timeRulerController = new TimeRulerController();
+        valueRulerController = new ValueRulerController();
+        Pane timeRuler = timeRulerController.build();//new TimeRulerPane( controller.getTimeConvertor() );
+        Pane valueRuler = valueRulerController.build();//new ValueRulerPane( controller.getValueConvertor() );
 
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth( 45d );
@@ -114,14 +118,12 @@ final class TimeLinePane extends GridPane
         popup = new ContextMenu();
         popup.getItems().add( menuItemRemove );
 
-        controller.widthProperty().bind( timeRuler.widthProperty() );
-        controller.heightProperty().bind( valueRuler.heightProperty() );
+        controller.dynamicProperty().bindBidirectional( graphPaneController.dynamicProperty() );
+        controller.dynamicProperty().bindBidirectional( timeRulerController.relativeProperty() );
         graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
         graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
-        graphPaneController.dynamicProperty().bindBidirectional( controller.dynamicProperty() );
-        graphPaneController.setTimeConvertor( controller.getTimeConvertor() );
-        graphPaneController.setValueConvertor( controller.getValueConvertor() );
-        timeRuler.relativeProperty().bind( controller.dynamicProperty() );
+        graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+        graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
         
         //TODO setOnMouseClicked( new ContextMenuRaiser( popup, TimeLinePane.this ) );
     }
@@ -132,10 +134,8 @@ final class TimeLinePane extends GridPane
         if( items != null && !items.isEmpty() )
         {
             JavaFX.copyMenuItems( items, popup.getItems(), true );
-            
-            timeRuler.appendToPopup( popup.getItems() );
-            
-            valueRuler.appendToPopup( popup.getItems() );
+            timeRulerController.appendToPopup( popup.getItems() );
+            valueRulerController.appendToPopup( popup.getItems() );
 
             List<MenuItem> itemsDrawArea = new ArrayList<>();
             MenuItem menuItemStart = new MenuItem( LOGGER.text( "timeline.popup.start" ) );
@@ -171,8 +171,10 @@ final class TimeLinePane extends GridPane
     Queue<Dot> createQueue( String name, Color color, int[][] pattern )
     {
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
-        DotPainter painter = new BufferedDotPainter( 
-                controller.getTimeConvertor(), controller.getValueConvertor(), queue, 1000 );
+        DotPainter painter = new BufferedDotPainter(
+                timeRulerController.convertorProperty().get(),
+                valueRulerController.convertorProperty().get(),
+                queue, 1000 );
         painter.writableImageProperty().bind( graphPaneController.writableImageProperty() );
         painter.colorProperty().setValue( color );
         painter.patternProperty().setValue( pattern );

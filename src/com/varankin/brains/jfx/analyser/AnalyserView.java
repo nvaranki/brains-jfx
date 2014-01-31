@@ -57,10 +57,8 @@ public class AnalyserView extends ScrollPane
             @Override
             public void handle( ActionEvent t )
             {
-                TimeConvertor tc = new TimeConvertor( 60, 2, TimeUnit.SECONDS ); 
-                ValueConvertor vc = new ValueConvertor( -1.0F, +1.0F );
-                TimeLineController controller = new TimeLineController( jfx, tc, vc );
-                TimeLinePane timeLine = new TimeLinePane( controller );
+                TimeLineController controller = new TimeLineController();
+                TimeLinePane timeLine = controller.build();
                 timeLine.appendToPopup( popup.getItems() );
                 timeLine = simulate( jfx, timeLine, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
                 box.getChildren().addAll( timeLine, new Separator( Orientation.HORIZONTAL ) );

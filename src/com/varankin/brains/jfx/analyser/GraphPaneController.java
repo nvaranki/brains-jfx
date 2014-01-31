@@ -39,12 +39,12 @@ public final class GraphPaneController implements Builder<Pane>
     private final ObjectProperty<TimeUnit> rateUnitProperty;
     private final BooleanProperty borderDisplayProperty, zeroDisplayProperty;
     private final ObjectProperty<Color> borderColorProperty, zeroColorProperty;
+    private final ObjectProperty<ValueConvertor> valueConvertorProperty;
+    private final ObjectProperty<TimeConvertor> timeConvertorProperty;
     private final ImageChanger imageChanger;
     private final DynamicSwitch dynamicSwitch;
     private final DynamicParametersChanger dynamicChanger;
 
-    private TimeConvertor timeConvertor;
-    private ValueConvertor valueConvertor;
     private GraphPropertiesStage properties;
     
     @FXML private Pane pane;
@@ -62,6 +62,8 @@ public final class GraphPaneController implements Builder<Pane>
         widthProperty = new SimpleDoubleProperty();
         heightProperty = new SimpleDoubleProperty();
         writableImageProperty = new ReadOnlyObjectWrapper<>();
+        valueConvertorProperty = new SimpleObjectProperty<>();
+        timeConvertorProperty = new SimpleObjectProperty<>();
         
         rateValueProperty = new SimpleObjectProperty<>( 100L );
         rateUnitProperty = new SimpleObjectProperty<>( TimeUnit.MILLISECONDS );
@@ -212,6 +214,16 @@ public final class GraphPaneController implements Builder<Pane>
         return heightProperty;
     }
     
+    Property<ValueConvertor> valueConvertorProperty()
+    {
+        return valueConvertorProperty;
+    }
+    
+    Property<TimeConvertor> timeConvertorProperty()
+    {
+        return timeConvertorProperty;
+    }
+    
     BooleanProperty dynamicProperty()
     {
         return dynamicProperty;
@@ -222,16 +234,6 @@ public final class GraphPaneController implements Builder<Pane>
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
     }
 
-    void setTimeConvertor( TimeConvertor convertor )
-    {
-        timeConvertor = convertor;
-    }
-
-    void setValueConvertor( ValueConvertor convertor )
-    {
-        valueConvertor = convertor;
-    }
-    
     private void replaceImage( int width, int height )
     {
         if( width > 0 && height > 0 )
@@ -267,7 +269,7 @@ public final class GraphPaneController implements Builder<Pane>
     
     private void drawAxes( PixelWriter writer, int width, int height )
     {
-        int zero = valueConvertor.valueToImage( 0.0F );
+        int zero = valueConvertorProperty.get().valueToImage( 0.0F );
         if( zeroDisplayProperty.get() && 0 < zero && zero < heightProperty.intValue() )
         {
             Color color = zeroColorProperty.getValue();
@@ -335,7 +337,7 @@ public final class GraphPaneController implements Builder<Pane>
             @Override
             public void run()
             {
-                int shift = timeConvertor.reset( widthProperty().doubleValue(), moment );
+                int shift = timeConvertorProperty.get().reset( widthProperty().doubleValue(), moment );
                 if( shift > 0 )
                     shiftImage( shift );
             }
