@@ -20,7 +20,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели графиков. 
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class AnalyserController implements Builder<Node>
 {
