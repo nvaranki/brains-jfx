@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Author     : Николай Варанкин
+    Description: Панель графиков.
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane 
+    fx:controller="com.varankin.brains.jfx.analyser.AnalyserController" 
+    styleClass="analyser"
+    fitToWidth="true" 
+    hbarPolicy="NEVER" 
+    vbarPolicy="ALWAYS"  
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@Analyser.css"/>
+    </stylesheets>
+    
+    <VBox 
+        fx:id="box"
+        fillWidth="true" 
+        focusTraversable="true"
+        />
+    
+    <contextMenu>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem 
+                    fx:id="menuItemAdd" 
+                    onAction="#onActionAddTimeLine" 
+                    text="%analyser.popup.add"  
+                />  
+            </items>
+        </ContextMenu>        
+    </contextMenu>
+    
+</ScrollPane>

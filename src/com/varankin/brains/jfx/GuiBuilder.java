@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.jfx.analyser.AnalyserView;
+import com.varankin.brains.jfx.analyser.AnalyserController;
 import com.varankin.brains.jfx.browser.BrowserView;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
@@ -79,13 +79,7 @@ class GuiBuilder
         views.addListener( new TabPaneContentManager( просмотр ) );
         //            Pane sppw = new StackPane();
         //            sppw.getChildren().add( просмотр );
-//        ScrollPane analyserViewScrolled = new ScrollPane();
-//        analyserViewScrolled.setContent( new AnalyserView( JFX ) );
-//        analyserViewScrolled.setHbarPolicy( ScrollPane.ScrollBarPolicy.NEVER );
-//        analyserViewScrolled.setVbarPolicy( ScrollPane.ScrollBarPolicy.ALWAYS );
-//        analyserViewScrolled.setFitToWidth( true );
-//        analyserViewScrolled.setStyle("-fx-background-color:transparent;");
-        views.add( new TitledSceneGraph( new AnalyserView( JFX ), new SimpleStringProperty( "Анализатор" ) ) );
+        views.add( new TitledSceneGraph( new AnalyserController().build(), new SimpleStringProperty( "Анализатор" ) ) );
         return просмотр; //sppw;
         //sppw;
     }

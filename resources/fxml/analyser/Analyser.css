@@ -1,0 +1,12 @@
+/* 
+    Author     : Николай Варанкин
+    Description: Панель графиков.
+*/
+
+analyser 
+{ 
+    -fx-spacing: 10;
+    -fx-padding: 5;
+    -fx-background-color: transparent;
+}
+
