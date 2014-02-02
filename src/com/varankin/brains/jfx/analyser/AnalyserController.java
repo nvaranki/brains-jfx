@@ -2,10 +2,9 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,7 +12,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
@@ -30,6 +29,8 @@ public final class AnalyserController implements Builder<Node>
     
     @Deprecated private int id; //DEBUG
 
+    @FXML private Pane buttonPanel;
+    @FXML private Button buttonRemoveAll;
     @FXML private VBox box;
     @FXML private ContextMenu popup;
     @FXML private MenuItem menuItemAdd;
@@ -45,6 +46,31 @@ public final class AnalyserController implements Builder<Node>
     @Override
     public ScrollPane build()
     {
+        Button buttonAdd = new Button( LOGGER.text( "analyser.popup.add" ) );
+        buttonAdd.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent e )
+            {
+                onActionAddTimeLine( e );
+            }
+        } );
+        
+        buttonRemoveAll = new Button( LOGGER.text( "analyser.popup.clean" ) );
+        buttonRemoveAll.setId( "buttonRemoveAll" );
+        buttonRemoveAll.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent e )
+            {
+                onActionRemoveAllTimeLines(e );
+            }
+        } );
+        
+        buttonPanel = new HBox();
+        buttonPanel.setId( "buttonPanel" );
+        buttonPanel.getChildren().addAll( buttonAdd, buttonRemoveAll );
+        
         menuItemAdd = new MenuItem( LOGGER.text( "analyser.popup.add" ) );
         menuItemAdd.setId( "menuItemAdd" );
         menuItemAdd.setOnAction( new EventHandler<ActionEvent>() 
@@ -61,6 +87,7 @@ public final class AnalyserController implements Builder<Node>
 
         box = new VBox();
         box.setId( "box" );
+        box.getChildren().add( buttonPanel );
         box.setFillWidth( true );
         box.setFocusTraversable( true );
 
@@ -98,6 +125,8 @@ public final class AnalyserController implements Builder<Node>
                             box.getChildren().remove( i-- );
             }
         } );
+        buttonRemoveAll.disableProperty().bind( Bindings.lessThan( 
+                Bindings.size( box.getChildren() ), 2 ) );
     }
     
     @FXML
@@ -107,8 +136,22 @@ public final class AnalyserController implements Builder<Node>
         TimeLinePane timeLine = controller.build();
         timeLine.appendToPopup( popup.getItems() );
         timeLine = simulate( timeLine, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
-        box.getChildren().addAll( timeLine, new Separator( Orientation.HORIZONTAL ) );
+        List<Node> children = box.getChildren();
+        int pos = Math.max( 0, children.indexOf( buttonPanel ) );
+        children.addAll( pos, Arrays.<Node>asList( timeLine, new Separator( Orientation.HORIZONTAL ) ) );
         controller.dynamicProperty().set( true );
+    }
+    
+    @FXML
+    private void onActionRemoveAllTimeLines( ActionEvent _ )
+    {
+        boolean confirmed = true;//TODO popup and ask again
+        if( confirmed )
+        {
+            List<Node> graphs = new ArrayList<>( box.getChildren() );
+            graphs.remove( buttonPanel );
+            box.getChildren().removeAll( graphs );
+        }
     }
     
     @Deprecated // DEBUG

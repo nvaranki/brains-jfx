@@ -3,10 +3,21 @@
     Description: Панель графиков.
 */
 
-analyser 
+.analyser 
 { 
-    -fx-spacing: 10;
-    -fx-padding: 5;
+    -fx-spacing: 10px;
+    -fx-padding: 5px;
     -fx-background-color: transparent;
 }
 
+.analyser #box #buttonPanel
+{
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+}
+
+.analyser #box #buttonPanel Button
+{
+    -fx-cursor: hand;
+}

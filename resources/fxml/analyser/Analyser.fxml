@@ -21,20 +21,38 @@
     <stylesheets>
         <URL value="@Analyser.css"/>
     </stylesheets>
-    
+
     <VBox 
         fx:id="box"
         fillWidth="true" 
         focusTraversable="true"
-        />
+        visible="false" 
+        >
+        <children>
+            <HBox 
+                fx:id="buttonPanel" 
+                alignment="CENTER_RIGHT" 
+                >  
+                <Button 
+                    text="@analyzer.popup.add" 
+                    onAction="#onActionAddTimeLine" 
+                    />      
+                <Button 
+                    fx:id="buttonRemoveAll" 
+                    text="@analyzer.popup.clean" 
+                    onAction="#onActionRemoveAllTimeLines" 
+                    />      
+            </HBox>
+        </children>
+    </VBox>
     
     <contextMenu>
         <ContextMenu fx:id="popup" >
             <items>
                 <MenuItem 
                     fx:id="menuItemAdd" 
-                    onAction="#onActionAddTimeLine" 
                     text="%analyser.popup.add"  
+                    onAction="#onActionAddTimeLine" 
                 />  
             </items>
         </ContextMenu>        
