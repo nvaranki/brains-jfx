@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.util.Builder;
 
 /**
@@ -28,6 +29,7 @@ public final class AnalyserController implements Builder<Node>
     private static final String CSS_CLASS = "analyser";
     
     @Deprecated private int id; //DEBUG
+    private TimeLineSetupStage setup;
 
     @FXML private Pane buttonPanel;
     @FXML private Button buttonRemoveAll;
@@ -132,14 +134,27 @@ public final class AnalyserController implements Builder<Node>
     @FXML
     private void onActionAddTimeLine( ActionEvent _ )
     {
-        TimeLineController controller = new TimeLineController();
-        TimeLinePane timeLine = controller.build();
-        timeLine.appendToPopup( popup.getItems() );
-        timeLine = simulate( timeLine, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
-        List<Node> children = box.getChildren();
-        int pos = Math.max( 0, children.indexOf( buttonPanel ) );
-        children.addAll( pos, Arrays.<Node>asList( timeLine, new Separator( Orientation.HORIZONTAL ) ) );
-        controller.dynamicProperty().set( true );
+        if( setup == null )
+        {
+            setup = new TimeLineSetupStage();
+            setup.initModality( Modality.APPLICATION_MODAL );
+            setup.initOwner( JavaFX.getInstance().платформа );
+            setup.setTitle( LOGGER.text( "analyser.popup.add" ) );
+        }
+        setup.showAndWait();
+        TimeLineSetupController setupController = setup.getController();
+        boolean proceed = setupController.isApproved();
+        if( proceed )
+        {
+            TimeLineController controller = new TimeLineController();
+            TimeLinePane timeLine = controller.build();
+            timeLine.appendToPopup( popup.getItems() );
+            timeLine = simulate( timeLine, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
+            List<Node> children = box.getChildren();
+            int pos = Math.max( 0, children.indexOf( buttonPanel ) );
+            children.addAll( pos, Arrays.<Node>asList( timeLine, new Separator( Orientation.HORIZONTAL ) ) );
+            controller.dynamicProperty().set( true );
+        }
     }
     
     @FXML
