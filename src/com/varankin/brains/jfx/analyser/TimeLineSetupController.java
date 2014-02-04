@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.util.LoggerX;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -20,12 +22,37 @@ public class TimeLineSetupController implements Builder<Parent>
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeLineSetup.css";
     private static final String CSS_CLASS = "time-line-setup";
     
+    private boolean approved;
+    
+    @FXML private Button buttonOK, buttonCancel;
 
     @Override
     public Parent build()
     {
+        buttonOK = new Button( LOGGER.text( "button.apply" ) );
+        buttonOK.setDefaultButton( true );
+        buttonOK.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionOK( event );
+            }
+        } );
+        
+        buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
+        buttonCancel.setCancelButton( true );
+        buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Override
+            public void handle( ActionEvent event )
+            {
+                onActionCancel( event );
+            }
+        } );
+        
         HBox buttonBar = new HBox();
-        buttonBar.getChildren().addAll( new Button("OK"), new Button("Cancel") );
+        buttonBar.getChildren().addAll( buttonOK, buttonCancel );
 
         Tab tabValueRuler = new Tab();
         tabValueRuler.setContent( new ValueRulerPropertiesPaneController().build() );
@@ -62,9 +89,27 @@ public class TimeLineSetupController implements Builder<Parent>
     {
     }
 
+    @FXML
+    void onActionOK( ActionEvent event )
+    {
+        approved = true;
+        buttonOK.getScene().getWindow().hide();
+    }
+    
+    @FXML
+    void onActionCancel( ActionEvent event )
+    {
+        buttonCancel.getScene().getWindow().hide();
+    }
+
     boolean isApproved()
     {
-        return true; //TODO
+        return approved;
+    }
+    
+    void setApproved( boolean value )
+    {
+        approved = value;
     }
     
 }

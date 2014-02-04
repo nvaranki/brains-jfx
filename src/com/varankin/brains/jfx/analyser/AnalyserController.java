@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
+import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 
 /**
@@ -140,11 +141,17 @@ public final class AnalyserController implements Builder<Node>
             setup.initModality( Modality.APPLICATION_MODAL );
             setup.initOwner( JavaFX.getInstance().платформа );
             setup.setTitle( LOGGER.text( "analyser.popup.add" ) );
+            setup.setOnShowing( new EventHandler<WindowEvent>() 
+            {
+                @Override
+                public void handle( WindowEvent _ )
+                {
+                    setup.getController().setApproved( false );
+                }
+            } );
         }
         setup.showAndWait();
-        TimeLineSetupController setupController = setup.getController();
-        boolean proceed = setupController.isApproved();
-        if( proceed )
+        if( setup.getController().isApproved() )
         {
             TimeLineController controller = new TimeLineController();
             TimeLinePane timeLine = controller.build();
