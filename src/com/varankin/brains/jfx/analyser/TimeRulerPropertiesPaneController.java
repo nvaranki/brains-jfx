@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Builder;
 
 /**
@@ -174,6 +175,16 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     {
         textColor.fireEvent( new ActionEvent() );
         tickColor.fireEvent( new ActionEvent() );
+    }
+
+    void reset()
+    {
+        unitProperty.setValue( TimeUnit.MILLISECONDS );
+        durationProperty.setValue( 1000L );
+        excessProperty.setValue( 20L );
+        textColor.setValue( Color.BLACK );
+        tickColor.setValue( Color.BLACK );
+        fontPickerController.fontProperty().setValue( new Text().getFont() );
     }
 
     private class DurationConverter extends PositiveLongConverter

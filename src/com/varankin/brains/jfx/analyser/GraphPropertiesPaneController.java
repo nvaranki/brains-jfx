@@ -167,4 +167,15 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         zeroColor.fireEvent( new ActionEvent() );
     }
     
+    void reset()
+    {
+        rateUnitProperty.setValue( TimeUnit.MILLISECONDS );
+        rateValueProperty.setValue( 200L );
+        borderColor.setValue( Color.BLACK );
+        borderDisplay.selectedProperty().setValue( false );
+        zeroColor.setValue( Color.GRAY );
+        zeroDisplay.selectedProperty().setValue( true );
+        timeFlow.selectedProperty().setValue( true );
+    }
+
 }

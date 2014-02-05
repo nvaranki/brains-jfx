@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.shared.FontPickerPaneController;
 import com.varankin.util.LoggerX;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
@@ -14,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Builder;
 
 /**
@@ -154,6 +156,15 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     {
         textColor.fireEvent( new ActionEvent() );
         tickColor.fireEvent( new ActionEvent() );
+    }
+
+    void reset()
+    {
+        valueMinProperty.setValue( -1f );
+        valueMaxProperty.setValue( +1f );
+        textColor.setValue( Color.BLACK );
+        tickColor.setValue( Color.BLACK );
+        fontPickerController.fontProperty().setValue( new Text().getFont() );
     }
 
     private static class RelativeFloatConverter extends FloatConverter

@@ -3,19 +3,13 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.util.LoggerX;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.util.Builder;
 
 /**
@@ -66,23 +60,23 @@ public class TimeLineSetupController implements Builder<Parent>
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel );
 
-        Tab tabValueRuler = new Tab();
         valueRulerPropertiesPaneController = new ValueRulerPropertiesPaneController();
         valueRulerPropertiesPane = valueRulerPropertiesPaneController.build();
+        Tab tabValueRuler = new Tab();
         tabValueRuler.setContent( valueRulerPropertiesPane );
         tabValueRuler.setText( LOGGER.text( "timeline.setup.value.title" ) );
         tabValueRuler.setClosable( false );
         
-        Tab tabTimeRuler = new Tab();
         timeRulerPropertiesPaneController = new TimeRulerPropertiesPaneController();
         timeRulerPropertiesPane = timeRulerPropertiesPaneController.build();
+        Tab tabTimeRuler = new Tab();
         tabTimeRuler.setContent( timeRulerPropertiesPane );
         tabTimeRuler.setText( LOGGER.text( "timeline.setup.time.title" ) );
         tabTimeRuler.setClosable( false );
         
-        Tab tabGraph = new Tab();
         graphPropertiesPaneController = new GraphPropertiesPaneController();
         graphPropertiesPane = graphPropertiesPaneController.build();
+        Tab tabGraph = new Tab();
         tabGraph.setContent( graphPropertiesPane );
         tabGraph.setText( LOGGER.text( "timeline.setup.graph.title" ) );
         tabGraph.setClosable( false );
@@ -111,6 +105,9 @@ public class TimeLineSetupController implements Builder<Parent>
                     timeRulerPropertiesPaneController.validProperty(),
                     valueRulerPropertiesPaneController.validProperty() ),
                 graphPropertiesPaneController.validProperty() ) ;
+        timeRulerPropertiesPaneController.reset();
+        valueRulerPropertiesPaneController.reset();
+        graphPropertiesPaneController.reset();
         buttonOK.disableProperty().bind( Bindings.not( validProperty ) );
     }
 
