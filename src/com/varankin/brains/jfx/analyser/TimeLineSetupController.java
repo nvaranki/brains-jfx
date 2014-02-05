@@ -29,7 +29,7 @@ public class TimeLineSetupController implements Builder<Parent>
     @Override
     public Parent build()
     {
-        buttonOK = new Button( LOGGER.text( "button.apply" ) );
+        buttonOK = new Button( LOGGER.text( "button.ok" ) );
         buttonOK.setDefaultButton( true );
         buttonOK.setOnAction( new EventHandler<ActionEvent>() 
         {
