@@ -4,6 +4,7 @@ import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.shared.FontPickerPaneController;
 import com.varankin.util.LoggerX;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +28,7 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     private static final String CSS_CLASS = "value-ruler-properties-pane";
 
     private final ObjectProperty<Float> valueMinProperty, valueMaxProperty;
+    private final ReadOnlyBooleanWrapper validProperty;
     
     @FXML private TextField valueMin, valueMax;
     @FXML private ColorPicker textColor, tickColor;
@@ -37,6 +39,7 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     {
         valueMinProperty = new SimpleObjectProperty<>();
         valueMaxProperty = new SimpleObjectProperty<>();
+        validProperty = new ReadOnlyBooleanWrapper();
     }
     
     /**
@@ -94,6 +97,24 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
                 new RelativeFloatConverter( valueMin, valueMaxProperty, true ) );
         Bindings.bindBidirectional( valueMax.textProperty(), valueMaxProperty, 
                 new RelativeFloatConverter( valueMax, valueMinProperty, false ) );
+        BooleanBinding validBinding = Bindings.and
+        ( 
+            Bindings.and
+            ( 
+                Bindings.and
+                ( 
+                    ObjectBindings.isNotNull( valueMinProperty() ),
+                    ObjectBindings.isNotNull( valueMaxProperty() ) 
+                ),
+                ObjectBindings.isNotNull( textColorProperty() )
+            ),
+            Bindings.and
+            ( 
+                ObjectBindings.isNotNull( tickColorProperty() ),
+                ObjectBindings.isNotNull( textFontProperty() )
+            )
+        );
+        validProperty.bind( validBinding );
     }
     
     Property<Float> valueMinProperty()
@@ -119,6 +140,11 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     Property<Font> textFontProperty()
     {
         return fontPickerController.fontProperty();
+    }
+
+    ReadOnlyBooleanProperty validProperty()
+    {
+        return validProperty.getReadOnlyProperty();
     }
 
     /**

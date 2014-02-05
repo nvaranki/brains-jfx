@@ -4,7 +4,6 @@ import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.brains.jfx.ObjectBindings;
 import com.varankin.util.LoggerX;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -132,9 +131,9 @@ public final class GraphPropertiesController implements Builder<Parent>
                 propertiesController.zeroDisplayProperty(),
                 propertiesController.zeroColorProperty(),
                 propertiesController.timeFlowProperty() );
-        BooleanBinding validBinding = ObjectBindings.isNotNull( propertiesController.rateValueProperty() );
-        buttonOK.disableProperty().bind( Bindings.not( validBinding ) );
-        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validBinding ) ) );
+        ReadOnlyBooleanProperty validProperty = propertiesController.validProperty();
+        buttonOK.disableProperty().bind( Bindings.not( validProperty ) );
+        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validProperty ) ) );
     }
     
     @FXML

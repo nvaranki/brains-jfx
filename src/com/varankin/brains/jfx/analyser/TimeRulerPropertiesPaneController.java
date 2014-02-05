@@ -6,6 +6,7 @@ import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,6 +31,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
 
     private final ObjectProperty<Long> durationProperty, excessProperty;
     private final SingleSelectionProperty<TimeUnit> unitProperty;
+    private final ReadOnlyBooleanWrapper validProperty;
 
     @FXML private TextField duration, excess;
     @FXML private ComboBox<TimeUnit> unit;
@@ -42,6 +44,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
         durationProperty = new SimpleObjectProperty<>();
         excessProperty = new SimpleObjectProperty<>();
         unitProperty = new SingleSelectionProperty<>();
+        validProperty = new ReadOnlyBooleanWrapper();
     }
     
     /**
@@ -105,6 +108,28 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
                 new ExcessConverter( excess ) );
         unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         unitProperty.setModel( unit.getSelectionModel() );
+        BooleanBinding validBinding = Bindings.and
+        ( 
+            Bindings.and
+            ( 
+                Bindings.and
+                ( 
+                    ObjectBindings.isNotNull( durationProperty() ),
+                    ObjectBindings.isNotNull( excessProperty() ) 
+                ),
+                Bindings.and
+                ( 
+                    ObjectBindings.isNotNull( unitProperty() ),
+                    ObjectBindings.isNotNull( textColorProperty() )
+                )
+            ),
+            Bindings.and
+            ( 
+                ObjectBindings.isNotNull( tickColorProperty() ),
+                ObjectBindings.isNotNull( textFontProperty() )
+            )
+        );
+        validProperty.bind( validBinding );
     }
 
     Property<Long> durationProperty()
@@ -135,6 +160,11 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     Property<Font> textFontProperty()
     {
         return fontPickerController.fontProperty();
+    }
+    
+    ReadOnlyBooleanProperty validProperty()
+    {
+        return validProperty.getReadOnlyProperty();
     }
 
     /**

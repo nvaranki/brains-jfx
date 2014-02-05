@@ -1,15 +1,21 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.util.LoggerX;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.util.Builder;
 
 /**
@@ -25,6 +31,12 @@ public class TimeLineSetupController implements Builder<Parent>
     private boolean approved;
     
     @FXML private Button buttonOK, buttonCancel;
+    @FXML private Pane valueRulerPropertiesPane;
+    @FXML private ValueRulerPropertiesPaneController valueRulerPropertiesPaneController;
+    @FXML private Pane timeRulerPropertiesPane;
+    @FXML private TimeRulerPropertiesPaneController timeRulerPropertiesPaneController;
+    @FXML private Node graphPropertiesPane;
+    @FXML private GraphPropertiesPaneController graphPropertiesPaneController;
 
     @Override
     public Parent build()
@@ -55,17 +67,23 @@ public class TimeLineSetupController implements Builder<Parent>
         buttonBar.getChildren().addAll( buttonOK, buttonCancel );
 
         Tab tabValueRuler = new Tab();
-        tabValueRuler.setContent( new ValueRulerPropertiesPaneController().build() );
+        valueRulerPropertiesPaneController = new ValueRulerPropertiesPaneController();
+        valueRulerPropertiesPane = valueRulerPropertiesPaneController.build();
+        tabValueRuler.setContent( valueRulerPropertiesPane );
         tabValueRuler.setText( LOGGER.text( "timeline.setup.value.title" ) );
         tabValueRuler.setClosable( false );
         
         Tab tabTimeRuler = new Tab();
-        tabTimeRuler.setContent( new TimeRulerPropertiesPaneController().build() );
+        timeRulerPropertiesPaneController = new TimeRulerPropertiesPaneController();
+        timeRulerPropertiesPane = timeRulerPropertiesPaneController.build();
+        tabTimeRuler.setContent( timeRulerPropertiesPane );
         tabTimeRuler.setText( LOGGER.text( "timeline.setup.time.title" ) );
         tabTimeRuler.setClosable( false );
         
         Tab tabGraph = new Tab();
-        tabGraph.setContent( new GraphPropertiesPaneController().build() );
+        graphPropertiesPaneController = new GraphPropertiesPaneController();
+        graphPropertiesPane = graphPropertiesPaneController.build();
+        tabGraph.setContent( graphPropertiesPane );
         tabGraph.setText( LOGGER.text( "timeline.setup.graph.title" ) );
         tabGraph.setClosable( false );
         
@@ -87,6 +105,13 @@ public class TimeLineSetupController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
+        BooleanBinding validProperty = 
+            Bindings.and( 
+                Bindings.and( 
+                    timeRulerPropertiesPaneController.validProperty(),
+                    valueRulerPropertiesPaneController.validProperty() ),
+                graphPropertiesPaneController.validProperty() ) ;
+        buttonOK.disableProperty().bind( Bindings.not( validProperty ) );
     }
 
     @FXML

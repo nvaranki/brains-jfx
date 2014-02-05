@@ -5,6 +5,7 @@ import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +28,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
 
     private final ObjectProperty<Long> rateValueProperty;
     private final SingleSelectionProperty<TimeUnit> rateUnitProperty;
+    private final ReadOnlyBooleanWrapper validProperty;
 
     @FXML private TextField rateValue;
     @FXML private ComboBox<TimeUnit> rateUnit;
@@ -40,6 +42,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     {
         rateValueProperty = new SimpleObjectProperty<>();
         rateUnitProperty = new SingleSelectionProperty<>();
+        validProperty = new ReadOnlyBooleanWrapper();
     }
 
     /**
@@ -111,6 +114,8 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         rateUnitProperty.setModel( rateUnit.getSelectionModel() );
         borderColor.disableProperty().bind( Bindings.not( borderDisplay.selectedProperty() ) );
         zeroColor.disableProperty().bind( Bindings.not( zeroDisplay.selectedProperty() ) );
+        BooleanBinding validBinding = ObjectBindings.isNotNull( rateValueProperty() );
+        validProperty.bind( validBinding );
     }
     
     Property<Long> rateValueProperty()
@@ -146,6 +151,11 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     Property<Boolean> timeFlowProperty()
     {
         return timeFlow.selectedProperty();
+    }
+
+    ReadOnlyBooleanProperty validProperty()
+    {
+        return validProperty.getReadOnlyProperty();
     }
 
     /**

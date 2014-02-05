@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -127,29 +128,9 @@ public final class TimeRulerPropertiesController implements Builder<Parent>
                 propertiesController.textColorProperty(),
                 propertiesController.textFontProperty(),
                 propertiesController.tickColorProperty());
-        BooleanBinding validBinding = Bindings.and
-        ( 
-            Bindings.and
-            ( 
-                Bindings.and
-                ( 
-                    ObjectBindings.isNotNull( propertiesController.durationProperty() ),
-                    ObjectBindings.isNotNull( propertiesController.excessProperty() ) 
-                ),
-                Bindings.and
-                ( 
-                    ObjectBindings.isNotNull( propertiesController.unitProperty() ),
-                    ObjectBindings.isNotNull( propertiesController.textColorProperty() )
-                )
-            ),
-            Bindings.and
-            ( 
-                ObjectBindings.isNotNull( propertiesController.tickColorProperty() ),
-                ObjectBindings.isNotNull( propertiesController.textFontProperty() )
-            )
-        );
-        buttonOK.disableProperty().bind( Bindings.not( validBinding ) );
-        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validBinding ) ) );
+        ReadOnlyBooleanProperty validProperty = propertiesController.validProperty();
+        buttonOK.disableProperty().bind( Bindings.not( validProperty ) );
+        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validProperty ) ) );
     }
     
     @FXML

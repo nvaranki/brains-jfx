@@ -5,6 +5,7 @@ import com.varankin.util.LoggerX;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -123,25 +124,9 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
                 propertiesController.textColorProperty(),
                 propertiesController.textFontProperty(),
                 propertiesController.tickColorProperty());
-        BooleanBinding validBinding = Bindings.and
-        ( 
-            Bindings.and
-            ( 
-                Bindings.and
-                ( 
-                    ObjectBindings.isNotNull( propertiesController.valueMinProperty() ),
-                    ObjectBindings.isNotNull( propertiesController.valueMaxProperty() ) 
-                ),
-                ObjectBindings.isNotNull( propertiesController.textColorProperty() )
-            ),
-            Bindings.and
-            ( 
-                ObjectBindings.isNotNull( propertiesController.tickColorProperty() ),
-                ObjectBindings.isNotNull( propertiesController.textFontProperty() )
-            )
-        );
-        buttonOK.disableProperty().bind( Bindings.not( validBinding ) );
-        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validBinding ) ) );
+        ReadOnlyBooleanProperty validProperty = propertiesController.validProperty();
+        buttonOK.disableProperty().bind( Bindings.not( validProperty ) );
+        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( changedBinding, validProperty ) ) );
     }
     
     @FXML
