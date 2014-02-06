@@ -13,8 +13,9 @@ import javafx.scene.layout.*;
 import javafx.util.Builder;
 
 /**
- *
- * @author Николай
+ * FXML-контроллер выбора параметров рисования графика.
+ * 
+ * @author &copy; 2014 Николай Варанкин
  */
 public class TimeLineSetupController implements Builder<Parent>
 {

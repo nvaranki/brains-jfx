@@ -11,8 +11,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- *
- * @author Николай
+ * Диалог выбора параметров рисования графика.
+ * 
+ * @author &copy; 2014 Николай Варанкин
  */
 final class TimeLineSetupStage extends Stage
 {
