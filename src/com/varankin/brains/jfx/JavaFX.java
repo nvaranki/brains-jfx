@@ -171,7 +171,7 @@ public final class JavaFX
         return stream != null ? new ImageView( new Image( stream ) ) : null;
     }
 
-    public static void copyMenuItems( List<MenuItem> from, List<MenuItem> to )
+    public static void copyMenuItems( List<? extends MenuItem> from, List<MenuItem> to )
     {
         for( MenuItem оригинал : from )
         {
@@ -202,7 +202,7 @@ public final class JavaFX
         }
     }
     
-    public static void copyMenuItems( List<MenuItem> from, List<MenuItem> to, boolean separate )
+    public static void copyMenuItems( List<? extends MenuItem> from, List<MenuItem> to, boolean separate )
     {
         if( from != null && !from.isEmpty() && to != null ) 
         {

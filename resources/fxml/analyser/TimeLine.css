@@ -6,7 +6,8 @@
         Purpose of the stylesheet follows.
 */
 
-time-line 
-{ 
+.time-line 
+{
+    -fx-padding: 5px 5px 5px 0px;
 }
 

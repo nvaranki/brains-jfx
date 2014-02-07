@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
@@ -9,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -153,13 +155,30 @@ public final class AnalyserController implements Builder<Node>
         setup.showAndWait();
         if( setup.getController().isApproved() )
         {
-            TimeLineController controller = new TimeLineController();
-            TimeLinePane timeLine = controller.build();
-            timeLine.appendToPopup( popup.getItems() );
-            timeLine = simulate( timeLine, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
-            List<Node> children = box.getChildren();
-            int pos = Math.max( 0, children.indexOf( buttonPanel ) );
-            children.addAll( pos, Arrays.<Node>asList( timeLine, new Separator( Orientation.HORIZONTAL ) ) );
+            Pane timeLine;
+            TimeLineController controller;
+            if( JavaFX.getInstance().useFxmlLoader() )
+                try
+                {
+                    java.net.URL location = getClass().getResource( TimeLineController.RESOURCE_FXML );
+                    ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
+                    FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
+                    timeLine = (Pane)fxmlLoader.load();
+                    controller = fxmlLoader.getController();
+                }
+                catch( IOException ex )
+                {
+                    throw new RuntimeException( ex );
+                }
+            else
+            {
+                controller = new TimeLineController();
+                timeLine = controller.build();
+            }
+            controller.reset( setup.getController() );
+            controller.appendToPopup( popup.getItems() );
+            simulate( controller, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
+            addTimeLine( timeLine );
             controller.dynamicProperty().set( true );
         }
     }
@@ -176,8 +195,15 @@ public final class AnalyserController implements Builder<Node>
         }
     }
     
+    private void addTimeLine( Node pane )
+    {
+        List<Node> children = box.getChildren();
+        int pos = Math.max( 0, children.indexOf( buttonPanel ) );
+        children.addAll( pos, Arrays.<Node>asList( pane, new Separator( Orientation.HORIZONTAL ) ) );
+    }
+    
     @Deprecated // DEBUG
-    private TimeLinePane simulate( TimeLinePane tl, String... values )
+    private void simulate( TimeLineController tl, String... values )
     {
         JavaFX jfx = JavaFX.getInstance();
         Color[] colors = {Color.RED, Color.BLUE, Color.GREEN };
@@ -200,7 +226,6 @@ public final class AnalyserController implements Builder<Node>
             }
         };
         jfx.getScheduledExecutorService().scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
-        return tl;
     }
     
 }

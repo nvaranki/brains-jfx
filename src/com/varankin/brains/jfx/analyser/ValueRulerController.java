@@ -201,5 +201,10 @@ public final class ValueRulerController extends AbstractRulerController
             JavaFX.copyMenuItems( items, popup.getItems() );
         }
     }
-    
+
+    void setParentPopupMenu( List<? extends MenuItem> parentPopupMenu )
+    {
+        JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
+    }
+        
 }

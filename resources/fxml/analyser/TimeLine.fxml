@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- 
+    Author     : (c) 2014 Николай Варанкин
+    Description: Панель графика динамического изменения значений по времени.
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,8 +10,46 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml">
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.analyser.TimeLineController"
+    styleClass="time-line" 
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" 
+    >
+
     <stylesheets>
         <URL value="@TimeLine.css"/>
     </stylesheets>
-</AnchorPane>
+    
+    <columnConstraints>
+        <ColumnConstraints minWidth="45" hgrow="NEVER" halignment="RIGHT" />  
+        <ColumnConstraints minWidth="100" hgrow="ALWAYS" halignment="LEFT" />  
+    </columnConstraints>
+    
+    <rowConstraints>
+        <RowConstraints minHeight="100" vgrow="ALWAYS" valignment="BOTTOM" />   
+        <RowConstraints minHeight="25" vgrow="NEVER" valignment="TOP" />   
+        <RowConstraints vgrow="NEVER" fillHeight="false" />   
+    </rowConstraints>
+    
+    <fx:include fx:id="valueRuler" source="ValueRuler.fxml" >
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+    </fx:include>
+
+    <fx:include fx:id="timeRuler" source="TimeRuler.fxml" >
+        <GridPane.columnIndex>1</GridPane.columnIndex>
+        <GridPane.rowIndex>1</GridPane.rowIndex>
+    </fx:include>
+
+    <fx:include fx:id="drawArea" source="GraphPane.fxml" >
+        <GridPane.columnIndex>1</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+    </fx:include>
+
+    <fx:include fx:id="controlBar" source="ValueRuler.fxml" >
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>2</GridPane.rowIndex>
+        <GridPane.columnSpan>2</GridPane.columnSpan>
+    </fx:include>
+    
+</GridPane>

@@ -31,7 +31,7 @@ public final class LegendPaneController implements Builder<Pane>
     private final BooleanProperty dynamicProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
 
-    private List<MenuItem> parentPopupMenu;
+    private List<? extends MenuItem> parentPopupMenu;
     
     @FXML private CheckBox time;
     @FXML private FlowPane values;
@@ -129,7 +129,7 @@ public final class LegendPaneController implements Builder<Pane>
         return dynamicProperty;
     }
     
-    void setParentPopupMenu( List<MenuItem> parentPopupMenu )
+    void setParentPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         this.parentPopupMenu = parentPopupMenu;
         JavaFX.copyMenuItems( parentPopupMenu, timePopup.getItems(), true );

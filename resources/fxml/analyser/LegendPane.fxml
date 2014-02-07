@@ -23,6 +23,11 @@
         <URL value="@LegendPane.css"/>
     </stylesheets>
     
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER" minWidth="110" ></ColumnConstraints>
+        <ColumnConstraints hgrow="NEVER"  halignment="RIGHT"  minWidth="100" ></ColumnConstraints>
+    </columnConstraints>
+    
     <FlowPane fx:id="values" >
         <GridPane.columnIndex>0</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
@@ -41,9 +46,4 @@
         </contextMenu>
     </CheckBox>
 
-    <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER" minWidth="110" ></ColumnConstraints>
-        <ColumnConstraints hgrow="NEVER"  halignment="RIGHT"  minWidth="100" ></ColumnConstraints>
-    </columnConstraints>
-    
 </GridPane>
