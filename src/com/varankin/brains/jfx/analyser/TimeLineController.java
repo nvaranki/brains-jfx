@@ -10,12 +10,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -176,9 +174,19 @@ public final class TimeLineController implements Builder<Pane>
         return dynamicProperty;
     }
 
-    void reset( TimeLineSetupController controller )
+    void reset( ValueRulerPropertiesPaneController controller )
     {
-        //throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        valueRulerController.reset( controller );
+    }
+
+    void reset( TimeRulerPropertiesPaneController controller )
+    {
+        timeRulerController.reset( controller );
+    }
+
+    void reset( GraphPropertiesPaneController controller )
+    {
+        graphPaneController.reset( controller );
     }
 
     /**

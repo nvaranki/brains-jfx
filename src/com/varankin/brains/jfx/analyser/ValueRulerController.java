@@ -133,6 +133,15 @@ public final class ValueRulerController extends AbstractRulerController
         convertorProperty.get().reset( size );
     }
     
+    void reset( ValueRulerPropertiesPaneController pattern )
+    {
+        tickColorProperty().setValue( pattern.tickColorProperty().getValue() );
+        textColorProperty().setValue( pattern.textColorProperty().getValue() );
+        fontProperty().setValue( pattern.textFontProperty().getValue() );
+        valueMinProperty.setValue( pattern.valueMinProperty().getValue() );
+        valueMaxProperty.setValue( pattern.valueMaxProperty().getValue() );
+    }
+    
     @Override
     protected void removeRuler()
     {

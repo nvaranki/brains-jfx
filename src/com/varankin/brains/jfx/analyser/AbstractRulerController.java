@@ -62,6 +62,16 @@ public abstract class AbstractRulerController implements Builder<Pane>
     {
         return textColorProperty;
     }
+    
+    protected void reset( AbstractRulerController pattern )
+    {
+        tickSizeLarge = pattern.tickSizeLarge;
+        tickSizeMedium = pattern.tickSizeMedium;
+        tickSizeSmall = pattern.tickSizeSmall;
+        tickColorProperty.setValue( pattern.tickColorProperty.getValue() );
+        textColorProperty.setValue( pattern.textColorProperty.getValue() );
+        fontProperty.setValue( pattern.fontProperty.getValue() );
+    }
 
     abstract protected void reset( int size );
     abstract protected void generateRuler();

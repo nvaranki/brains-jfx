@@ -32,7 +32,7 @@ public final class TimeRulerController extends AbstractRulerController
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRuler.css";
     private static final String CSS_CLASS = "time-ruler";
 
-    private final Property<Long> sizeProperty, excessProperty;
+    private final Property<Long> durationProperty, excessProperty;
     private final Property<TimeUnit> unitProperty;
     private final SimpleBooleanProperty relativeProperty;
     private final SimpleObjectProperty<TimeConvertor> convertorProperty;
@@ -50,7 +50,7 @@ public final class TimeRulerController extends AbstractRulerController
         TimeUnit convertorUnits = TimeUnit.SECONDS;
         TimeConvertor convertor = new TimeConvertor( 60, 2, convertorUnits );
         convertorProperty = new SimpleObjectProperty<>( convertor );
-        sizeProperty = new SimpleObjectProperty<>( convertor.getSize() );
+        durationProperty = new SimpleObjectProperty<>( convertor.getSize() );
         excessProperty = new SimpleObjectProperty<>( convertor.getExcess() );
         unitProperty = new SimpleObjectProperty<>( convertorUnits );
         relativeProperty = new SimpleBooleanProperty();
@@ -160,7 +160,7 @@ public final class TimeRulerController extends AbstractRulerController
             properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.ruler.time.title", 0 ) );
             TimeRulerPropertiesController controller = properties.getController();
-            controller.bindDurationProperty( sizeProperty );
+            controller.bindDurationProperty( durationProperty );
             controller.bindExcessProperty( excessProperty );
             controller.bindUnitProperty( unitProperty );
             controller.bindTickColorProperty( tickColorProperty() );
@@ -187,6 +187,16 @@ public final class TimeRulerController extends AbstractRulerController
         TimeConvertor convertor = convertorProperty.get();
         convertor.reset( size, relativeProperty.get() ?
                             System.currentTimeMillis() : convertor.getEntry() );
+    }
+    
+    void reset( TimeRulerPropertiesPaneController pattern )
+    {
+        tickColorProperty().setValue( pattern.tickColorProperty().getValue() );
+        textColorProperty().setValue( pattern.textColorProperty().getValue() );
+        fontProperty().setValue( pattern.textFontProperty().getValue() );
+        durationProperty.setValue( pattern.durationProperty().getValue() );
+        excessProperty.setValue( pattern.excessProperty().getValue() );
+        unitProperty.setValue( pattern.unitProperty().getValue() );
     }
     
     @Override

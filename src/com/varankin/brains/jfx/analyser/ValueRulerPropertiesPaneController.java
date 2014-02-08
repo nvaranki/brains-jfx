@@ -3,7 +3,6 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.shared.FontPickerPaneController;
 import com.varankin.util.LoggerX;
-import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
@@ -74,10 +73,10 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
         fontPicker.setId( "fontPicker" );
         
         GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "properties.ruler.value.min" ) ), 0, 0 );
-        pane.add( valueMin, 1, 0, 2, 1 );
-        pane.add( new Label( LOGGER.text( "properties.ruler.value.max" ) ), 0, 1 );
-        pane.add( valueMax, 1, 1, 2, 1 );
+        pane.add( new Label( LOGGER.text( "properties.ruler.value.max" ) ), 0, 0 );
+        pane.add( valueMax, 1, 0, 2, 1 );
+        pane.add( new Label( LOGGER.text( "properties.ruler.value.min" ) ), 0, 1 );
+        pane.add( valueMin, 1, 1, 2, 1 );
         pane.add( new Label( LOGGER.text( "properties.ruler.text.color" ) ), 0, 2 );
         pane.add( textColor, 1, 2 );
         pane.add( new Label( LOGGER.text( "properties.ruler.tick.color" ) ), 2, 2 );

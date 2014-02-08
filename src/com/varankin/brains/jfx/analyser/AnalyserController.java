@@ -153,7 +153,8 @@ public final class AnalyserController implements Builder<Node>
             } );
         }
         setup.showAndWait();
-        if( setup.getController().isApproved() )
+        TimeLineSetupController setupController = setup.getController();
+        if( setupController.isApproved() )
         {
             Pane timeLine;
             TimeLineController controller;
@@ -175,8 +176,10 @@ public final class AnalyserController implements Builder<Node>
                 controller = new TimeLineController();
                 timeLine = controller.build();
             }
-            controller.reset( setup.getController() );
-            controller.appendToPopup( popup.getItems() );
+            controller.reset( setupController.getValueRulerPropertiesPaneController() );
+            controller.reset( setupController.getTimeRulerPropertiesPaneController() );
+            controller.reset( setupController.getGraphPropertiesPaneController() );
+            controller.setParentPopupMenu( popup.getItems() );//.appendToPopup( popup.getItems() );
             simulate( controller, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
             addTimeLine( timeLine );
             controller.dynamicProperty().set( true );

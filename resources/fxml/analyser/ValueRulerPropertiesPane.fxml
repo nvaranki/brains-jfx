@@ -25,26 +25,26 @@
     <Label 
         text="%properties.ruler.value.min" 
         GridPane.columnIndex="0" 
-        GridPane.rowIndex="0" 
+        GridPane.rowIndex="1" 
     />
     <TextField 
         fx:id="valueMin"
         prefColumnCount="9"
         focusTraversable="true"   
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="0"
+        GridPane.rowIndex="1"
         GridPane.columnSpan="2"  
     />   
     <Label 
         text="%properties.ruler.value.max" 
-        GridPane.columnIndex="2" 
+        GridPane.columnIndex="0" 
         GridPane.rowIndex="0" 
     />
     <TextField 
         fx:id="valueMax"
         prefColumnCount="9"  
         focusTraversable="true"   
-        GridPane.columnIndex="3" 
+        GridPane.columnIndex="1" 
         GridPane.rowIndex="0" 
         GridPane.columnSpan="2"  
     />   
@@ -73,6 +73,9 @@
     <fx:include 
         source="../shared/FontPickerPane.fxml" 
         fx:id="fontPicker"
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="3" 
+        GridPane.columnSpan="4"  
     />
   </children>
   

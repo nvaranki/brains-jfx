@@ -31,25 +31,33 @@
         <RowConstraints vgrow="NEVER" fillHeight="false" />   
     </rowConstraints>
     
-    <fx:include fx:id="valueRuler" source="ValueRuler.fxml" >
-        <GridPane.columnIndex>0</GridPane.columnIndex>
-        <GridPane.rowIndex>0</GridPane.rowIndex>
-    </fx:include>
+    <fx:include 
+        fx:id="valueRuler" 
+        source="ValueRuler.fxml" 
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="0"
+        />
 
-    <fx:include fx:id="timeRuler" source="TimeRuler.fxml" >
-        <GridPane.columnIndex>1</GridPane.columnIndex>
-        <GridPane.rowIndex>1</GridPane.rowIndex>
-    </fx:include>
+    <fx:include 
+        fx:id="timeRuler" 
+        source="TimeRuler.fxml" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="1"
+        />
 
-    <fx:include fx:id="drawArea" source="GraphPane.fxml" >
-        <GridPane.columnIndex>1</GridPane.columnIndex>
-        <GridPane.rowIndex>0</GridPane.rowIndex>
-    </fx:include>
+    <fx:include 
+        fx:id="drawArea" 
+        source="GraphPane.fxml" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="0"
+        />
 
-    <fx:include fx:id="controlBar" source="ValueRuler.fxml" >
-        <GridPane.columnIndex>0</GridPane.columnIndex>
-        <GridPane.rowIndex>2</GridPane.rowIndex>
-        <GridPane.columnSpan>2</GridPane.columnSpan>
-    </fx:include>
+    <fx:include 
+        fx:id="controlBar" 
+        source="ValueRuler.fxml" 
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="2"
+        GridPane.columnSpan="2"
+        />
     
 </GridPane>

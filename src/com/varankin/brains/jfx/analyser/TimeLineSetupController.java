@@ -134,5 +134,20 @@ public class TimeLineSetupController implements Builder<Parent>
     {
         approved = value;
     }
+
+    ValueRulerPropertiesPaneController getValueRulerPropertiesPaneController()
+    {
+        return valueRulerPropertiesPaneController;
+    }
+
+    TimeRulerPropertiesPaneController getTimeRulerPropertiesPaneController()
+    {
+        return timeRulerPropertiesPaneController;
+    }
+    
+    GraphPropertiesPaneController getGraphPropertiesPaneController()
+    {
+        return graphPropertiesPaneController;
+    }
     
 }

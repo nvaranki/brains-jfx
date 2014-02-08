@@ -277,6 +277,17 @@ public final class GraphPaneController implements Builder<Pane>
                 writer.setColor( i, zero, color ); // zero value
         }
     }
+
+    void reset( GraphPropertiesPaneController pattern )
+    {
+        rateValueProperty.setValue( pattern.rateValueProperty().getValue() );
+        rateUnitProperty.setValue( pattern.rateUnitProperty().getValue() );
+        borderDisplayProperty.setValue( pattern.borderDisplayProperty().getValue() );
+        borderColorProperty.setValue( pattern.borderColorProperty().getValue() );
+        zeroDisplayProperty.setValue( pattern.zeroDisplayProperty().getValue() );
+        zeroColorProperty.setValue( pattern.zeroColorProperty().getValue() );
+        dynamicProperty.setValue( pattern.timeFlowProperty().getValue() );
+    }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
     
