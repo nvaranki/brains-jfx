@@ -3,7 +3,7 @@ package com.varankin.brains.jfx.analyser;
 /**
  * Конвертер значений графика в координату Y {@link  WritableImage}.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 final class ValueConvertor
 {
@@ -40,6 +40,20 @@ final class ValueConvertor
     float getSize()
     {
         return vSize;
+    }
+
+    void setMax( Float value )
+    {
+        vSize -= v0;
+        v0 = value;
+        vSize += v0;
+    }
+
+    void setMin( Float value )
+    {
+        vSize += vMin;
+        vMin = value;
+        vSize -= vMin;
     }
 
 }

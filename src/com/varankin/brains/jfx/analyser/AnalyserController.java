@@ -182,7 +182,6 @@ public final class AnalyserController implements Builder<Node>
             controller.setParentPopupMenu( popup.getItems() );//.appendToPopup( popup.getItems() );
             simulate( controller, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
             addTimeLine( timeLine );
-            controller.dynamicProperty().set( true );
         }
     }
     

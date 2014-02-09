@@ -111,6 +111,36 @@ public final class TimeRulerController extends AbstractRulerController
     {
         pane.widthProperty().addListener( new SizeChangeListener() );
         pane.setMinWidth( 100d );
+        durationProperty.addListener( new ChangeListener<Long>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Long> _, Long oldValue, Long newValue )
+            {
+                TimeConvertor convertor = convertorProperty.getValue();
+                convertor.reset( newValue, excessProperty.getValue(), unitProperty.getValue() );
+                convertor.reset( pane.widthProperty().doubleValue(), convertor.getEntry() );
+            }
+        } );
+        excessProperty.addListener( new ChangeListener<Long>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Long> _, Long oldValue, Long newValue )
+            {
+                TimeConvertor convertor = convertorProperty.getValue();
+                convertor.reset( durationProperty.getValue(), newValue, unitProperty.getValue() );
+                convertor.reset( pane.widthProperty().doubleValue(), convertor.getEntry() );
+            }
+        } );
+        unitProperty.addListener( new ChangeListener<TimeUnit>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends TimeUnit> _, TimeUnit oldValue, TimeUnit newValue )
+            {
+                TimeConvertor convertor = convertorProperty.getValue();
+                convertor.reset( durationProperty.getValue(), excessProperty.getValue(), newValue );
+                convertor.reset( pane.widthProperty().doubleValue(), convertor.getEntry() );
+            }
+        } );
 /*
         BooleanBinding reconfigure = Bindings.createBooleanBinding( 
                 new Callable<Boolean>()

@@ -8,14 +8,16 @@ import java.util.concurrent.TimeUnit;
  */
 final class TimeConvertor
 {
+    static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
+    
     private long t0, tSize, tExcess;
     private double tx;
     private long tEntry = -1L;
 
     TimeConvertor( long duration, long excess, TimeUnit unit )
     {
-        tSize   = TimeUnit.MILLISECONDS.convert( duration, unit );
-        tExcess = TimeUnit.MILLISECONDS.convert( excess, unit );
+        tSize   = TIME_UNIT.convert( duration, unit );
+        tExcess = TIME_UNIT.convert( excess, unit );
     }
     
     int timeToImage( long t )
@@ -25,8 +27,8 @@ final class TimeConvertor
 
     void reset( long duration, long excess, TimeUnit unit )
     {
-        tSize   = TimeUnit.MILLISECONDS.convert( duration, unit );
-        tExcess = TimeUnit.MILLISECONDS.convert( excess, unit );
+        tSize   = TIME_UNIT.convert( duration, unit );
+        tExcess = TIME_UNIT.convert( excess, unit );
     }
     
     int reset( double width, long t )

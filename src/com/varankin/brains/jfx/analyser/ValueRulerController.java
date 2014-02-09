@@ -93,6 +93,26 @@ public final class ValueRulerController extends AbstractRulerController
     protected void initialize()
     {
         pane.heightProperty().addListener( new SizeChangeListener() );
+        valueMaxProperty.addListener( new ChangeListener<Float>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Float> _, Float oldValue, Float newValue )
+            {
+                ValueConvertor convertor = convertorProperty.getValue();
+                convertor.setMax( newValue );
+                convertor.reset( pane.heightProperty().intValue() );
+            }
+        } );
+        valueMinProperty.addListener( new ChangeListener<Float>() 
+        {
+            @Override
+            public void changed( ObservableValue<? extends Float> _, Float oldValue, Float newValue )
+            {
+                ValueConvertor convertor = convertorProperty.getValue();
+                convertor.setMin( newValue );
+                convertor.reset( pane.heightProperty().intValue() );
+            }
+        } );
     }
 
     @FXML
