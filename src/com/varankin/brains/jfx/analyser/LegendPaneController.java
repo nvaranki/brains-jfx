@@ -4,6 +4,8 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
@@ -14,6 +16,7 @@ import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
@@ -124,6 +127,18 @@ public final class LegendPaneController implements Builder<Pane>
         dynamicProperty.addListener( new WeakChangeListener<>( dynamicPropertyChangeListener ) );
     }
     
+    @FXML
+    private void onActionResume( ActionEvent _ )
+    {
+        time.selectedProperty().setValue( Boolean.TRUE );
+    }
+
+    @FXML
+    private void onActionStop( ActionEvent _ )
+    {
+        time.selectedProperty().setValue( Boolean.FALSE );
+    }
+
     BooleanProperty dynamicProperty()
     {
         return dynamicProperty;
@@ -169,18 +184,6 @@ public final class LegendPaneController implements Builder<Pane>
         JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
         
         values.getChildren().add( label );
-    }
-
-    @FXML
-    private void onActionResume( ActionEvent _ )
-    {
-        time.selectedProperty().setValue( Boolean.TRUE );
-    }
-
-    @FXML
-    private void onActionStop( ActionEvent _ )
-    {
-        time.selectedProperty().setValue( Boolean.FALSE );
     }
 
     //    EventHandler<ActionEvent> createActionStartAllFlows()

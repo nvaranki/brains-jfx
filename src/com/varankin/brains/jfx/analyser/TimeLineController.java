@@ -1,11 +1,10 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -188,29 +187,42 @@ public final class TimeLineController implements Builder<Pane>
     {
         graphPaneController.reset( controller );
     }
-
+    
     /**
-     * Добавляет отображаемое значение и создает очередь для отметок, рисуемых на графике.
+     * Добавляет значение, отображаемое на графике.
      * 
-     * @param name    название значения.
-     * @param color   цвет рисования шаблона.
-     * @param pattern шаблон отметки на графике.
-     * @return очередь точек для рисования отметок на графике.
-     */
-    Queue<Dot> createQueue( String name, Color color, int[][] pattern )
+     * @param pm        источник значений.
+     * @param title     название значения для отображения на графике.
+     */ 
+    void addProperty( PropertyMonitor pm, String title )
     {
-        BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
-        DotPainter painter = new BufferedDotPainter(
-                timeRulerController.convertorProperty().get(),
-                valueRulerController.convertorProperty().get(),
-                queue, 1000 );
+        // Drad'n'drop here?
+        //addProperty( pm, ..., title );
+    }
+    
+    /**
+     * Добавляет значение, отображаемое на графике.
+     * 
+     * @param pm        источник значений.
+     * @param property  название значения как атрибута в источнике значений.
+     * @param convertor преобразователь значения в тип {@link Float}.
+     * @param pattern   шаблон отметки на графике.
+     * @param color     цвет рисования шаблона отметки на графике.
+     * @param title     название значения для отображения на графике.
+     */
+    void addProperty( PropertyMonitor pm, String property, Dot.Convertor<Float> convertor,
+            int[][] pattern, Color color, String title )
+    {
+        DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<Dot>(), 1000 );
+        painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+        painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
         painter.writableImageProperty().bind( graphPaneController.writableImageProperty() );
         painter.colorProperty().setValue( color );
         painter.patternProperty().setValue( pattern );
-        legendPaneController.addValueControl( name, painter );
-        return queue;
+        painter.startMonitoring( pm, property, convertor );
+        legendPaneController.addValueControl( title, painter );
     }
-    
+
     @Deprecated
     void appendToPopup( List<MenuItem> items ) 
     {

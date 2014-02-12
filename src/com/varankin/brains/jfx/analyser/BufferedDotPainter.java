@@ -14,7 +14,7 @@ import javafx.scene.image.Image;
  * Прорисованные отметки сохраняются в буфере. При замене графической 
  * зоны отметки из буфера рисуются заново.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 class BufferedDotPainter extends DotPainter
 {
@@ -29,9 +29,9 @@ class BufferedDotPainter extends DotPainter
      * @param очередь  очередь отметок для прорисовки.
      * @param size     размер буфера.
      */
-    BufferedDotPainter( TimeConvertor tc, ValueConvertor vc, BlockingQueue<Dot> очередь, int size )
+    BufferedDotPainter( BlockingQueue<Dot> очередь, int size )
     {
-        super( tc, vc, очередь );
+        super( очередь );
         буфер = new Dot[ Math.max( 1, size ) ];
         writableImageProperty().addListener( new ChangeListener<Image>() 
         {

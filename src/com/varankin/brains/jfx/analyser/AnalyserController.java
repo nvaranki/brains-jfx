@@ -1,7 +1,10 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -205,16 +208,47 @@ public final class AnalyserController implements Builder<Node>
     }
     
     @Deprecated // DEBUG
-    private void simulate( TimeLineController tl, String... values )
+    final class PropertyMonitorImpl implements PropertyMonitor
+    {
+        static final String PROPERTY = "value";
+        final Dot.Convertor<Float> CONVERTOR = new Dot.Convertor<Float>() 
+        {
+            @Override
+            public Dot toDot( Float value, long timestamp )
+            {
+                return new Dot( value, timestamp );
+            }
+        };
+        final Collection<PropertyChangeListener> listeners = new ArrayList<>();
+
+        @Override
+        public Collection<PropertyChangeListener> наблюдатели()
+        {
+            return listeners;
+        }
+
+        void fire()
+        {
+            for( PropertyChangeListener listener : listeners )
+                listener.propertyChange( new PropertyChangeEvent( PropertyMonitorImpl.this, PROPERTY, 
+                        null, (float)Math.random() * 2f - 1f ) );
+        }
+    }
+    
+    @Deprecated // DEBUG
+    private void simulate( TimeLineController tlc, String... values )
     {
         JavaFX jfx = JavaFX.getInstance();
         Color[] colors = {Color.RED, Color.BLUE, Color.GREEN };
         int[][][] patterns = { DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX };
         int i = 0;
-        final List<Queue<Dot>> queues = new ArrayList<>();
+        final List<PropertyMonitorImpl> monitors = new ArrayList<>();
         for( String value : values )
         {
-            queues.add( tl.createQueue( value, colors[i%colors.length], patterns[i%patterns.length] ) );
+            PropertyMonitorImpl monitor = new PropertyMonitorImpl();
+            monitors.add( monitor );
+            tlc.addProperty( monitor, PropertyMonitorImpl.PROPERTY, monitor.CONVERTOR, 
+                    patterns[i%patterns.length], colors[i%colors.length], value );
             i++;
         }
         
@@ -223,8 +257,8 @@ public final class AnalyserController implements Builder<Node>
             @Override
             public void run()
             {
-                for( Queue<Dot> queue : queues )
-                    queue.add( new Dot( (float)Math.random() * 2f - 1f, System.currentTimeMillis()) );
+                for( PropertyMonitorImpl monitor : monitors )
+                    monitor.fire();
             }
         };
         jfx.getScheduledExecutorService().scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );

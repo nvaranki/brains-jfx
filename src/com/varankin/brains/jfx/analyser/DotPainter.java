@@ -1,5 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.property.PropertyMonitor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
@@ -16,7 +19,7 @@ import javafx.scene.paint.Color;
  * Процесс динамического рисования отметок в графической зоне. 
  * Отметки рисуются блоками, по мере поступления в очередь.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 class DotPainter implements Runnable
 {
@@ -32,8 +35,8 @@ class DotPainter implements Runnable
     public static final int[][] CROSS45 = new int[][]{{0,0},{1,1},{1,-1},{-1,-1},{-1,1}};
 
     private final ObjectProperty<WritableImage> writableImage;
-    private final TimeConvertor timeConvertor;
-    private final ValueConvertor valueConvertor;
+    private final ObjectProperty<ValueConvertor> valueConvertorProperty;
+    private final ObjectProperty<TimeConvertor> timeConvertorProperty;
     private final BlockingQueue<Dot> очередь;
     private final int fragmentSize;
     private final long fragmentTimeout;
@@ -49,11 +52,11 @@ class DotPainter implements Runnable
      * @param vc       функция Y-координаты отметки от значения.
      * @param очередь  очередь отметок для прорисовки.
      */
-    DotPainter( TimeConvertor tc, ValueConvertor vc, BlockingQueue<Dot> очередь )
+    DotPainter( BlockingQueue<Dot> очередь )
     {
         writableImage = new SimpleObjectProperty<>();
-        timeConvertor = tc;
-        valueConvertor = vc;
+        valueConvertorProperty = new SimpleObjectProperty<>();
+        timeConvertorProperty = new SimpleObjectProperty<>();
         colorProperty = new SimpleObjectProperty<>();
         patternProperty = new SimpleObjectProperty<>();
         writableImage.addListener( new ChangeListener<WritableImage>() {
@@ -141,8 +144,8 @@ class DotPainter implements Runnable
      */
     protected void paint( Dot dot )
     {
-        int x = timeConvertor.timeToImage( dot.t );
-        int y = valueConvertor.valueToImage( dot.v );
+        int x = timeConvertorProperty.get().timeToImage( dot.t );
+        int y = valueConvertorProperty.get().valueToImage( dot.v );
         paint( x, y, colorProperty.get(), patternProperty.get(), writer, width, height );
     }
 
@@ -166,6 +169,47 @@ class DotPainter implements Runnable
             if( 0 <= xo && xo < width && 0 <= yo && yo < height )
                 writer.setColor( xo, yo, color );
         }
+    }
+
+    private PropertyChangeListener наблюдатель;
+    private PropertyMonitor монитор;
+    void startMonitoring( PropertyMonitor pm, final String property, final Dot.Convertor convertor )
+    {
+        наблюдатель = new PropertyChangeListener() 
+        {
+            @Override
+            public void propertyChange( PropertyChangeEvent evt )
+            {
+                if( property.equals( evt.getPropertyName() ) )
+                {
+                    Object value = evt.getNewValue();
+                    Dot dot = convertor.toDot( value, System.currentTimeMillis() );
+                    boolean offered = dot != null && очередь.offer( dot );
+                    //TODO LOGGER.log( Level.OFF, property );
+                }
+            }
+        };
+        (монитор = pm).наблюдатели().add( наблюдатель );
+    }
+    
+    void stopMonitoring()
+    {
+        if( монитор != null )
+        {
+            монитор.наблюдатели().remove( наблюдатель );
+            наблюдатель = null;
+            монитор = null;
+        }
+    }
+
+    final Property<ValueConvertor> valueConvertorProperty()
+    {
+        return valueConvertorProperty;
+    }
+
+    final Property<TimeConvertor> timeConvertorProperty()
+    {
+        return timeConvertorProperty;
     }
     
     /**
