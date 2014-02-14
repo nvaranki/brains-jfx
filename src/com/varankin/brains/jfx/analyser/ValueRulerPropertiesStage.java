@@ -1,13 +1,12 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.util.LoggerX;
-import java.io.IOException;
-import java.util.ResourceBundle;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.*;
+
+import static com.varankin.brains.jfx.analyser.ValueRulerPropertiesController.*;
 
 /**
  * Диалог для выбора и установки параметров оси значений.
@@ -16,32 +15,13 @@ import javafx.stage.*;
  */
 final class ValueRulerPropertiesStage extends Stage
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( ValueRulerPropertiesStage.class );
-    
     private final ValueRulerPropertiesController controller;
 
     ValueRulerPropertiesStage()
     {
-        Parent root;
-        if( JavaFX.getInstance().useFxmlLoader() )
-            try
-            {
-                java.net.URL location = getClass().getResource( 
-                        ValueRulerPropertiesController.RESOURCE_FXML );
-                ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-                FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
-                root = (Parent)fxmlLoader.load();
-                controller = fxmlLoader.getController();
-            }
-            catch( IOException ex )
-            {
-                throw new RuntimeException( ex );
-            }
-        else
-        {
-            controller = new ValueRulerPropertiesController();
-            root = controller.build();
-        }
+        BuilderFX<Parent,ValueRulerPropertiesController> builder = new BuilderFX<>();
+        builder.init( ValueRulerPropertiesController.class, RESOURCE_FXML, RESOURCE_BUNDLE );
+        controller = builder.getController();
 
         initStyle( StageStyle.DECORATED );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
@@ -51,7 +31,7 @@ final class ValueRulerPropertiesStage extends Stage
         setMinWidth( 400d );
         setHeight( 270d ); //TODO save/restore size&pos
         setWidth( 400d );
-        setScene( new Scene( root ) );
+        setScene( new Scene( builder.getNode() ) );
         setOnShowing( new EventHandler<WindowEvent>() 
         {
             @Override

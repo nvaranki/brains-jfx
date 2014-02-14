@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
@@ -13,14 +13,12 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
-import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 
 /**
@@ -146,45 +144,21 @@ public final class AnalyserController implements Builder<Node>
             setup.initModality( Modality.APPLICATION_MODAL );
             setup.initOwner( JavaFX.getInstance().платформа );
             setup.setTitle( LOGGER.text( "analyser.popup.add" ) );
-            setup.setOnShowing( new EventHandler<WindowEvent>() 
-            {
-                @Override
-                public void handle( WindowEvent _ )
-                {
-                    setup.getController().setApproved( false );
-                }
-            } );
         }
         setup.showAndWait();
         TimeLineSetupController setupController = setup.getController();
         if( setupController.isApproved() )
         {
-            Pane timeLine;
-            TimeLineController controller;
-            if( JavaFX.getInstance().useFxmlLoader() )
-                try
-                {
-                    java.net.URL location = getClass().getResource( TimeLineController.RESOURCE_FXML );
-                    ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-                    FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
-                    timeLine = (Pane)fxmlLoader.load();
-                    controller = fxmlLoader.getController();
-                }
-                catch( IOException ex )
-                {
-                    throw new RuntimeException( ex );
-                }
-            else
-            {
-                controller = new TimeLineController();
-                timeLine = controller.build();
-            }
+            BuilderFX<Pane,TimeLineController> builder = new BuilderFX<>();
+            builder.init( TimeLineController.class, 
+                    TimeLineController.RESOURCE_FXML, TimeLineController.RESOURCE_BUNDLE );
+            TimeLineController controller = builder.getController();
             controller.reset( setupController.getValueRulerPropertiesPaneController() );
             controller.reset( setupController.getTimeRulerPropertiesPaneController() );
             controller.reset( setupController.getGraphPropertiesPaneController() );
             controller.setParentPopupMenu( popup.getItems() );//.appendToPopup( popup.getItems() );
             simulate( controller, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
-            addTimeLine( timeLine );
+            addTimeLine( builder.getNode() );
         }
     }
     

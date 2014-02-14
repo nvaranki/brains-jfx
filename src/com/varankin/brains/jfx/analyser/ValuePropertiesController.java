@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.util.LoggerX;
+import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.Property;
@@ -20,7 +21,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели диалога для выбора и установки параметров прорисовки отметок.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class ValuePropertiesController implements Builder<Parent>
 {
@@ -29,6 +30,7 @@ public final class ValuePropertiesController implements Builder<Parent>
     private static final String CSS_CLASS = "value-properties";
     
     static final String RESOURCE_FXML = "/fxml/analyser/ValueProperties.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final PropertyGate<Color> colorGate;
     private final PropertyGate<int[][]> patternGate;

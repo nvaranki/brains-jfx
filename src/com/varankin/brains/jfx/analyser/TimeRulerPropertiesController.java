@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -22,7 +23,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели диалога для выбора и установки параметров оси времени.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class TimeRulerPropertiesController implements Builder<Parent>
 {
@@ -31,6 +32,7 @@ public final class TimeRulerPropertiesController implements Builder<Parent>
     private static final String CSS_CLASS = "time-ruler-properties";
     
     static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerProperties.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final PropertyGate<Long> durationGate;
     private final PropertyGate<Long> excessGate;

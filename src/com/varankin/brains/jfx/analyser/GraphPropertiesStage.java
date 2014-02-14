@@ -1,53 +1,32 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.util.LoggerX;
-import java.io.IOException;
-import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.property.Property;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.stage.*;
+
+import static com.varankin.brains.jfx.analyser.GraphPropertiesController.*;
 
 /**
  * Диалог для выбора и установки параметров рисования графика.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 final class GraphPropertiesStage extends Stage
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( GraphPropertiesStage.class );
-
     GraphPropertiesStage( 
             Property<Long> rateValueProperty, Property<TimeUnit> rateUnitProperty, 
             Property<Boolean> borderDisplayProperty, Property<Color> borderColorProperty, 
             Property<Boolean> zeroDisplayProperty, Property<Color> zeroColorProperty, 
             Property<Boolean> flowModeProperty )
     {
-        final GraphPropertiesController rootController;
-        Parent root;
-        if( JavaFX.getInstance().useFxmlLoader() )
-            try
-            {
-                java.net.URL location = getClass().getResource( GraphPropertiesController.RESOURCE_FXML );
-                ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-                FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
-                root = (Parent)fxmlLoader.load();
-                rootController = fxmlLoader.getController();
-            }
-            catch( IOException ex )
-            {
-                throw new RuntimeException( ex );
-            }
-        else
-        {
-            rootController = new GraphPropertiesController();
-            root = rootController.build();
-        }
+        BuilderFX<Parent,GraphPropertiesController> builder = new BuilderFX<>();
+        builder.init( GraphPropertiesController.class, RESOURCE_FXML, RESOURCE_BUNDLE );
+        final GraphPropertiesController rootController = builder.getController();
         rootController.bindRateValueProperty( rateValueProperty );
         rootController.bindRateUnitProperty( rateUnitProperty );
         rootController.bindBorderDisplayProperty( borderDisplayProperty );
@@ -56,8 +35,8 @@ final class GraphPropertiesStage extends Stage
         rootController.bindZeroColorProperty( zeroColorProperty );
         rootController.bindFlowModeProperty( flowModeProperty );
         
-        setOnShowing( new EventHandler<WindowEvent>() {
-
+        setOnShowing( new EventHandler<WindowEvent>() 
+        {
             @Override
             public void handle( WindowEvent event )
             {
@@ -72,7 +51,7 @@ final class GraphPropertiesStage extends Stage
         setMinWidth( 400d );
         setHeight( 200d ); //TODO save/restore size&pos
         setWidth( 400d );
-        setScene( new Scene( root ) );
+        setScene( new Scene( builder.getNode() ) );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
     }
 

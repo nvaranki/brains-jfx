@@ -1,22 +1,18 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
@@ -29,7 +25,6 @@ public final class LegendPaneController implements Builder<Pane>
     private static final LoggerX LOGGER = LoggerX.getLogger( LegendPaneController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/LegendPane.css";
     private static final String CSS_CLASS = "legend-pane";
-    private static final String RESOURCE_FXML_VALUE = "/fxml/analyser/LegendValue.fxml";
     
     private final BooleanProperty dynamicProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
@@ -149,6 +144,14 @@ public final class LegendPaneController implements Builder<Pane>
         this.parentPopupMenu = parentPopupMenu;
         JavaFX.copyMenuItems( parentPopupMenu, timePopup.getItems(), true );
     }
+
+    void onCreated()
+    {
+    }
+    
+    void onDeleted()
+    {
+    }
     
     /**
      * Добавляет отображаемое значение.
@@ -158,27 +161,12 @@ public final class LegendPaneController implements Builder<Pane>
      */
     void addValueControl( String name, DotPainter painter )
     {
-        LegendValueController legendValueController;
-        CheckBox label;
-        if( JavaFX.getInstance().useFxmlLoader() )
-            try
-            {
-                java.net.URL location = getClass().getResource( RESOURCE_FXML_VALUE );
-                ResourceBundle resources = LOGGER.getLogger().getResourceBundle();
-                FXMLLoader fxmlLoader = new FXMLLoader( location, resources );
-                label = (CheckBox)fxmlLoader.load();
-                legendValueController = fxmlLoader.getController();
-            }
-            catch( IOException ex )
-            {
-                throw new RuntimeException( ex );
-            }
-        else
-        {
-            legendValueController = new LegendValueController();
-            label = legendValueController.build();
-        }
+        BuilderFX<CheckBox,LegendValueController> builder = new BuilderFX<>();
+        builder.init( LegendValueController.class, 
+                LegendValueController.RESOURCE_FXML, LegendValueController.RESOURCE_BUNDLE );
+        LegendValueController legendValueController = builder.getController();
         legendValueController.setPainter( painter );
+        CheckBox label = builder.getNode();
         label.setText( name );
         label.setSelected( true ); // запуск прорисовки
         JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );

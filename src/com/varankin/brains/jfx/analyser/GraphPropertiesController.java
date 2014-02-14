@@ -2,8 +2,8 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
-import com.varankin.brains.jfx.ObjectBindings;
 import com.varankin.util.LoggerX;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -31,6 +31,7 @@ public final class GraphPropertiesController implements Builder<Parent>
     private static final String CSS_CLASS = "graph-properties";
     
     static final String RESOURCE_FXML = "/fxml/analyser/GraphProperties.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private final PropertyGate<Long> rateValueGate;
     private final PropertyGate<TimeUnit> rateUnitGate;

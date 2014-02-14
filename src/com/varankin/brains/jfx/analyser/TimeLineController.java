@@ -5,10 +5,13 @@ import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.LinkedBlockingQueue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -31,7 +34,9 @@ public final class TimeLineController implements Builder<Pane>
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeLineController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeLine.css";
     private static final String CSS_CLASS = "time-line";
+    
     static final String RESOURCE_FXML  = "/fxml/analyser/TimeLine.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final SimpleBooleanProperty dynamicProperty;
     private final ContextMenu popup;
@@ -127,22 +132,25 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void initialize()
     {
-        dynamicProperty.bindBidirectional( legendPaneController.dynamicProperty() );
-        dynamicProperty.bindBidirectional( graphPaneController.dynamicProperty() );
-        dynamicProperty.bindBidirectional( timeRulerController.relativeProperty() );
-        
-        graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
-        graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
-        graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-        graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-        
-        pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() {
-
+        pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
+        {
             @Override
             public void handle( ContextMenuEvent e )
             {
                 popup.show( pane, e.getScreenX(), e.getScreenY() );
                 e.consume();
+            }
+        } );
+        pane.parentProperty().addListener( new ChangeListener<Parent>() {
+
+            @Override
+            public void changed( ObservableValue<? extends Parent> _, 
+                    Parent oldValue, Parent newValue )
+            {
+                if( newValue != null )
+                    onCreated();
+                else
+                    onDeleted();
             }
         } );
     }
@@ -156,8 +164,6 @@ public final class TimeLineController implements Builder<Pane>
         Parent parent = pane.getParent();
         if( parent instanceof Pane )
         {
-            // остановить процессы
-            dynamicProperty.setValue( false );
             // убрать с экрана
             Pane pp = (Pane)parent;
             pp.getChildren().remove( pane );
@@ -173,6 +179,44 @@ public final class TimeLineController implements Builder<Pane>
         return dynamicProperty;
     }
 
+    private void onCreated()
+    {
+        legendPaneController.onCreated();
+        graphPaneController.onCreated();
+        timeRulerController.onCreated();
+        valueRulerController.onCreated();
+        
+        boolean dynamic = dynamicProperty.get();
+        dynamicProperty.bindBidirectional( legendPaneController.dynamicProperty() );
+        dynamicProperty.bindBidirectional( graphPaneController.dynamicProperty() );
+        dynamicProperty.bindBidirectional( timeRulerController.relativeProperty() );
+        dynamicProperty.setValue( dynamic ); // запустить процессы
+        
+        graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
+        graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
+        graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+        graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+    }
+    
+    private void onDeleted()
+    {
+        dynamicProperty.setValue( false ); // остановить процессы
+        dynamicProperty.unbindBidirectional( legendPaneController.dynamicProperty() );
+        dynamicProperty.unbindBidirectional( graphPaneController.dynamicProperty() );
+        dynamicProperty.unbindBidirectional( timeRulerController.relativeProperty() );
+        
+        graphPaneController.widthProperty().unbind();
+        graphPaneController.heightProperty().unbind();
+        graphPaneController.timeConvertorProperty().unbind();
+        graphPaneController.valueConvertorProperty().unbind();
+        
+        legendPaneController.onDeleted();
+        graphPaneController.onDeleted();
+        timeRulerController.onDeleted();
+        valueRulerController.onDeleted();
+        
+    }
+    
     void reset( ValueRulerPropertiesPaneController controller )
     {
         valueRulerController.reset( controller );

@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.util.ResourceBundle;
 import java.util.concurrent.Future;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
@@ -23,11 +24,14 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2013 Николай Варанкин
  */
-public final class LegendValueController implements Builder<Control>
+public final class LegendValueController implements Builder<CheckBox>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( LegendValueController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/LegendValue.css";
     private static final String CSS_CLASS = "legend-value";
+
+    static final String RESOURCE_FXML = "/fxml/analyser/LegendValue.fxml";
+    static ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final ColorPropertyChangeListener colorPropertyChangeListener;
     private final PatternPropertyChangeListener patternPropertyChangeListener;

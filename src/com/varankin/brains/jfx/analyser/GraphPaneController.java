@@ -234,6 +234,14 @@ public final class GraphPaneController implements Builder<Pane>
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
     }
 
+    void onCreated()
+    {
+    }
+    
+    void onDeleted()
+    {
+    }
+    
     private void replaceImage( int width, int height )
     {
         if( width > 0 && height > 0 )

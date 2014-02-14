@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.util.LoggerX;
+import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -22,6 +23,9 @@ public class TimeLineSetupController implements Builder<Parent>
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeLineSetupController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeLineSetup.css";
     private static final String CSS_CLASS = "time-line-setup";
+    
+    static final String RESOURCE_FXML  = "/fxml/analyser/TimeLineSetup.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private boolean approved;
     
