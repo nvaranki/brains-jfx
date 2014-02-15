@@ -408,8 +408,8 @@ public final class GraphPaneController implements Builder<Pane>
         Future<?> process;
         
         @Override
-        public void changed( ObservableValue<? extends Boolean> observable,
-        Boolean oldValue, Boolean newValue )
+        public void changed( ObservableValue<? extends Boolean> _,
+                Boolean oldValue, Boolean newValue )
         {
             if( newValue != null )
                 if( newValue )

@@ -3,10 +3,14 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -39,7 +43,6 @@ public final class TimeLineController implements Builder<Pane>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final SimpleBooleanProperty dynamicProperty;
-    private final ContextMenu popup;
 
     @FXML private Pane timeRuler;
     @FXML private TimeRulerController timeRulerController;
@@ -49,7 +52,7 @@ public final class TimeLineController implements Builder<Pane>
     @FXML private GraphPaneController graphPaneController;
     @FXML private Pane controlBar;
     @FXML private LegendPaneController legendPaneController;
-    //@FXML private ContextMenu popup;
+    /*@FXML*/ private ContextMenu popup;
     @FXML private GridPane pane;
 
     public TimeLineController(  )
@@ -254,7 +257,7 @@ public final class TimeLineController implements Builder<Pane>
      * @param color     цвет рисования шаблона отметки на графике.
      * @param title     название значения для отображения на графике.
      */
-    void addProperty( PropertyMonitor pm, String property, Dot.Convertor<Float> convertor,
+    void addMonitor( PropertyMonitor pm, String property, Dot.Convertor<Float> convertor,
             int[][] pattern, Color color, String title )
     {
         DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<Dot>(), 1000 );
@@ -307,4 +310,61 @@ public final class TimeLineController implements Builder<Pane>
         legendPaneController.setParentPopupMenu( popupItems );
     }
         
+    @Deprecated // DEBUG
+    void simulate( String... values )
+    {
+        JavaFX jfx = JavaFX.getInstance();
+        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN };
+        int[][][] patterns = { DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX };
+        int i = 0;
+        final List<PropertyMonitorImpl> monitors = new ArrayList<>();
+        for( String value : values )
+        {
+            PropertyMonitorImpl monitor = new PropertyMonitorImpl();
+            monitors.add( monitor );
+            addMonitor( monitor, PropertyMonitorImpl.PROPERTY, monitor.CONVERTOR, 
+                    patterns[i%patterns.length], colors[i%colors.length], value );
+            i++;
+        }
+        
+        Runnable observerService = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                for( PropertyMonitorImpl monitor : monitors )
+                    monitor.fire();
+            }
+        };
+        jfx.getScheduledExecutorService().scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
+    }
+    
+    @Deprecated // DEBUG
+    private final static class PropertyMonitorImpl implements PropertyMonitor
+    {
+        static final String PROPERTY = "value";
+        final Dot.Convertor<Float> CONVERTOR = new Dot.Convertor<Float>() 
+        {
+            @Override
+            public Dot toDot( Float value, long timestamp )
+            {
+                return new Dot( value, timestamp );
+            }
+        };
+        final Collection<PropertyChangeListener> listeners = new ArrayList<>();
+
+        @Override
+        public Collection<PropertyChangeListener> наблюдатели()
+        {
+            return listeners;
+        }
+
+        void fire()
+        {
+            for( PropertyChangeListener listener : listeners )
+                listener.propertyChange( new PropertyChangeEvent( PropertyMonitorImpl.this, PROPERTY, 
+                        null, (float)Math.random() * 2f - 1f ) );
+        }
+    }
+    
 }

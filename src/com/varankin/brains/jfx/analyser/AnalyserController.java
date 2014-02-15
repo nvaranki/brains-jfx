@@ -2,12 +2,8 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -17,7 +13,6 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.util.Builder;
 
@@ -31,6 +26,9 @@ public final class AnalyserController implements Builder<Node>
     private static final LoggerX LOGGER = LoggerX.getLogger( AnalyserController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/Analyser.css";
     private static final String CSS_CLASS = "analyser";
+    
+    static final String RESOURCE_FXML  = "/fxml/analyser/Analyser.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     @Deprecated private int id; //DEBUG
     private TimeLineSetupStage setup;
@@ -157,8 +155,10 @@ public final class AnalyserController implements Builder<Node>
             controller.reset( setupController.getTimeRulerPropertiesPaneController() );
             controller.reset( setupController.getGraphPropertiesPaneController() );
             controller.setParentPopupMenu( popup.getItems() );//.appendToPopup( popup.getItems() );
-            simulate( controller, "Value A"+id++, "Value B"+id++, "Value C"+id++ ); //DEBUG
-            addTimeLine( builder.getNode() );
+            controller.simulate( "Value A"+id++, "Value B"+id++, "Value C"+id++ );
+            List<Node> children = box.getChildren();
+            int pos = Math.max( 0, children.indexOf( buttonPanel ) );
+            children.addAll( pos, Arrays.<Node>asList( builder.getNode(), new Separator( Orientation.HORIZONTAL ) ) );
         }
     }
     
@@ -172,70 +172,6 @@ public final class AnalyserController implements Builder<Node>
             graphs.remove( buttonPanel );
             box.getChildren().removeAll( graphs );
         }
-    }
-    
-    private void addTimeLine( Node pane )
-    {
-        List<Node> children = box.getChildren();
-        int pos = Math.max( 0, children.indexOf( buttonPanel ) );
-        children.addAll( pos, Arrays.<Node>asList( pane, new Separator( Orientation.HORIZONTAL ) ) );
-    }
-    
-    @Deprecated // DEBUG
-    final class PropertyMonitorImpl implements PropertyMonitor
-    {
-        static final String PROPERTY = "value";
-        final Dot.Convertor<Float> CONVERTOR = new Dot.Convertor<Float>() 
-        {
-            @Override
-            public Dot toDot( Float value, long timestamp )
-            {
-                return new Dot( value, timestamp );
-            }
-        };
-        final Collection<PropertyChangeListener> listeners = new ArrayList<>();
-
-        @Override
-        public Collection<PropertyChangeListener> наблюдатели()
-        {
-            return listeners;
-        }
-
-        void fire()
-        {
-            for( PropertyChangeListener listener : listeners )
-                listener.propertyChange( new PropertyChangeEvent( PropertyMonitorImpl.this, PROPERTY, 
-                        null, (float)Math.random() * 2f - 1f ) );
-        }
-    }
-    
-    @Deprecated // DEBUG
-    private void simulate( TimeLineController tlc, String... values )
-    {
-        JavaFX jfx = JavaFX.getInstance();
-        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN };
-        int[][][] patterns = { DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX };
-        int i = 0;
-        final List<PropertyMonitorImpl> monitors = new ArrayList<>();
-        for( String value : values )
-        {
-            PropertyMonitorImpl monitor = new PropertyMonitorImpl();
-            monitors.add( monitor );
-            tlc.addProperty( monitor, PropertyMonitorImpl.PROPERTY, monitor.CONVERTOR, 
-                    patterns[i%patterns.length], colors[i%colors.length], value );
-            i++;
-        }
-        
-        Runnable observerService = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                for( PropertyMonitorImpl monitor : monitors )
-                    monitor.fire();
-            }
-        };
-        jfx.getScheduledExecutorService().scheduleAtFixedRate( observerService, 0L, 1000L, TimeUnit.MILLISECONDS );
     }
     
 }
