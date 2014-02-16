@@ -42,7 +42,7 @@ public final class TimeLineController implements Builder<Pane>
     static final String RESOURCE_FXML  = "/fxml/analyser/TimeLine.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private final SimpleBooleanProperty dynamicProperty;
+    private BooleanProperty dynamicProperty;
 
     @FXML private Pane timeRuler;
     @FXML private TimeRulerController timeRulerController;
@@ -57,8 +57,6 @@ public final class TimeLineController implements Builder<Pane>
 
     public TimeLineController(  )
     {
-        dynamicProperty = new SimpleBooleanProperty();
-
         MenuItem menuItemRemove = new MenuItem( LOGGER.text( "timeline.popup.remove" ) );
         menuItemRemove.setGraphic( JavaFX.icon( "icons16x16/remove.png" ) );
         menuItemRemove.setOnAction( new EventHandler<ActionEvent>() 
@@ -135,6 +133,8 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void initialize()
     {
+        dynamicProperty = graphPaneController.dynamicProperty();
+
         pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
         {
             @Override
@@ -144,18 +144,7 @@ public final class TimeLineController implements Builder<Pane>
                 e.consume();
             }
         } );
-        pane.parentProperty().addListener( new ChangeListener<Parent>() {
-
-            @Override
-            public void changed( ObservableValue<? extends Parent> _, 
-                    Parent oldValue, Parent newValue )
-            {
-                if( newValue != null )
-                    onCreated();
-                else
-                    onDeleted();
-            }
-        } );
+        pane.parentProperty().addListener( new LifeCycleListener() );
     }
 
     /**
@@ -182,44 +171,6 @@ public final class TimeLineController implements Builder<Pane>
         return dynamicProperty;
     }
 
-    private void onCreated()
-    {
-        legendPaneController.onCreated();
-        graphPaneController.onCreated();
-        timeRulerController.onCreated();
-        valueRulerController.onCreated();
-        
-        boolean dynamic = dynamicProperty.get();
-        dynamicProperty.bindBidirectional( legendPaneController.dynamicProperty() );
-        dynamicProperty.bindBidirectional( graphPaneController.dynamicProperty() );
-        dynamicProperty.bindBidirectional( timeRulerController.relativeProperty() );
-        dynamicProperty.setValue( dynamic ); // запустить процессы
-        
-        graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
-        graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
-        graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-        graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-    }
-    
-    private void onDeleted()
-    {
-        dynamicProperty.setValue( false ); // остановить процессы
-        dynamicProperty.unbindBidirectional( legendPaneController.dynamicProperty() );
-        dynamicProperty.unbindBidirectional( graphPaneController.dynamicProperty() );
-        dynamicProperty.unbindBidirectional( timeRulerController.relativeProperty() );
-        
-        graphPaneController.widthProperty().unbind();
-        graphPaneController.heightProperty().unbind();
-        graphPaneController.timeConvertorProperty().unbind();
-        graphPaneController.valueConvertorProperty().unbind();
-        
-        legendPaneController.onDeleted();
-        graphPaneController.onDeleted();
-        timeRulerController.onDeleted();
-        valueRulerController.onDeleted();
-        
-    }
-    
     void reset( ValueRulerPropertiesPaneController controller )
     {
         valueRulerController.reset( controller );
@@ -300,7 +251,7 @@ public final class TimeLineController implements Builder<Pane>
         }
     }
     
-    void setParentPopupMenu( List<? extends MenuItem> parentPopupMenu )
+    void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         List<MenuItem> popupItems = popup.getItems();
         JavaFX.copyMenuItems( parentPopupMenu, popupItems, true );
@@ -364,6 +315,43 @@ public final class TimeLineController implements Builder<Pane>
             for( PropertyChangeListener listener : listeners )
                 listener.propertyChange( new PropertyChangeEvent( PropertyMonitorImpl.this, PROPERTY, 
                         null, (float)Math.random() * 2f - 1f ) );
+        }
+    }
+    
+    private class LifeCycleListener implements ChangeListener<Parent>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Parent> _, Parent oldValue, Parent newValue )
+        {
+            if( newValue != null )
+            {
+                graphPaneController.onCreated();
+                legendPaneController.onCreated();
+                timeRulerController.onCreated();
+                valueRulerController.onCreated();
+
+                legendPaneController.dynamicProperty().bindBidirectional( dynamicProperty );
+                timeRulerController.relativeProperty().bindBidirectional( dynamicProperty );
+                graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
+                graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
+                graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+                graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+            }
+            else
+            {
+                legendPaneController.dynamicProperty().unbindBidirectional( dynamicProperty );
+                timeRulerController.relativeProperty().unbindBidirectional( dynamicProperty );
+                graphPaneController.widthProperty().unbind();
+                graphPaneController.heightProperty().unbind();
+                graphPaneController.timeConvertorProperty().unbind();
+                graphPaneController.valueConvertorProperty().unbind();
+
+                graphPaneController.onDeleted();
+                legendPaneController.onDeleted();
+                timeRulerController.onDeleted();
+                valueRulerController.onDeleted();
+
+            }
         }
     }
     

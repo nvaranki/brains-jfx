@@ -154,7 +154,7 @@ public final class AnalyserController implements Builder<Node>
             controller.reset( setupController.getValueRulerPropertiesPaneController() );
             controller.reset( setupController.getTimeRulerPropertiesPaneController() );
             controller.reset( setupController.getGraphPropertiesPaneController() );
-            controller.setParentPopupMenu( popup.getItems() );//.appendToPopup( popup.getItems() );
+            controller.extendPopupMenu( popup.getItems() );
             controller.simulate( "Value A"+id++, "Value B"+id++, "Value C"+id++ );
             List<Node> children = box.getChildren();
             int pos = Math.max( 0, children.indexOf( buttonPanel ) );
