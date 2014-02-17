@@ -180,8 +180,8 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     void reset()
     {
         unitProperty.setValue( TimeUnit.MILLISECONDS );
-        durationProperty.setValue( 1000L );
-        excessProperty.setValue( 20L );
+        durationProperty.setValue( 10000L );
+        excessProperty.setValue( 200L );
         textColor.setValue( Color.BLACK );
         tickColor.setValue( Color.BLACK );
         fontPickerController.fontProperty().setValue( new Text().getFont() );

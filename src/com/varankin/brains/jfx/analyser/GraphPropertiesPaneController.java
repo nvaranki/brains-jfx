@@ -170,7 +170,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     void reset()
     {
         rateUnitProperty.setValue( TimeUnit.MILLISECONDS );
-        rateValueProperty.setValue( 200L );
+        rateValueProperty.setValue( 20L );
         borderColor.setValue( Color.BLACK );
         borderDisplay.selectedProperty().setValue( false );
         zeroColor.setValue( Color.GRAY );
