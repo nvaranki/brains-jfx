@@ -79,7 +79,7 @@ class GuiBuilder
         views.addListener( new TabPaneContentManager( просмотр ) );
         //            Pane sppw = new StackPane();
         //            sppw.getChildren().add( просмотр );
-        views.add( new TitledSceneGraph( new AnalyserController().build(), new SimpleStringProperty( "Анализатор" ) ) );
+        views.add( new TitledSceneGraph( new Pane(), new SimpleStringProperty( "Quick start" ) ) );
         return просмотр; //sppw;
         //sppw;
     }

@@ -80,6 +80,9 @@ class ApplicationMenuBar
                     new MenuNode( действие( Пауза, jfx, "ApplicationActionPause" ) ),
                     new MenuNode( действие( Стоп,  jfx, "ApplicationActionStop"  ) ) ),
 
+            new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".3", специфика ),
+                    new MenuNode( new ApplicationActionAnalyser( jfx ) ) ),
+
             new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".5", специфика ),
 //                    new MenuNode( actions.getAbout() ),
 //                    new MenuNode( new SubMenu( ".5.1", специфика ),
