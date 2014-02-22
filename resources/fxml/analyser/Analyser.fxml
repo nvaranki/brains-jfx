@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Author     : Николай Варанкин
     Description: Панель графиков.
+    Author     : (c) 2014 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -22,6 +22,18 @@
         <URL value="@Analyser.css"/>
     </stylesheets>
 
+    <contextMenu>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem 
+                    fx:id="menuItemAdd" 
+                    text="%analyser.popup.add"  
+                    onAction="#onActionAddTimeLine" 
+                />  
+            </items>
+        </ContextMenu>        
+    </contextMenu>
+    
     <VBox 
         fx:id="box"
         fillWidth="true" 
@@ -45,17 +57,5 @@
             </HBox>
         </children>
     </VBox>
-    
-    <contextMenu>
-        <ContextMenu fx:id="popup" >
-            <items>
-                <MenuItem 
-                    fx:id="menuItemAdd" 
-                    text="%analyser.popup.add"  
-                    onAction="#onActionAddTimeLine" 
-                />  
-            </items>
-        </ContextMenu>        
-    </contextMenu>
     
 </ScrollPane>

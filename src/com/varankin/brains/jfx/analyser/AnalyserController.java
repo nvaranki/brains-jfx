@@ -30,7 +30,6 @@ public final class AnalyserController implements Builder<Node>
     static final String RESOURCE_FXML  = "/fxml/analyser/Analyser.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    @Deprecated private int id; //DEBUG
     private TimeLineSetupStage setup;
 
     @FXML private Pane buttonPanel;
@@ -96,13 +95,11 @@ public final class AnalyserController implements Builder<Node>
         box.setFocusTraversable( true );
 
         ScrollPane pane = new ScrollPane();
-        pane.setId( "analyser" );
         pane.setContent( box );
         pane.setContextMenu( popup );
         pane.setFitToWidth( true );
         pane.setHbarPolicy( ScrollPane.ScrollBarPolicy.NEVER );
         pane.setVbarPolicy( ScrollPane.ScrollBarPolicy.ALWAYS );
-        pane.setStyle("-fx-background-color:transparent;"); //TODO DEBUG
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -155,7 +152,6 @@ public final class AnalyserController implements Builder<Node>
             controller.reset( setupController.getTimeRulerPropertiesPaneController() );
             controller.reset( setupController.getGraphPropertiesPaneController() );
             controller.extendPopupMenu( popup.getItems() );
-            controller.simulate( "Value A"+id++, "Value B"+id++, "Value C"+id++ );
             List<Node> children = box.getChildren();
             int pos = Math.max( 0, children.indexOf( buttonPanel ) );
             children.addAll( pos, Arrays.<Node>asList( builder.getNode(), new Separator( Orientation.HORIZONTAL ) ) );
