@@ -309,7 +309,7 @@ public final class TimeRulerController extends AbstractRulerController
         }
     }
 
-    void setParentPopupMenu( List<? extends MenuItem> parentPopupMenu )
+    void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
     }

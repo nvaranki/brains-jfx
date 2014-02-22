@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -221,44 +219,28 @@ public final class TimeLineController implements Builder<Pane>
         legendPaneController.addValueControl( title, painter );
     }
 
-    @Deprecated
-    void appendToPopup( List<MenuItem> items ) 
-    {
-        if( items != null && !items.isEmpty() )
-        {
-            JavaFX.copyMenuItems( items, popup.getItems(), true );
-            timeRulerController.appendToPopup( popup.getItems() );
-            valueRulerController.appendToPopup( popup.getItems() );
-
-            List<MenuItem> itemsDrawArea = new ArrayList<>();
-            MenuItem menuItemStart = new MenuItem( LOGGER.text( "timeline.popup.start" ) );
-            menuItemStart.setGraphic( JavaFX.icon( "icons16x16/start.png" ) );
-//            menuItemStart.setOnAction( legendPaneController.createActionStartAllFlows() );
-            menuItemStart.disableProperty().bind( dynamicProperty() );
-
-            MenuItem menuItemStop = new MenuItem( LOGGER.text( "timeline.popup.stop" ) );
-            menuItemStop.setGraphic( JavaFX.icon( "icons16x16/stop.png" ) );
-//            menuItemStop.setOnAction( legendPaneController.createActionStopAllFlows() );
-            menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty() ) );
-
-            itemsDrawArea.add( menuItemStart );
-            itemsDrawArea.add( menuItemStop );
-            if( !popup.getItems().isEmpty() )
-                itemsDrawArea.add( new SeparatorMenuItem() );
-            itemsDrawArea.addAll( popup.getItems() );
-//            drawArea.appendToPopup( itemsDrawArea );
-            
-        }
-    }
-    
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         List<MenuItem> popupItems = popup.getItems();
+        //TODO DEBUG START
+        MenuItem menuItemSimulate = new MenuItem("Simulate");
+        menuItemSimulate.setOnAction( new EventHandler<ActionEvent>() 
+        {
+            @Deprecated private int id;
+            
+            @Override
+            public void handle( ActionEvent _ )
+            {
+                simulate( "Value A"+id++, "Value B"+id++, "Value C"+id++ );
+            }
+        } );
+        popup.getItems().add( menuItemSimulate);
+        //TODO DEBUG END
         JavaFX.copyMenuItems( parentPopupMenu, popupItems, true );
-        graphPaneController.setParentPopupMenu( popupItems );
-        valueRulerController.setParentPopupMenu( popupItems );
-        timeRulerController.setParentPopupMenu( popupItems );
-        legendPaneController.setParentPopupMenu( popupItems );
+        graphPaneController.extendPopupMenu( popupItems );
+        valueRulerController.extendPopupMenu( popupItems );
+        timeRulerController.extendPopupMenu( popupItems );
+        legendPaneController.extendPopupMenu( popupItems );
     }
         
     @Deprecated // DEBUG

@@ -229,7 +229,7 @@ public final class GraphPaneController implements Builder<Pane>
         return dynamicProperty;
     }
 
-    void setParentPopupMenu( List<MenuItem> parentPopupMenu )
+    void extendPopupMenu( List<MenuItem> parentPopupMenu )
     {
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
     }

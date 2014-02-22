@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    Author     : (c) 2014 Николай Варанкин
     Description: Панель графика динамического изменения значений по времени.
+    Author     : (c) 2014 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>

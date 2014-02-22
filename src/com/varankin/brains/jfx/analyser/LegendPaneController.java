@@ -139,7 +139,7 @@ public final class LegendPaneController implements Builder<Pane>
         return dynamicProperty;
     }
     
-    void setParentPopupMenu( List<? extends MenuItem> parentPopupMenu )
+    void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         this.parentPopupMenu = parentPopupMenu;
         JavaFX.copyMenuItems( parentPopupMenu, timePopup.getItems(), true );
