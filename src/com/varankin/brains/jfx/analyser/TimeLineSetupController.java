@@ -40,7 +40,7 @@ public class TimeLineSetupController implements Builder<Parent>
     @Override
     public Parent build()
     {
-        buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK = new Button( LOGGER.text( "button.create" ) );
         buttonOK.setDefaultButton( true );
         buttonOK.setOnAction( new EventHandler<ActionEvent>() 
         {
@@ -104,16 +104,16 @@ public class TimeLineSetupController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        BooleanBinding validProperty = 
+        timeRulerPropertiesPaneController.reset();
+        valueRulerPropertiesPaneController.reset();
+        graphPropertiesPaneController.reset();
+        BooleanBinding valid = 
             Bindings.and( 
                 Bindings.and( 
                     timeRulerPropertiesPaneController.validProperty(),
                     valueRulerPropertiesPaneController.validProperty() ),
                 graphPropertiesPaneController.validProperty() ) ;
-        timeRulerPropertiesPaneController.reset();
-        valueRulerPropertiesPaneController.reset();
-        graphPropertiesPaneController.reset();
-        buttonOK.disableProperty().bind( Bindings.not( validProperty ) );
+        buttonOK.disableProperty().bind( Bindings.not( valid ) );
     }
 
     @FXML

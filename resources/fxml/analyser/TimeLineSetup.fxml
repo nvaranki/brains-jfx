@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Author     : (с) 2014 Николай Варанкин
     Description: Диалог выбора параметров рисования графика.
+    Author     : (с) 2014 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -56,7 +56,7 @@
             <children>
                 <Button 
                     fx:id="buttonOK" 
-                    text="@button.ok" 
+                    text="@button.create" 
                     defaultButton="true"
                     onAction="#onActionOK"
                     />
