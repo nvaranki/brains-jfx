@@ -319,7 +319,7 @@ public final class TimeLineController implements Builder<Pane>
                 graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
                 graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
             }
-            else
+            else if( oldValue != null )
             {
                 legendPaneController.dynamicProperty().unbindBidirectional( dynamicProperty );
                 timeRulerController.relativeProperty().unbindBidirectional( dynamicProperty );

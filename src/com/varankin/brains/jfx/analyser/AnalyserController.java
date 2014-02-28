@@ -5,7 +5,11 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.*;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -30,8 +34,12 @@ public final class AnalyserController implements Builder<Node>
     static final String RESOURCE_FXML  = "/fxml/analyser/Analyser.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
+    private final ListChangeListener<Node> doubleSeparatorRemover;
+    private final ChangeListener<Boolean> lifeCycleListener;
+    
     private TimeLineSetupStage setup;
 
+    @FXML private ScrollPane pane;
     @FXML private Pane buttonPanel;
     @FXML private Button buttonRemoveAll;
     @FXML private VBox box;
@@ -40,6 +48,8 @@ public final class AnalyserController implements Builder<Node>
 
     public AnalyserController()
     {
+        lifeCycleListener = new LifeCycleListener();
+        doubleSeparatorRemover = new DoubleSeparatorRemover();
     }
     
     /**
@@ -94,7 +104,7 @@ public final class AnalyserController implements Builder<Node>
         box.setFillWidth( true );
         box.setFocusTraversable( true );
 
-        ScrollPane pane = new ScrollPane();
+        pane = new ScrollPane();
         pane.setContent( box );
         pane.setContextMenu( popup );
         pane.setFitToWidth( true );
@@ -112,22 +122,10 @@ public final class AnalyserController implements Builder<Node>
     @FXML
     protected void initialize()
     {
-        box.getChildren().addListener( new ListChangeListener<Node>() 
-        {
-            @Override
-            public void onChanged( ListChangeListener.Change<? extends Node> change )
-            {
-                boolean removed = false;
-                while( change.next() )
-                    removed = removed || !change.getRemoved().isEmpty();
-                if( removed )
-                    for( int i = 0; i < box.getChildren().size(); i++ )
-                        if( i % 2 == 0 && box.getChildren().get( i ) instanceof Separator )
-                            box.getChildren().remove( i-- );
-            }
-        } );
+        box.getChildren().addListener( new WeakListChangeListener<>( doubleSeparatorRemover ) );
         buttonRemoveAll.disableProperty().bind( Bindings.lessThan( 
                 Bindings.size( box.getChildren() ), 2 ) );
+        pane.visibleProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) ); 
     }
     
     @FXML
@@ -162,11 +160,46 @@ public final class AnalyserController implements Builder<Node>
     private void onActionRemoveAllTimeLines( ActionEvent _ )
     {
         boolean confirmed = true;//TODO popup and ask again
-        if( confirmed )
+        if( confirmed ) removeAllTimeLines();
+    }
+
+    private void removeAllTimeLines()
+    {
+        List<Node> graphs = new ArrayList<>( box.getChildren() );
+        graphs.remove( buttonPanel );
+        box.getChildren().removeAll( graphs );
+    }
+    
+    private class DoubleSeparatorRemover implements ListChangeListener<Node>
+    {
+        @Override
+        public void onChanged( ListChangeListener.Change<? extends Node> change )
         {
-            List<Node> graphs = new ArrayList<>( box.getChildren() );
-            graphs.remove( buttonPanel );
-            box.getChildren().removeAll( graphs );
+            boolean removed = false;
+            while( change.next() )
+                removed = removed || !change.getRemoved().isEmpty();
+            if( removed )
+                for( int i = 0; i < box.getChildren().size(); i++ )
+                    if( i % 2 == 0 && box.getChildren().get( i ) instanceof Separator )
+                        box.getChildren().remove( i-- );
+        }
+    }
+    
+    private class LifeCycleListener implements ChangeListener<Boolean>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Boolean> _, 
+                            Boolean oldValue, Boolean newValue )
+        {
+            if( newValue != null && newValue )
+            {
+                // всё уже настроено
+            }
+            else if( oldValue != null && oldValue )
+            {
+                // удалить все графики, чтобы они отключили мониторинг
+                removeAllTimeLines();
+            }
         }
     }
     

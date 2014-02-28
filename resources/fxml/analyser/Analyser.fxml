@@ -12,6 +12,7 @@
 
 <ScrollPane 
     fx:controller="com.varankin.brains.jfx.analyser.AnalyserController" 
+    fx:id="pane" 
     styleClass="analyser"
     fitToWidth="true" 
     hbarPolicy="NEVER" 
