@@ -197,6 +197,7 @@ public final class AnalyserController implements Builder<Node>
             }
             else if( oldValue != null && oldValue )
             {
+                buttonRemoveAll.disableProperty().unbind();
                 // удалить все графики, чтобы они отключили мониторинг
                 removeAllTimeLines();
             }
