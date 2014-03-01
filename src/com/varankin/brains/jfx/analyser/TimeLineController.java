@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -40,6 +41,8 @@ public final class TimeLineController implements Builder<Pane>
     static final String RESOURCE_FXML  = "/fxml/analyser/TimeLine.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
+    private final ChangeListener<Parent> lifeCycleListener;
+
     private BooleanProperty dynamicProperty;
 
     @FXML private Pane timeRuler;
@@ -69,6 +72,8 @@ public final class TimeLineController implements Builder<Pane>
         popup = new ContextMenu();
         popup.getItems().add( menuItemRemove );
         popup.setAutoHide( true );
+        
+        lifeCycleListener = new LifeCycleListener();
     }
 
     /**
@@ -142,7 +147,7 @@ public final class TimeLineController implements Builder<Pane>
                 e.consume();
             }
         } );
-        pane.parentProperty().addListener( new LifeCycleListener() );
+        pane.parentProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) );
     }
 
     /**
@@ -168,7 +173,7 @@ public final class TimeLineController implements Builder<Pane>
     {
         return dynamicProperty;
     }
-
+    
     void reset( ValueRulerPropertiesPaneController controller )
     {
         valueRulerController.reset( controller );
@@ -213,10 +218,15 @@ public final class TimeLineController implements Builder<Pane>
         painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
         painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
         painter.writableImageProperty().bind( graphPaneController.writableImageProperty() );
-        painter.colorProperty().setValue( color );
-        painter.patternProperty().setValue( pattern );
-        painter.startMonitoring( pm, property, convertor );
-        legendPaneController.addValueControl( title, painter );
+        Value value = new Value();
+        value.монитор = pm;
+        value.property = property;
+        value.convertor = convertor;
+        value.painter = painter;
+        value.title = title;
+        value.color = color;
+        value.pattern = pattern;
+        legendPaneController.valuesProperty().getValue().add( value );
     }
 
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
@@ -307,11 +317,6 @@ public final class TimeLineController implements Builder<Pane>
         {
             if( newValue != null )
             {
-                graphPaneController.onCreated();
-                legendPaneController.onCreated();
-                timeRulerController.onCreated();
-                valueRulerController.onCreated();
-
                 legendPaneController.dynamicProperty().bindBidirectional( dynamicProperty );
                 timeRulerController.relativeProperty().bindBidirectional( dynamicProperty );
                 graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
@@ -328,11 +333,7 @@ public final class TimeLineController implements Builder<Pane>
                 graphPaneController.timeConvertorProperty().unbind();
                 graphPaneController.valueConvertorProperty().unbind();
 
-                graphPaneController.onDeleted();
-                legendPaneController.onDeleted();
-                timeRulerController.onDeleted();
-                valueRulerController.onDeleted();
-
+                legendPaneController.valuesProperty().clear();
             }
         }
     }

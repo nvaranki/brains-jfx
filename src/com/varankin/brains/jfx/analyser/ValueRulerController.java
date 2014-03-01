@@ -162,14 +162,6 @@ public final class ValueRulerController extends AbstractRulerController
         valueMaxProperty.setValue( pattern.valueMaxProperty().getValue() );
     }
     
-    void onCreated()
-    {
-    }
-    
-    void onDeleted()
-    {
-    }
-    
     @Override
     protected void removeRuler()
     {

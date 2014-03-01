@@ -229,14 +229,6 @@ public final class TimeRulerController extends AbstractRulerController
         unitProperty.setValue( pattern.unitProperty().getValue() );
     }
     
-    void onCreated()
-    {
-    }
-    
-    void onDeleted()
-    {
-    }
-    
     @Override
     protected void removeRuler()
     {

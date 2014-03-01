@@ -3,9 +3,11 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
-import java.util.concurrent.Future;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
@@ -33,11 +35,11 @@ public final class LegendValueController implements Builder<CheckBox>
     static final String RESOURCE_FXML = "/fxml/analyser/LegendValue.fxml";
     static ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
+    private final ObjectProperty<Color> colorProperty;
+    private final ObjectProperty<int[][]> patternProperty;
     private final ColorPropertyChangeListener colorPropertyChangeListener;
     private final PatternPropertyChangeListener patternPropertyChangeListener;
-    private final SelectedPropertyChangeListener selectedPropertyChangeListener;
 
-    private DotPainter painter;
     private ValuePropertiesStage properties;
     
     @FXML private CheckBox legend;
@@ -49,9 +51,12 @@ public final class LegendValueController implements Builder<CheckBox>
 
     public LegendValueController()
     {
+        colorProperty = new SimpleObjectProperty<>();
+        patternProperty = new SimpleObjectProperty<>();
         colorPropertyChangeListener = new ColorPropertyChangeListener();
         patternPropertyChangeListener = new PatternPropertyChangeListener();
-        selectedPropertyChangeListener = new SelectedPropertyChangeListener();
+        colorProperty.addListener( new WeakChangeListener<>( colorPropertyChangeListener ) );
+        patternProperty.addListener( new WeakChangeListener<>( patternPropertyChangeListener ) );
     }
 
     /**
@@ -121,8 +126,6 @@ public final class LegendValueController implements Builder<CheckBox>
     @FXML
     protected void initialize()
     {
-        legend.selectedProperty().addListener( new WeakChangeListener<>( selectedPropertyChangeListener ) );
-        
         menuItemShow.textProperty().bind( new TextWithName( "control.popup.show" ) );
         menuItemShow.disableProperty().bind( legend.selectedProperty() );
 
@@ -153,16 +156,6 @@ public final class LegendValueController implements Builder<CheckBox>
         }
     }
 
-    void setPainter( DotPainter painter )
-    {
-        this.painter = painter;
-        
-        painter.colorProperty().addListener( new WeakChangeListener<>( colorPropertyChangeListener ) );
-        painter.patternProperty().addListener( new WeakChangeListener<>( patternPropertyChangeListener ) );
-        
-        resample( painter.colorProperty().getValue(), painter.patternProperty().getValue() );
-    }
-    
     ContextMenu getContextMenu() 
     {
         return popup;
@@ -204,21 +197,42 @@ public final class LegendValueController implements Builder<CheckBox>
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.setTitle( LOGGER.text( "properties.value.title", legend.getText() ) );
             ValuePropertiesController controller = properties.getController();
-            controller.bindColorProperty( painter.colorProperty() );
-            controller.bindPatternProperty( painter.patternProperty() );
+            controller.bindColorProperty( colorProperty );
+            controller.bindPatternProperty( patternProperty );
             controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         }
         properties.show();
         properties.toFront();
     }
         
+    /**
+     * @return свойство "цвет рисования шаблона".
+     */
+    final Property<Color> colorProperty()
+    {
+        return colorProperty;
+    }
+
+    /**
+     * @return свойство "шаблон для рисования как массив точек (x,y)".
+     */
+    final Property<int[][]> patternProperty()
+    {
+        return patternProperty;
+    }
+
+    BooleanProperty selectedProperty()
+    {
+        return legend.selectedProperty();
+    }
+    
     private class ColorPropertyChangeListener implements ChangeListener<Color>
     {
         @Override
         public void changed( ObservableValue<? extends Color> observable, 
                             Color oldValue, Color newValue )
         {
-            resample( newValue, painter.patternProperty().getValue() );
+            resample( newValue, patternProperty.getValue() );
         }
     }
 
@@ -228,28 +242,7 @@ public final class LegendValueController implements Builder<CheckBox>
         public void changed( ObservableValue<? extends int[][]> observable, 
                             int[][] oldValue, int[][] newValue )
         {
-            resample( painter.colorProperty().getValue(), newValue );
-        }
-    }
-        
-    private class SelectedPropertyChangeListener implements ChangeListener<Boolean>
-    {
-        private Future<?> process;
-        
-        @Override
-        public void changed( ObservableValue<? extends Boolean> observable, 
-                            Boolean oldValue, Boolean newValue )
-        {
-            if( newValue != null && newValue )
-            {
-                // запустить прорисовку отметок
-                process = JavaFX.getInstance().getExecutorService().submit( painter );
-            }
-            else if( process != null )
-            {
-                // остановить прорисовку отметок
-                process.cancel( true );
-            }
+            resample( colorProperty.getValue(), newValue );
         }
     }
         

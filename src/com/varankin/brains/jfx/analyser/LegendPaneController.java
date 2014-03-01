@@ -7,10 +7,14 @@ import java.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Builder;
@@ -26,6 +30,8 @@ public final class LegendPaneController implements Builder<Pane>
     private static final String RESOURCE_CSS  = "/fxml/analyser/LegendPane.css";
     private static final String CSS_CLASS = "legend-pane";
     
+    private final ReadOnlyListWrapper<Value> valuesProperty;
+    private final ListChangeListener<Value> valueListListener;
     private final BooleanProperty dynamicProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
 
@@ -39,6 +45,9 @@ public final class LegendPaneController implements Builder<Pane>
 
     public LegendPaneController()
     {
+        valuesProperty = new ReadOnlyListWrapper<>( FXCollections.<Value>observableArrayList() );
+        valueListListener = new ValueListListener();
+        valuesProperty.addListener( new WeakListChangeListener<>( valueListListener ) );
         dynamicProperty = new SimpleBooleanProperty();
         dynamicPropertyChangeListener = new DynamicPropertyChangeListener();
         parentPopupMenu = Collections.emptyList();
@@ -134,6 +143,11 @@ public final class LegendPaneController implements Builder<Pane>
         time.selectedProperty().setValue( Boolean.FALSE );
     }
 
+    ReadOnlyListProperty<Value> valuesProperty()
+    {
+        return valuesProperty.getReadOnlyProperty();
+    }
+
     BooleanProperty dynamicProperty()
     {
         return dynamicProperty;
@@ -143,35 +157,6 @@ public final class LegendPaneController implements Builder<Pane>
     {
         this.parentPopupMenu = parentPopupMenu;
         JavaFX.copyMenuItems( parentPopupMenu, timePopup.getItems(), true );
-    }
-
-    void onCreated()
-    {
-    }
-    
-    void onDeleted()
-    {
-    }
-    
-    /**
-     * Добавляет отображаемое значение.
-     * 
-     * @param name    название значения.
-     * @param painter сервис рисования отметок.
-     */
-    void addValueControl( String name, DotPainter painter )
-    {
-        BuilderFX<CheckBox,LegendValueController> builder = new BuilderFX<>();
-        builder.init( LegendValueController.class, 
-                LegendValueController.RESOURCE_FXML, LegendValueController.RESOURCE_BUNDLE );
-        LegendValueController legendValueController = builder.getController();
-        legendValueController.setPainter( painter );
-        CheckBox label = builder.getNode();
-        label.setText( name );
-        label.setSelected( true ); // запуск прорисовки
-        JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
-        
-        values.getChildren().add( label );
     }
 
     //    EventHandler<ActionEvent> createActionStartAllFlows()
@@ -244,6 +229,87 @@ public final class LegendPaneController implements Builder<Pane>
         void setFlowState( Object o, boolean flows )
         {
             flowState.put( o, flows );
+        }
+
+    }
+    
+    private class ValueListListener implements ListChangeListener<Value>
+    {
+        @Override
+        public void onChanged( ListChangeListener.Change<? extends Value> c )
+        {
+            while( c.next() ) 
+             if( c.wasPermutated() ) 
+                 for( int i = c.getFrom(); i < c.getTo(); ++i ) 
+                 {
+                      //permutate
+                 }
+             else if( c.wasUpdated() ) 
+             {
+                      //update item
+             } 
+             else 
+             {
+                 for( Value value : c.getRemoved() ) 
+                 {
+                     value.stopMonitoring();
+                 }
+                 for( Value value : c.getAddedSubList() ) 
+                 {
+                    values.getChildren().add( createValueControl( value ) );
+                    //TODO values.getParent().requestLayout();
+                    value.startMonitoring();
+                 }
+             }
+        }
+
+        /**
+         * Создает элемент управления отображаемым значением.
+         * 
+         * @param value дескриптор значения.
+         */
+        Node createValueControl( Value value )
+        {
+            BuilderFX<CheckBox,LegendValueController> builder = new BuilderFX<>();
+            builder.init( LegendValueController.class, 
+                    LegendValueController.RESOURCE_FXML, LegendValueController.RESOURCE_BUNDLE );
+            LegendValueController legendValueController = builder.getController();
+            legendValueController.colorProperty().setValue( value.color );
+            legendValueController.patternProperty().setValue( value.pattern );
+            legendValueController.selectedProperty().setValue( true ); // запуск прорисовки
+
+            value.painter.colorProperty().bind( legendValueController.colorProperty() );
+            value.painter.patternProperty().bind( legendValueController.patternProperty() );
+            value.painter.enabledProperty().bind( legendValueController.selectedProperty() );
+
+            CheckBox label = builder.getNode();
+            label.setText( value.title );
+            JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
+            label.parentProperty().addListener( new LifeCycleListener( value ) );
+            return label;
+        }
+        
+        class LifeCycleListener implements ChangeListener<Parent>
+        {
+            final Value value;
+
+            LifeCycleListener( Value value )
+            {
+                this.value = value;
+            }
+            
+            @Override
+            public void changed( ObservableValue<? extends Parent> _, Parent ov, Parent nv )
+            {
+                if( nv != null )
+                {
+                    
+                }
+                else if( ov != null )
+                {
+                    valuesProperty.getValue().remove( value );
+                }
+            }
         }
 
     }

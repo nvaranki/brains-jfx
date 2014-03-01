@@ -11,6 +11,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.ContextMenuEvent;
@@ -44,6 +45,7 @@ public final class GraphPaneController implements Builder<Pane>
     private final ImageChanger imageChanger;
     private final DynamicSwitch dynamicSwitch;
     private final DynamicParametersChanger dynamicChanger;
+    private final ChangeListener<Boolean> lifeCycleListener;
 
     private GraphPropertiesStage properties;
     
@@ -86,6 +88,8 @@ public final class GraphPaneController implements Builder<Pane>
         dynamicProperty.addListener( new WeakChangeListener<>( dynamicSwitch ) );
         rateValueProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
         rateUnitProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
+        
+        lifeCycleListener = new LifeCycleListener();
     }
 
     /**
@@ -161,6 +165,7 @@ public final class GraphPaneController implements Builder<Pane>
         menuItemResume.disableProperty().bind( dynamicProperty );
         menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty ) );
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
+        //pane.set visibleProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) );
     }
     
     @FXML
@@ -234,14 +239,6 @@ public final class GraphPaneController implements Builder<Pane>
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
     }
 
-    void onCreated()
-    {
-    }
-    
-    void onDeleted()
-    {
-    }
-    
     private void replaceImage( int width, int height )
     {
         if( width > 0 && height > 0 )
@@ -298,6 +295,26 @@ public final class GraphPaneController implements Builder<Pane>
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
+    
+    private class LifeCycleListener implements ChangeListener<Boolean>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Boolean> _, Boolean oldValue, Boolean newValue )
+        {
+            if( newValue != null && newValue )
+            {
+                imageView.imageProperty().bind( writableImageProperty );
+                menuItemResume.disableProperty().bind( dynamicProperty );
+                menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty ) );
+            }
+            else if( oldValue != null && oldValue )
+            {
+                imageView.imageProperty().unbind();
+                menuItemResume.disableProperty().unbind();
+                menuItemStop.disableProperty().unbind();
+            }
+        }
+    }
     
     /**
      * Сервис движения временной шкалы.

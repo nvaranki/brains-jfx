@@ -1,14 +1,16 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.property.PropertyMonitor;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import com.varankin.brains.jfx.JavaFX;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.*;
 import javafx.concurrent.Task;
@@ -21,7 +23,7 @@ import javafx.scene.paint.Color;
  * 
  * @author &copy; 2014 Николай Варанкин
  */
-class DotPainter implements Runnable
+class DotPainter
 {
     private static final Logger LOGGER = Logger.getLogger( DotPainter.class.getName() );
     private static long idThread = 0L;
@@ -37,19 +39,20 @@ class DotPainter implements Runnable
     private final ObjectProperty<WritableImage> writableImage;
     private final ObjectProperty<ValueConvertor> valueConvertorProperty;
     private final ObjectProperty<TimeConvertor> timeConvertorProperty;
+    private final BooleanProperty enabledProperty;
+    private final ObjectProperty<Color> colorProperty;
+    private final ObjectProperty<int[][]> patternProperty;
+    private final ChangeListener<Boolean> enabledPropertyChangeListener;
+    private final ChangeListener<WritableImage> imageChangeListener;
     private final BlockingQueue<Dot> очередь;
     private final int fragmentSize;
     private final long fragmentTimeout;
     private final TimeUnit fragmentUnits;
-    private final ObjectProperty<Color> colorProperty;
-    private final ObjectProperty<int[][]> patternProperty;
 
     private PixelWriter writer;
     private int width, height;
 
     /**
-     * @param tc       функция X-координаты отметки от времени.
-     * @param vc       функция Y-координаты отметки от значения.
      * @param очередь  очередь отметок для прорисовки.
      */
     DotPainter( BlockingQueue<Dot> очередь )
@@ -57,26 +60,25 @@ class DotPainter implements Runnable
         writableImage = new SimpleObjectProperty<>();
         valueConvertorProperty = new SimpleObjectProperty<>();
         timeConvertorProperty = new SimpleObjectProperty<>();
+        enabledProperty = new SimpleBooleanProperty();
         colorProperty = new SimpleObjectProperty<>();
         patternProperty = new SimpleObjectProperty<>();
-        writableImage.addListener( new ChangeListener<WritableImage>() {
-
-            @Override
-            public void changed( ObservableValue<? extends WritableImage> observable, 
-                                WritableImage oldValue, WritableImage newValue )
-            {
-                width  = newValue.widthProperty().intValue();
-                height = newValue.heightProperty().intValue();
-                writer = newValue.getPixelWriter();
-            }
-        } );
+        
+        imageChangeListener = new ImageChangeListener();
+        writableImage.addListener( new WeakChangeListener<>( imageChangeListener ) );
+        enabledPropertyChangeListener = new EnabledPropertyChangeListener();
+        enabledProperty.addListener( new WeakChangeListener<>( enabledPropertyChangeListener ) );
+        
         this.очередь = очередь;
         //TODO appl. setup
         fragmentUnits = TimeUnit.MILLISECONDS;
         fragmentTimeout = 20L;
         fragmentSize = 50;
     }
-
+    
+    /**
+     * @return свойство "область рисования".
+     */
     final Property<WritableImage> writableImageProperty()
     {
         return writableImage;
@@ -98,43 +100,30 @@ class DotPainter implements Runnable
         return patternProperty;
     }
     
-    @Override
-    public final void run()
+    /**
+     * @return свойство "рисование точек".
+     */
+    final BooleanProperty enabledProperty()
     {
-        LOGGER.log( Level.FINE, "DrawAreaPainter started: pool={0}, timeout={1} {2}", 
-                new Object[]{ fragmentSize, fragmentTimeout, fragmentUnits.name() } );
-        try
-        {
-            Thread.currentThread().setName( getClass().getSimpleName() + idThread++ );
-        }
-        catch( SecurityException ex )
-        {
-            LOGGER.log( Level.FINE, "DrawAreaPainter failed to rename thread." );
-        }
-        
-        try
-        {                
-            while( !Thread.interrupted() )
-            {
-                Dot[] блок = new Dot[ Math.max( 1, fragmentSize ) ];
-                блок[0] = очередь.take();
-                int i = 1;
-                for( ; i < блок.length; i++ )
-                {
-                    Dot dot = очередь.poll( fragmentTimeout, fragmentUnits );
-                    if( dot != null )
-                        блок[i] = dot;
-                    else
-                        break; 
-                }
-                Platform.runLater( new MultiDotTask( блок, i ) );
-            }
-            LOGGER.log( Level.FINE, "DrawAreaPainter finished." );
-        } 
-        catch( InterruptedException ex )
-        {
-            LOGGER.log( Level.FINE, "DrawAreaPainter interruped: {0}", ex.getMessage() );
-        }
+        return enabledProperty;
+    }
+    
+    final Property<ValueConvertor> valueConvertorProperty()
+    {
+        return valueConvertorProperty;
+    }
+
+    final Property<TimeConvertor> timeConvertorProperty()
+    {
+        return timeConvertorProperty;
+    }
+    
+    /**
+     * @return очередь точек.
+     */
+    final Queue<Dot> queue()
+    {
+        return очередь;
     }
     
     /**
@@ -171,47 +160,6 @@ class DotPainter implements Runnable
         }
     }
 
-    private PropertyChangeListener наблюдатель;
-    private PropertyMonitor монитор;
-    void startMonitoring( PropertyMonitor pm, final String property, final Dot.Convertor convertor )
-    {
-        наблюдатель = new PropertyChangeListener() 
-        {
-            @Override
-            public void propertyChange( PropertyChangeEvent evt )
-            {
-                if( property.equals( evt.getPropertyName() ) )
-                {
-                    Object value = evt.getNewValue();
-                    Dot dot = convertor.toDot( value, System.currentTimeMillis() );
-                    boolean offered = dot != null && очередь.offer( dot );
-                    //TODO LOGGER.log( Level.OFF, property );
-                }
-            }
-        };
-        (монитор = pm).наблюдатели().add( наблюдатель );
-    }
-    
-    void stopMonitoring()
-    {
-        if( монитор != null )
-        {
-            монитор.наблюдатели().remove( наблюдатель );
-            наблюдатель = null;
-            монитор = null;
-        }
-    }
-
-    final Property<ValueConvertor> valueConvertorProperty()
-    {
-        return valueConvertorProperty;
-    }
-
-    final Property<TimeConvertor> timeConvertorProperty()
-    {
-        return timeConvertorProperty;
-    }
-    
     /**
      * Рисовальщик блока отметок.
      */
@@ -241,53 +189,85 @@ class DotPainter implements Runnable
         
     }
     
-//    interface WritableObservableValue<T> extends ObservableValue<T>, WritableValue<T> {}
-//    
-//    private static final class ColorProperty 
-//            extends ObservableValueBase<Color>
-//            implements WritableObservableValue<Color>
-//    {
-//        Color value;
-//
-//        @Override
-//        public Color getValue()
-//        {
-//            return value;
-//        }
-//
-//        @Override
-//        public void setValue( Color newValue )
-//        {
-//            Color oldValue = value;
-//            value = newValue;
-//            if( newValue != null && !newValue.equals( oldValue ) || newValue == null && oldValue != null )
-//                fireValueChangedEvent();
-//        }
-//        
-//    }
-//    
-//    private static final class PatternProperty 
-//            extends ObservableValueBase<int[][]>
-//            implements WritableObservableValue<int[][]>
-//    {
-//        int[][] value;
-//        
-//        @Override
-//        public int[][] getValue()
-//        {
-//            return value;
-//        }
-//
-//        @Override
-//        public void setValue( int[][] newValue )
-//        {
-//            int[][] oldValue = value;
-//            value = newValue;
-//            if( newValue != null && oldValue != null && !Arrays.deepEquals( newValue, oldValue ) 
-//                    || newValue == null && oldValue != null || newValue != null && oldValue == null )
-//                fireValueChangedEvent();
-//        }
-//        
-//    }
+    /**
+     * Контроллер области рисования.
+     */
+    private class ImageChangeListener implements ChangeListener<WritableImage>
+    {
+        @Override
+        public void changed( ObservableValue<? extends WritableImage> observable, 
+                            WritableImage oldValue, WritableImage newValue )
+        {
+            width  = newValue.widthProperty().intValue();
+            height = newValue.heightProperty().intValue();
+            writer = newValue.getPixelWriter();
+        }
+    }
 
+    /**
+     * Старт-стоп контроллер прорисовки значений.
+     */
+    private class EnabledPropertyChangeListener implements ChangeListener<Boolean>
+    {
+        private Future<?> process;
+        
+        @Override
+        public void changed( ObservableValue<? extends Boolean> observable, 
+                            Boolean oldValue, Boolean newValue )
+        {
+            if( newValue != null && newValue )
+            {
+                // запустить прорисовку отметок
+                process = JavaFX.getInstance().getExecutorService().submit( new ThreadedPainter() );
+            }
+            else if( process != null )
+            {
+                // остановить прорисовку отметок
+                process.cancel( true );
+            }
+        }
+    }
+    
+    private class ThreadedPainter implements Runnable
+    {
+        @Override
+        public final void run()
+        {
+            LOGGER.log( Level.FINE, "DrawAreaPainter started: pool={0}, timeout={1} {2}", 
+                    new Object[]{ fragmentSize, fragmentTimeout, fragmentUnits.name() } );
+            try
+            {
+                Thread.currentThread().setName( getClass().getSimpleName() + idThread++ );
+            }
+            catch( SecurityException ex )
+            {
+                LOGGER.log( Level.FINE, "DrawAreaPainter failed to rename thread." );
+            }
+
+            try
+            {                
+                while( !Thread.interrupted() )
+                {
+                    Dot[] блок = new Dot[ Math.max( 1, fragmentSize ) ];
+                    блок[0] = очередь.take();
+                    int i = 1;
+                    for( ; i < блок.length; i++ )
+                    {
+                        Dot dot = очередь.poll( fragmentTimeout, fragmentUnits );
+                        if( dot != null )
+                            блок[i] = dot;
+                        else
+                            break; 
+                    }
+                    Platform.runLater( new MultiDotTask( блок, i ) );
+                }
+                LOGGER.log( Level.FINE, "DrawAreaPainter finished." );
+            } 
+            catch( InterruptedException ex )
+            {
+                LOGGER.log( Level.FINE, "DrawAreaPainter interruped: {0}", ex.getMessage() );
+            }
+        }
+    }
+        
 }
