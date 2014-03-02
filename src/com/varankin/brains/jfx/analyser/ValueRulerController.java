@@ -45,10 +45,10 @@ public final class ValueRulerController extends AbstractRulerController
 
     public ValueRulerController()
     {
-        ValueConvertor convertor = new ValueConvertor( -1.0F, +1.0F );
-        convertorProperty = new SimpleObjectProperty<>( convertor );
-        valueMinProperty = new SimpleObjectProperty<>( convertor.getMin() );
-        valueMaxProperty = new SimpleObjectProperty<>( convertor.getMax() );
+        //ValueConvertor convertor = new ValueConvertor( -1.0F, +1.0F );
+        convertorProperty = new SimpleObjectProperty<>();// convertor );
+        valueMinProperty = new SimpleObjectProperty<>( 0F );// convertor.getMin() );
+        valueMaxProperty = new SimpleObjectProperty<>( 0F );// convertor.getMax() );
     }
     
     /**
@@ -98,9 +98,14 @@ public final class ValueRulerController extends AbstractRulerController
             @Override
             public void changed( ObservableValue<? extends Float> _, Float oldValue, Float newValue )
             {
-                ValueConvertor convertor = convertorProperty.getValue();
-                convertor.setMax( newValue );
-                convertor.reset( pane.heightProperty().intValue() );
+                if( newValue != null && !newValue.equals( oldValue ) )
+                {
+                    ValueConvertor c = new ValueConvertor( valueMinProperty.getValue(), newValue,
+                            pane.heightProperty().intValue() );
+                    convertorProperty.setValue( c );
+                    removeRuler();
+                    generateRuler();
+                }
             }
         } );
         valueMinProperty.addListener( new ChangeListener<Float>() 
@@ -108,9 +113,14 @@ public final class ValueRulerController extends AbstractRulerController
             @Override
             public void changed( ObservableValue<? extends Float> _, Float oldValue, Float newValue )
             {
-                ValueConvertor convertor = convertorProperty.getValue();
-                convertor.setMin( newValue );
-                convertor.reset( pane.heightProperty().intValue() );
+                if( newValue != null && !newValue.equals( oldValue ) )
+                {
+                    ValueConvertor c = new ValueConvertor( newValue, valueMaxProperty.getValue(),
+                            pane.heightProperty().intValue() );
+                    convertorProperty.setValue( c );
+                    removeRuler();
+                    generateRuler();
+                }
             }
         } );
     }
@@ -150,7 +160,11 @@ public final class ValueRulerController extends AbstractRulerController
     @Override
     protected void reset( int size )
     {
-        convertorProperty.get().reset( size );
+        ValueConvertor c = new ValueConvertor( valueMinProperty.getValue(), valueMaxProperty.getValue(), size );
+        convertorProperty.setValue( c );
+        //convertorProperty.get().reset( size );
+        removeRuler();
+        generateRuler();
     }
     
     void reset( ValueRulerPropertiesPaneController pattern )
@@ -162,19 +176,17 @@ public final class ValueRulerController extends AbstractRulerController
         valueMaxProperty.setValue( pattern.valueMaxProperty().getValue() );
     }
     
-    @Override
     protected void removeRuler()
     {
         pane.getChildren().clear();
     }
     
-    @Override
     protected void generateRuler()
     {
         ValueConvertor convertor = convertorProperty.get();
-        float size = convertor.getSize();
+        float size = valueMaxProperty.getValue() - valueMinProperty.getValue();
         float step = (float)roundToFactor( size / ( pane.getHeight() / pixelStepMin ), factor );
-        float vStart = convertor.getMin();
+        float vStart = valueMinProperty.getValue();
         float offset = vStart % step;
         if( offset < 0 ) offset += step; // float!!! step = 0.1 => offset = -0.099999999
         vStart -= offset;

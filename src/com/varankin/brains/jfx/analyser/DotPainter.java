@@ -2,24 +2,17 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.Контекст;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.*;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.concurrent.Task;
 import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 
 /**
- * Процесс динамического рисования отметок в графической зоне. 
+ * Менеджер рисования отметок в графической зоне. 
  * Отметки рисуются блоками, по мере поступления в очередь.
  * 
  * @author &copy; 2014 Николай Варанкин
@@ -119,11 +112,12 @@ class DotPainter
     }
     
     /**
-     * @return очередь точек.
+     * @param dot отметка для прорисовки.
+     * @return {@code true} если отметка поставлена в очередь, иначе {@code false}.
      */
-    final Queue<Dot> queue()
+    boolean offer( Dot dot )
     {
-        return очередь;
+        return очередь.offer( dot );
     }
     
     /**
@@ -195,7 +189,7 @@ class DotPainter
     private class ImageChangeListener implements ChangeListener<WritableImage>
     {
         @Override
-        public void changed( ObservableValue<? extends WritableImage> observable, 
+        public void changed( ObservableValue<? extends WritableImage> _, 
                             WritableImage oldValue, WritableImage newValue )
         {
             width  = newValue.widthProperty().intValue();
@@ -212,7 +206,7 @@ class DotPainter
         Future<?> process;
         
         @Override
-        public void changed( ObservableValue<? extends Boolean> observable, 
+        public void changed( ObservableValue<? extends Boolean> _, 
                             Boolean oldValue, Boolean newValue )
         {
             if( newValue != null && newValue )
@@ -229,39 +223,39 @@ class DotPainter
     }
     
     /**
-     * Экстрактор части потока значений для прорисовки единым блоком.
+     * Экстрактор фрагментов потока отметок для прорисовки единым блоком.
      */
     private class DotStreamCutter implements Runnable
     {
-        final int size;
-        final long timeout;
-        final TimeUnit unit;
+        final int количество;
+        final long пауза;
+        final TimeUnit единица;
 
         DotStreamCutter()
         {
             Контекст контекст = JavaFX.getInstance().контекст;
-            size = Integer.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_QUEUE ) );
-            timeout = Long.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_TIMEOUT ) );
-            unit = TimeUnit.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_UNIT ) );
+            количество = Integer.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_QUEUE ) );
+            пауза = Long.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_TIMEOUT ) );
+            единица = TimeUnit.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_UNIT ) );
         }
         
         /**
-         * @param size    максимальное количество отметок в блоке на прорисовку.
-         * @param timeout время ожидания пустой очереди отметок.
-         * @param units   единица времени ожидания.
+         * @param количество максимальное количество отметок в блоке на прорисовку.
+         * @param пауза      время ожидания пустой очереди отметок.
+         * @param единица    единица времени ожидания.
          */
-        DotStreamCutter( int size, long timeout, TimeUnit units )
+        DotStreamCutter( int количество, long пауза, TimeUnit единица )
         {
-            this.size = size;
-            this.timeout = timeout;
-            this.unit = units;
+            this.количество = количество;
+            this.пауза = пауза;
+            this.единица = единица;
         }
 
         @Override
         public final void run()
         {
             LOGGER.log( Level.FINE, "DrawAreaPainter started: pool={0}, timeout={1} {2}", 
-                    new Object[]{ size, timeout, unit.name() } );
+                    new Object[]{ количество, пауза, единица.name() } );
             try
             {
                 Thread.currentThread().setName( getClass().getSimpleName() + idThread++ );
@@ -275,12 +269,12 @@ class DotPainter
             {                
                 while( !Thread.interrupted() )
                 {
-                    Dot[] блок = new Dot[ Math.max( 1, size ) ];
+                    Dot[] блок = new Dot[ Math.max( 1, количество ) ];
                     блок[0] = очередь.take();
                     int i = 1;
                     for( ; i < блок.length; i++ )
                     {
-                        Dot dot = очередь.poll( timeout, unit );
+                        Dot dot = очередь.poll( пауза, единица );
                         if( dot != null )
                             блок[i] = dot;
                         else

@@ -211,7 +211,7 @@ public final class TimeLineController implements Builder<Pane>
      * @param color     цвет рисования шаблона отметки на графике.
      * @param title     название значения для отображения на графике.
      */
-    void addMonitor( PropertyMonitor pm, String property, Dot.Convertor<Float> convertor,
+    void addMonitor( PropertyMonitor pm, String property, Value.Convertor<Float> convertor,
             int[][] pattern, Color color, String title )
     {
         DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<Dot>(), 1000 );
@@ -286,7 +286,7 @@ public final class TimeLineController implements Builder<Pane>
     private final static class PropertyMonitorImpl implements PropertyMonitor
     {
         static final String PROPERTY = "value";
-        final Dot.Convertor<Float> CONVERTOR = new Dot.Convertor<Float>() 
+        final Value.Convertor<Float> CONVERTOR = new Value.Convertor<Float>() 
         {
             @Override
             public Dot toDot( Float value, long timestamp )

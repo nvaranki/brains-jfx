@@ -8,13 +8,13 @@ package com.varankin.brains.jfx.analyser;
 final class ValueConvertor
 {
     private volatile double v0, vx;
-    private float vMin, vSize;
+    private float vSize;
 
-    ValueConvertor( float low, float high )
+    ValueConvertor( float low, float high, int height )
     {
         v0 = high;
-        vMin = low;
         vSize = high - low;
+        vx = Double.valueOf( height - 1 ) / vSize;
     }
 
     public int valueToImage( float v )
@@ -22,38 +22,4 @@ final class ValueConvertor
         return (int)Math.round( ( v0 - v ) * vx ); // Y axis runs down on +
     }
     
-    void reset( int height )
-    {
-        vx = Double.valueOf( height - 1 )/ vSize;
-    }
-
-    float getMin()
-    {
-        return vMin;
-    }
-
-    float getMax()
-    {
-        return vMin + vSize;
-    }
-
-    float getSize()
-    {
-        return vSize;
-    }
-
-    void setMax( Float value )
-    {
-        vSize -= v0;
-        v0 = value;
-        vSize += v0;
-    }
-
-    void setMin( Float value )
-    {
-        vSize += vMin;
-        vMin = value;
-        vSize -= vMin;
-    }
-
 }

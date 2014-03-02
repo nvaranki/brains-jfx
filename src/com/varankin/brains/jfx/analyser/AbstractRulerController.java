@@ -74,8 +74,6 @@ public abstract class AbstractRulerController implements Builder<Pane>
     }
 
     abstract protected void reset( int size );
-    abstract protected void generateRuler();
-    abstract protected void removeRuler();
     
     protected class SizeChangeListener implements ChangeListener<Number>
     {
@@ -87,8 +85,6 @@ public abstract class AbstractRulerController implements Builder<Pane>
             if( size > 0 )
             {
                 reset( size );
-                removeRuler();
-                generateRuler();
             }
         }
     }

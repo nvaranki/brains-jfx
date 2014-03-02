@@ -217,6 +217,8 @@ public final class TimeRulerController extends AbstractRulerController
         TimeConvertor convertor = convertorProperty.get();
         convertor.reset( size, relativeProperty.get() ?
                             System.currentTimeMillis() : convertor.getEntry() );
+        removeRuler();
+        generateRuler();
     }
     
     void reset( TimeRulerPropertiesPaneController pattern )
@@ -229,7 +231,6 @@ public final class TimeRulerController extends AbstractRulerController
         unitProperty.setValue( pattern.unitProperty().getValue() );
     }
     
-    @Override
     protected void removeRuler()
     {
         for( Node node : pane.getChildren() )
@@ -245,7 +246,6 @@ public final class TimeRulerController extends AbstractRulerController
         pane.getChildren().clear();
     }
     
-    @Override
     protected void generateRuler()
     {
         TimeConvertor convertor = convertorProperty.get();

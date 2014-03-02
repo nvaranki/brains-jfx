@@ -23,7 +23,7 @@ class Value
 {
     PropertyMonitor монитор;
     String property;
-    Dot.Convertor<Float> convertor;
+    Convertor<Float> convertor;
     int[][] pattern;
     Color color;
     String title;
@@ -44,7 +44,7 @@ class Value
                     if( value instanceof Float )
                     {
                         Dot dot = convertor.toDot( (Float)value, System.currentTimeMillis() );
-                        boolean offered = dot != null && painter.queue().offer( dot );
+                        boolean offered = dot != null && painter.offer( dot );
                     }
                     //TODO LOGGER.log( Level.OFF, property );
                 }
@@ -60,6 +60,11 @@ class Value
             монитор.наблюдатели().remove( наблюдатель );
             наблюдатель = null;
         }
+    }
+
+    interface Convertor<T>
+    {
+        Dot toDot( T value, long timestamp );
     }
 
 }

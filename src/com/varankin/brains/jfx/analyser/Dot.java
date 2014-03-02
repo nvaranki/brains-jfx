@@ -5,19 +5,21 @@ package com.varankin.brains.jfx.analyser;
  * 
  * @author &copy; 2014 Николай Варанкин
  */
-public class Dot
+class Dot
 {
+    /** нормализованное значение */
     final float v;
+    /** момент фиксации значения */
     final long t;
 
-    public Dot( float v, long t )
+    /**
+     * @param v нормализованное значение.
+     * @param t момент фиксации значения. 
+     */
+    Dot( float v, long t )
     {
         this.v = v;
         this.t = t;
     }
     
-    public interface Convertor<T>
-    {
-        Dot toDot( T value, long timestamp );
-    }
 }
