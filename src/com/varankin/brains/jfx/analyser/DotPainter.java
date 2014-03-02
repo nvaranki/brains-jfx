@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.Контекст;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
@@ -45,9 +46,6 @@ class DotPainter
     private final ChangeListener<Boolean> enabledPropertyChangeListener;
     private final ChangeListener<WritableImage> imageChangeListener;
     private final BlockingQueue<Dot> очередь;
-    private final int fragmentSize;
-    private final long fragmentTimeout;
-    private final TimeUnit fragmentUnits;
 
     private PixelWriter writer;
     private int width, height;
@@ -70,14 +68,10 @@ class DotPainter
         enabledProperty.addListener( new WeakChangeListener<>( enabledPropertyChangeListener ) );
         
         this.очередь = очередь;
-        //TODO appl. setup
-        fragmentUnits = TimeUnit.MILLISECONDS;
-        fragmentTimeout = 20L;
-        fragmentSize = 50;
     }
     
     /**
-     * @return свойство "область рисования".
+     * @return свойство "графическая зона рисования".
      */
     final Property<WritableImage> writableImageProperty()
     {
@@ -101,18 +95,24 @@ class DotPainter
     }
     
     /**
-     * @return свойство "рисование точек".
+     * @return свойство "рисование отметок".
      */
     final BooleanProperty enabledProperty()
     {
         return enabledProperty;
     }
     
+    /**
+     * @return свойство "масштаб значений".
+     */
     final Property<ValueConvertor> valueConvertorProperty()
     {
         return valueConvertorProperty;
     }
 
+    /**
+     * @return свойство "масштаб времени".
+     */
     final Property<TimeConvertor> timeConvertorProperty()
     {
         return timeConvertorProperty;
@@ -209,7 +209,7 @@ class DotPainter
      */
     private class EnabledPropertyChangeListener implements ChangeListener<Boolean>
     {
-        private Future<?> process;
+        Future<?> process;
         
         @Override
         public void changed( ObservableValue<? extends Boolean> observable, 
@@ -218,7 +218,7 @@ class DotPainter
             if( newValue != null && newValue )
             {
                 // запустить прорисовку отметок
-                process = JavaFX.getInstance().getExecutorService().submit( new ThreadedPainter() );
+                process = JavaFX.getInstance().getExecutorService().submit( new DotStreamCutter() );
             }
             else if( process != null )
             {
@@ -228,13 +228,40 @@ class DotPainter
         }
     }
     
-    private class ThreadedPainter implements Runnable
+    /**
+     * Экстрактор части потока значений для прорисовки единым блоком.
+     */
+    private class DotStreamCutter implements Runnable
     {
+        final int size;
+        final long timeout;
+        final TimeUnit unit;
+
+        DotStreamCutter()
+        {
+            Контекст контекст = JavaFX.getInstance().контекст;
+            size = Integer.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_QUEUE ) );
+            timeout = Long.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_TIMEOUT ) );
+            unit = TimeUnit.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_UNIT ) );
+        }
+        
+        /**
+         * @param size    максимальное количество отметок в блоке на прорисовку.
+         * @param timeout время ожидания пустой очереди отметок.
+         * @param units   единица времени ожидания.
+         */
+        DotStreamCutter( int size, long timeout, TimeUnit units )
+        {
+            this.size = size;
+            this.timeout = timeout;
+            this.unit = units;
+        }
+
         @Override
         public final void run()
         {
             LOGGER.log( Level.FINE, "DrawAreaPainter started: pool={0}, timeout={1} {2}", 
-                    new Object[]{ fragmentSize, fragmentTimeout, fragmentUnits.name() } );
+                    new Object[]{ size, timeout, unit.name() } );
             try
             {
                 Thread.currentThread().setName( getClass().getSimpleName() + idThread++ );
@@ -248,12 +275,12 @@ class DotPainter
             {                
                 while( !Thread.interrupted() )
                 {
-                    Dot[] блок = new Dot[ Math.max( 1, fragmentSize ) ];
+                    Dot[] блок = new Dot[ Math.max( 1, size ) ];
                     блок[0] = очередь.take();
                     int i = 1;
                     for( ; i < блок.length; i++ )
                     {
-                        Dot dot = очередь.poll( fragmentTimeout, fragmentUnits );
+                        Dot dot = очередь.poll( timeout, unit );
                         if( dot != null )
                             блок[i] = dot;
                         else
