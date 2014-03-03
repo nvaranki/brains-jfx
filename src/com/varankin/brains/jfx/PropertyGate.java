@@ -25,7 +25,7 @@ public final class PropertyGate<T>
     /**
      * Устанавливает автоматическое обновление значения "b" при изменении "a".
      * 
-     * @param a связываемое значение/
+     * @param a связываемое значение.
      * @param b связываемое значение.
      */
     public void bind( Property<T> a, WritableValue<T> b )
