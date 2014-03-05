@@ -11,7 +11,6 @@ import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.ContextMenuEvent;
@@ -22,7 +21,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер графической зоны для рисования отметок. 
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class GraphPaneController implements Builder<Pane>
 {
@@ -81,11 +80,14 @@ public final class GraphPaneController implements Builder<Pane>
         borderColorProperty.addListener( new WeakChangeListener<>( imageChanger ) );
         zeroDisplayProperty.addListener( new WeakChangeListener<>( imageChanger ) );
         zeroColorProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        valueConvertorProperty.addListener( new WeakChangeListener<>( imageChanger ) );
+        timeConvertorProperty.addListener( new WeakChangeListener<>( imageChanger ) );
         
-        dynamicProperty = new SimpleBooleanProperty( false );
         dynamicSwitch = new DynamicSwitch();
-        dynamicChanger = new DynamicParametersChanger();
+        dynamicProperty = new SimpleBooleanProperty( false );
         dynamicProperty.addListener( new WeakChangeListener<>( dynamicSwitch ) );
+        
+        dynamicChanger = new DynamicParametersChanger();
         rateValueProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
         rateUnitProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
         
