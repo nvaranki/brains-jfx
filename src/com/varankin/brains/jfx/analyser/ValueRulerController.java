@@ -5,8 +5,7 @@ import com.varankin.brains.jfx.PaneWithPopup;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.value.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -32,7 +31,9 @@ public final class ValueRulerController extends AbstractRulerController
     private static final String CSS_CLASS = "value-ruler";
 
     private final Property<Float> valueMinProperty, valueMaxProperty;
-    private final SimpleObjectProperty<ValueConvertor> convertorProperty;
+    private final Property<ValueConvertor> convertorProperty;
+    private final ChangeListener<Float> boundChangeListener;
+    private final ChangeListener<Number> sizeChangeListener;
     private final double factor = 1d; // 1, 2, 5
     private final int pixelStepMin = 5; // min 5 pixels in between ticks
     private final double tickShift = 35d;
@@ -45,10 +46,13 @@ public final class ValueRulerController extends AbstractRulerController
 
     public ValueRulerController()
     {
-        //ValueConvertor convertor = new ValueConvertor( -1.0F, +1.0F );
-        convertorProperty = new SimpleObjectProperty<>();// convertor );
-        valueMinProperty = new SimpleObjectProperty<>( 0F );// convertor.getMin() );
-        valueMaxProperty = new SimpleObjectProperty<>( 0F );// convertor.getMax() );
+        convertorProperty = new SimpleObjectProperty<>();
+        valueMinProperty = new SimpleObjectProperty<>( Float.NaN );
+        valueMaxProperty = new SimpleObjectProperty<>( Float.NaN );
+        boundChangeListener = new BoundChangeListener<>();
+        valueMaxProperty.addListener( new WeakChangeListener<>( boundChangeListener ) );
+        valueMinProperty.addListener( new WeakChangeListener<>( boundChangeListener ) );
+        sizeChangeListener = new SizeChangeListener();
     }
     
     /**
@@ -92,39 +96,9 @@ public final class ValueRulerController extends AbstractRulerController
     @FXML
     protected void initialize()
     {
-        pane.heightProperty().addListener( new SizeChangeListener() );
-        valueMaxProperty.addListener( new ChangeListener<Float>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Float> _, Float oldValue, Float newValue )
-            {
-                if( newValue != null && !newValue.equals( oldValue ) )
-                {
-                    ValueConvertor c = new ValueConvertor( valueMinProperty.getValue(), newValue,
-                            pane.heightProperty().intValue() );
-                    convertorProperty.setValue( c );
-                    removeRuler();
-                    generateRuler();
-                }
-            }
-        } );
-        valueMinProperty.addListener( new ChangeListener<Float>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Float> _, Float oldValue, Float newValue )
-            {
-                if( newValue != null && !newValue.equals( oldValue ) )
-                {
-                    ValueConvertor c = new ValueConvertor( newValue, valueMaxProperty.getValue(),
-                            pane.heightProperty().intValue() );
-                    convertorProperty.setValue( c );
-                    removeRuler();
-                    generateRuler();
-                }
-            }
-        } );
+        pane.heightProperty().addListener( new WeakChangeListener<>( sizeChangeListener ) );
     }
-
+    
     @FXML
     private void onContextMenuRequested( ContextMenuEvent event )
     {
@@ -152,19 +126,9 @@ public final class ValueRulerController extends AbstractRulerController
         properties.toFront();
     }
 
-    ObjectProperty<ValueConvertor> convertorProperty()
+    Property<ValueConvertor> convertorProperty()
     {
         return convertorProperty;
-    }
-    
-    @Override
-    protected void reset( int size )
-    {
-        ValueConvertor c = new ValueConvertor( valueMinProperty.getValue(), valueMaxProperty.getValue(), size );
-        convertorProperty.setValue( c );
-        //convertorProperty.get().reset( size );
-        removeRuler();
-        generateRuler();
     }
     
     void reset( ValueRulerPropertiesPaneController pattern )
@@ -176,24 +140,34 @@ public final class ValueRulerController extends AbstractRulerController
         valueMaxProperty.setValue( pattern.valueMaxProperty().getValue() );
     }
     
-    protected void removeRuler()
+    @Override
+    protected void reset()
     {
+        ValueConvertor convertor = new ValueConvertor( 
+                valueMinProperty.getValue(), valueMaxProperty.getValue(),
+                pane.heightProperty().intValue() );
+        convertorProperty.setValue( convertor );
+        // remove ruler
         pane.getChildren().clear();
-    }
-    
-    protected void generateRuler()
-    {
-        ValueConvertor convertor = convertorProperty.get();
+        // generate ruler
         float size = valueMaxProperty.getValue() - valueMinProperty.getValue();
         float step = (float)roundToFactor( size / ( pane.getHeight() / pixelStepMin ), factor );
-        float vStart = valueMinProperty.getValue();
-        float offset = vStart % step;
-        if( offset < 0 ) offset += step; // float!!! step = 0.1 => offset = -0.099999999
-        vStart -= offset;
-        int stepCount = (int)Math.ceil( size / step );
-        for( int i = 0; i <= stepCount; i++ )
+        if( step > 0F )
         {
-            float v = vStart + step * i;
+            float start = valueMinProperty.getValue();
+            float offset = start % step;
+            if( offset < 0 ) offset += step; // float!!! step = 0.1 => offset = -0.099999999
+            start -= offset;
+            int stepCount = (int)Math.ceil( size / step );
+            generateAllTickAndText( start, step, stepCount, convertor );
+        }
+    }
+    
+    private void generateAllTickAndText( float start, float step, int count, ValueConvertor convertor )
+    {
+        for( int i = 0; i <= count; i++ )
+        {
+            float v = start + step * i;
             int y = convertor.valueToImage( v );
             long f = Math.round( (double)v / step );
             if( 0 <= y && y < pane.getHeight() )
@@ -233,16 +207,6 @@ public final class ValueRulerController extends AbstractRulerController
         return shift;
     }
     
-    @Deprecated
-    void appendToPopup( List<MenuItem> items ) 
-    {
-        if( items != null && !items.isEmpty() )
-        {
-            popup.getItems().add( new SeparatorMenuItem() );
-            JavaFX.copyMenuItems( items, popup.getItems() );
-        }
-    }
-
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );

@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -34,8 +35,12 @@ public final class TimeRulerController extends AbstractRulerController
 
     private final Property<Long> durationProperty, excessProperty;
     private final Property<TimeUnit> unitProperty;
-    private final SimpleBooleanProperty relativeProperty;
-    private final SimpleObjectProperty<TimeConvertor> convertorProperty;
+    private final BooleanProperty relativeProperty;
+    private final Property<TimeConvertor> convertorProperty;
+    private final ChangeListener<Long> boundChangeListener;
+    private final ChangeListener<TimeUnit> unitChangeListener;
+    private final ChangeListener<Boolean> relativeChangeListener;
+    private final ChangeListener<Number> sizeChangeListener;
     private final double factor = 1d; // 1, 2, 5
     private final int pixelStepMin = 10; // min 10 pixels in between ticks
     
@@ -47,25 +52,25 @@ public final class TimeRulerController extends AbstractRulerController
     
     public TimeRulerController()
     {
-        TimeUnit convertorUnits = TimeUnit.SECONDS;
-        TimeConvertor convertor = new TimeConvertor( 60, 2, convertorUnits );
-        convertorProperty = new SimpleObjectProperty<>( convertor );
-        durationProperty = new SimpleObjectProperty<>( convertor.getSize() );
-        excessProperty = new SimpleObjectProperty<>( convertor.getExcess() );
-        unitProperty = new SimpleObjectProperty<>( convertorUnits );
+//        TimeUnit convertorUnits = TimeUnit.SECONDS;
+//        TimeConvertor convertor = new TimeConvertor( 60, 2, convertorUnits );
+        convertorProperty = new SimpleObjectProperty<>();// convertor );
+        durationProperty = new SimpleObjectProperty<>( 0L );// convertor.getSize() );
+        excessProperty = new SimpleObjectProperty<>( 0L );// convertor.getExcess() );
+        unitProperty = new SimpleObjectProperty<>( TimeUnit.SECONDS );// convertorUnits );
         relativeProperty = new SimpleBooleanProperty();
-        relativeProperty.addListener( new ChangeListener<Boolean>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue )
-            {
-                if( pane.widthProperty().intValue() > 0 ) 
-                {
-                    removeRuler();
-                    generateRuler();
-                }
-            }
-        } );
+
+        boundChangeListener = new BoundChangeListener<>();
+        durationProperty.addListener( new WeakChangeListener<>( boundChangeListener ) );
+        excessProperty.addListener( new WeakChangeListener<>( boundChangeListener ) );
+        
+        unitChangeListener = new BoundChangeListener<>();
+        unitProperty.addListener( new WeakChangeListener<>( unitChangeListener ) );
+        
+        relativeChangeListener = new КelativeChangeListener();
+        relativeProperty.addListener( new WeakChangeListener<>( relativeChangeListener ) );
+        
+        sizeChangeListener = new SizeChangeListener();
     }
     
     /**
@@ -109,68 +114,8 @@ public final class TimeRulerController extends AbstractRulerController
     @FXML
     protected void initialize()
     {
-        pane.widthProperty().addListener( new SizeChangeListener() );
+        pane.widthProperty().addListener( new WeakChangeListener<>( sizeChangeListener ) );
         pane.setMinWidth( 100d );
-        durationProperty.addListener( new ChangeListener<Long>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Long> _, Long oldValue, Long newValue )
-            {
-                TimeConvertor convertor = convertorProperty.getValue();
-                convertor.reset( newValue, excessProperty.getValue(), unitProperty.getValue() );
-                convertor.reset( pane.widthProperty().doubleValue(), convertor.getEntry() );
-            }
-        } );
-        excessProperty.addListener( new ChangeListener<Long>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends Long> _, Long oldValue, Long newValue )
-            {
-                TimeConvertor convertor = convertorProperty.getValue();
-                convertor.reset( durationProperty.getValue(), newValue, unitProperty.getValue() );
-                convertor.reset( pane.widthProperty().doubleValue(), convertor.getEntry() );
-            }
-        } );
-        unitProperty.addListener( new ChangeListener<TimeUnit>() 
-        {
-            @Override
-            public void changed( ObservableValue<? extends TimeUnit> _, TimeUnit oldValue, TimeUnit newValue )
-            {
-                TimeConvertor convertor = convertorProperty.getValue();
-                convertor.reset( durationProperty.getValue(), excessProperty.getValue(), newValue );
-                convertor.reset( pane.widthProperty().doubleValue(), convertor.getEntry() );
-            }
-        } );
-/*
-        BooleanBinding reconfigure = Bindings.createBooleanBinding( 
-                new Callable<Boolean>()
-                {
-                    @Override
-                    public Boolean call() throws Exception
-                    {
-                        return true;
-                    }
-                }, 
-                sizeProperty, excessProperty, unitProperty );
-        reconfigure.addListener( new InvalidationListener() 
-        {
-            @Override
-            public void invalidated( Observable _ )
-            {
-                Long duration = sizeProperty.getValue();
-                Long excess = excessProperty.getValue();
-                TimeUnit unit = unitProperty.getValue();
-                int width = widthProperty().intValue(); 
-                if( width > 0 
-                        && duration != null && duration > 0L 
-                        && excess != null && unit != null ) 
-                {
-                    convertor.reset( duration, excess, unit );
-                    generateRuler();
-                }
-            }
-        } );
- */        
     }
     
     @FXML
@@ -206,19 +151,9 @@ public final class TimeRulerController extends AbstractRulerController
         return relativeProperty;
     }
     
-    ObjectProperty<TimeConvertor> convertorProperty()
+    Property<TimeConvertor> convertorProperty()
     {
         return convertorProperty;
-    }
-    
-    @Override
-    protected void reset( int size )
-    {
-        TimeConvertor convertor = convertorProperty.get();
-        convertor.reset( size, relativeProperty.get() ?
-                            System.currentTimeMillis() : convertor.getEntry() );
-        removeRuler();
-        generateRuler();
     }
     
     void reset( TimeRulerPropertiesPaneController pattern )
@@ -231,8 +166,20 @@ public final class TimeRulerController extends AbstractRulerController
         unitProperty.setValue( pattern.unitProperty().getValue() );
     }
     
-    protected void removeRuler()
+    @Override
+    protected void reset()
     {
+        TimeConvertor convertor = new TimeConvertor( 
+                durationProperty.getValue(), excessProperty.getValue(), unitProperty.getValue() );
+        convertor.reset( pane.widthProperty().doubleValue(), relativeProperty.get() ?
+                            System.currentTimeMillis() : convertor.getEntry() );
+        convertorProperty.setValue( convertor );
+        reset( convertor );
+    }
+    
+    private void reset( TimeConvertor convertor )
+    {
+        // remove ruler
         for( Node node : pane.getChildren() )
             if( node instanceof Line )
             {
@@ -244,15 +191,23 @@ public final class TimeRulerController extends AbstractRulerController
                 ((Text)node).fontProperty().unbind();
             }
         pane.getChildren().clear();
-    }
-    
-    protected void generateRuler()
-    {
-        TimeConvertor convertor = convertorProperty.get();
+        // generate ruler
         boolean relative = relativeProperty.get();
         DateFormat formatter = DateFormat.getTimeInstance();
         long step = (long)roundToFactor( convertor.getSize() / ( pane.getWidth() / pixelStepMin ), factor );
-        for( int i = 1, count = (int)Math.ceil( convertor.getExcess() / step ); i <= count; i++ )
+        if( step > 0L )
+        {
+            int stepCountRight = (int)Math.ceil( convertor.getExcess() / step );
+            int stepCountLeft  = (int)Math.ceil( ( convertor.getSize() - convertor.getExcess() ) / step );
+            generateAllTickAndText( 1, step, stepCountRight, convertor, relative, formatter );
+            generateAllTickAndText( 0, -step, stepCountLeft, convertor, relative, formatter );
+        }
+    }
+    
+    private void generateAllTickAndText( int start, long step, int count, TimeConvertor convertor,
+            boolean relative, DateFormat formatter )
+    {
+        for( int i = start; i <= count; i++ )
         {
             long t = step * i;
             int x = convertor.timeToImage( convertor.getEntry() + t );
@@ -261,17 +216,8 @@ public final class TimeRulerController extends AbstractRulerController
                         Long.toString( t/1000L/*new Date( t ).getSeconds()*/ ) :
                         formatter.format( new Date( convertor.getEntry() + t ) ), i, relative );
         }
-        for( int i = 0, count = (int)Math.ceil( ( convertor.getSize() - convertor.getExcess() ) / step ); i <= count; i++ )
-        {
-            long t = - step * i;
-            int x = convertor.timeToImage( convertor.getEntry() + t );
-            if( 0 <= x && x < pane.getWidth() )
-                generateTickAndText( x, relative ?
-                        Long.toString( t/1000L/*new Date( t ).getSeconds()*/ ) :
-                        formatter.format( new Date( convertor.getEntry() + t ) ), i, relative );
-        }
     }
-
+    
     private void generateTickAndText( int x, String text, long s, boolean relative )
     {
         int length = s % 10 == 0 ? getTickSizeLarge() : 
@@ -304,6 +250,17 @@ public final class TimeRulerController extends AbstractRulerController
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
     {
         JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
+    }
+    
+    private class КelativeChangeListener implements ChangeListener<Boolean>
+    {
+        @Override
+        public void changed( ObservableValue<? extends Boolean> _, 
+                            Boolean oldValue, Boolean newValue )
+        {
+            if( newValue != null && !newValue.equals( oldValue ) ) 
+                reset( convertorProperty.getValue() );
+        }
     }
     
 }

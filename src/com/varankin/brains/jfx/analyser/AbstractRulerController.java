@@ -73,22 +73,28 @@ public abstract class AbstractRulerController implements Builder<Pane>
         fontProperty.setValue( pattern.fontProperty.getValue() );
     }
 
-    abstract protected void reset( int size );
+    abstract protected void reset();
     
     protected class SizeChangeListener implements ChangeListener<Number>
     {
         @Override
-        public void changed( ObservableValue<? extends Number> observable, 
+        public void changed( ObservableValue<? extends Number> _, 
                             Number oldValue, Number newValue )
         {
-            int size = newValue.intValue();
-            if( size > 0 )
-            {
-                reset( size );
-            }
+            if( newValue.intValue() > 0 ) reset();
         }
     }
 
+    protected class BoundChangeListener<T> implements ChangeListener<T>
+    {
+        @Override
+        public void changed( ObservableValue<? extends T> _, 
+                            T oldValue, T newValue )
+        {
+            if( newValue != null && !newValue.equals( oldValue ) ) reset();
+        }
+    }
+    
     static double roundToFactor( double value, double factor )
     {
         double exp = Math.floor( Math.log10( value ) );
