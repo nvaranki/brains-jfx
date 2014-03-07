@@ -169,10 +169,11 @@ public final class TimeRulerController extends AbstractRulerController
     @Override
     protected void reset()
     {
-        TimeConvertor convertor = new TimeConvertor( 
-                durationProperty.getValue(), excessProperty.getValue(), unitProperty.getValue() );
-        convertor.reset( pane.widthProperty().doubleValue(), relativeProperty.get() ?
-                            System.currentTimeMillis() : convertor.getEntry() );
+        long duration = TimeConvertor.TIME_UNIT.convert( durationProperty.getValue(), unitProperty.getValue() );
+        long excess   = TimeConvertor.TIME_UNIT.convert( excessProperty.getValue(), unitProperty.getValue() );
+        TimeConvertor convertor = new TimeConvertor( duration, excess, pane.widthProperty().intValue() );
+        TimeConvertor cr = convertorProperty.getValue();
+        convertor.setEntry( relativeProperty.get() || cr == null ? System.currentTimeMillis() : cr.getEntry() );
         convertorProperty.setValue( convertor );
         reset( convertor );
     }
@@ -194,11 +195,13 @@ public final class TimeRulerController extends AbstractRulerController
         // generate ruler
         boolean relative = relativeProperty.get();
         DateFormat formatter = DateFormat.getTimeInstance();
-        long step = (long)roundToFactor( convertor.getSize() / ( pane.getWidth() / pixelStepMin ), factor );
+        long duration = TimeConvertor.TIME_UNIT.convert( durationProperty.getValue(), unitProperty.getValue() );
+        long step = (long)roundToFactor( duration / ( pane.getWidth() / pixelStepMin ), factor );
         if( step > 0L )
         {
-            int stepCountRight = (int)Math.ceil( convertor.getExcess() / step );
-            int stepCountLeft  = (int)Math.ceil( ( convertor.getSize() - convertor.getExcess() ) / step );
+            long excess = TimeConvertor.TIME_UNIT.convert( excessProperty.getValue(), unitProperty.getValue() );
+            int stepCountRight = (int)Math.ceil( excess / step );
+            int stepCountLeft  = (int)Math.ceil( ( duration - excess ) / step );
             generateAllTickAndText( 1, step, stepCountRight, convertor, relative, formatter );
             generateAllTickAndText( 0, -step, stepCountLeft, convertor, relative, formatter );
         }

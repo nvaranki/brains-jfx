@@ -14,10 +14,11 @@ final class TimeConvertor
     private double tx;
     private long tEntry = -1L;
 
-    TimeConvertor( long duration, long excess, TimeUnit unit )
+    TimeConvertor( long duration, long excess, int width )
     {
-        tSize   = TIME_UNIT.convert( duration, unit );
-        tExcess = TIME_UNIT.convert( excess, unit );
+        tSize   = duration;
+        tExcess = excess;
+        tx = Double.valueOf( width - 1 ) / tSize;
     }
     
     int timeToImage( long t )
@@ -25,16 +26,8 @@ final class TimeConvertor
         return (int)Math.round( ( t - t0 ) * tx );
     }
 
-    void reset( long duration, long excess, TimeUnit unit )
+    int setEntry( long t )
     {
-        tSize   = TIME_UNIT.convert( duration, unit );
-        tExcess = TIME_UNIT.convert( excess, unit );
-    }
-    
-    int reset( double width, long t )
-    {
-        tx = width / tSize;
-        
         int shift;
         if( tEntry < 0L )
         {
@@ -56,16 +49,6 @@ final class TimeConvertor
     long getEntry()
     {
         return tEntry;
-    }
-
-    long getSize()
-    {
-        return tSize;
-    }
-
-    long getExcess()
-    {
-        return tExcess;
     }
 
 }
