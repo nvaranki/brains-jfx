@@ -26,9 +26,15 @@ final class TimeConvertor
         return (int)Math.round( ( t - t0 ) * tx );
     }
 
+    int offsetToImage( long t )
+    {
+        return timeToImage( tEntry + t );
+    }
+
     int setEntry( long t )
     {
         int shift;
+        
         if( tEntry < 0L )
         {
             shift = 0;

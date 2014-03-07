@@ -213,7 +213,7 @@ public final class TimeRulerController extends AbstractRulerController
         for( int i = start; i <= count; i++ )
         {
             long t = step * i;
-            int x = convertor.timeToImage( convertor.getEntry() + t );
+            int x = convertor.offsetToImage( t );
             if( 0 <= x && x < pane.getWidth() )
                 generateTickAndText( x, relative ?
                         Long.toString( t/1000L/*new Date( t ).getSeconds()*/ ) :
