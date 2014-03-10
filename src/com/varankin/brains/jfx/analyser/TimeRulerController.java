@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.PaneWithPopup;
+import com.varankin.brains.jfx.shared.PaneWithPopup;
 import com.varankin.util.LoggerX;
 import java.text.DateFormat;
 import java.util.Date;
@@ -52,12 +52,10 @@ public final class TimeRulerController extends AbstractRulerController
     
     public TimeRulerController()
     {
-//        TimeUnit convertorUnits = TimeUnit.SECONDS;
-//        TimeConvertor convertor = new TimeConvertor( 60, 2, convertorUnits );
-        convertorProperty = new SimpleObjectProperty<>();// convertor );
-        durationProperty = new SimpleObjectProperty<>( 0L );// convertor.getSize() );
-        excessProperty = new SimpleObjectProperty<>( 0L );// convertor.getExcess() );
-        unitProperty = new SimpleObjectProperty<>( TimeUnit.SECONDS );// convertorUnits );
+        convertorProperty = new SimpleObjectProperty<>();
+        durationProperty = new SimpleObjectProperty<>( 0L );
+        excessProperty = new SimpleObjectProperty<>( 0L );
+        unitProperty = new SimpleObjectProperty<>( TimeUnit.SECONDS );
         relativeProperty = new SimpleBooleanProperty();
 
         boundChangeListener = new BoundChangeListener<>();

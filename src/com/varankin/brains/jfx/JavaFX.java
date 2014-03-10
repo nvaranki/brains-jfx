@@ -214,7 +214,7 @@ public final class JavaFX
 
     public boolean useFxmlLoader()
     {
-        return false; //TODO appl. setup
+        return true;//false; //TODO appl. setup
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">

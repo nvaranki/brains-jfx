@@ -12,6 +12,7 @@
 
 <GridPane 
     fx:controller="com.varankin.brains.jfx.analyser.TimeLineController"
+    fx:id="pane"
     styleClass="time-line" 
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" 
     >
@@ -46,15 +47,15 @@
         />
 
     <fx:include 
-        fx:id="drawArea" 
+        fx:id="graph" 
         source="GraphPane.fxml" 
         GridPane.columnIndex="1"
         GridPane.rowIndex="0"
         />
 
     <fx:include 
-        fx:id="controlBar" 
-        source="ValueRuler.fxml" 
+        fx:id="legend" 
+        source="LegendPane.fxml" 
         GridPane.columnIndex="0"
         GridPane.rowIndex="2"
         GridPane.columnSpan="2"

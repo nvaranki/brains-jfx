@@ -49,10 +49,10 @@ public final class TimeLineController implements Builder<Pane>
     @FXML private TimeRulerController timeRulerController;
     @FXML private Pane valueRuler;
     @FXML private ValueRulerController valueRulerController;
-    @FXML private Pane drawArea;
-    @FXML private GraphPaneController graphPaneController;
-    @FXML private Pane controlBar;
-    @FXML private LegendPaneController legendPaneController;
+    @FXML private Pane graph;
+    @FXML private GraphPaneController graphController;
+    @FXML private Pane legend;
+    @FXML private LegendPaneController legendController;
     /*@FXML*/ private ContextMenu popup;
     @FXML private GridPane pane;
 
@@ -83,15 +83,15 @@ public final class TimeLineController implements Builder<Pane>
     @Override
     public GridPane build()
     {
-        legendPaneController = new LegendPaneController();
-        graphPaneController = new GraphPaneController();
+        legendController = new LegendPaneController();
+        graphController = new GraphPaneController();
         timeRulerController = new TimeRulerController();
         valueRulerController = new ValueRulerController();
 
         timeRuler = timeRulerController.build();
         valueRuler = valueRulerController.build();
-        drawArea = graphPaneController.build();
-        controlBar = legendPaneController.build();
+        graph = graphController.build();
+        legend = legendController.build();
 
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth( 45d );
@@ -122,8 +122,8 @@ public final class TimeLineController implements Builder<Pane>
         pane.getRowConstraints().addAll( rc0, rc1, rc2 );
         pane.add( valueRuler, 0, 0 );
         pane.add( timeRuler, 1, 1 );
-        pane.add( drawArea, 1, 0 );
-        pane.add( controlBar, 0, 2, 2, 1 );
+        pane.add( graph, 1, 0 );
+        pane.add( legend, 0, 2, 2, 1 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -136,7 +136,7 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void initialize()
     {
-        dynamicProperty = graphPaneController.dynamicProperty();
+        dynamicProperty = graphController.dynamicProperty();
 
         pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
         {
@@ -186,7 +186,7 @@ public final class TimeLineController implements Builder<Pane>
 
     void reset( GraphPropertiesPaneController controller )
     {
-        graphPaneController.reset( controller );
+        graphController.reset( controller );
     }
     
     /**
@@ -217,7 +217,7 @@ public final class TimeLineController implements Builder<Pane>
         DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<Dot>(), 1000 );
         painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
         painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-        painter.writableImageProperty().bind( graphPaneController.writableImageProperty() );
+        painter.writableImageProperty().bind( graphController.writableImageProperty() );
         Value value = new Value();
         value.монитор = pm;
         value.property = property;
@@ -226,7 +226,7 @@ public final class TimeLineController implements Builder<Pane>
         value.title = title;
         value.color = color;
         value.pattern = pattern;
-        legendPaneController.valuesProperty().getValue().add( value );
+        legendController.valuesProperty().getValue().add( value );
     }
 
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
@@ -247,10 +247,10 @@ public final class TimeLineController implements Builder<Pane>
         popup.getItems().add( menuItemSimulate);
         //TODO DEBUG END
         JavaFX.copyMenuItems( parentPopupMenu, popupItems, true );
-        graphPaneController.extendPopupMenu( popupItems );
+        graphController.extendPopupMenu( popupItems );
         valueRulerController.extendPopupMenu( popupItems );
         timeRulerController.extendPopupMenu( popupItems );
-        legendPaneController.extendPopupMenu( popupItems );
+        legendController.extendPopupMenu( popupItems );
     }
         
     @Deprecated // DEBUG
@@ -317,23 +317,23 @@ public final class TimeLineController implements Builder<Pane>
         {
             if( newValue != null )
             {
-                legendPaneController.dynamicProperty().bindBidirectional( dynamicProperty );
+                legendController.dynamicProperty().bindBidirectional( dynamicProperty );
                 timeRulerController.relativeProperty().bindBidirectional( dynamicProperty );
-                graphPaneController.widthProperty().bind( timeRuler.widthProperty() );
-                graphPaneController.heightProperty().bind( valueRuler.heightProperty() );
-                graphPaneController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-                graphPaneController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+                graphController.widthProperty().bind( timeRuler.widthProperty() );
+                graphController.heightProperty().bind( valueRuler.heightProperty() );
+                graphController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+                graphController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
             }
             else if( oldValue != null )
             {
-                legendPaneController.dynamicProperty().unbindBidirectional( dynamicProperty );
+                legendController.dynamicProperty().unbindBidirectional( dynamicProperty );
                 timeRulerController.relativeProperty().unbindBidirectional( dynamicProperty );
-                graphPaneController.widthProperty().unbind();
-                graphPaneController.heightProperty().unbind();
-                graphPaneController.timeConvertorProperty().unbind();
-                graphPaneController.valueConvertorProperty().unbind();
+                graphController.widthProperty().unbind();
+                graphController.heightProperty().unbind();
+                graphController.timeConvertorProperty().unbind();
+                graphController.valueConvertorProperty().unbind();
 
-                legendPaneController.valuesProperty().clear();
+                legendController.valuesProperty().clear();
             }
         }
     }

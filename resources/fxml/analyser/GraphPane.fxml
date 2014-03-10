@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.varankin.brains.jfx.shared.PaneWithPopup ?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,7 +8,6 @@
 <?import javafx.scene.image.* ?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import com.varankin.brains.jfx.PaneWithPopup ?>
 
 <!-- 
     Document   : GraphPane.fxml
@@ -26,8 +26,6 @@
     <stylesheets>
         <URL value="@GraphPane.css"/>
     </stylesheets>
-    
-    <ImageView fx:id="imageView" preserveRatio="true" mouseTransparent="true" />
     
     <contextMenu>
         <ContextMenu fx:id="popup" >
@@ -50,5 +48,7 @@
             </items>
         </ContextMenu>
     </contextMenu>
+    
+    <ImageView fx:id="imageView" preserveRatio="true" mouseTransparent="true" />
 
 </PaneWithPopup>

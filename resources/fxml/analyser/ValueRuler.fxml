@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+    Description: Панель шкалы по оси значений.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import com.varankin.brains.jfx.shared.PaneWithPopup?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,8 +11,26 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml">
+<PaneWithPopup
+    fx:controller="com.varankin.brains.jfx.analyser.ValueRulerController" 
+    fx:id="pane"
+    styleClass="value-ruler"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
     <stylesheets>
         <URL value="@ValueRuler.css"/>
     </stylesheets>
-</AnchorPane>
+
+    <contextMenu>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem 
+                    fx:id="menuItemProperties"
+                    text="@control.popup.properties" 
+                    onAction="#onActionProperties"
+                    />  
+            </items>
+        </ContextMenu>        
+    </contextMenu>
+
+</PaneWithPopup>

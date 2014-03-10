@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.PaneWithPopup;
+import com.varankin.brains.jfx.shared.PaneWithPopup;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import javafx.beans.property.*;
