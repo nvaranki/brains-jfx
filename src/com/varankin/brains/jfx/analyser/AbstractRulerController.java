@@ -1,5 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.Контекст;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -23,10 +25,10 @@ public abstract class AbstractRulerController implements Builder<Pane>
 
     protected AbstractRulerController()
     {
-        //TODO appl. param.
-        tickSizeLarge = 9;
-        tickSizeMedium = 6;
-        tickSizeSmall = 3;
+        Контекст контекст = JavaFX.getInstance().контекст;
+        tickSizeLarge = Integer.valueOf( контекст.параметр( Контекст.Параметры.TICK_LARGE ) );
+        tickSizeMedium = Integer.valueOf( контекст.параметр( Контекст.Параметры.TICK_MEDIUM ) );
+        tickSizeSmall = Integer.valueOf( контекст.параметр( Контекст.Параметры.TICK_SMALL ) );
 
         tickColorProperty = new SimpleObjectProperty<>( Color.BLACK );
         textColorProperty = new SimpleObjectProperty<>( Color.BLACK );
