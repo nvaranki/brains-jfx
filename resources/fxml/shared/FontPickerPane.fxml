@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Document   : FontPickerPane.fxml
-    Created on : Dec 2, 2013
-    Author     : Николай Варанкин
     Description: Панель для выбора и установки параметров шрифта.
+    Author     : (c) 2014 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -25,11 +23,12 @@
         text="%properties.font.family" 
         GridPane.columnIndex="0"
         GridPane.rowIndex="0" 
-        GridPane.columnSpan="3"
-        GridPane.rowSpan="1"  
     />   
     <ComboBox 
         fx:id="family" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="0" 
+        GridPane.columnSpan="3"
     />
     <Label 
         text="%properties.font.weight" 
@@ -38,6 +37,8 @@
     />
     <ComboBox 
         fx:id="weight" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="1"
     />
     <Label 
         text="%properties.font.posture" 
@@ -46,6 +47,8 @@
     />
     <ComboBox 
         fx:id="posture" 
+        GridPane.columnIndex="3"
+        GridPane.rowIndex="1"
     />
     <Label 
         text="%properties.font.size" 

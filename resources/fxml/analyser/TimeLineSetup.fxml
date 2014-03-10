@@ -23,7 +23,7 @@
     <center>
         <TabPane>
             <tabs>
-                <Tab text="@timeline.setup.value.title" closable="false" >
+                <Tab text="%timeline.setup.value.title" closable="false" >
                     <content>
                         <fx:include 
                             source="ValueRulerPropertiesPane.fxml" 
@@ -31,7 +31,7 @@
                             />
                     </content>
                 </Tab>  
-                <Tab text="@timeline.setup.time.title" closable="false" >
+                <Tab text="%timeline.setup.time.title" closable="false" >
                     <content>
                         <fx:include 
                             source="TimeRulerPropertiesPane.fxml" 
@@ -39,7 +39,7 @@
                             />
                     </content>
                 </Tab>  
-                <Tab text="@timeline.setup.value.title" closable="false" >
+                <Tab text="%timeline.setup.graph.title" closable="false" >
                     <content>
                         <fx:include 
                             source="GraphPropertiesPane.fxml" 
@@ -56,13 +56,13 @@
             <children>
                 <Button 
                     fx:id="buttonOK" 
-                    text="@button.create" 
+                    text="%button.create" 
                     defaultButton="true"
                     onAction="#onActionOK"
                     />
                 <Button 
                     fx:id="buttonCancel" 
-                    text="@button.cancel" 
+                    text="%button.cancel" 
                     cancelButton="true" 
                     onAction="#onActionCancel"
                     /> 
