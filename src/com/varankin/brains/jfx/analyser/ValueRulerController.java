@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.shared.PaneWithPopup;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import javafx.beans.property.*;
@@ -75,7 +74,7 @@ public final class ValueRulerController extends AbstractRulerController
         popup = new ContextMenu();
         popup.getItems().addAll( menuItemProperties );
         
-        pane = new PaneWithPopup();
+        pane = new Pane();
         pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
         {
             @Override
@@ -97,6 +96,7 @@ public final class ValueRulerController extends AbstractRulerController
     protected void initialize()
     {
         pane.heightProperty().addListener( new WeakChangeListener<>( sizeChangeListener ) );
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
     
     @FXML

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import com.varankin.brains.jfx.shared.PaneWithPopup ?>
+<!-- 
+    Description: Графическая зона для рисования  отметок.
+    Author     : (c) 2014 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -9,14 +11,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!-- 
-    Document   : GraphPane.fxml
-    Created on : Nov 11, 2013
-    Author     : 2013 Николай Варанкин
-    Description: Графическая зона для рисования  отметок.
--->
-
-<PaneWithPopup
+<Pane
         fx:controller="com.varankin.brains.jfx.analyser.GraphPaneController"
         styleClass="graph-pane" 
         fx:id="pane"
@@ -27,7 +22,7 @@
         <URL value="@GraphPane.css"/>
     </stylesheets>
     
-    <contextMenu>
+    <fx:define>
         <ContextMenu fx:id="popup" >
             <items>
                 <MenuItem 
@@ -47,8 +42,8 @@
                 /> 
             </items>
         </ContextMenu>
-    </contextMenu>
+    </fx:define>
     
     <ImageView fx:id="imageView" preserveRatio="true" mouseTransparent="true" />
 
-</PaneWithPopup>
+</Pane>

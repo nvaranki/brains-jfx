@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.shared.PaneWithPopup;
 import com.varankin.util.LoggerX;
 import java.text.DateFormat;
 import java.util.Date;
@@ -91,7 +90,7 @@ public final class TimeRulerController extends AbstractRulerController
         popup = new ContextMenu();
         popup.getItems().addAll( menuItemProperties );
         
-        pane = new PaneWithPopup();
+        pane = new Pane();
         pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
         {
             @Override
@@ -114,6 +113,7 @@ public final class TimeRulerController extends AbstractRulerController
     {
         pane.widthProperty().addListener( new WeakChangeListener<>( sizeChangeListener ) );
         pane.setMinWidth( 100d );
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
     
     @FXML

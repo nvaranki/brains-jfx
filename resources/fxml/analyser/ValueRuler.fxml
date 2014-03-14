@@ -3,7 +3,6 @@
     Description: Панель шкалы по оси значений.
     Author     : (c) 2014 Николай Варанкин
 -->
-<?import com.varankin.brains.jfx.shared.PaneWithPopup?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -11,26 +10,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<PaneWithPopup
+<Pane
     fx:controller="com.varankin.brains.jfx.analyser.ValueRulerController" 
     fx:id="pane"
     styleClass="value-ruler"
+    onContextMenuRequested="#onContextMenuRequested"  
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
     <stylesheets>
         <URL value="@ValueRuler.css"/>
     </stylesheets>
 
-    <contextMenu>
+    <fx:define>
         <ContextMenu fx:id="popup" >
             <items>
                 <MenuItem 
                     fx:id="menuItemProperties"
-                    text="@control.popup.properties" 
+                    text="%control.popup.properties" 
                     onAction="#onActionProperties"
                     />  
             </items>
         </ContextMenu>        
-    </contextMenu>
+    </fx:define>
 
-</PaneWithPopup>
+</Pane>
