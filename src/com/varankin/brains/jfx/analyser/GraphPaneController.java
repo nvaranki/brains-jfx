@@ -44,7 +44,6 @@ public final class GraphPaneController implements Builder<Pane>
     private final ImageChanger imageChanger;
     private final DynamicSwitch dynamicSwitch;
     private final DynamicParametersChanger dynamicChanger;
-    private final ChangeListener<Boolean> lifeCycleListener;
 
     private GraphPropertiesStage properties;
     
@@ -52,7 +51,6 @@ public final class GraphPaneController implements Builder<Pane>
     @FXML private ImageView imageView;
     @FXML private MenuItem menuItemResume;
     @FXML private MenuItem menuItemStop;
-    @FXML private MenuItem menuItemProperties;
     @FXML private ContextMenu popup;
     
     public GraphPaneController()
@@ -90,8 +88,6 @@ public final class GraphPaneController implements Builder<Pane>
         dynamicChanger = new DynamicParametersChanger();
         rateValueProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
         rateUnitProperty.addListener( new WeakChangeListener<>( dynamicChanger ) );
-        
-        lifeCycleListener = new LifeCycleListener();
     }
 
     /**
@@ -122,7 +118,8 @@ public final class GraphPaneController implements Builder<Pane>
             }
         } );
         
-        menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
         menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
         {
             @Override
@@ -166,8 +163,6 @@ public final class GraphPaneController implements Builder<Pane>
         
         menuItemResume.disableProperty().bind( dynamicProperty );
         menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty ) );
-        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
-        //pane.set visibleProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) );
     }
     
     @FXML
@@ -297,26 +292,6 @@ public final class GraphPaneController implements Builder<Pane>
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
-    
-    private class LifeCycleListener implements ChangeListener<Boolean>
-    {
-        @Override
-        public void changed( ObservableValue<? extends Boolean> _, Boolean oldValue, Boolean newValue )
-        {
-            if( newValue != null && newValue )
-            {
-                imageView.imageProperty().bind( writableImageProperty );
-                menuItemResume.disableProperty().bind( dynamicProperty );
-                menuItemStop.disableProperty().bind( Bindings.not( dynamicProperty ) );
-            }
-            else if( oldValue != null && oldValue )
-            {
-                imageView.imageProperty().unbind();
-                menuItemResume.disableProperty().unbind();
-                menuItemStop.disableProperty().unbind();
-            }
-        }
-    }
     
     /**
      * Сервис движения временной шкалы.

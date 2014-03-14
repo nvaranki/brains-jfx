@@ -36,10 +36,17 @@
                     text="%control.popup.stop"  
                 />  
                 <MenuItem 
-                    fx:id="menuItemProperties" 
                     onAction="#onActionProperties" 
-                    text="%control.popup.properties" 
-                /> 
+                    text="%control.popup.properties"
+                    >
+                    <graphic>
+                        <ImageView>
+                            <image>
+                                <Image url="@/icons16x16/properties.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </MenuItem> 
             </items>
         </ContextMenu>
     </fx:define>

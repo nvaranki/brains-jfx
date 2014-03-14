@@ -46,7 +46,6 @@ public final class TimeRulerController extends AbstractRulerController
     private TimeRulerPropertiesStage properties;
     
     @FXML private Pane pane;
-    @FXML private MenuItem menuItemProperties;
     @FXML private ContextMenu popup;
     
     public TimeRulerController()
@@ -77,7 +76,8 @@ public final class TimeRulerController extends AbstractRulerController
     @Override
     public Pane build()
     {
-        menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
         menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
         {
             @Override
@@ -113,7 +113,6 @@ public final class TimeRulerController extends AbstractRulerController
     {
         pane.widthProperty().addListener( new WeakChangeListener<>( sizeChangeListener ) );
         pane.setMinWidth( 100d );
-        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
     
     @FXML

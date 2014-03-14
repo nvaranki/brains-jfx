@@ -40,7 +40,6 @@ public final class ValueRulerController extends AbstractRulerController
     private ValueRulerPropertiesStage properties;
     
     @FXML private Pane pane;
-    @FXML private MenuItem menuItemProperties;
     @FXML private ContextMenu popup;
 
     public ValueRulerController()
@@ -61,7 +60,8 @@ public final class ValueRulerController extends AbstractRulerController
     @Override
     public Pane build()
     {
-        menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
         menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
         {
             @Override
@@ -96,7 +96,6 @@ public final class ValueRulerController extends AbstractRulerController
     protected void initialize()
     {
         pane.heightProperty().addListener( new WeakChangeListener<>( sizeChangeListener ) );
-        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
     }
     
     @FXML
