@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
-    Document   : GraphPropertiesPane
-    Created on : Nov 14, 2013
-    Author     : 2013 Николай Варанкин
     Description: Панель выбора и установки параметров рисования графика.
+    Author     : (c) 2014 Николай Варанкин
 -->
-
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -87,7 +83,6 @@
         GridPane.rowIndex="3"  
         focusTraversable="true"      
     />
-      
   </children>
       
 </GridPane>
