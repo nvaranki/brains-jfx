@@ -237,19 +237,9 @@ public final class TimeRulerController extends AbstractRulerController
         }
     }
     
-    @Deprecated
-    void appendToPopup( List<MenuItem> items ) 
+    void extendPopupMenu( List<? extends MenuItem> menu )
     {
-        if( items != null && !items.isEmpty() )
-        {
-            popup.getItems().add( new SeparatorMenuItem() );
-            JavaFX.copyMenuItems( items, popup.getItems() );
-        }
-    }
-
-    void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
-    {
-        JavaFX.copyMenuItems( parentPopupMenu, popup.getItems(), true );
+        JavaFX.copyMenuItems( menu, popup.getItems(), true );
     }
     
     private class КelativeChangeListener implements ChangeListener<Boolean>
