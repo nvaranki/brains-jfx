@@ -2,9 +2,12 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.text.DateFormat;
-import java.util.Date;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +34,21 @@ public final class TimeRulerController extends AbstractRulerController
     private static final LoggerX LOGGER = LoggerX.getLogger( TimeRulerController.class );
     private static final String RESOURCE_CSS  = "/fxml/analyser/TimeRuler.css";
     private static final String CSS_CLASS = "time-ruler";
-
+    private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
+    
+    private final static Map<TimeUnit,Format> TF;
+    static
+    {
+        TF = new EnumMap<>( TimeUnit.class );
+        TF.put( TimeUnit.NANOSECONDS, NumberFormat.getInstance() );
+        TF.put( TimeUnit.MICROSECONDS, NumberFormat.getInstance() );
+        TF.put( TimeUnit.MILLISECONDS, new SimpleDateFormat( "m:ss.SSS" ) );
+        TF.put( TimeUnit.SECONDS, new SimpleDateFormat( "H:mm:ss" ) );
+        TF.put( TimeUnit.MINUTES, new SimpleDateFormat( "HH:mm" ) );
+        TF.put( TimeUnit.HOURS, new SimpleDateFormat( "d, H:mm" ) );
+        TF.put( TimeUnit.DAYS, new SimpleDateFormat( "MMM, d" ) );
+    }
+    
     private final Property<Long> durationProperty, excessProperty;
     private final Property<TimeUnit> unitProperty;
     private final BooleanProperty relativeProperty;
@@ -166,8 +183,8 @@ public final class TimeRulerController extends AbstractRulerController
     @Override
     protected void reset()
     {
-        long duration = TimeConvertor.TIME_UNIT.convert( durationProperty.getValue(), unitProperty.getValue() );
-        long excess   = TimeConvertor.TIME_UNIT.convert( excessProperty.getValue(), unitProperty.getValue() );
+        long duration = TIME_UNIT.convert( durationProperty.getValue(), unitProperty.getValue() );
+        long excess   = TIME_UNIT.convert( excessProperty.getValue(), unitProperty.getValue() );
         TimeConvertor convertor = new TimeConvertor( duration, excess, pane.widthProperty().intValue() );
         TimeConvertor cr = convertorProperty.getValue();
         convertor.setEntry( relativeProperty.get() || cr == null ? System.currentTimeMillis() : cr.getEntry() );
@@ -189,50 +206,111 @@ public final class TimeRulerController extends AbstractRulerController
                 ((Text)node).fontProperty().unbind();
             }
         pane.getChildren().clear();
+        
         // generate ruler
         boolean relative = relativeProperty.get();
-        DateFormat formatter = DateFormat.getTimeInstance();
-        long duration = TimeConvertor.TIME_UNIT.convert( durationProperty.getValue(), unitProperty.getValue() );
-        long step = (long)roundToFactor( duration / ( pane.getWidth() / pixelStepMin ), factor );
-        if( step > 0L )
+        long duration = TIME_UNIT.convert( durationProperty.getValue(), unitProperty.getValue() );
+        long excess   = TIME_UNIT.convert( excessProperty.getValue(),   unitProperty.getValue() );
+        long u = TIME_UNIT.convert( 1L, unitProperty.getValue() );
+        
+        int tl, tm;
+        if( relative )
         {
-            long excess = TimeConvertor.TIME_UNIT.convert( excessProperty.getValue(), unitProperty.getValue() );
+            tl = 10; tm = 5;
+        }
+        else switch( unitProperty.getValue() )
+        {
+            case DAYS:
+                tl = 10; tm = 10; break;
+            case HOURS:
+            case MINUTES:
+                tl = 12; tm = 6; break;
+            default:
+                tl = 10; tm = 5;
+        }
+        
+        long step = (long)roundToFactor( duration / ( pane.getWidth() / pixelStepMin ), factor );
+        if( u / tl > step ) step = u / tl;
+        else if( u / tm > step ) step = u / tm;
+        else if( u / 2L > step ) step = u / 2L;
+        else if( u > step ) step = u;
+        else step -= step % u;
+        
+        if( step > 0L )
+          if( relative )
+          {
             int stepCountRight = (int)Math.ceil( excess / step );
             int stepCountLeft  = (int)Math.ceil( ( duration - excess ) / step );
-            generateAllTickAndText( 1, step, stepCountRight, convertor, relative, formatter );
-            generateAllTickAndText( 0, -step, stepCountLeft, convertor, relative, formatter );
+            generateAllTickAndTextRel( 1, step, stepCountRight, convertor, relative, tl, tm );
+            generateAllTickAndTextRel( 0, -step, stepCountLeft, convertor, relative, tl, tm );
+          }
+          else
+          {
+              long start = convertor.getEntry() + excess - duration;
+              long offset = start % step;
+              if( offset < 0 ) offset += step;
+              start -= offset;
+              int stepCount = (int)Math.ceil( duration / step );
+              generateAllTickAndTextAbs( start, step, stepCount, convertor, relative, tl, tm );
+          }
+    }
+    
+    private void generateAllTickAndTextAbs( long start, long step, int count, TimeConvertor convertor,
+            boolean relative, int tl, int tm )
+    {
+        TimeUnit unit = unitProperty.getValue();
+        Format df = TF.get( unit );
+        
+        for( int i = 0; i <= count; i++ )
+        {
+            long t = start + step * i;
+            int x = convertor.timeToImage( t );
+            if( 0 <= x && x < pane.getWidth() )
+            {
+                String text = df.format( t );
+                long ic = start / step;
+                generateTickAndText( x, text, ic + i, relative, tl, tm );
+            }
         }
     }
     
-    private void generateAllTickAndText( int start, long step, int count, TimeConvertor convertor,
-            boolean relative, DateFormat formatter )
+    private void generateAllTickAndTextRel( int start, long step, int count, TimeConvertor convertor, 
+            boolean relative, int tl, int tm )
     {
+        TimeUnit unit = unitProperty.getValue();
+        Format df = TF.get( unit );
+        
         for( int i = start; i <= count; i++ )
         {
             long t = step * i;
             int x = convertor.offsetToImage( t );
             if( 0 <= x && x < pane.getWidth() )
-                generateTickAndText( x, relative ?
-                        Long.toString( t/1000L/*new Date( t ).getSeconds()*/ ) :
-                        formatter.format( new Date( convertor.getEntry() + t ) ), i, relative );
+            {
+                String text = relative ?
+                    Long.toString( unit.convert( t, TIME_UNIT ) ) :
+                    df.format( convertor.getEntry() + t );
+                generateTickAndText( x, text, i, relative, tl, tm );
+            }
         }
     }
     
-    private void generateTickAndText( int x, String text, long s, boolean relative )
+    private void generateTickAndText( int x, String text, long s, boolean relative, int tl, int tm )
     {
-        int length = s % 10 == 0 ? getTickSizeLarge() : 
-                s % 5 == 0 ? getTickSizeMedium() : getTickSizeSmall();
+        int length = s % tl == 0 ? getTickSizeLarge() : 
+                s % tm == 0 ? getTickSizeMedium() : getTickSizeSmall();
         Line tick = new Line( 0, 0, 0, length );
         tick.strokeProperty().bind( tickColorProperty() );
         tick.relocate( x, 0d );
         pane.getChildren().add( tick );
-        if( s % 10 == 0 || ( s % 5 == 0 && relative ) )
+        if( s % tl == 0 || ( s % tm == 0 && relative ) )
         {
             Text value = new Text( text );
+            double maxWidth = value.boundsInLocalProperty().get().getMaxX();
+            x -= maxWidth / 2;
             value.relocate( x, 10d );
             value.fillProperty().bind( textColorProperty() );
             value.fontProperty().bind( fontProperty() );
-            if( x + value.boundsInLocalProperty().get().getMaxX() < pane.getWidth() )
+            if( 0 <= x && x + maxWidth < pane.getWidth() )
                 pane.getChildren().add( value );
         }
     }

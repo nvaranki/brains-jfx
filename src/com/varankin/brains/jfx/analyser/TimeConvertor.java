@@ -1,15 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  *
  * @author Николай
  */
 final class TimeConvertor
 {
-    static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
-    
     private long t0, tSize, tExcess;
     private double tx;
     private long tEntry = -1L;
