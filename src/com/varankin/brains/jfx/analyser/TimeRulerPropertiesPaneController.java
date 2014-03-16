@@ -2,6 +2,8 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.shared.FontPickerPaneController;
+import com.varankin.brains.jfx.shared.TimeUnitCallBack;
+import com.varankin.brains.jfx.shared.TimeUnitCell;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +24,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров оси времени.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public class TimeRulerPropertiesPaneController implements Builder<Node>
 {
@@ -107,6 +109,8 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
                 new DurationConverter( duration ) );
         Bindings.bindBidirectional( excess.textProperty(), excessProperty, 
                 new ExcessConverter( excess ) );
+        unit.setCellFactory( new TimeUnitCallBack() );
+        unit.setButtonCell( new TimeUnitCell() );
         unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         unitProperty.setModel( unit.getSelectionModel() );
         BooleanBinding validBinding = Bindings.and

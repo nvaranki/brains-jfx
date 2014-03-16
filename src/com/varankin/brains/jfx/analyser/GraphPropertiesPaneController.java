@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
+import com.varankin.brains.jfx.shared.TimeUnitCallBack;
+import com.varankin.brains.jfx.shared.TimeUnitCell;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,7 @@ import javafx.util.Builder;
 /**
  * Панель выбора и установки параметров рисования графика.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class GraphPropertiesPaneController implements Builder<Node>
 {
@@ -110,6 +112,8 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     {
         Bindings.bindBidirectional( rateValue.textProperty(), rateValueProperty, 
                 new PositiveLongConverter( rateValue ) );
+        rateUnit.setCellFactory( new TimeUnitCallBack() );
+        rateUnit.setButtonCell( new TimeUnitCell() );
         rateUnit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         rateUnitProperty.setModel( rateUnit.getSelectionModel() );
         borderColor.disableProperty().bind( Bindings.not( borderDisplay.selectedProperty() ) );
