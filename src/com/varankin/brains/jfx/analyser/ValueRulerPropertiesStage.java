@@ -27,10 +27,10 @@ final class ValueRulerPropertiesStage extends Stage
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
         
         setResizable( true );
-        setMinHeight( 270d );
-        setMinWidth( 400d );
-        setHeight( 270d ); //TODO save/restore size&pos
-        setWidth( 400d );
+        setMinHeight( 290d );
+        setMinWidth( 420d );
+        setHeight( 290d ); //TODO save/restore size&pos
+        setWidth( 420d );
         setScene( new Scene( builder.getNode() ) );
         setOnShowing( new EventHandler<WindowEvent>() 
         {

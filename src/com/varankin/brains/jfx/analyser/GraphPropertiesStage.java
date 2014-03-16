@@ -47,9 +47,9 @@ final class GraphPropertiesStage extends Stage
         initStyle( StageStyle.DECORATED );
         initModality( Modality.NONE );
         setResizable( true );
-        setMinHeight( 200d );
+        setMinHeight( 220d );
         setMinWidth( 400d );
-        setHeight( 200d ); //TODO save/restore size&pos
+        setHeight( 220d ); //TODO save/restore size&pos
         setWidth( 400d );
         setScene( new Scene( builder.getNode() ) );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );

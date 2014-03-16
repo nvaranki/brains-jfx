@@ -28,9 +28,9 @@ final class TimeLineSetupStage extends Stage
 
         setResizable( true );
         setMinHeight( 320d );
-        setMinWidth( 400d );
+        setMinWidth( 420d );
         setHeight( 320d ); //TODO save/restore size&pos
-        setWidth( 400d );
+        setWidth( 420d );
         setScene( new Scene( builder.getNode() ) );
         setOnShowing( new EventHandler<WindowEvent>() 
         {

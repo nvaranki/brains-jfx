@@ -27,10 +27,10 @@ final class TimeRulerPropertiesStage extends Stage
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
         
         setResizable( true );
-        setMinHeight( 270d );
-        setMinWidth( 380d );
-        setHeight( 270d ); //TODO save/restore size&pos
-        setWidth( 380d );
+        setMinHeight( 290d );
+        setMinWidth( 430d );
+        setHeight( 290d ); //TODO save/restore size&pos
+        setWidth( 430d );
         setScene( new Scene( builder.getNode() ) );
         setOnShowing( new EventHandler<WindowEvent>() 
         {
