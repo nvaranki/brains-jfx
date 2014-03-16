@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
-import com.varankin.brains.jfx.shared.TimeUnitCallBack;
-import com.varankin.brains.jfx.shared.TimeUnitCell;
+import com.varankin.brains.jfx.shared.EnumCallBack;
+import com.varankin.brains.jfx.shared.EnumCell;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -112,8 +112,8 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     {
         Bindings.bindBidirectional( rateValue.textProperty(), rateValueProperty, 
                 new PositiveLongConverter( rateValue ) );
-        rateUnit.setCellFactory( new TimeUnitCallBack() );
-        rateUnit.setButtonCell( new TimeUnitCell() );
+        rateUnit.setCellFactory( new EnumCallBack<>( TimeUnit.class ) );
+        rateUnit.setButtonCell( new EnumCell<>( TimeUnit.class ) );
         rateUnit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         rateUnitProperty.setModel( rateUnit.getSelectionModel() );
         borderColor.disableProperty().bind( Bindings.not( borderDisplay.selectedProperty() ) );

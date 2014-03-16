@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.*;
+import com.varankin.brains.jfx.shared.EnumCallBack;
+import com.varankin.brains.jfx.shared.EnumCell;
 import com.varankin.brains.jfx.shared.FontPickerPaneController;
-import com.varankin.brains.jfx.shared.TimeUnitCallBack;
-import com.varankin.brains.jfx.shared.TimeUnitCell;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -109,8 +109,8 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
                 new DurationConverter( duration ) );
         Bindings.bindBidirectional( excess.textProperty(), excessProperty, 
                 new ExcessConverter( excess ) );
-        unit.setCellFactory( new TimeUnitCallBack() );
-        unit.setButtonCell( new TimeUnitCell() );
+        unit.setCellFactory( new EnumCallBack<>( TimeUnit.class ) );
+        unit.setButtonCell( new EnumCell<>( TimeUnit.class ) );
         unit.getItems().addAll( Arrays.asList( TimeUnit.values() ) );
         unitProperty.setModel( unit.getSelectionModel() );
         BooleanBinding validBinding = Bindings.and

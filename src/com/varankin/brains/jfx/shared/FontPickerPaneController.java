@@ -117,6 +117,11 @@ public final class FontPickerPaneController implements Builder<Pane>
     @FXML
     protected void initialize()
     {
+        weight.setCellFactory( new EnumCallBack<>( FontWeight.class ) );
+        weight.setButtonCell( new EnumCell<>( FontWeight.class ) );
+        posture.setCellFactory( new EnumCallBack<>( FontPosture.class ) );
+        posture.setButtonCell( new EnumCell<>( FontPosture.class ) );
+        
         family.getItems().addAll( Font.getFamilies() );
         weight.getItems().addAll( FontWeight.values() );
         posture.getItems().addAll( FontPosture.values() );
