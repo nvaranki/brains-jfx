@@ -137,6 +137,8 @@ public final class TimeLineController implements Builder<Pane>
     protected void initialize()
     {
         dynamicProperty = graphController.dynamicProperty();
+        
+        legendController.unitProperty().bind( timeRulerController.unitProperty() );
 
         pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
         {

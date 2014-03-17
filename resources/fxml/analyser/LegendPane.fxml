@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- 
-    Document   : ValuePropertiesPane.fxml
-    Created on : Nov 9, 2013
-    Author     : 2013 Николай Варанкин
     Description: Панель управления прорисовкой отметок.
+    Author     : (c) 2014 Николай Варанкин
 -->
-
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -33,7 +29,7 @@
         <GridPane.rowIndex>0</GridPane.rowIndex>
     </FlowPane>
 
-    <CheckBox fx:id="time" selected="false" text="%axis.time.name" >
+    <CheckBox fx:id="time" selected="false" >
         <GridPane.columnIndex>1</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
         <contextMenu>

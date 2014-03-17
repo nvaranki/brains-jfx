@@ -4,6 +4,8 @@ import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
@@ -33,6 +35,7 @@ public final class LegendPaneController implements Builder<Pane>
     private final ReadOnlyListWrapper<Value> valuesProperty;
     private final ListChangeListener<Value> valueListListener;
     private final BooleanProperty dynamicProperty;
+    private final ObjectProperty<TimeUnit> unitProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
 
     private List<? extends MenuItem> parentPopupMenu;
@@ -50,6 +53,7 @@ public final class LegendPaneController implements Builder<Pane>
         valuesProperty.addListener( new WeakListChangeListener<>( valueListListener ) );
         dynamicProperty = new SimpleBooleanProperty();
         dynamicPropertyChangeListener = new DynamicPropertyChangeListener();
+        unitProperty = new SimpleObjectProperty<>();
         parentPopupMenu = Collections.emptyList();
     }
     
@@ -85,7 +89,6 @@ public final class LegendPaneController implements Builder<Pane>
         
         time = new CheckBox();
         time.setId( "time" );
-        time.setText( LOGGER.text( "axis.time.name" ) );
         time.setSelected( false );
         time.setContextMenu( timePopup );
         
@@ -121,6 +124,7 @@ public final class LegendPaneController implements Builder<Pane>
     protected void initialize()
     {   
         time.selectedProperty().bindBidirectional( dynamicProperty );
+        time.textProperty().bind( Bindings.createStringBinding( new TimeAxisText(), unitProperty ) );
         
         menuItemResume.disableProperty().bind( time.selectedProperty() );
         menuItemStop.disableProperty().bind( Bindings.not( time.selectedProperty() ) );
@@ -151,6 +155,11 @@ public final class LegendPaneController implements Builder<Pane>
     BooleanProperty dynamicProperty()
     {
         return dynamicProperty;
+    }
+    
+    Property<TimeUnit> unitProperty()
+    {
+        return unitProperty;
     }
     
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
@@ -312,6 +321,20 @@ public final class LegendPaneController implements Builder<Pane>
             }
         }
 
+    }
+    
+    private class TimeAxisText implements Callable<String>
+    {
+        @Override
+        public String call() throws Exception 
+        {
+            String key = "legend.TimeUnit." + unitProperty.getValue().name();
+            ResourceBundle rb = LOGGER.getLogger().getResourceBundle();
+            String text = "";
+            if( rb.containsKey( key ) )
+                text = rb.getString( key );
+            return LOGGER.text( "axis.time.name", text );
+        }
     }
     
 }

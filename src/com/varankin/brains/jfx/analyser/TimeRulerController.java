@@ -170,6 +170,11 @@ public final class TimeRulerController extends AbstractRulerController
         return convertorProperty;
     }
     
+    Property<TimeUnit> unitProperty()
+    {
+        return unitProperty;
+    }
+    
     void reset( TimeRulerPropertiesPaneController pattern )
     {
         tickColorProperty().setValue( pattern.tickColorProperty().getValue() );
