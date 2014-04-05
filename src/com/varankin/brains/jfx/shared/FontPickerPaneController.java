@@ -74,6 +74,8 @@ public final class FontPickerPaneController implements Builder<Pane>
     /**
      * Создает панель для выбора и установки параметров шрифта.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель для выбора и установки параметров шрифта.
      */
     @Override
     public Pane build()
@@ -173,11 +175,12 @@ public final class FontPickerPaneController implements Builder<Pane>
         @Override
         public Font call() throws Exception
         {
+            Double sizePropertyValue = sizeProperty.getValue();
             return Font.font( 
                 familyProperty.getValue(), 
                 weightProperty.getValue(), 
                 postureProperty.getValue(), 
-                sizeProperty.getValue() );
+                sizePropertyValue != null ? sizePropertyValue : 0d );
         }
     }
     

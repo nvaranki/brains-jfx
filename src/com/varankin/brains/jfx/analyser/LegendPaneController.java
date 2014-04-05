@@ -60,6 +60,8 @@ public final class LegendPaneController implements Builder<Pane>
     /**
      * Создает панель управления прорисовкой отметок.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель управления прорисовкой отметок.
      */
     @Override
     public GridPane build()
@@ -136,13 +138,13 @@ public final class LegendPaneController implements Builder<Pane>
     }
     
     @FXML
-    private void onActionResume( ActionEvent _ )
+    private void onActionResume( ActionEvent __ )
     {
         time.selectedProperty().setValue( Boolean.TRUE );
     }
 
     @FXML
-    private void onActionStop( ActionEvent _ )
+    private void onActionStop( ActionEvent __ )
     {
         time.selectedProperty().setValue( Boolean.FALSE );
     }
@@ -308,7 +310,7 @@ public final class LegendPaneController implements Builder<Pane>
             }
             
             @Override
-            public void changed( ObservableValue<? extends Parent> _, Parent ov, Parent nv )
+            public void changed( ObservableValue<? extends Parent> __, Parent ov, Parent nv )
             {
                 if( nv != null )
                 {
@@ -328,7 +330,8 @@ public final class LegendPaneController implements Builder<Pane>
         @Override
         public String call() throws Exception 
         {
-            String key = "legend.TimeUnit." + unitProperty.getValue().name();
+            TimeUnit unitValue = unitProperty.getValue();
+            String key = "legend.TimeUnit." + ( unitValue != null ? unitValue.name() : "" );
             ResourceBundle rb = LOGGER.getLogger().getResourceBundle();
             String text = "";
             if( rb.containsKey( key ) )
