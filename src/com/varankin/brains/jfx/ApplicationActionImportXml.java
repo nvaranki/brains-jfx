@@ -37,7 +37,7 @@ class ApplicationActionImportXml extends CoordinatedAction<Импортиров�
     }
 
     @Override
-    public void handle( ActionEvent _ )
+    public void handle( ActionEvent __ )
     {
         if( селектор != null && ( контекст.поставщик = селектор.newInstance() ) != null )
             new ApplicationActionWorker<Импортировать.Контекст>( действие, контекст ) // новый, т.к. одноразовый
