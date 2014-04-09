@@ -37,7 +37,7 @@ public class DoubleConverter extends StringConverter<Double>
         {
             value = Double.valueOf( string );
         } 
-        catch( NumberFormatException _ )
+        catch( NumberFormatException __ )
         {
             if( string != null && !string.isEmpty() )
                 LOGGER.log( "002001003W", string );

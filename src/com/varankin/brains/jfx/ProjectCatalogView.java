@@ -100,7 +100,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     private class RowBuilder implements Callback<ListView<Проект>, ListCell<Проект>>
     {
         @Override
-        public ListCell<Проект> call( ListView<Проект> _ )
+        public ListCell<Проект> call( ListView<Проект> __ )
         {
             return new VisibleRow();
         }
@@ -125,7 +125,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
@@ -142,7 +142,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
@@ -160,7 +160,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }

@@ -106,7 +106,7 @@ public final class ValueRulerController extends AbstractRulerController
     }
     
     @FXML
-    private void onActionProperties( ActionEvent _ )
+    private void onActionProperties( ActionEvent __ )
     {
         if( properties == null )
         {

@@ -44,7 +44,7 @@ class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ>
     }
 
     @Override
-    public void handle( ActionEvent _ )
+    public void handle( ActionEvent __ )
     {
         final ЭЛЕМЕНТ элемент = история.get( позиция );
         new ApplicationActionWorker<КОНТЕКСТ>( действие, контекст ) // новый, т.к. одноразовый
@@ -71,7 +71,7 @@ class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ>
     }
     
     @Override
-    public void invalidated( Observable _ ) 
+    public void invalidated( Observable __ ) 
     {
         refreshProperties();
     }

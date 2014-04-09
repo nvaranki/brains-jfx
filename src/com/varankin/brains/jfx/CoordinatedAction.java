@@ -30,7 +30,7 @@ class CoordinatedAction<КОНТЕКСТ> extends AbstractJfxAction
     }
 
     @Override
-    public void handle( ActionEvent _ )
+    public void handle( ActionEvent __ )
     {
         new ApplicationActionWorker<>( действие, контекст ).execute( jfx );
     }

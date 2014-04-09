@@ -37,7 +37,7 @@ public class IntegerConverter extends StringConverter<Integer>
         {
             value = Integer.valueOf( string );
         } 
-        catch( NumberFormatException _ )
+        catch( NumberFormatException __ )
         {
             if( string != null && !string.isEmpty() )
                 LOGGER.log( "002001001W", string );

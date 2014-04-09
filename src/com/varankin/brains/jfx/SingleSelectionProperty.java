@@ -53,7 +53,7 @@ public class SingleSelectionProperty<T> extends SimpleObjectProperty<T>
     private class SelectionSetter implements ChangeListener<T>
     {
         @Override
-        public void changed( ObservableValue<? extends T> _, T oldValue, T newValue )
+        public void changed( ObservableValue<? extends T> __, T oldValue, T newValue )
         {
             if( newValue != null )
                 model.select( newValue );

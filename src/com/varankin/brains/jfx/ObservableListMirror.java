@@ -122,7 +122,7 @@ public final class ObservableListMirror<E> extends AbstractList<E> implements Ob
         }
         
         @Override
-        public void invalidated( javafx.beans.Observable _ )
+        public void invalidated( javafx.beans.Observable __ )
         {
             АГЕНТ.copy( SOURCE, TARGET );
         }

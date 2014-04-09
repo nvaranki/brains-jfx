@@ -224,7 +224,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private class ColorPickerChangeListener implements ChangeListener<Color>
     {
         @Override
-        public void changed( ObservableValue<? extends Color> _,
+        public void changed( ObservableValue<? extends Color> __,
                             Color oldValue, Color newValue )
         {
             Color color = newValue;
@@ -240,7 +240,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private class MarkerPickerChangeListener implements ChangeListener<Marker>
     {
         @Override
-        public void changed( ObservableValue<? extends Marker> _,
+        public void changed( ObservableValue<? extends Marker> __,
                             Marker oldValue, Marker newValue )
         {
             Color color = colorPicker.getValue();
@@ -256,7 +256,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private class ScalePickerChangeListener implements ChangeListener<Integer>
     {
         @Override
-        public void changed( ObservableValue<? extends Integer> _,
+        public void changed( ObservableValue<? extends Integer> __,
                             Integer oldValue, Integer newValue )
         {
             Color color = colorPicker.getValue();
@@ -295,7 +295,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private class PatternResolver implements ChangeListener<int[][]>
     {
         @Override
-        public void changed( ObservableValue<? extends int[][]> _, 
+        public void changed( ObservableValue<? extends int[][]> __, 
                             int[][] oldValue, int[][] newValue )
         {
             List<Marker> items = markerPicker.getItems();

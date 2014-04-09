@@ -140,7 +140,7 @@ public final class TimeRulerController extends AbstractRulerController
     }
     
     @FXML
-    private void onActionProperties( ActionEvent _ )
+    private void onActionProperties( ActionEvent __ )
     {
         if( properties == null )
         {
@@ -328,7 +328,7 @@ public final class TimeRulerController extends AbstractRulerController
     private class КelativeChangeListener implements ChangeListener<Boolean>
     {
         @Override
-        public void changed( ObservableValue<? extends Boolean> _, 
+        public void changed( ObservableValue<? extends Boolean> __, 
                             Boolean oldValue, Boolean newValue )
         {
             if( newValue != null && !newValue.equals( oldValue ) ) 

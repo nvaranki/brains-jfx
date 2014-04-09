@@ -105,7 +105,7 @@ public class MenuFactory
         }
 
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
         }
     }

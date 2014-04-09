@@ -26,7 +26,7 @@ class SimpleAction<КОНТЕКСТ> extends com.varankin.brains.jfx.AbstractJfx
     }
     
     @Override
-    public void handle( ActionEvent _ )
+    public void handle( ActionEvent __ )
     {
         new ApplicationActionWorker<>( действие, контекст ).execute( jfx );
     }

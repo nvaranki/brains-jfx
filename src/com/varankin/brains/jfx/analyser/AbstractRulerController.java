@@ -80,7 +80,7 @@ public abstract class AbstractRulerController implements Builder<Pane>
     protected class SizeChangeListener implements ChangeListener<Number>
     {
         @Override
-        public void changed( ObservableValue<? extends Number> _, 
+        public void changed( ObservableValue<? extends Number> __, 
                             Number oldValue, Number newValue )
         {
             if( newValue.intValue() > 0 ) reset();
@@ -90,7 +90,7 @@ public abstract class AbstractRulerController implements Builder<Pane>
     protected class BoundChangeListener<T> implements ChangeListener<T>
     {
         @Override
-        public void changed( ObservableValue<? extends T> _, 
+        public void changed( ObservableValue<? extends T> __, 
                             T oldValue, T newValue )
         {
             if( newValue != null && !newValue.equals( oldValue ) ) reset();

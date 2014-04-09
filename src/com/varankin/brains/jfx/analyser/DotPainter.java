@@ -189,7 +189,7 @@ class DotPainter
     private class ImageChangeListener implements ChangeListener<WritableImage>
     {
         @Override
-        public void changed( ObservableValue<? extends WritableImage> _, 
+        public void changed( ObservableValue<? extends WritableImage> __, 
                             WritableImage oldValue, WritableImage newValue )
         {
             width  = newValue.widthProperty().intValue();
@@ -206,7 +206,7 @@ class DotPainter
         Future<?> process;
         
         @Override
-        public void changed( ObservableValue<? extends Boolean> _, 
+        public void changed( ObservableValue<? extends Boolean> __, 
                             Boolean oldValue, Boolean newValue )
         {
             if( newValue != null && newValue )

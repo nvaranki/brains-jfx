@@ -173,19 +173,19 @@ public final class GraphPaneController implements Builder<Pane>
     }
     
     @FXML
-    private void onActionResume( ActionEvent _ )
+    private void onActionResume( ActionEvent __ )
     {
         dynamicProperty.setValue( Boolean.TRUE );
     }
 
     @FXML
-    private void onActionStop( ActionEvent _ )
+    private void onActionStop( ActionEvent __ )
     {
         dynamicProperty.setValue( Boolean.FALSE );
     }
         
     @FXML
-    private void onActionProperties( ActionEvent _ )
+    private void onActionProperties( ActionEvent __ )
     {
         if( properties == null )
         {
@@ -402,7 +402,7 @@ public final class GraphPaneController implements Builder<Pane>
         Future<?> process;
         
         @Override
-        public void changed( ObservableValue<? extends Boolean> _,
+        public void changed( ObservableValue<? extends Boolean> __,
                 Boolean oldValue, Boolean newValue )
         {
             if( newValue != null )

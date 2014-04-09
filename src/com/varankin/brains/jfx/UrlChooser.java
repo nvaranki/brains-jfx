@@ -88,7 +88,7 @@ class UrlChooser extends Stage
     private class AcceptHandler implements EventHandler<ActionEvent>
     {
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             status.setText( null );
             url.value = null;
@@ -147,7 +147,7 @@ class UrlChooser extends Stage
     private class CancelHandler implements EventHandler<ActionEvent>
     {
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             status.setText( null );
             url.value = null;

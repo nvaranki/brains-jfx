@@ -35,7 +35,7 @@ final class TimeLineSetupStage extends Stage
         setOnShowing( new EventHandler<WindowEvent>() 
         {
             @Override
-            public void handle( WindowEvent _ )
+            public void handle( WindowEvent __ )
             {
                 controller.setApproved( false );
             }

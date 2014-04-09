@@ -66,7 +66,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             List<TitledSceneGraph> views = контекст.getViews().getValue();
             
@@ -114,7 +114,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         }
 
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
@@ -131,7 +131,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<E> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
@@ -153,7 +153,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
             List<E> сeлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );

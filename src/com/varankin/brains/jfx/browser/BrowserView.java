@@ -118,7 +118,7 @@ public class BrowserView extends TreeView<Элемент>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор() ).execute( контекст );
         }
@@ -214,7 +214,7 @@ public class BrowserView extends TreeView<Элемент>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }

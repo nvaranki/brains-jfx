@@ -20,7 +20,7 @@ class StageCloseHandler<T extends Event> implements EventHandler<T>
     }
 
     @Override
-    public void handle( T _ )
+    public void handle( T __ )
     {
         if( dispose )
             stage.close();

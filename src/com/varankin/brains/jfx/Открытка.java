@@ -99,7 +99,7 @@ class Открытка extends Stage
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             //Platform.runLater( this );
             Thread thread = new Thread( this );

@@ -162,19 +162,19 @@ public final class LegendValueController implements Builder<CheckBox>
     }
 
     @FXML
-    private void onActionShow( ActionEvent _ )
+    private void onActionShow( ActionEvent __ )
     {
         legend.selectedProperty().setValue( Boolean.TRUE );
     }
     
     @FXML
-    private void onActionHide( ActionEvent _ )
+    private void onActionHide( ActionEvent __ )
     {
         legend.selectedProperty().setValue( Boolean.FALSE );
     }
     
     @FXML
-    private void onActionRemove( ActionEvent _ )
+    private void onActionRemove( ActionEvent __ )
     {
         // остановить прорисовку
         legend.selectedProperty().setValue( Boolean.FALSE );
@@ -188,7 +188,7 @@ public final class LegendValueController implements Builder<CheckBox>
     }
         
     @FXML
-    private void onActionProperties( ActionEvent _ )
+    private void onActionProperties( ActionEvent __ )
     {
         if( properties == null )
         {

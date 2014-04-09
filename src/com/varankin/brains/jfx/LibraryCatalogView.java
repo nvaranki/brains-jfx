@@ -91,7 +91,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     private class RowBuilder implements Callback<ListView<Библиотека>, ListCell<Библиотека>>
     {
         @Override
-        public ListCell<Библиотека> call( ListView<Библиотека> _ )
+        public ListCell<Библиотека> call( ListView<Библиотека> __ )
         {
             return new VisibleRow();
         }
@@ -116,7 +116,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
@@ -131,7 +131,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         }
         
         @Override
-        public void handle( ActionEvent _ )
+        public void handle( ActionEvent __ )
         {
             LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
         }
