@@ -43,8 +43,6 @@ public final class TimeLineController implements Builder<Pane>
     
     private final ChangeListener<Parent> lifeCycleListener;
 
-    private BooleanProperty dynamicProperty;
-
     @FXML private Pane timeRuler;
     @FXML private TimeRulerController timeRulerController;
     @FXML private Pane valueRuler;
@@ -53,32 +51,19 @@ public final class TimeLineController implements Builder<Pane>
     @FXML private GraphPaneController graphController;
     @FXML private Pane legend;
     @FXML private LegendPaneController legendController;
-    /*@FXML*/ private ContextMenu popup;
+    @FXML private ContextMenu popup;
     @FXML private GridPane pane;
 
     public TimeLineController(  )
     {
-        MenuItem menuItemRemove = new MenuItem( LOGGER.text( "timeline.popup.remove" ) );
-        menuItemRemove.setGraphic( JavaFX.icon( "icons16x16/remove.png" ) );
-        menuItemRemove.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionRemove( event );
-            }
-        } );
-        
-        popup = new ContextMenu();
-        popup.getItems().add( menuItemRemove );
-        popup.setAutoHide( true );
-        
-        lifeCycleListener = new LifeCycleListener();
+        lifeCycleListener = new LifeCycleListener<>();
     }
 
     /**
      * Создает график динамического изменения значений по времени. 
      * Применяется в конфигурации без FXML.
+     * 
+     * @return график.
      */
     @Override
     public GridPane build()
@@ -128,6 +113,13 @@ public final class TimeLineController implements Builder<Pane>
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
 
+        MenuItem menuItemRemove = new MenuItem( LOGGER.text( "timeline.popup.remove" ) );
+        menuItemRemove.setGraphic( JavaFX.icon( "icons16x16/remove.png" ) );
+        menuItemRemove.setOnAction( this::onActionRemove );
+        
+        popup = new ContextMenu();
+        popup.getItems().add( menuItemRemove );
+        
         initialize();
         
         return pane;
@@ -136,27 +128,26 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void initialize()
     {
-        dynamicProperty = graphController.dynamicProperty();
-        
-        legendController.unitProperty().bind( timeRulerController.unitProperty() );
-
-        pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
+        pane.setOnContextMenuRequested( (ContextMenuEvent e) -> 
         {
-            @Override
-            public void handle( ContextMenuEvent e )
-            {
-                popup.show( pane, e.getScreenX(), e.getScreenY() );
-                e.consume();
-            }
-        } );
+            popup.show( pane, e.getScreenX(), e.getScreenY() );
+            e.consume();
+        });
         pane.parentProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) );
     }
 
+    @FXML
+    protected void onContextMenuRequested( ContextMenuEvent event )
+    {
+        popup.show( pane, event.getScreenX(), event.getScreenY() );
+        event.consume();
+    }
+    
     /**
      * Действие по удалению графика с экрана.
      */
     @FXML
-    void onActionRemove( ActionEvent _ )
+    protected void onActionRemove( ActionEvent __ )
     {
         Parent parent = pane.getParent();
         if( parent instanceof Pane )
@@ -169,11 +160,6 @@ public final class TimeLineController implements Builder<Pane>
         {
             LOGGER.log( "001001001W" );
         }
-    }
-    
-    BooleanProperty dynamicProperty()
-    {
-        return dynamicProperty;
     }
     
     void reset( ValueRulerPropertiesPaneController controller )
@@ -216,7 +202,7 @@ public final class TimeLineController implements Builder<Pane>
     void addMonitor( PropertyMonitor pm, String property, Value.Convertor<Float> convertor,
             int[][] pattern, Color color, String title )
     {
-        DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<Dot>(), 1000 );
+        DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<>(), 1000 );
         painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
         painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
         painter.writableImageProperty().bind( graphController.writableImageProperty() );
@@ -241,7 +227,7 @@ public final class TimeLineController implements Builder<Pane>
             @Deprecated private int id;
             
             @Override
-            public void handle( ActionEvent _ )
+            public void handle( ActionEvent __ )
             {
                 simulate( "Value A"+id++, "Value B"+id++, "Value C"+id++ );
             }
@@ -312,13 +298,16 @@ public final class TimeLineController implements Builder<Pane>
         }
     }
     
-    private class LifeCycleListener implements ChangeListener<Parent>
+    private class LifeCycleListener<T> implements ChangeListener<T>
     {
         @Override
-        public void changed( ObservableValue<? extends Parent> _, Parent oldValue, Parent newValue )
+        public void changed( ObservableValue<? extends T> __, T oldValue, T newValue )
         {
+            BooleanProperty dynamicProperty = graphController.dynamicProperty();
+            
             if( newValue != null )
             {
+                legendController.unitProperty().bind( timeRulerController.unitProperty() );
                 legendController.dynamicProperty().bindBidirectional( dynamicProperty );
                 timeRulerController.relativeProperty().bindBidirectional( dynamicProperty );
                 graphController.widthProperty().bind( timeRuler.widthProperty() );
@@ -328,6 +317,7 @@ public final class TimeLineController implements Builder<Pane>
             }
             else if( oldValue != null )
             {
+                legendController.unitProperty().unbind();
                 legendController.dynamicProperty().unbindBidirectional( dynamicProperty );
                 timeRulerController.relativeProperty().unbindBidirectional( dynamicProperty );
                 graphController.widthProperty().unbind();

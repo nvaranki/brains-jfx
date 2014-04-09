@@ -67,24 +67,10 @@ public final class LegendPaneController implements Builder<Pane>
     public GridPane build()
     {
         menuItemResume = new MenuItem( LOGGER.text( "control.popup.start" ) );
-        menuItemResume.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionResume( event );
-            }
-        } );
+        menuItemResume.setOnAction( this::onActionResume );
         
         menuItemStop = new MenuItem( LOGGER.text( "control.popup.stop" ) );
-        menuItemStop.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionStop( event );
-            }
-        } );
+        menuItemStop.setOnAction( this::onActionStop );
         
         timePopup = new ContextMenu();
         timePopup.getItems().addAll( menuItemResume, menuItemStop );

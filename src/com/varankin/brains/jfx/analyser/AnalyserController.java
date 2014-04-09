@@ -11,10 +11,10 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
@@ -35,7 +35,7 @@ public final class AnalyserController implements Builder<Node>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final ListChangeListener<Node> doubleSeparatorRemover;
-    private final ChangeListener<Boolean> lifeCycleListener;
+    private final ChangeListener<Scene> lifeCycleListener;
     
     private TimeLineSetupStage setup;
 
@@ -55,30 +55,18 @@ public final class AnalyserController implements Builder<Node>
     /**
      * Создает панель графиков. 
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель графиков. 
      */
     @Override
     public ScrollPane build()
     {
         Button buttonAdd = new Button( LOGGER.text( "analyser.popup.add" ) );
-        buttonAdd.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent e )
-            {
-                onActionAddTimeLine( e );
-            }
-        } );
+        buttonAdd.setOnAction( this::onActionAddTimeLine );
         
         buttonRemoveAll = new Button( LOGGER.text( "analyser.popup.clean" ) );
         buttonRemoveAll.setId( "buttonRemoveAll" );
-        buttonRemoveAll.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent e )
-            {
-                onActionRemoveAllTimeLines(e );
-            }
-        } );
+        buttonRemoveAll.setOnAction( this::onActionRemoveAllTimeLines );
         
         buttonPanel = new HBox();
         buttonPanel.setId( "buttonPanel" );
@@ -86,14 +74,7 @@ public final class AnalyserController implements Builder<Node>
         
         menuItemAdd = new MenuItem( LOGGER.text( "analyser.popup.add" ) );
         menuItemAdd.setId( "menuItemAdd" );
-        menuItemAdd.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent e )
-            {
-                onActionAddTimeLine( e );
-            }
-        } );
+        menuItemAdd.setOnAction( this::onActionAddTimeLine );
         
         popup = new ContextMenu();
         popup.getItems().add( menuItemAdd );
@@ -125,11 +106,11 @@ public final class AnalyserController implements Builder<Node>
         box.getChildren().addListener( new WeakListChangeListener<>( doubleSeparatorRemover ) );
         buttonRemoveAll.disableProperty().bind( Bindings.lessThan( 
                 Bindings.size( box.getChildren() ), 2 ) );
-        pane.visibleProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) ); 
+        pane.sceneProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) ); 
     }
     
     @FXML
-    private void onActionAddTimeLine( ActionEvent _ )
+    private void onActionAddTimeLine( ActionEvent __ )
     {
         if( setup == null )
         {
@@ -157,19 +138,17 @@ public final class AnalyserController implements Builder<Node>
     }
     
     @FXML
-    private void onActionRemoveAllTimeLines( ActionEvent _ )
+    private void onActionRemoveAllTimeLines( ActionEvent __ )
     {
         boolean confirmed = true;//TODO popup and ask again
-        if( confirmed ) removeAllTimeLines();
+        if( confirmed ) 
+        {
+            List<Node> graphs = new ArrayList<>( box.getChildren() );
+            graphs.remove( buttonPanel ); // еще пригодится
+            box.getChildren().removeAll( graphs );
+        }
     }
 
-    private void removeAllTimeLines()
-    {
-        List<Node> graphs = new ArrayList<>( box.getChildren() );
-        graphs.remove( buttonPanel );
-        box.getChildren().removeAll( graphs );
-    }
-    
     private class DoubleSeparatorRemover implements ListChangeListener<Node>
     {
         @Override
@@ -185,21 +164,21 @@ public final class AnalyserController implements Builder<Node>
         }
     }
     
-    private class LifeCycleListener implements ChangeListener<Boolean>
+    private class LifeCycleListener implements ChangeListener<Scene>
     {
         @Override
-        public void changed( ObservableValue<? extends Boolean> _, 
-                            Boolean oldValue, Boolean newValue )
+        public void changed( ObservableValue<? extends Scene> __, 
+                            Scene oldValue, Scene newValue )
         {
-            if( newValue != null && newValue )
+            if( newValue != null )
             {
                 // всё уже настроено
             }
-            else if( oldValue != null && oldValue )
+            else if( oldValue != null )
             {
                 buttonRemoveAll.disableProperty().unbind();
-                // удалить все графики, чтобы они отключили мониторинг
-                removeAllTimeLines();
+                // удалить все графики, чтобы они отключили мониторинг по такому случаю
+                box.getChildren().clear();
             }
         }
     }
