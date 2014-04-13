@@ -7,6 +7,7 @@
 <?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
+<?import javafx.scene.image.* ?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -14,6 +15,7 @@
     fx:controller="com.varankin.brains.jfx.analyser.TimeLineController"
     fx:id="pane"
     styleClass="time-line" 
+    onContextMenuRequested="#onContextMenuRequested" 
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" 
     >
 
@@ -49,6 +51,8 @@
     <fx:include 
         fx:id="graph" 
         source="GraphPane.fxml" 
+        onDragOver="#onDragOver"
+        onDragDropped="#onDragDropped"
         GridPane.columnIndex="1"
         GridPane.rowIndex="0"
         />
@@ -56,9 +60,30 @@
     <fx:include 
         fx:id="legend" 
         source="LegendPane.fxml" 
+        onDragOver="#onDragOver"
+        onDragDropped="#onDragDropped"
         GridPane.columnIndex="0"
         GridPane.rowIndex="2"
         GridPane.columnSpan="2"
         />
+    
+    <fx:define>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem 
+                    text="%timeline.popup.remove" 
+                    onAction="#onActionRemove"
+                    >
+                    <graphic>
+                        <ImageView>
+                            <image>
+                                <Image url="@/icons16x16/remove.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </MenuItem>
+            </items>
+        </ContextMenu>
+    </fx:define>
     
 </GridPane>

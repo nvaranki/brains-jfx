@@ -1,11 +1,15 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.appl.*;
 import com.varankin.brains.artificial.io.Фабрика;
+import com.varankin.brains.artificial.Элемент;
+import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 /**
@@ -16,10 +20,13 @@ import javafx.util.Callback;
  */
 final class BrowserNodeBuilder
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( BrowserNodeBuilder.class );
+    
     private final TreeView<Элемент> модель;
     private final ФабрикаНазваний фабрикаНазваний;
     private final BrowserRenderer фабрикаКартинок;
     private final Фабрика<BrowserNode,PropertyChangeListener> фабрикаМониторов;
+    private final Callback<TreeView<Элемент>,TreeCell<Элемент>> ФАБРИКА;
 
     BrowserNodeBuilder( TreeView<Элемент> модель, Map<Locale.Category,Locale> специфика )
     {
@@ -34,6 +41,7 @@ final class BrowserNodeBuilder
                 return new BrowserMonitor( узел, BrowserNodeBuilder.this );
             }
         };
+        ФАБРИКА = ( TreeView<Элемент> treeView ) -> new BrowserTreeCell( treeView );
     }
     
     BrowserRenderer фабрикаКартинок()
@@ -85,15 +93,7 @@ final class BrowserNodeBuilder
 
     Callback<TreeView<Элемент>,TreeCell<Элемент>> фабрика()
     {
-        return new Callback<TreeView<Элемент>,TreeCell<Элемент>>()
-        {
-            @Override
-            public TreeCell<Элемент> call( TreeView<Элемент> treeView )
-            {
-                return new BrowserTreeCell( treeView );
-            }
-            
-        };
+        return ФАБРИКА;
     }
     
     /**
@@ -106,6 +106,18 @@ final class BrowserNodeBuilder
         BrowserTreeCell( TreeView<Элемент> treeView ) 
         {
             this.treeView = treeView;
+        
+            this.setOnDragDetected( (MouseEvent e)-> 
+            {
+                LOGGER.getLogger().fine( "C: OnDragDetected" ); 
+                SnapshotParameters snapParams = new SnapshotParameters();
+                snapParams.setFill( Color.TRANSPARENT );
+                Dragboard dndb = startDragAndDrop( TransferMode.LINK );
+                dndb.setDragView( snapshot( snapParams, null ) );
+                dndb.setContent( Collections.singletonMap( DataFormat.PLAIN_TEXT, "data" ) );
+                //dragImageView.startFullDrag();
+                e.consume(); 
+            } );
         }
         
         @Override
@@ -116,14 +128,17 @@ final class BrowserNodeBuilder
             {
                 setText( null );
                 setGraphic( null );
+                setUserData( null );
             }
             else
             {
                 TreeItem<Элемент> item = getTreeItem();
                 setText( item.toString() );
                 setGraphic( item.getGraphic() );
-                }
+                setUserData( элемент );
             }
         }
+        
+    }
     
 }

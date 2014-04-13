@@ -6,7 +6,8 @@ import java.beans.PropertyChangeListener;
 import javafx.scene.paint.Color;
 
 /**
- *
+ * Значение, отображаемое на графике.
+ * 
  * @author Николай
  */
     /**
@@ -21,15 +22,38 @@ import javafx.scene.paint.Color;
      */
 class Value
 {
-    PropertyMonitor монитор;
-    String property;
-    Convertor<Float> convertor;
-    int[][] pattern;
-    Color color;
-    String title;
-    DotPainter painter;
+    final PropertyMonitor монитор;
+    final String property;
+    final Convertor<Float> convertor;
+    final DotPainter painter;
+    final int[][] pattern;
+    final Color color;
+    final String title;
 
     private PropertyChangeListener наблюдатель;
+    
+    /**
+     * @param pm        источник значений.
+     * @param property  название значения как атрибута в источнике значений.
+     * @param convertor преобразователь значения в тип {@link Float}.
+     * @param painter   менеджер рисования отметок в графической зоне.
+     * @param pattern   шаблон отметки на графике.
+     * @param color     цвет рисования шаблона отметки на графике.
+     * @param title     название значения для отображения на графике.
+     */
+    Value( PropertyMonitor pm, String property, 
+            Value.Convertor<Float> convertor,
+            DotPainter painter,
+            int[][] pattern, Color color, String title )
+    {
+        this.монитор = pm;
+        this.property = property;
+        this.convertor = convertor;
+        this.painter = painter;
+        this.title = title;
+        this.color = color;
+        this.pattern = pattern;
+    }
     
     void startMonitoring()
     {
