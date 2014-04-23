@@ -168,7 +168,7 @@ public final class TimeLineController implements Builder<Pane>
             List<Value> observables = legendController.valuesProperty().getValue();
             boolean completed = value != null && observables.add( value );
             event.setDropCompleted( completed );
-            if( completed )
+            if( value != null && value.painter != null && completed )
             {
                 value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
                 value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
