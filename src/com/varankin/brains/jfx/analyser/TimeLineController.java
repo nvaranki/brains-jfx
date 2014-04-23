@@ -10,7 +10,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -22,7 +21,6 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
@@ -41,6 +39,8 @@ public final class TimeLineController implements Builder<Pane>
     
     private final ChangeListener<Parent> lifeCycleListener;
 
+    private ObservablePropertiesStage properties;
+    
     @FXML private Pane timeRuler;
     @FXML private TimeRulerController timeRulerController;
     @FXML private Pane valueRuler;
@@ -144,8 +144,8 @@ public final class TimeLineController implements Builder<Pane>
     protected void onDragOver( DragEvent event )
     {
         PropertyMonitor m = monitor( event );
-        TransferMode[] modes = m != null ? new TransferMode[]{ TransferMode.LINK } : TransferMode.NONE;
-        event.acceptTransferModes( modes );
+        if( m != null ) event.acceptTransferModes( TransferMode.LINK );
+        else event.acceptTransferModes( TransferMode.NONE );
         event.consume();
     }
 
@@ -153,7 +153,32 @@ public final class TimeLineController implements Builder<Pane>
     protected void onDragDropped( DragEvent event )
     {
         PropertyMonitor m = monitor( event );
-        event.setDropCompleted( m != null && addPropertyMonitor( m ) );
+        if( m != null )
+        {
+            if( properties == null )
+            {
+                properties = new ObservablePropertiesStage();
+                properties.initOwner( JavaFX.getInstance().платформа );
+                properties.setTitle( LOGGER.text( "properties.observable.title" ) );
+            }
+            properties.setMonitor( m );
+            properties.showAndWait();
+            //properties.toFront();
+            Value value = properties.createValueInstance();
+            List<Value> observables = legendController.valuesProperty().getValue();
+            boolean completed = value != null && observables.add( value );
+            event.setDropCompleted( completed );
+            if( completed )
+            {
+                value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+                value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+                value.painter.writableImageProperty().bind( graphController.writableImageProperty() );
+            }
+        }
+        else
+        {
+            event.setDropCompleted( false );
+        }
         event.consume();
     }
     
@@ -209,43 +234,6 @@ public final class TimeLineController implements Builder<Pane>
     void reset( GraphPropertiesPaneController controller )
     {
         graphController.reset( controller );
-    }
-    
-    /**
-     * Добавляет значение, отображаемое на графике.
-     * 
-     * @param monitor        источник значений.
-     */ 
-    boolean addPropertyMonitor( PropertyMonitor monitor )
-    {
-        boolean confirmed = true; //TODO
-        if( confirmed )
-        {
-            ObservableList<Value> observables = legendController.valuesProperty().getValue();
-            //TODO DEBUG START
-            @Deprecated int i = observables.size();
-            // first tab
-            int buffer = 1000;
-            String name = monitor.getClass().getSimpleName() + i;
-            String property = "DEBUG"; 
-            Value.Convertor<Float> convertor = (Float value, long timestamp) -> new Dot( value, timestamp );
-            // next tab
-            @Deprecated Color[] colors = {Color.RED, Color.BLUE, Color.GREEN };
-            @Deprecated int[][][] patterns = { DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX };
-            int[][] pattern = patterns[i%patterns.length];
-            Color color = colors[i%colors.length];
-            //TODO DEBUG END
-            DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<>(), buffer );
-            painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-            painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-            painter.writableImageProperty().bind( graphController.writableImageProperty() );
-            observables.add( new Value( monitor, property, convertor, painter, pattern, color, name ) );
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
     
     void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
