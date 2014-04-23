@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
@@ -179,9 +178,10 @@ public final class TimeLineController implements Builder<Pane>
     
     /**
      * Действие по удалению графика с экрана.
+     * @param e
      */
     @FXML
-    protected void onActionRemove( ActionEvent __ )
+    protected void onActionRemove( ActionEvent e )
     {
         Parent parent = pane.getParent();
         if( parent instanceof Pane )
@@ -221,9 +221,9 @@ public final class TimeLineController implements Builder<Pane>
         boolean confirmed = true; //TODO
         if( confirmed )
         {
-            ObservableList<Value> legend = legendController.valuesProperty().getValue();
+            ObservableList<Value> observables = legendController.valuesProperty().getValue();
             //TODO DEBUG START
-            @Deprecated int i = legend.size();
+            @Deprecated int i = observables.size();
             // first tab
             int buffer = 1000;
             String name = monitor.getClass().getSimpleName() + i;
@@ -239,7 +239,7 @@ public final class TimeLineController implements Builder<Pane>
             painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
             painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
             painter.writableImageProperty().bind( graphController.writableImageProperty() );
-            legend.add( new Value( monitor, property, convertor, painter, pattern, color, name ) );
+            observables.add( new Value( monitor, property, convertor, painter, pattern, color, name ) );
             return true;
         }
         else
