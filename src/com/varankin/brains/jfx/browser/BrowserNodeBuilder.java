@@ -33,14 +33,7 @@ final class BrowserNodeBuilder
         this.модель = модель;
         this.фабрикаНазваний = new ФабрикаНазваний( специфика );
         this.фабрикаКартинок = new BrowserRenderer();
-        this.фабрикаМониторов = new Фабрика<BrowserNode,PropertyChangeListener>() 
-        {
-            @Override
-            public PropertyChangeListener создать( BrowserNode узел )
-            {
-                return new BrowserMonitor( узел, BrowserNodeBuilder.this );
-            }
-        };
+        this.фабрикаМониторов = (BrowserNode узел) -> new BrowserMonitor( узел, BrowserNodeBuilder.this );
         ФАБРИКА = ( TreeView<Элемент> treeView ) -> new BrowserTreeCell( treeView );
     }
     
