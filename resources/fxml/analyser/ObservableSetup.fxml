@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Диалог выбора параметров рисования наблюдаемого значения.
+    Author     : (с) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane 
+    fx:controller="com.varankin.brains.jfx.analyser.ObservableSetupController" 
+    styleClass="observable-setup"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2"
+    >
+    
+    <stylesheets>
+        <URL value="@ObservableSetup.css"/>
+    </stylesheets>
+  
+    <center>
+        <TabPane>
+            <tabs>
+            </tabs>
+        </TabPane>
+    </center>
+    
+    <bottom>
+        <HBox>
+            <children>
+                <Button 
+                    fx:id="buttonOK" 
+                    text="%button.create" 
+                    defaultButton="true"
+                    onAction="#onActionOK"
+                    />
+                <Button 
+                    fx:id="buttonCancel" 
+                    text="%button.cancel" 
+                    cancelButton="true" 
+                    onAction="#onActionCancel"
+                    /> 
+            </children>
+        </HBox>
+    </bottom>
+    
+</BorderPane>

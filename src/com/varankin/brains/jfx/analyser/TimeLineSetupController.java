@@ -5,7 +5,6 @@ import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -42,25 +41,11 @@ public class TimeLineSetupController implements Builder<Parent>
     {
         buttonOK = new Button( LOGGER.text( "button.create" ) );
         buttonOK.setDefaultButton( true );
-        buttonOK.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionOK( event );
-            }
-        } );
+        buttonOK.setOnAction( this::onActionOK );
         
         buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
         buttonCancel.setCancelButton( true );
-        buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionCancel( event );
-            }
-        } );
+        buttonCancel.setOnAction( this::onActionCancel );
         
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel );

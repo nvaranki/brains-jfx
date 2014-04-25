@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
-import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.stage.*;
 
@@ -32,16 +31,10 @@ final class TimeLineSetupStage extends Stage
         setHeight( 320d ); //TODO save/restore size&pos
         setWidth( 420d );
         setScene( new Scene( builder.getNode() ) );
-        setOnShowing( new EventHandler<WindowEvent>() 
-        {
-            @Override
-            public void handle( WindowEvent __ )
-            {
-                controller.setApproved( false );
-            }
-        } );
+        setOnShowing( (WindowEvent e) -> { controller.setApproved( false ); } );
     }
 
+    @Deprecated //TODO replace by createXXX()
     TimeLineSetupController getController()
     {
         return controller;

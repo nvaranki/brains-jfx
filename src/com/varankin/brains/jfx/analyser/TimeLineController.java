@@ -39,7 +39,7 @@ public final class TimeLineController implements Builder<Pane>
     
     private final ChangeListener<Parent> lifeCycleListener;
 
-    private ObservablePropertiesStage properties;
+    private ObservableSetupStage properties;
     
     @FXML private Pane timeRuler;
     @FXML private TimeRulerController timeRulerController;
@@ -157,7 +157,7 @@ public final class TimeLineController implements Builder<Pane>
         {
             if( properties == null )
             {
-                properties = new ObservablePropertiesStage();
+                properties = new ObservableSetupStage();
                 properties.initOwner( JavaFX.getInstance().платформа );
                 properties.setTitle( LOGGER.text( "properties.observable.title" ) );
             }
