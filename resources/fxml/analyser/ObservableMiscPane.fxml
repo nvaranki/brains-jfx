@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+    Description: Панель выбора и установки параметров отображения наблюдаемого значения.
+    Author     : (c) 2014 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -17,6 +20,30 @@
     </stylesheets>
     
   <children>
+    <Label 
+        text="%observable.setup.value.name" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField
+        fx:id="title"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0"  
+        focusTraversable="true"
+        prefColumnCount="25"       
+    />
+    <Label 
+        text="%observable.setup.buffer.name" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <TextField
+        fx:id="buffer"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
+        focusTraversable="true"      
+        prefColumnCount="6"       
+    />
   </children>
   
 </GridPane>
