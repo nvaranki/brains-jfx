@@ -18,7 +18,6 @@ import javafx.stage.WindowEvent;
 final class ObservableSetupStage extends Stage
 {
     private final ObservableSetupController controller;
-    private PropertyMonitor monitor;
 
     ObservableSetupStage()
     {
@@ -45,7 +44,7 @@ final class ObservableSetupStage extends Stage
      */
     void setMonitor( PropertyMonitor value )
     {
-        monitor = value;
+        controller.setMonitor( value );
     }
 
     /**
@@ -53,7 +52,7 @@ final class ObservableSetupStage extends Stage
      */ 
     Value createValueInstance()
     {
-        return controller.createValueInstance( monitor );
+        return controller.createValueInstance(  );
     }
 
 }

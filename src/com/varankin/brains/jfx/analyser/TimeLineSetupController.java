@@ -6,7 +6,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -29,11 +28,8 @@ public class TimeLineSetupController implements Builder<Parent>
     private boolean approved;
     
     @FXML private Button buttonOK, buttonCancel;
-    @FXML private Pane valueRulerPropertiesPane;
     @FXML private ValueRulerPropertiesPaneController valueRulerPropertiesPaneController;
-    @FXML private Pane timeRulerPropertiesPane;
     @FXML private TimeRulerPropertiesPaneController timeRulerPropertiesPaneController;
-    @FXML private Node graphPropertiesPane;
     @FXML private GraphPropertiesPaneController graphPropertiesPaneController;
 
     @Override
@@ -51,23 +47,20 @@ public class TimeLineSetupController implements Builder<Parent>
         buttonBar.getChildren().addAll( buttonOK, buttonCancel );
 
         valueRulerPropertiesPaneController = new ValueRulerPropertiesPaneController();
-        valueRulerPropertiesPane = valueRulerPropertiesPaneController.build();
         Tab tabValueRuler = new Tab();
-        tabValueRuler.setContent( valueRulerPropertiesPane );
+        tabValueRuler.setContent( valueRulerPropertiesPaneController.build() );
         tabValueRuler.setText( LOGGER.text( "timeline.setup.value.title" ) );
         tabValueRuler.setClosable( false );
         
         timeRulerPropertiesPaneController = new TimeRulerPropertiesPaneController();
-        timeRulerPropertiesPane = timeRulerPropertiesPaneController.build();
         Tab tabTimeRuler = new Tab();
-        tabTimeRuler.setContent( timeRulerPropertiesPane );
+        tabTimeRuler.setContent( timeRulerPropertiesPaneController.build() );
         tabTimeRuler.setText( LOGGER.text( "timeline.setup.time.title" ) );
         tabTimeRuler.setClosable( false );
         
         graphPropertiesPaneController = new GraphPropertiesPaneController();
-        graphPropertiesPane = graphPropertiesPaneController.build();
         Tab tabGraph = new Tab();
-        tabGraph.setContent( graphPropertiesPane );
+        tabGraph.setContent( graphPropertiesPaneController.build() );
         tabGraph.setText( LOGGER.text( "timeline.setup.graph.title" ) );
         tabGraph.setClosable( false );
         

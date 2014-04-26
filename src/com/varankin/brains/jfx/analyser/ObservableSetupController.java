@@ -2,23 +2,23 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
- *
- * @author Николай
+ * FXML-контроллер выбора параметров рисования наблюдаемого значения.
+ * 
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class ObservableSetupController implements Builder<Parent>
 {
@@ -30,8 +30,14 @@ public final class ObservableSetupController implements Builder<Parent>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private boolean approved;
+    private PropertyMonitor monitor;
+    private Iterator<Color> colors = new CyclicIterator<>( Arrays.asList( Color.RED, Color.BLUE, Color.GREEN ) );
+    private Iterator<int[][]> patterns = new CyclicIterator<>( Arrays.asList( DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX ) );
     
     @FXML private Button buttonOK, buttonCancel;
+    @FXML private ObservableMiscPaneController observableMiscPaneController;
+    @FXML private ObservableConversionPaneController observableConversionPaneController;
+    @FXML private ValuePropertiesPaneController valuePropertiesPaneController;
 
     @Override
     public Parent build()
@@ -48,9 +54,26 @@ public final class ObservableSetupController implements Builder<Parent>
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel );
 
+        Tab tabName = new Tab();
+        observableMiscPaneController = new ObservableMiscPaneController();
+        tabName.setContent( observableMiscPaneController.build() );
+        tabName.setText( LOGGER.text( "observable.setup.value.title" ) );
+        tabName.setClosable( false );
+        
+        Tab tabConversion = new Tab();
+        observableConversionPaneController = new ObservableConversionPaneController();
+        tabConversion.setContent( observableConversionPaneController.build() );
+        tabConversion.setText( LOGGER.text( "observable.setup.conversion.title" ) );
+        tabConversion.setClosable( false );
+        
+        valuePropertiesPaneController = new ValuePropertiesPaneController();
+        Tab tabPainting = new Tab();
+        tabPainting.setContent( valuePropertiesPaneController.build() );
+        tabPainting.setText( LOGGER.text( "observable.setup.presentation.title" ) );
+        tabPainting.setClosable( false );
         
         TabPane tabs = new TabPane();
-//        tabs.getTabs().addAll( tabValueRuler, tabTimeRuler, tabGraph );
+        tabs.getTabs().addAll( tabName, tabConversion, tabPainting );
 
         BorderPane pane = new BorderPane();
         pane.setCenter( tabs );
@@ -67,13 +90,14 @@ public final class ObservableSetupController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-//        BooleanBinding valid = 
-//            Bindings.and( 
-//                Bindings.and( 
-//                    timeRulerPropertiesPaneController.validProperty(),
-//                    valueRulerPropertiesPaneController.validProperty() ),
-//                graphPropertiesPaneController.validProperty() ) ;
-//        buttonOK.disableProperty().bind( Bindings.not( valid ) );
+        valuePropertiesPaneController.scaleProperty().setValue( 3 );
+        BooleanBinding valid = 
+            Bindings.and( 
+                Bindings.and( 
+                    observableMiscPaneController.validProperty(),
+                    observableConversionPaneController.validProperty() ),
+                valuePropertiesPaneController.validProperty() ) ;
+        buttonOK.disableProperty().bind( Bindings.not( valid ) );
     }
     
     @FXML
@@ -100,32 +124,65 @@ public final class ObservableSetupController implements Builder<Parent>
     }
 
     /**
-     * Создает новое значение, отображаемое на графике.
+     * Устанавливает монитор наблюдаемого значения.
      * 
-     * @param monitor монитор значения.
+     * @param value монитор.
+     */
+    void setMonitor( PropertyMonitor value )
+    {
+        monitor = value;
+        observableMiscPaneController.setMonitor( value );
+        observableConversionPaneController.setMonitor( value );
+        valuePropertiesPaneController.colorProperty().setValue( colors.next() );
+        valuePropertiesPaneController.patternProperty().setValue( patterns.next() );
+        valuePropertiesPaneController.resetColorPicker();
+    }
+
+    /**
+     * Создает новое значение, отображаемое на графике.
      */ 
-    Value createValueInstance( PropertyMonitor monitor )
+    Value createValueInstance()
     {
         if( monitor == null || !approved ) return null;
+
+        String property = observableConversionPaneController.propertyProperty().getValue();
+        Value.Convertor<Float> convertor = observableConversionPaneController.convertorProperty().getValue();
+        int[][] pattern = valuePropertiesPaneController.patternProperty().getValue();
+        Color color = valuePropertiesPaneController.colorProperty().getValue();
+        String title = observableMiscPaneController.titleProperty().getValue();
+        int buffer = observableMiscPaneController.bufferProperty().getValue().intValue();
+        BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
+        DotPainter painter = buffer > 0 ? new BufferedDotPainter( queue, buffer ) : new DotPainter( queue );
+        return new Value( monitor, property, convertor, painter, pattern, color, title );
+    }
+    
+    private static class CyclicIterator<E> implements Iterator<E>
+    {
+        private final Iterable<E> source;
+        private Iterator<E> it;
+
+        CyclicIterator( Iterable<E> source )
+        {
+            this.source = source != null ? source : Collections.emptyList();
+            this.it = this.source.iterator();
+        }
         
-        //TODO DEBUG START
-        @Deprecated int i = 0;//observables.size();
-        // first tab
-        int buffer = 1000;
-        String name = monitor.getClass().getSimpleName() + i;
-        String property = "DEBUG"; 
-        Value.Convertor<Float> convertor = (Float value, long timestamp) -> new Dot( value, timestamp );
-        // next tab
-        @Deprecated Color[] colors = {Color.RED, Color.BLUE, Color.GREEN };
-        @Deprecated int[][][] patterns = { DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX };
-        int[][] pattern = patterns[i%patterns.length];
-        Color color = colors[i%colors.length];
-        //TODO DEBUG END
-        DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<>(), buffer );
-//        painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-//        painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-//        painter.writableImageProperty().bind( graphController.writableImageProperty() );
-        return new Value( monitor, property, convertor, painter, pattern, color, name );
+        @Override
+        public boolean hasNext()
+        {
+            if( !it.hasNext() ) it = source.iterator();
+            return it.hasNext();
+        }
+
+        @Override
+        public E next()
+        {
+            if( hasNext() )
+                return it.next();
+            else
+                throw new NoSuchElementException();
+        }
+        
     }
     
 }

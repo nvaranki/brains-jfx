@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane
+    fx:controller="com.varankin.brains.jfx.analyser.ObservableMiscPaneController" 
+    styleClass="observable-misc-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@ObservableMiscPane.css"/>
+    </stylesheets>
+    
+  <children>
+  </children>
+  
+</GridPane>

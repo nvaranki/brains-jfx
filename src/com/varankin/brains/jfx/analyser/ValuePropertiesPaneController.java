@@ -4,6 +4,8 @@ import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.List;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
@@ -26,8 +28,9 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
     private static final String CSS_CLASS = "value-properties-pane";
 
-    private final Property<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
+    private final SimpleObjectProperty<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
     private final SingleSelectionProperty<Integer> scaleProperty;
+    private final ReadOnlyBooleanWrapper validProperty;
     private final ColorPickerChangeListener colorPickerListener;
     private final ChangeListener<Marker> markerPickerChangeListener;
     private final ChangeListener<int[][]> markerPickerSetter;
@@ -46,6 +49,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         scalePickerChangeListener = new ScalePickerChangeListener();
         patternProperty = new SimpleObjectProperty<>();
         scaleProperty = new SingleSelectionProperty<>();
+        validProperty = new ReadOnlyBooleanWrapper();
         markerPickerSetter = new PatternResolver();
         patternPropertySetter = new MarkerResolver();
     }
@@ -53,6 +57,8 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     /**
      * Создает панель выбора параметров прорисовки отметок.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return созданная панель.
      */
     @Override
     public GridPane build()
@@ -110,6 +116,12 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         
         scaleProperty.setModel( scalePicker.getSelectionModel() );
         scaleProperty.addListener( new WeakChangeListener<>( scalePickerChangeListener ) );
+
+        BooleanBinding validBinding = 
+            Bindings.and( 
+                Bindings.isNotNull( colorPicker.valueProperty() ), 
+                Bindings.isNotNull( patternProperty ) );
+        validProperty.bind( validBinding );
     }
     
     Property<Color> colorProperty()
@@ -125,6 +137,11 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     Property<Integer> scaleProperty()
     {
         return scaleProperty;
+    }
+
+    ReadOnlyBooleanProperty validProperty()
+    {
+        return validProperty.getReadOnlyProperty();
     }
 
     /**

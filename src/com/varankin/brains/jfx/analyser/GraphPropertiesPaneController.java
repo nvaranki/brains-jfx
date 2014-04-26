@@ -50,6 +50,8 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     /**
      * Создает панель для выбора и установки параметров рисования графика.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return созданная панель.
      */
     @Override
     public Node build()

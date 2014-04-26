@@ -23,6 +23,30 @@
     <center>
         <TabPane>
             <tabs>
+                <Tab text="%observable.setup.value.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ObservableMiscPane.fxml" 
+                            fx:id="observableMiscPane"
+                            />
+                    </content>
+                </Tab>  
+                <Tab text="%observable.setup.conversion.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ObservableConversionPane.fxml" 
+                            fx:id="observableConversionPane"
+                            />
+                    </content>
+                </Tab>  
+                <Tab text="%observable.setup.presentation.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ValuePropertiesPane.fxml" 
+                            fx:id="valuePropertiesPane"
+                            />
+                    </content>
+                </Tab>  
             </tabs>
         </TabPane>
     </center>
