@@ -150,7 +150,7 @@ public final class ObservableSetupController implements Builder<Parent>
         int[][] pattern = valuePropertiesPaneController.patternProperty().getValue();
         Color color = valuePropertiesPaneController.colorProperty().getValue();
         String title = observableMiscPaneController.titleProperty().getValue();
-        int buffer = observableMiscPaneController.bufferProperty().getValue().intValue();
+        int buffer = observableMiscPaneController.bufferProperty().getValue();
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DotPainter painter = buffer > 0 ? new BufferedDotPainter( queue, buffer ) : new DotPainter( queue );
         return new Value( monitor, property, convertor, painter, pattern, color, title );

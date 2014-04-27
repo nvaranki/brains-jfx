@@ -25,12 +25,13 @@
         GridPane.columnIndex="0" 
         GridPane.rowIndex="0" 
     />
-    <TextField
+    <ComboBox
         fx:id="title"
+        focusTraversable="true"
+        editable="true" 
+        visibleRowCount="5" 
         GridPane.columnIndex="1" 
         GridPane.rowIndex="0"  
-        focusTraversable="true"
-        prefColumnCount="25"       
     />
     <Label 
         text="%observable.setup.buffer.name" 
@@ -39,10 +40,10 @@
     />
     <TextField
         fx:id="buffer"
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="1"  
         focusTraversable="true"      
         prefColumnCount="6"       
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
     />
   </children>
   
