@@ -147,20 +147,21 @@ public final class ObservableMiscPaneController implements Builder<Pane>
             {
                 String name = o instanceof Базовый ? 
                         ((Базовый)o).шаблон().название() :
-                        alias( basicClassOf( o.getClass(), PKG_APPL ) );
+                        alias( basicClassOf( o.getClass(), CLASS_APPL ) );
                 text.insert( 0, text.length() > 0 ? "." : "" ).insert( 0, name );
             }
-            if( !( object instanceof Базовый ) )
-                items.add( text.append( suffix ).toString() );
+            items.add( text.append( object instanceof Базовый ? "" : suffix ).toString() );
         }
         if( object instanceof Базовый )
         {
             Базовый o = (Базовый)object;
             items.add( o.шаблон().название() );
             items.add( o.шаблон().название( "", "." ) );
-            items.add( alias( basicClassOf( o.шаблон().getClass(), PKG_DB ) ) + suffix );
+            String alias = alias( basicClassOf( o.шаблон().getClass(), CLASS_DB ) );
+            items.add( alias + '_' + o.шаблон().название() );
+            items.add( alias + suffix );
         }
-        items.add( alias( basicClassOf( object.getClass(), PKG_APPL ) ) + suffix );
+        items.add( alias( basicClassOf( object.getClass(), CLASS_APPL ) ) + suffix );
         
         items.remove( "" );
         if( items.isEmpty() ) items.add( suffix );
@@ -168,25 +169,34 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         return items;
     }
     
-    private static final Package PKG_APPL = com.varankin.brains.artificial.Элемент.class.getPackage();
-    private static final Package PKG_DB   = com.varankin.brains.db.Элемент.class.getPackage();
+    private static final Class CLASS_APPL = com.varankin.brains.artificial.Элемент.class;
+    private static final Class CLASS_DB   = com.varankin.brains.db.Элемент.class;
     
-    private static Class basicClassOf( Class original, Package pkg )
+    private static Class implementationOf( Class original, Class pattern )
     {
-        if( pkg.equals( original.getPackage() ) )
+        if( original == null )
+        {
+            return null;
+        }
+        else if( original.equals( pattern ) ) 
         {
             return original;
         }
         else for( Class i : original.getInterfaces() )
         {
-            Class found = basicClassOf( i, pkg );
-            if( found != null && !Object.class.equals( found ) ) 
-                return found;
+            if( i.equals( pattern ) && original.getPackage().equals( pattern.getPackage() ) ) 
+                return original;
+            Class found = implementationOf( i, pattern );
+            if( found != null ) return found;
         }
-        Class found = null;
-        Class sc = original.getSuperclass();
-        if( sc != null ) found = basicClassOf( sc, pkg );
-        return found != null && !Object.class.equals( found ) ? found : original;
+        
+        return implementationOf( original.getSuperclass(), pattern );
+    }
+    
+    private static Class basicClassOf( Class original, Class pattern )
+    {
+        Class c = implementationOf( original, pattern );
+        return c != null ? c : original;
     }
     
     private static String alias( Class original )
