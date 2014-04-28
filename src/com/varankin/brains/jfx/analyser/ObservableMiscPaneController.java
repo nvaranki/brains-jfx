@@ -130,12 +130,18 @@ public final class ObservableMiscPaneController implements Builder<Pane>
     void setMonitor( PropertyMonitor monitor )
     {
         title.getItems().clear();
-        title.getItems().addAll( createSuggestedTitles( monitor ) );
+        title.getItems().addAll( suggestTitles( monitor ) );
         title.selectionModelProperty().getValue().select( 0 );
         
     }
 
-    private Collection<String> createSuggestedTitles( Object object ) 
+    /**
+     * Создает набор названий объекта.
+     * 
+     * @param object объект.
+     * @return набор названий.
+     */
+    private Collection<String> suggestTitles( Object object ) 
     {
         Collection<String> items = new LinkedHashSet<>();
         String suffix = "#" + Integer.toString( count++ );
@@ -172,6 +178,13 @@ public final class ObservableMiscPaneController implements Builder<Pane>
     private static final Class CLASS_APPL = com.varankin.brains.artificial.Элемент.class;
     private static final Class CLASS_DB   = com.varankin.brains.db.Элемент.class;
     
+    /**
+     * Находит ближайший к {@code pattern} субинтерфейс, реализованный в {@code original).
+     * 
+     * @param original исследуемый класс.
+     * @param pattern  базовый класс.
+     * @return интерфейс или {@code null}.
+     */
     private static Class implementationOf( Class original, Class pattern )
     {
         if( original == null )
@@ -193,15 +206,29 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         return implementationOf( original.getSuperclass(), pattern );
     }
     
+    /**
+     * Понижает класс {@code original} до ближайшего к {@code pattern}, 
+     * если это возможно.
+     * 
+     * @param original исследуемый класс.
+     * @param pattern  базовый класс.
+     * @return класс; возможно {@code original}; никогда {@code null}.
+     */
     private static Class basicClassOf( Class original, Class pattern )
     {
         Class c = implementationOf( original, pattern );
         return c != null ? c : original;
     }
     
-    private static String alias( Class original )
+    /**
+     * Находит публичное короткое название класса.
+     * 
+     * @param класс класс.
+     * @return название класса. 
+     */
+    private static String alias( Class класс )
     {
-        String simpleName = original.getSimpleName();
+        String simpleName = класс.getSimpleName();
         ResourceBundle rb = LOGGER.getLogger().getResourceBundle();
         String key = "element.".concat( simpleName );
         return rb.containsKey( key ) ? rb.getString( key ) : simpleName;
