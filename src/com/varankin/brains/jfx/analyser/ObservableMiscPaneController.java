@@ -3,8 +3,10 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.brains.db.factory.Базовый;
 import com.varankin.brains.jfx.IntegerConverter;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.ObjectBindings;
 import com.varankin.brains.jfx.SingleSelectionProperty;
+import com.varankin.brains.Контекст;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.*;
@@ -42,11 +44,8 @@ public final class ObservableMiscPaneController implements Builder<Pane>
     public ObservableMiscPaneController()
     {
         titleProperty = new SingleSelectionProperty<>();
-        bufferProperty = new ReadOnlyObjectWrapper<>(
-        //TODO DEBUG START
-                1000
-        //TODO DEBUG END
-        );
+        bufferProperty = new ReadOnlyObjectWrapper<>( Integer.valueOf( 
+            JavaFX.getInstance().контекст.параметр( Контекст.Параметры.BUFFER ) ) );
         validProperty = new ReadOnlyBooleanWrapper();
     }
 
@@ -65,11 +64,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         title.setFocusTraversable( true );
         title.setVisibleRowCount( 5 );
         
-        buffer = new TextField(
-        //TODO DEBUG START
-                "1000"
-        //TODO DEBUG END
-        );
+        buffer = new TextField();
         buffer.setId( "buffer" );
         buffer.setFocusTraversable( true );
         buffer.setPrefColumnCount( 6 );
