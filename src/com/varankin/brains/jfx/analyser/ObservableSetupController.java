@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.artificial.Ранжировщик;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.*;
@@ -145,8 +146,8 @@ public final class ObservableSetupController implements Builder<Parent>
     {
         if( monitor == null || !approved ) return null;
 
-        String property = observableConversionPaneController.propertyProperty().getValue();
-        Value.Convertor<Float> convertor = observableConversionPaneController.convertorProperty().getValue();
+        String property = observableConversionPaneController.parameterProperty().getValue();
+        Ранжировщик convertor = observableConversionPaneController.convertorProperty().getValue();
         int[][] pattern = valuePropertiesPaneController.patternProperty().getValue();
         Color color = valuePropertiesPaneController.colorProperty().getValue();
         String title = observableMiscPaneController.titleProperty().getValue();

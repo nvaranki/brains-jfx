@@ -1,10 +1,12 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
 /* 
-    Created on : Apr 26, 2014, 1:43:54 PM
-    Author     : Николай
+    Description: Панель выбора и установки параметров конверсии наблюдаемого значения.
+    Author     : (c) 2014 Николай Варанкин
 */
+
+.observable-conversion-pane
+{ 
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
 

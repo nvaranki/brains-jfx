@@ -127,7 +127,6 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         title.getItems().clear();
         title.getItems().addAll( suggestTitles( monitor ) );
         title.selectionModelProperty().getValue().select( 0 );
-        
     }
 
     /**

@@ -53,7 +53,7 @@ class MenuItemSimulatePropertyMonitor extends MenuItem
             PropertyMonitorImpl monitor = new PropertyMonitorImpl();
             monitors.add( monitor );
             DotPainter painter = фабрика.создать( null );
-            Value v = new Value( monitor, PropertyMonitorImpl.PROPERTY, monitor.CONVERTOR, 
+            Value v = new Value( monitor, PropertyMonitorImpl.PROPERTY, null, 
                     painter, patterns[i%patterns.length], colors[i%colors.length], value );
             legend.add( v );
             i++;
@@ -74,8 +74,6 @@ class MenuItemSimulatePropertyMonitor extends MenuItem
     private final static class PropertyMonitorImpl implements PropertyMonitor
     {
         static final String PROPERTY = "value";
-        final Value.Convertor<Float> CONVERTOR = 
-                (Float value, long timestamp) -> new Dot( value, timestamp );
         final Collection<PropertyChangeListener> listeners = new ArrayList<>();
 
         @Override
