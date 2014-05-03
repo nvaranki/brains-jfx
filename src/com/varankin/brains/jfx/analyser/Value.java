@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 /**
  * Значение, отображаемое на графике.
  * 
- * @author Николай
+ * @author &copy; 2014 Николай Варанкин
  */
     /**
      * Добавляет значение, отображаемое на графике.
@@ -87,7 +87,7 @@ class Value
             Dot dot = new Dot( convertor.значение( evt.getNewValue() ), System.currentTimeMillis() );
             
             if( !painter.offer( dot ) )
-                LOGGER.log( Level.FINEST, "painter overflowed" );
+                LOGGER.log( Level.FINEST, "Painter of \"{0}\" rejected a dot.", title );
         }
     }
     

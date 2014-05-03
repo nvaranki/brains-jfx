@@ -1,18 +1,19 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
 import com.varankin.brains.artificial.async.Процесс;
+import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.Ранжировщик;
-import com.varankin.brains.jfx.ObjectBindings;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.*;
 import javafx.beans.property.*;
+import javafx.beans.value.WeakChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -32,23 +33,18 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     private static final String CSS_CLASS = "observable-conversion-pane";
 
     private final SingleSelectionProperty<String> parameterProperty;
-    private final ReadOnlyObjectWrapper<Ранжировщик> convertorProperty;
+    private final SingleSelectionProperty<Ранжировщик> convertorProperty;
     private final ReadOnlyBooleanWrapper validProperty;
+    
+    private AutoComboBoxSelector<Ранжировщик> convertorAutoSelector;
 
     @FXML private ComboBox<String> parameter;
+    @FXML private ComboBox<Ранжировщик> convertor;
 
     public ObservableConversionPaneController()
     {
         parameterProperty = new SingleSelectionProperty<>();
-        convertorProperty = new ReadOnlyObjectWrapper<>(
-        //TODO DEBUG START
-                new Value.РанжировщикImpl()
-//                                (Float value, long timestamp) ->
-//        {
-//            return new Dot( value, timestamp );
-//        }
-        //TODO DEBUG END
-        );
+        convertorProperty = new SingleSelectionProperty<>();
         validProperty = new ReadOnlyBooleanWrapper();
     }
 
@@ -67,10 +63,17 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         parameter.setFocusTraversable( true );
         parameter.setVisibleRowCount( 5 );
         
+        convertor = new ComboBox<>();
+        convertor.setEditable( false );
+        convertor.setId( "convertor" );
+        convertor.setFocusTraversable( true );
+        convertor.setVisibleRowCount( 5 );
         
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "observable.setup.conversion.parameter" ) ), 0, 0 );
         pane.add( parameter, 1, 0 );
+        pane.add( new Label( LOGGER.text( "observable.setup.conversion.convertor" ) ), 0, 1 );
+        pane.add( convertor, 1, 1 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -84,13 +87,16 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     protected void initialize()
     {
         parameterProperty.setModel( parameter.getSelectionModel() );
+        convertorProperty.setModel( convertor.getSelectionModel() );
+        convertorAutoSelector = new AutoComboBoxSelector<>( convertor, 0 );
+        convertor.itemsProperty().addListener( new WeakChangeListener<>( convertorAutoSelector ) );
+        convertor.itemsProperty().bind( new ConvertorBinding() );
         BooleanBinding validBinding = 
             Bindings.and( 
-                ObjectBindings.isNotNull( parameterProperty ), 
+                Bindings.isNotNull( parameterProperty ), 
                 Bindings.isNotNull( convertorProperty ) );
         validProperty.bind( validBinding );
     }
-    
     
     ReadOnlyProperty<String> parameterProperty()
     {
@@ -99,7 +105,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
 
     ReadOnlyProperty<Ранжировщик> convertorProperty()
     {
-        return convertorProperty.getReadOnlyProperty();
+        return convertorProperty;
     }
 
     ReadOnlyBooleanProperty validProperty()
@@ -116,19 +122,49 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     {
         parameter.getItems().clear();
         parameter.getItems().addAll( suggestParameters( monitor ) );
-        parameter.selectionModelProperty().getValue().select( 0 );
-//        monitor = value;
+        if( !parameter.getItems().isEmpty() )
+            parameter.selectionModelProperty().getValue().select( 0 );
     }
 
+    /**
+     * Создает список доступных параметров монитора.
+     * 
+     * @param value монитор.
+     * @return список доступных параметров. 
+     */
     private Collection<String> suggestParameters( PropertyMonitor value )
     {
-        List<String> titles = new ArrayList<>();
+        Collection<String> items = new ArrayList<>();
         
         if( value instanceof Процесс )
         {
-            titles.add( Процесс.СОСТОЯНИЕ ); //"Состояние"
+            items.add( Процесс.СОСТОЯНИЕ ); //"Состояние"
         }
-        return titles;
+        return items;
+    }
+
+    /**
+     * Генератор списка доступных вариантов конвертеров.
+     */
+    private class ConvertorBinding extends ListBinding<Ранжировщик>
+    {
+
+        ConvertorBinding()
+        {
+            bind( parameterProperty );
+        }
+        
+        @Override
+        protected ObservableList<Ранжировщик> computeValue()
+        {
+            ObservableList<Ранжировщик> list = FXCollections.observableArrayList();
+            String p = parameterProperty.getValue();
+            Collection<Ранжировщик> options = КаталогРанжировщиков.getInstance().get( p );
+            if( options != null ) list.addAll( options );
+            if( p != null ) list.add( new Value.РанжировщикImpl() );
+            return list;
+        }
+        
     }
     
 }

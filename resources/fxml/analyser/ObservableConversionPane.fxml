@@ -33,6 +33,19 @@
         GridPane.columnIndex="1" 
         GridPane.rowIndex="0"  
     />
+    <Label 
+        text="%observable.setup.conversion.convertor" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <ComboBox
+        fx:id="convertor"
+        focusTraversable="true"
+        editable="false" 
+        visibleRowCount="5" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
+    />
   </children>
   
 </GridPane>
