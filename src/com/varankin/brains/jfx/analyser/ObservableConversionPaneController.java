@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
+import com.varankin.brains.appl.Именованный;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.Ранжировщик;
 import com.varankin.brains.jfx.SingleSelectionProperty;
+import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
@@ -17,9 +18,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Builder;
+import javafx.util.Callback;
 
 /**
  * FXML-контроллер выбора параметров конверсии наблюдаемого значения.
@@ -91,6 +95,10 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         convertorAutoSelector = new AutoComboBoxSelector<>( convertor, 0 );
         convertor.itemsProperty().addListener( new WeakChangeListener<>( convertorAutoSelector ) );
         convertor.itemsProperty().bind( new ConvertorBinding() );
+        convertor.setCellFactory( null );
+        ConvertorCellFactory ccf = new ConvertorCellFactory();
+        convertor.setCellFactory( ccf );
+        convertor.setButtonCell( ccf.call( null ) );
         BooleanBinding validBinding = 
             Bindings.and( 
                 Bindings.isNotNull( parameterProperty ), 
@@ -121,6 +129,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     void setMonitor( PropertyMonitor monitor )
     {
         parameter.getItems().clear();
+        parameter.selectionModelProperty().getValue().clearSelection();
         parameter.getItems().addAll( suggestParameters( monitor ) );
         if( !parameter.getItems().isEmpty() )
             parameter.selectionModelProperty().getValue().select( 0 );
@@ -167,4 +176,35 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         
     }
     
+    private static class ConvertorCellFactory 
+        implements Callback<ListView<Ранжировщик>,ListCell<Ранжировщик>>
+    {
+        @Override
+        public ListCell<Ранжировщик> call( final ListView<Ранжировщик> param )
+        {
+            return new ListCell<Ранжировщик>()
+            {
+                @Override
+                protected void updateItem( Ранжировщик item, boolean empty )
+                {
+                    // calling super here is very important - don't skip this!
+                    super.updateItem( item, empty );
+                    
+                    if( empty || item == null )
+                    {
+                        setText( null );
+                    }
+                    else if( item instanceof Именованный )
+                    {
+                        setText( ((Именованный)item).название() );
+                    }
+                    else
+                    {
+                        setText( item.getClass().getName() );
+                    }
+                }
+            };
+        }
+    }
+
 }

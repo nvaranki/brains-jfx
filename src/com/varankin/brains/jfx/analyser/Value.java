@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.appl.Именованный;
 import com.varankin.brains.artificial.algebra.Значимый;
 import com.varankin.brains.artificial.Измеримый;
 import com.varankin.brains.artificial.Ранжировщик;
@@ -91,7 +92,7 @@ class Value
         }
     }
     
-    static final class РанжировщикImpl implements Ранжировщик
+    static final class РанжировщикImpl implements Ранжировщик, Именованный
     {
         private Object old;
         
@@ -126,7 +127,13 @@ class Value
         {
             old = value;
         }
-        
+
+        @Override
+        public String название()
+        {
+            return "Стандартный ранжировщик";
+        }
+
     }
 
 }
