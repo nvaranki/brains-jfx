@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.appl.Именованный;
+import com.varankin.characteristic.Именованный;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.Ранжировщик;

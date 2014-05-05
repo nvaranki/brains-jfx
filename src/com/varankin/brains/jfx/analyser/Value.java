@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.appl.Именованный;
+import com.varankin.characteristic.Именованный;
 import com.varankin.brains.artificial.algebra.Значимый;
 import com.varankin.brains.artificial.Измеримый;
 import com.varankin.brains.artificial.Ранжировщик;
