@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.browser;
 
+import com.varankin.brains.artificial.factory.proxy.Proxy;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.ObservableListMirror;
 import java.util.ArrayList;
@@ -32,13 +33,29 @@ class ExclusiveTreeItemCopier implements ObservableListMirror.Copier<TreeItem<Э
         Collection<TreeItem<Элемент>> tmp = new ArrayList<>( source );
         tmp.removeAll( target );
         for( TreeItem<Элемент> item : tmp )
-            if( item == null || !КЛАСС.isInstance( item.getValue() ) )
+            if( item == null || !isInstance( item.getValue(), КЛАСС ) )
             {
                 target.clear(); // это означает Exclusive
                 return;
             }
         if( !tmp.isEmpty() ) // .addAll(...) сигналит всегда :(
             target.addAll( tmp );
+    }
+    
+    private static boolean isInstance( Элемент элемент, Class cls )
+    {
+        if( cls.isInstance( элемент ) )
+        {
+            return true;
+        }
+        else if( элемент instanceof Proxy )
+        {
+            return cls.isInstance( ((Proxy)элемент).оригинал() );
+        }
+        else
+        {
+            return false;
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
+import com.varankin.brains.artificial.factory.proxy.Proxy;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.property.MonitoredCollection;
 import java.beans.PropertyChangeEvent;
@@ -42,7 +43,9 @@ class BrowserMonitor implements PropertyChangeListener
                 break;
 
             case Процесс.СОСТОЯНИЕ:
-                if( УЗЕЛ.getValue() instanceof Процесс )
+                Элемент элемент = УЗЕЛ.getValue();
+                if( элемент instanceof Процесс || 
+                        элемент instanceof Proxy && ((Proxy)элемент).оригинал() instanceof Процесс )
                     Platform.runLater( new OnStatusChangeded( 
                             (Процесс.Состояние)evt.getNewValue() ) );
                 break;

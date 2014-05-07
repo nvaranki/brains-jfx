@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.browser;
 
+import com.varankin.brains.artificial.factory.proxy.Proxy;
 import com.varankin.brains.artificial.factory.structured.Структурный;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.artificial.Элемент;
@@ -47,6 +48,12 @@ class BrowserNode extends TreeItem<Элемент>
             монитор = фабрика.создать( this );
             ( (PropertyMonitor)элемент ).наблюдатели().add( монитор );
         }
+        if( элемент instanceof Proxy )
+        {
+            Элемент оригинал = ((Proxy)элемент).оригинал();
+            if( оригинал instanceof PropertyMonitor )
+                ( (PropertyMonitor)оригинал ).наблюдатели().add( монитор );
+        }
     }
 
     void removeMonitor()
@@ -56,6 +63,12 @@ class BrowserNode extends TreeItem<Элемент>
         {
             if( элемент instanceof PropertyMonitor )
                 ( (PropertyMonitor)элемент ).наблюдатели().remove( монитор );
+            if( элемент instanceof Proxy )
+            {
+                Элемент оригинал = ((Proxy)элемент).оригинал();
+                if( оригинал instanceof PropertyMonitor )
+                    ( (PropertyMonitor)оригинал ).наблюдатели().remove( монитор );
+            }
             монитор = null;
         }
     }

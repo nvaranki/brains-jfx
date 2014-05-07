@@ -1,11 +1,13 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.characteristic.Именованный;
 import com.varankin.brains.artificial.async.Процесс;
+import com.varankin.brains.artificial.factory.proxy.Proxy;
 import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.Ранжировщик;
+import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
+import com.varankin.characteristic.Именованный;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
@@ -148,6 +150,14 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         if( value instanceof Процесс )
         {
             items.add( Процесс.СОСТОЯНИЕ ); //"Состояние"
+        }
+        else if( value instanceof Proxy )
+        {
+            Элемент элемент = ((Proxy)value).оригинал();
+            if( элемент instanceof Процесс )
+            {
+                items.add( Процесс.СОСТОЯНИЕ ); //"Состояние"
+            }
         }
         return items;
     }

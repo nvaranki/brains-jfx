@@ -6,6 +6,7 @@ import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
 import com.varankin.brains.appl.УправлениеПроцессом;
 import com.varankin.brains.artificial.async.Процесс;
+import com.varankin.brains.artificial.factory.proxy.Proxy;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.AbstractContextJfxAction;
@@ -137,6 +138,22 @@ public class BrowserView extends TreeView<Элемент>
         
         abstract T convert( Элемент элемент ); //TODO Фильтр
         
+        protected <T> T convert( Элемент элемент, Class<T> cls )
+        {
+            if( cls.isInstance( элемент ) )
+            {
+                return cls.cast( элемент );
+            }
+            else if( элемент instanceof Proxy )
+            {
+                Элемент оригинал = ((Proxy)элемент).оригинал();
+                return cls.isInstance( оригинал ) ? cls.cast( оригинал ) : null;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
     
     private class ActionStart extends ActionProcessControl<Процесс>
@@ -150,7 +167,7 @@ public class BrowserView extends TreeView<Элемент>
         @Override
         Процесс convert( Элемент элемент )
         {
-            return элемент instanceof Процесс ? (Процесс)элемент : null;
+            return convert( элемент, Процесс.class );
         }
         
     }
@@ -166,7 +183,7 @@ public class BrowserView extends TreeView<Элемент>
         @Override
         Процесс convert( Элемент элемент )
         {
-            return элемент instanceof Процесс ? (Процесс)элемент : null;
+            return convert( элемент, Процесс.class );
         }
         
     }
@@ -182,7 +199,7 @@ public class BrowserView extends TreeView<Элемент>
         @Override
         Процесс convert( Элемент элемент )
         {
-            return элемент instanceof Процесс ? (Процесс)элемент : null;
+            return convert( элемент, Процесс.class );
         }
         
     }
@@ -199,7 +216,7 @@ public class BrowserView extends TreeView<Элемент>
         @Override
         Проект convert( Элемент элемент )
         {
-            return элемент instanceof Проект ? (Проект)элемент : null;
+            return convert( элемент, Проект.class );
         }
         
     }
