@@ -143,12 +143,13 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         if( object instanceof Структурный )
         {
             StringBuilder text = new StringBuilder();
-            for( Структурный o = (Структурный)object; o != null; o = o.вхождение() )
+            for( Структурный o = (Структурный)object; o != null;  )
             {
                 String name = o instanceof Базовый ? 
                         ((Базовый)o).шаблон().название() :
                         alias( basicClassOf( o.getClass(), CLASS_APPL ) );
                 text.insert( 0, text.length() > 0 ? "." : "" ).insert( 0, name );
+                o = o.вхождение().iterator().next(); //TODO .hasNext()
             }
             items.add( text.append( object instanceof Базовый ? "" : suffix ).toString() );
         }
