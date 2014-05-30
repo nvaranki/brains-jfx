@@ -6,7 +6,7 @@ import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
 import com.varankin.brains.appl.УправлениеПроцессом;
 import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.artificial.factory.proxy.Proxy;
+import com.varankin.brains.factory.Proxy;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.AbstractContextJfxAction;

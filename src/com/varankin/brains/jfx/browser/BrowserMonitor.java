@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.artificial.factory.proxy.Proxy;
+import com.varankin.brains.factory.Proxy;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.property.MonitoredCollection;
 import java.beans.PropertyChangeEvent;

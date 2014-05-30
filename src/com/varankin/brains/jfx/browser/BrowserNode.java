@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.artificial.factory.proxy.Proxy;
-import com.varankin.brains.artificial.factory.structured.Структурный;
+import com.varankin.brains.factory.Proxy;
+import com.varankin.brains.factory.structured.Структурный;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.property.PropertyMonitor;

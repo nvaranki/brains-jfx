@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.artificial.factory.proxy.Proxy;
+import com.varankin.brains.factory.Proxy;
 import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.Ранжировщик;
 import com.varankin.brains.artificial.Элемент;
