@@ -28,7 +28,7 @@
     <ComboBox
         fx:id="parameter"
         focusTraversable="true"
-        editable="true" 
+        editable="false" 
         visibleRowCount="5" 
         GridPane.columnIndex="1" 
         GridPane.rowIndex="0"  

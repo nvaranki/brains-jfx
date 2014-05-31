@@ -146,7 +146,7 @@ public final class ObservableSetupController implements Builder<Parent>
     {
         if( monitor == null || !approved ) return null;
 
-        String property = observableConversionPaneController.parameterProperty().getValue();
+        Observable property = observableConversionPaneController.parameterProperty().getValue();
         Ранжировщик convertor = observableConversionPaneController.convertorProperty().getValue();
         int[][] pattern = valuePropertiesPaneController.patternProperty().getValue();
         Color color = valuePropertiesPaneController.colorProperty().getValue();
@@ -154,7 +154,7 @@ public final class ObservableSetupController implements Builder<Parent>
         int buffer = observableMiscPaneController.bufferProperty().getValue();
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DotPainter painter = buffer > 0 ? new BufferedDotPainter( queue, buffer ) : new DotPainter( queue );
-        return new Value( monitor, property, convertor, painter, pattern, color, title );
+        return new Value( monitor, property.СВОЙСТВО, convertor, painter, pattern, color, title );
     }
     
     private static class CyclicIterator<E> implements Iterator<E>

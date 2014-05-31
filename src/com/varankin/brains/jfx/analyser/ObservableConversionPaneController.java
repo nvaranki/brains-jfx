@@ -1,27 +1,18 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.factory.Proxy;
-import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.Ранжировщик;
-import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
 import com.varankin.characteristic.Именованный;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
-import java.util.ArrayList;
-import java.util.Collection;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Builder;
@@ -38,13 +29,13 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ObservableConversionPane.css";
     private static final String CSS_CLASS = "observable-conversion-pane";
 
-    private final SingleSelectionProperty<String> parameterProperty;
+    private final SingleSelectionProperty<Observable> parameterProperty;
     private final SingleSelectionProperty<Ранжировщик> convertorProperty;
     private final ReadOnlyBooleanWrapper validProperty;
     
     private AutoComboBoxSelector<Ранжировщик> convertorAutoSelector;
 
-    @FXML private ComboBox<String> parameter;
+    @FXML private ComboBox<Observable> parameter;
     @FXML private ComboBox<Ранжировщик> convertor;
 
     public ObservableConversionPaneController()
@@ -64,7 +55,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     public Pane build()
     {
         parameter = new ComboBox<>();
-        parameter.setEditable( true );
+        parameter.setEditable( false );
         parameter.setId( "property" );
         parameter.setFocusTraversable( true );
         parameter.setVisibleRowCount( 5 );
@@ -94,13 +85,15 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     {
         parameterProperty.setModel( parameter.getSelectionModel() );
         convertorProperty.setModel( convertor.getSelectionModel() );
-        convertorAutoSelector = new AutoComboBoxSelector<>( convertor, 0 );
-        convertor.itemsProperty().addListener( new WeakChangeListener<>( convertorAutoSelector ) );
-        convertor.itemsProperty().bind( new ConvertorBinding() );
-        convertor.setCellFactory( null );
+        ObservableCellFactory ocf = new ObservableCellFactory();
+        parameter.setCellFactory( ocf );
+        parameter.setButtonCell( ocf.call( null ) );
         ConvertorCellFactory ccf = new ConvertorCellFactory();
         convertor.setCellFactory( ccf );
         convertor.setButtonCell( ccf.call( null ) );
+        convertorAutoSelector = new AutoComboBoxSelector<>( convertor, 0 );
+        convertor.itemsProperty().addListener( new WeakChangeListener<>( convertorAutoSelector ) );
+        convertor.itemsProperty().bind( new ConvertorBinding() );
         BooleanBinding validBinding = 
             Bindings.and( 
                 Bindings.isNotNull( parameterProperty ), 
@@ -108,7 +101,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         validProperty.bind( validBinding );
     }
     
-    ReadOnlyProperty<String> parameterProperty()
+    ReadOnlyProperty<Observable> parameterProperty()
     {
         return parameterProperty;
     }
@@ -131,35 +124,12 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     void setMonitor( PropertyMonitor monitor )
     {
         parameter.getItems().clear();
+        convertor.getItems().clear();
         parameter.selectionModelProperty().getValue().clearSelection();
-        parameter.getItems().addAll( suggestParameters( monitor ) );
+        convertor.selectionModelProperty().getValue().clearSelection();
+        parameter.getItems().addAll( Observable.observables( monitor ) );
         if( !parameter.getItems().isEmpty() )
             parameter.selectionModelProperty().getValue().select( 0 );
-    }
-
-    /**
-     * Создает список доступных параметров монитора.
-     * 
-     * @param value монитор.
-     * @return список доступных параметров. 
-     */
-    private Collection<String> suggestParameters( PropertyMonitor value )
-    {
-        Collection<String> items = new ArrayList<>();
-        
-        if( value instanceof Процесс )
-        {
-            items.add( Процесс.СОСТОЯНИЕ ); //"Состояние"
-        }
-        else if( value instanceof Proxy )
-        {
-            Элемент элемент = ((Proxy)value).оригинал();
-            if( элемент instanceof Процесс )
-            {
-                items.add( Процесс.СОСТОЯНИЕ ); //"Состояние"
-            }
-        }
-        return items;
     }
 
     /**
@@ -177,13 +147,31 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         protected ObservableList<Ранжировщик> computeValue()
         {
             ObservableList<Ранжировщик> list = FXCollections.observableArrayList();
-            String p = parameterProperty.getValue();
-            Collection<Ранжировщик> options = КаталогРанжировщиков.getInstance().get( p );
-            if( options != null ) list.addAll( options );
-            if( p != null ) list.add( new Value.РанжировщикImpl() );
+            Observable observable = parameterProperty.getValue();
+            if( observable != null ) 
+                list.addAll( observable.РАНЖИРОВЩИКИ );
             return list;
         }
         
+    }
+    
+    private static class ObservableCellFactory 
+        implements Callback<ListView<Observable>,ListCell<Observable>>
+    {
+        @Override
+        public ListCell<Observable> call( final ListView<Observable> param )
+        {
+            return new ListCell<Observable>()
+            {
+                @Override
+                protected void updateItem( Observable item, boolean empty )
+                {
+                    // calling super here is very important - don't skip this!
+                    super.updateItem( item, empty );
+                    setText( empty || item == null ? null : item.НАЗВАНИЕ );
+                }
+            };
+        }       
     }
     
     private static class ConvertorCellFactory 

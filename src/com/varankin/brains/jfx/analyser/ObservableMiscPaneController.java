@@ -149,7 +149,8 @@ public final class ObservableMiscPaneController implements Builder<Pane>
                         ((Базовый)o).шаблон().название() :
                         alias( basicClassOf( o.getClass(), CLASS_APPL ) );
                 text.insert( 0, text.length() > 0 ? "." : "" ).insert( 0, name );
-                o = o.вхождение().iterator().next(); //TODO .hasNext()
+                Iterator<Структурный> it = o.вхождение().iterator();
+                o = it.hasNext() ? it.next() : null;
             }
             items.add( text.append( object instanceof Базовый ? "" : suffix ).toString() );
         }
