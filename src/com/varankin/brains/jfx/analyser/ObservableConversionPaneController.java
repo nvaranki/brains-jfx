@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.appl.RatedObservable;
 import com.varankin.brains.artificial.Ранжировщик;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
@@ -29,13 +30,13 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ObservableConversionPane.css";
     private static final String CSS_CLASS = "observable-conversion-pane";
 
-    private final SingleSelectionProperty<Observable> parameterProperty;
+    private final SingleSelectionProperty<RatedObservable> parameterProperty;
     private final SingleSelectionProperty<Ранжировщик> convertorProperty;
     private final ReadOnlyBooleanWrapper validProperty;
     
     private AutoComboBoxSelector<Ранжировщик> convertorAutoSelector;
 
-    @FXML private ComboBox<Observable> parameter;
+    @FXML private ComboBox<RatedObservable> parameter;
     @FXML private ComboBox<Ранжировщик> convertor;
 
     public ObservableConversionPaneController()
@@ -101,7 +102,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         validProperty.bind( validBinding );
     }
     
-    ReadOnlyProperty<Observable> parameterProperty()
+    ReadOnlyProperty<RatedObservable> parameterProperty()
     {
         return parameterProperty;
     }
@@ -127,7 +128,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         convertor.getItems().clear();
         parameter.selectionModelProperty().getValue().clearSelection();
         convertor.selectionModelProperty().getValue().clearSelection();
-        parameter.getItems().addAll( Observable.observables( monitor ) );
+        parameter.getItems().addAll( RatedObservable.observables( monitor ) );
         if( !parameter.getItems().isEmpty() )
             parameter.selectionModelProperty().getValue().select( 0 );
     }
@@ -147,28 +148,28 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         protected ObservableList<Ранжировщик> computeValue()
         {
             ObservableList<Ранжировщик> list = FXCollections.observableArrayList();
-            Observable observable = parameterProperty.getValue();
+            RatedObservable observable = parameterProperty.getValue();
             if( observable != null ) 
-                list.addAll( observable.РАНЖИРОВЩИКИ );
+                list.addAll( observable.ранжировщики() );
             return list;
         }
         
     }
     
     private static class ObservableCellFactory 
-        implements Callback<ListView<Observable>,ListCell<Observable>>
+        implements Callback<ListView<RatedObservable>,ListCell<RatedObservable>>
     {
         @Override
-        public ListCell<Observable> call( final ListView<Observable> param )
+        public ListCell<RatedObservable> call( final ListView<RatedObservable> param )
         {
-            return new ListCell<Observable>()
+            return new ListCell<RatedObservable>()
             {
                 @Override
-                protected void updateItem( Observable item, boolean empty )
+                protected void updateItem( RatedObservable item, boolean empty )
                 {
                     // calling super here is very important - don't skip this!
                     super.updateItem( item, empty );
-                    setText( empty || item == null ? null : item.НАЗВАНИЕ );
+                    setText( empty || item == null ? null : item.название() );
                 }
             };
         }       

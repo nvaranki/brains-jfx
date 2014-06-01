@@ -1,10 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.artificial.algebra.Значимый;
-import com.varankin.brains.artificial.Измеримый;
+import com.varankin.brains.artificial.rating.СтандартныйРанжировщик;
 import com.varankin.brains.artificial.Ранжировщик;
 import com.varankin.characteristic.Изменение;
-import com.varankin.characteristic.Именованный;
 import com.varankin.characteristic.НаблюдаемоеСвойство;
 import com.varankin.characteristic.Наблюдатель;
 import com.varankin.property.PropertyMonitor;
@@ -62,7 +60,7 @@ class Value
         this.монитор = pm;
         this.свойство = null;
         this.property = property;
-        this.convertor = convertor != null ? convertor : new РанжировщикImpl();
+        this.convertor = convertor != null ? convertor : new СтандартныйРанжировщик();
         this.painter = painter;
         this.title = title;
         this.color = color;
@@ -86,7 +84,7 @@ class Value
         this.монитор = pm;
         this.свойство = property;
         this.property = null;
-        this.convertor = convertor != null ? convertor : new РанжировщикImpl();
+        this.convertor = convertor != null ? convertor : new СтандартныйРанжировщик();
         this.painter = painter;
         this.title = title;
         this.color = color;
@@ -132,8 +130,8 @@ class Value
     
     private void onPropertyChange( Object прежнее, Object актуальное )
     {
-        if( convertor instanceof РанжировщикImpl )
-            ((РанжировщикImpl)convertor).setOldValue( прежнее );
+        if( convertor instanceof СтандартныйРанжировщик )
+            ((СтандартныйРанжировщик)convertor).setOldValue( прежнее );
 
         Dot dot = new Dot( convertor.значение( актуальное ), System.currentTimeMillis() );
 
@@ -141,50 +139,4 @@ class Value
             LOGGER.log( Level.FINEST, "Painter of \"{0}\" rejected a dot.", title );
     }
     
-    
-    
-    static final class РанжировщикImpl implements Ранжировщик, Именованный
-    {
-        private Object old;
-        
-        @Override
-        public float значение( Object value )
-        {
-            float measure;
-            if( value instanceof Number )
-            {
-                measure = ((Number)value).floatValue();
-            }
-            else if( value instanceof Измеримый )
-            {
-                measure = ((Измеримый)value).значение().floatValue();
-            }
-            else if( value instanceof Boolean )
-            {
-                measure = (Boolean)value ? 1f : 0f;
-            }
-            else if( value == null )
-            {
-                measure = Значимый.НЕИЗВЕСТНЫЙ.значение();
-            }
-            else
-            {
-                measure = value.equals( old ) ? 0f : 1f;
-            }
-            return measure;
-        }
-
-        private void setOldValue( Object value )
-        {
-            old = value;
-        }
-
-        @Override
-        public String название()
-        {
-            return "Стандартный ранжировщик";
-        }
-
-    }
-
 }
