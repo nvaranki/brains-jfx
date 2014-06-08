@@ -81,7 +81,8 @@ class ApplicationMenuBar
                     new MenuNode( действие( Стоп,  jfx, "ApplicationActionStop"  ) ) ),
 
             new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".3", специфика ),
-                    new MenuNode( new ApplicationActionAnalyser( jfx ) ) ),
+                    new MenuNode( new ApplicationActionAnalyser( jfx ) ),
+                    new MenuNode( new ApplicationActionEditor( jfx ) ) ),
 
             new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".5", специфика ),
 //                    new MenuNode( actions.getAbout() ),

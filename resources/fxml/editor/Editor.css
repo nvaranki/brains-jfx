@@ -1,0 +1,11 @@
+/* 
+    Description: Панель редактора.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.analyser 
+{ 
+    -fx-spacing: 10px;
+    -fx-padding: 5px;
+    -fx-background-color: transparent;
+}
