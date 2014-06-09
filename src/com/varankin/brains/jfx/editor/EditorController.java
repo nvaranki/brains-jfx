@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.Элемент;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -27,6 +28,10 @@ public final class EditorController implements Builder<Node>
     @FXML private Pane box;
     @FXML private ContextMenu popup;
 
+    public EditorController( Элемент элемент )
+    {
+    }
+    
     public EditorController()
     {
     }
@@ -66,5 +71,5 @@ public final class EditorController implements Builder<Node>
     {
     }
     
-    
+
 }

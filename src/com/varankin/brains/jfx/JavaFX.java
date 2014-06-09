@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
+import com.varankin.brains.db.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
@@ -12,18 +14,21 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
-import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -67,7 +72,7 @@ public final class JavaFX
         es = new ThreadPoolExecutor( //TODO load preferences
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
-            new SynchronousQueue<Runnable>() );
+            new SynchronousQueue<>() );
         ses = new ScheduledThreadPoolExecutor( 10 ); //TODO appl config
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
     }
@@ -75,6 +80,28 @@ public final class JavaFX
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
     {
         return views;
+    }
+    
+    TitledSceneGraph isShown( Элемент элемент, Predicate<? super TitledSceneGraph> predicate )
+    {
+        Optional<TitledSceneGraph> o = views.getValue().stream()
+            .filter( predicate )
+            .filter( ( TitledSceneGraph tsg ) -> элемент.equals( tsg.node.getUserData() ) )
+            .findFirst();
+        return o.isPresent() ? o.get() : null;
+    }
+    
+    <E extends Элемент> void show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
+            Фабрика<E,TitledSceneGraph> фабрика )
+    {
+        ObservableList<TitledSceneGraph> список = views.getValue();
+        TitledSceneGraph tsg = isShown( элемент, predicate );
+        if( tsg == null )
+            список.add( фабрика.создать( элемент ) );
+        else
+            //TODO временный обходной вариант для активации view
+            список.set( список.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
+        
     }
 
     /**
@@ -135,14 +162,7 @@ public final class JavaFX
                 return null;
             }
         } );
-        Runnable r = new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                Font.getFamilies(); // заполнит кэш этого метода
-            }
-        };
+        Runnable r = () -> { Font.getFamilies(); };
         Thread t = new Thread( r, "Font Family loader" );
         t.setPriority( Thread.currentThread().getPriority() - 1 );
         t.start();
@@ -150,9 +170,11 @@ public final class JavaFX
 
     void стоп()
     {
+        Parent root = платформа.getScene().getRoot();
+        ((Pane)root).getChildren().clear(); // brute force signal TODO validate approach
         es.shutdown();
         ses.shutdown();
-        платформа.hide();
+        платформа.close();
     }
     
     public Текст словарь( Class<?> c )
@@ -214,7 +236,7 @@ public final class JavaFX
 
     public boolean useFxmlLoader()
     {
-        return true;//false; //TODO appl. setup
+        return false; //TODO appl. setup
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">

@@ -3,21 +3,26 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
+import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
+import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.*;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
+import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 
 /**
@@ -57,66 +62,58 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
     
     protected class ActionPreview extends AbstractContextJfxAction<JavaFX>
     {
-        private final SvgService<E> service;
+        private final Фабрика<E,TitledSceneGraph> фабрика;
+        private final Predicate<TitledSceneGraph> inBrowser;
         
         ActionPreview( SvgService<E> service )
         {
             super( jfx, jfx.словарь( ActionPreview.class ) );
-            this.service = service;
+            inBrowser = ( TitledSceneGraph tsg ) -> tsg.node instanceof WebView;
+            фабрика = ( E элемент ) -> 
+            {
+                WebView view = new WebView();
+                view.setUserData( элемент );
+                String название = элемент.название();
+                контекст.getExecutorService().submit( new WebViewLoaderTask(
+                        service.генератор( элемент ), view.getEngine(), название, словарь ) );
+                return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
+            };
         }
         
         @Override
-        public void handle( ActionEvent __ )
+        public void handle( ActionEvent event )
         {
-            List<TitledSceneGraph> views = контекст.getViews().getValue();
-            
             for( E элемент : selectionModelProperty().getValue().getSelectedItems() )
                 if( элемент != null )
-                {
-                    TitledSceneGraph tsg = isShown( элемент, views );
-                    if( tsg == null )
-                        views.add( show( элемент ) );
-                    else
-                        //TODO временный обходной вариант для активации view
-                        views.set( views.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
-                }
+                    jfx.show( элемент, inBrowser, фабрика );
         }
         
-        private TitledSceneGraph isShown( E элемент, Iterable<TitledSceneGraph> views )
-        {
-            for( TitledSceneGraph tsg : views )
-            {
-                Object content = tsg.node.getUserData(); // see show(элемент)
-                if( tsg.node instanceof WebView && элемент.equals( content ) )
-                    return tsg;
-            }
-            return null;
-        }
-        
-        private TitledSceneGraph show( E элемент )
-        {
-            WebView view = new WebView();
-            view.setUserData( элемент );
-            String название = элемент.название();
-            контекст.getExecutorService().submit( new WebViewLoaderTask(
-                    service.генератор( элемент ), view.getEngine(), название, словарь ) );
-            return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
-        }
-
     }
     
     protected class ActionEdit extends AbstractContextJfxAction<JavaFX>
     {
+        private final Фабрика<E,TitledSceneGraph> фабрика;
+        private final Predicate<TitledSceneGraph> inEditor;
         
         ActionEdit()
         {
             super( jfx, jfx.словарь( ActionEdit.class ) );
+            inEditor = ( TitledSceneGraph tsg ) -> true;//tsg.node instanceof Pane; //TODO identification
+            фабрика = ( E элемент ) -> 
+            {
+                Parent view = new EditorController( элемент ).build();
+                view.setUserData( элемент );
+                String название = элемент.название();
+                return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
+            };
         }
 
         @Override
-        public void handle( ActionEvent __ )
+        public void handle( ActionEvent event )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            for( E элемент : selectionModelProperty().getValue().getSelectedItems() )
+                if( элемент != null )
+                    jfx.show( элемент, inEditor, фабрика );
         }
     }
     

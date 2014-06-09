@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.jfx.analyser.AnalyserController;
 import com.varankin.brains.jfx.browser.BrowserView;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
