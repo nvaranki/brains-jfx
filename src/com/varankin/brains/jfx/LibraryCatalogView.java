@@ -7,6 +7,7 @@ import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
@@ -123,7 +124,14 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
                 Библиотека элемент = архив.архитектор().newElementInstance( Библиотека.class );
+                архив.библиотеки().add( элемент );
                 транзакция.завершить( true );
+                
+                транзакция = архив.транзакция();
+                транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+                архив.setPropertyValue( Коллекция.PROPERTY_UPDATED, true );
+                транзакция.завершить( true );
+                
                 return элемент;
             };
         }

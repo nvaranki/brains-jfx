@@ -11,6 +11,7 @@ import com.varankin.brains.artificial.io.svg.SvgПроект;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
 import com.varankin.brains.db.Архив;
+import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
@@ -136,7 +137,14 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
                 Проект элемент = архив.архитектор().newElementInstance( Проект.class );
+                архив.проекты().add( элемент );
                 транзакция.завершить( true );
+                
+                транзакция = архив.транзакция();
+                транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+                архив.setPropertyValue( Коллекция.PROPERTY_UPDATED, true );
+                транзакция.завершить( true );
+                
                 return элемент;
             };
         }

@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.*;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -130,7 +131,8 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         jfx.getExecutorService().submit( () -> 
         { 
             E элемент = фабрика.call( null );
-            controller.setContent( элемент ); propertyTitle.setValue( элемент.название() ); 
+            controller.setContent( элемент );
+            Platform.runLater( () -> propertyTitle.setValue( элемент.название() ) );
         } );
     }
     
