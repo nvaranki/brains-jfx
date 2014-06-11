@@ -91,17 +91,17 @@ public final class JavaFX
         return o.isPresent() ? o.get() : null;
     }
     
-    <E extends Элемент> void show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
+    <E extends Элемент> TitledSceneGraph show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
             Фабрика<E,TitledSceneGraph> фабрика )
     {
-        ObservableList<TitledSceneGraph> список = views.getValue();
+        List<TitledSceneGraph> список = views.getValue();
         TitledSceneGraph tsg = isShown( элемент, predicate );
         if( tsg == null )
-            список.add( фабрика.создать( элемент ) );
+            список.add( tsg = фабрика.создать( элемент ) );
         else
             //TODO временный обходной вариант для активации view
             список.set( список.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
-        
+        return tsg;
     }
 
     /**

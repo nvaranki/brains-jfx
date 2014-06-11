@@ -8,6 +8,7 @@ import javafx.scene.Node;
  *
  * @author &copy; 2012 Николай Варанкин
  */
+@Deprecated // use Node.getProperties()
 class TitledSceneGraph 
 {
     final Node node;

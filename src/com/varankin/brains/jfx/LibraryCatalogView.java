@@ -4,8 +4,11 @@ import com.varankin.brains.appl.УдалитьАрхивныеБиблиотек
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
+import com.varankin.brains.artificial.io.Фабрика;
+import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Сборка;
+import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.Arrays;
@@ -57,7 +60,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
 
         actionNew       .disableProperty().bind( blocker_0_0 );
         actionPreview   .disableProperty().bind( blocker_1_1 );
-        actionEdit      .disableProperty().bind( blocker_1_1 );
+        actionEdit      .disableProperty().bind( blocker_1_N );
         actionRemove    .disableProperty().bind( blocker_1_N );
         actionExport    .disableProperty().bind( blocker_1_N );
         actionProperties.disableProperty().bind( blocker_1_1 );
@@ -109,16 +112,26 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     
     private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
+        final Callback<Void,Библиотека> фабрика;
         
         ActionNew()
         {
             super( jfx, jfx.словарь( ActionNew.class ) );
+            фабрика = ( Void v ) ->
+            {
+                Архив архив = jfx.контекст.архив;
+                Транзакция транзакция = архив.транзакция();
+                транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
+                Библиотека элемент = архив.архитектор().newElementInstance( Библиотека.class );
+                транзакция.завершить( true );
+                return элемент;
+            };
         }
         
         @Override
-        public void handle( ActionEvent __ )
+        public void handle( ActionEvent event )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            handleEditElement( фабрика );
         }
     }
     

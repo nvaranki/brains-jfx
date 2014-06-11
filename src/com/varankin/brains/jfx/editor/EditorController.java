@@ -1,13 +1,20 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.Архив;
+import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.db.Элемент;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 import javafx.util.Builder;
 
 /**
@@ -21,21 +28,16 @@ public final class EditorController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/editor/Editor.css";
     private static final String CSS_CLASS = "editor";
     
-    static final String RESOURCE_FXML  = "/fxml/editor/Editor.fxml";
-    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
+    public static final String RESOURCE_FXML  = "/fxml/editor/Editor.fxml";
+    public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     @FXML private ScrollPane pane;
-    @FXML private Pane box;
     @FXML private ContextMenu popup;
 
-    public EditorController( Элемент элемент )
-    {
-    }
-    
     public EditorController()
     {
     }
-    
+
     /**
      * Создает панель редактора. 
      * Применяется в конфигурации без FXML.
@@ -47,11 +49,13 @@ public final class EditorController implements Builder<Node>
     {
         popup = new ContextMenu();
         
-        box = new Pane();
-        box.setId( "box" );
+        ProgressIndicator progress = new ProgressIndicator();
+        progress.setPrefSize( 100, 100 );
+        progress.setMaxSize( 500, 500 );
+        BorderPane content = new BorderPane( progress);
         
         pane = new ScrollPane();
-        pane.setContent( box );
+        pane.setContent( content );
         pane.setContextMenu( popup );
         pane.setFitToWidth( true );
         pane.setFitToHeight( true );
@@ -71,5 +75,25 @@ public final class EditorController implements Builder<Node>
     {
     }
     
+    public void setContent( Элемент элемент )
+    {
+        Архив архив = JavaFX.getInstance().контекст.архив;
+        Транзакция транзакция = архив.транзакция();
+        транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+        try
+        {
+            Node content = new TextArea("DEBUG: Loaded element will be here.");
+            //TODO not impl
+            Platform.runLater( () -> { pane.setContent( content ); pane.setUserData( элемент ); } );
+        }
+        catch( Exception ex )
+        {
+            LOGGER.log( Level.SEVERE, "failure to setup editor for " + элемент.название(), ex );
+        }
+        finally
+        {
+            транзакция.завершить( true );
+        }
+    }
 
 }

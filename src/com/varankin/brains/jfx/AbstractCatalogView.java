@@ -20,10 +20,11 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
+import javafx.util.Callback;
 
 /**
  *
@@ -92,29 +93,45 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
     
     protected class ActionEdit extends AbstractContextJfxAction<JavaFX>
     {
-        private final Фабрика<E,TitledSceneGraph> фабрика;
         private final Predicate<TitledSceneGraph> inEditor;
         
         ActionEdit()
         {
             super( jfx, jfx.словарь( ActionEdit.class ) );
-            inEditor = ( TitledSceneGraph tsg ) -> true;//tsg.node instanceof Pane; //TODO identification
-            фабрика = ( E элемент ) -> 
-            {
-                Parent view = new EditorController( элемент ).build();
-                view.setUserData( элемент );
-                String название = элемент.название();
-                return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
-            };
+            inEditor = ( TitledSceneGraph tsg ) -> tsg!=null;//tsg.node instanceof Pane; //TODO identification
         }
 
         @Override
         public void handle( ActionEvent event )
         {
             for( E элемент : selectionModelProperty().getValue().getSelectedItems() )
-                if( элемент != null )
-                    jfx.show( элемент, inEditor, фабрика );
+                if( элемент == null )
+                    LOGGER.log( Level.FINE, "Item to edit is null." );
+                else if( jfx.isShown( элемент, inEditor ) != null )
+                    LOGGER.log( Level.INFO, "Item to edit \"{}\" is already in editor.", элемент.название() );
+                else
+                    handleEditElement( ( Void v ) -> элемент );
         }
+        
+    }
+    
+    protected void handleEditElement( Callback<Void,E> фабрика )
+    {
+        // Создать, разместить и показатеть пустой редактор
+        BuilderFX<Node,EditorController> builder = new BuilderFX<>();
+        builder.init( EditorController.class, EditorController.RESOURCE_FXML, EditorController.RESOURCE_BUNDLE );
+        EditorController controller = builder.getController();
+        Parent view = controller.build();
+        SimpleStringProperty propertyTitle = new SimpleStringProperty();
+        TitledSceneGraph tsg = new TitledSceneGraph( view, propertyTitle );
+        jfx.getViews().getValue().add( tsg );
+        
+        // загрузить элемент для редактирования
+        jfx.getExecutorService().submit( () -> 
+        { 
+            E элемент = фабрика.call( null );
+            controller.setContent( элемент ); propertyTitle.setValue( элемент.название() ); 
+        } );
     }
     
     protected class ActionRemove extends AbstractContextJfxAction<JavaFX>

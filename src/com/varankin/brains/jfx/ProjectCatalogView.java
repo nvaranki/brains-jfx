@@ -8,16 +8,23 @@ import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
+import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
+import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Сборка;
+import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
+import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
@@ -64,7 +71,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         actionLoad      .disableProperty().bind( blocker_1_N );
         actionNew       .disableProperty().bind( blocker_0_0 );
         actionPreview   .disableProperty().bind( blocker_1_1 );
-        actionEdit      .disableProperty().bind( blocker_1_1 );
+        actionEdit      .disableProperty().bind( blocker_1_N );
         actionRemove    .disableProperty().bind( blocker_1_N );
         actionExport    .disableProperty().bind( blocker_1_N );
         actionProperties.disableProperty().bind( blocker_1_1 );
@@ -118,16 +125,26 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     
     private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
+        final Callback<Void,Проект> фабрика;
         
         ActionNew()
         {
             super( jfx, jfx.словарь( ActionNew.class ) );
+            фабрика = ( Void v ) ->
+            {
+                Архив архив = jfx.контекст.архив;
+                Транзакция транзакция = архив.транзакция();
+                транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
+                Проект элемент = архив.архитектор().newElementInstance( Проект.class );
+                транзакция.завершить( true );
+                return элемент;
+            };
         }
         
         @Override
-        public void handle( ActionEvent __ )
+        public void handle( ActionEvent event )
         {
-            LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+            handleEditElement( фабрика );
         }
     }
     

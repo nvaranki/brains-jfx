@@ -31,11 +31,15 @@
         </ContextMenu>        
     </contextMenu>
     
-    <Pane 
-        fx:id="box"
-        >
-        <children>
-        </children>
-    </Pane>
-
+    <content>
+        <BorderPane >
+            <center>
+                <ProgressIndicator 
+                    prefWidth="100"  maxWidth="500" 
+                    prefHeight="100" maxHeight="500"  
+                />  
+            </center>
+        </BorderPane>
+    </content>
+    
 </ScrollPane>
