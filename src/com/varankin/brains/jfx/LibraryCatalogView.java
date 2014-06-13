@@ -4,6 +4,7 @@ import com.varankin.brains.appl.УдалитьАрхивныеБиблиотек
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_NAME;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Библиотека;
@@ -123,7 +124,9 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 Архив архив = jfx.контекст.архив;
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
+                String название = "New library #" + архив.библиотеки().size();
                 Библиотека элемент = архив.архитектор().newElementInstance( Библиотека.class );
+                элемент.определить( XML_NAME, null, название );
                 архив.библиотеки().add( элемент );
                 транзакция.завершить( true );
                 

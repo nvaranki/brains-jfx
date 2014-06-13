@@ -8,6 +8,7 @@ import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_NAME;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
 import com.varankin.brains.db.Архив;
@@ -137,6 +138,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
                 Проект элемент = архив.архитектор().newElementInstance( Проект.class );
+                элемент.определить( XML_NAME, null, "New project #" + архив.проекты().size() );
                 архив.проекты().add( элемент );
                 транзакция.завершить( true );
                 
