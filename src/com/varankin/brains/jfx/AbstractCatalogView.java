@@ -9,11 +9,13 @@ import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
+import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.logging.*;
 import javafx.application.Platform;
@@ -33,7 +35,8 @@ import javafx.util.Callback;
  */
 abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
 {
-    private static final Logger LOGGER = Logger.getLogger( AbstractCatalogView.class.getName() );
+    private static final LoggerX LOGGER = LoggerX.getLogger( AbstractCatalogView.class );
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final ReadOnlyStringProperty title;
 
@@ -107,9 +110,9 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         {
             for( E элемент : selectionModelProperty().getValue().getSelectedItems() )
                 if( элемент == null )
-                    LOGGER.log( Level.FINE, "Item to edit is null." );
+                    LOGGER.log( Level.FINE, "002002001E" );
                 else if( jfx.isShown( элемент, inEditor ) != null )
-                    LOGGER.log( Level.INFO, "Item to edit \"{}\" is already in editor.", элемент.название() );
+                    LOGGER.log( Level.INFO, "002002002W", элемент.название() );
                 else
                     handleEditElement( ( Void v ) -> элемент );
         }
