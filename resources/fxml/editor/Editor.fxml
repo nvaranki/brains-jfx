@@ -35,8 +35,8 @@
         <BorderPane >
             <center>
                 <ProgressIndicator 
-                    prefWidth="100"  maxWidth="500" 
-                    prefHeight="100" maxHeight="500"  
+                    prefWidth="50"  maxWidth="150" 
+                    prefHeight="50" maxHeight="150"  
                 />  
             </center>
         </BorderPane>

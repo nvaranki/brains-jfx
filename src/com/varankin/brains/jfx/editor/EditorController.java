@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.Архив;
+import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.JavaFX;
@@ -50,8 +52,8 @@ public final class EditorController implements Builder<Node>
         popup = new ContextMenu();
         
         ProgressIndicator progress = new ProgressIndicator();
-        progress.setPrefSize( 100, 100 );
-        progress.setMaxSize( 500, 500 );
+        progress.setPrefSize( 50, 50 );
+        progress.setMaxSize( 150, 150 );
         BorderPane content = new BorderPane( progress);
         
         pane = new ScrollPane();
@@ -82,8 +84,13 @@ public final class EditorController implements Builder<Node>
         транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
         try
         {
-            Node content = new TextArea("DEBUG: Loaded element will be here.");
-            //TODO not impl
+            Node content;
+            if( элемент instanceof Проект )
+                content = new EdtПроект( (Проект)элемент ).загрузить();
+            else if( элемент instanceof Библиотека )
+                content = new EdtБиблиотека( (Библиотека)элемент ).загрузить();
+            else
+                content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
             Platform.runLater( () -> { pane.setContent( content ); pane.setUserData( элемент ); } );
         }
         catch( Exception ex )
