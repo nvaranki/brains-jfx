@@ -26,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 
@@ -81,7 +82,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
                 String название = элемент.название();
                 контекст.getExecutorService().submit( new WebViewLoaderTask(
                         service.генератор( элемент ), view.getEngine(), название, словарь ) );
-                return new TitledSceneGraph( view, new SimpleStringProperty( название ) );
+                return new TitledSceneGraph( view, iconProperty().getValue().getImage(), new SimpleStringProperty( название ) );
             };
         }
         
@@ -114,12 +115,16 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
                 else if( jfx.isShown( элемент, inEditor ) != null )
                     LOGGER.log( Level.INFO, "002002002W", элемент.название() );
                 else
-                    handleEditElement( ( Void v ) -> элемент );
+                    handleEditElement( ( Void v ) -> элемент, getIconImage() );
         }
         
+        Image getIconImage()
+        {
+            return iconProperty().getValue().getImage();
+        }
     }
     
-    protected void handleEditElement( Callback<Void,E> фабрика )
+    protected void handleEditElement( Callback<Void,E> фабрика, Image image )
     {
         // Создать, разместить и показатеть пустой редактор
         BuilderFX<Node,EditorController> builder = new BuilderFX<>();
@@ -127,7 +132,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
         EditorController controller = builder.getController();
         Parent view = controller.build();
         SimpleStringProperty propertyTitle = new SimpleStringProperty();
-        TitledSceneGraph tsg = new TitledSceneGraph( view, propertyTitle );
+        TitledSceneGraph tsg = new TitledSceneGraph( view, image, propertyTitle );
         jfx.getViews().getValue().add( tsg );
         
         // загрузить элемент для редактирования

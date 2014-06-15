@@ -23,6 +23,7 @@ class ApplicationActionEditor extends AbstractContextJfxAction<JavaFX>
     {
         List<TitledSceneGraph> views = JavaFX.getInstance().getViews().getValue();
         views.add( new TitledSceneGraph( new EditorController().build(), 
+                iconProperty().getValue().getImage(), 
                 new SimpleStringProperty( textProperty().getValue() ) ) );
     }
     

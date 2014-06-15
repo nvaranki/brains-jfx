@@ -5,6 +5,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
 
 /**
  * TabPane content manager.
@@ -45,6 +46,7 @@ class TabPaneContentManager implements ListChangeListener<TitledSceneGraph>
                 {
                     Tab tab = new Tab();
                     tab.setContent( tsg.node );
+                    if( tsg.icon != null ) tab.setGraphic( new ImageView( tsg.icon ) );
                     tab.textProperty().bind( tsg.title );
                     tabs.add( tab );
                     selector.select( tab );

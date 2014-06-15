@@ -23,7 +23,7 @@ class ApplicationActionAnalyser extends AbstractContextJfxAction<JavaFX>
     {
         List<TitledSceneGraph> views = JavaFX.getInstance().getViews().getValue();
         views.add( new TitledSceneGraph( new AnalyserController().build(), 
-                new SimpleStringProperty( textProperty().getValue() ) ) );
+                null, new SimpleStringProperty( textProperty().getValue() ) ) );
     }
     
 }

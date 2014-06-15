@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
@@ -100,7 +99,7 @@ public final class JavaFX
             список.add( tsg = фабрика.создать( элемент ) );
         else
             //TODO временный обходной вариант для активации view
-            список.set( список.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.title ) );
+            список.set( список.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.icon, tsg.title ) );
         return tsg;
     }
 

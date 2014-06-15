@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.util.Callback;
 
 /**
@@ -31,6 +32,8 @@ import javafx.util.Callback;
 class LibraryCatalogView extends AbstractCatalogView<Библиотека>
 {
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
+    
+    private final Image iconEditor;
     
     LibraryCatalogView( JavaFX jfx )
     {
@@ -89,6 +92,8 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 null,
                 actionProperties 
                 ) );
+        
+        iconEditor = actionEdit.getIconImage();
     }
     
     //<editor-fold defaultstate="collapsed" desc="классы">
@@ -142,7 +147,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         @Override
         public void handle( ActionEvent event )
         {
-            handleEditElement( фабрика );
+            handleEditElement( фабрика, iconEditor );
         }
     }
     
