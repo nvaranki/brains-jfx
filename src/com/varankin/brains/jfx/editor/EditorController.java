@@ -86,9 +86,9 @@ public final class EditorController implements Builder<Node>
         {
             Node content;
             if( элемент instanceof Проект )
-                content = new EdtПроект( (Проект)элемент ).загрузить();
+                content = new EdtПроект( (Проект)элемент ).загрузить( true );
             else if( элемент instanceof Библиотека )
-                content = new EdtБиблиотека( (Библиотека)элемент ).загрузить();
+                content = new EdtБиблиотека( (Библиотека)элемент ).загрузить( true );
             else
                 content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
             Platform.runLater( () -> { pane.setContent( content ); pane.setUserData( элемент ); } );
@@ -96,6 +96,7 @@ public final class EditorController implements Builder<Node>
         catch( Exception ex )
         {
             LOGGER.log( Level.SEVERE, "failure to setup editor for " + элемент.название(), ex );
+            LOGGER.log( Level.SEVERE, "Exception: {0}", ex.getMessage() );
         }
         finally
         {

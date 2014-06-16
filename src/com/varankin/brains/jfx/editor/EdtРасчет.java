@@ -1,19 +1,16 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.xml.XmlBrains;
 import com.varankin.brains.db.Неизвестный;
-import com.varankin.brains.db.Сигнал;
+import com.varankin.brains.db.Расчет;
 import javafx.scene.*;
-
-import static com.varankin.brains.db.neo4j.Architect.*;
 
 /**
  *
  * @author Николай
  */
-class EdtСигнал extends EdtАтрибутныйЭлемент<Сигнал>
+class EdtРасчет extends EdtАтрибутныйЭлемент<Расчет>
 {
-    EdtСигнал( Сигнал элемент )
+    EdtРасчет( Расчет элемент )
     {
         super( элемент );
     }
@@ -22,11 +19,10 @@ class EdtСигнал extends EdtАтрибутныйЭлемент<Сигнал
     {
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
-
-        String атрибутName  = toStringValue( ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "" ) );
         
         for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
+        
         
         return group;
     }

@@ -29,7 +29,7 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
         super( элемент );
     }
     
-    Node загрузить()
+    Node загрузить( boolean изменяемый )
     {
         Node node;
         
@@ -66,14 +66,14 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
                 default:
                     Group group = new Group();
                     for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
-                        group.getChildren().add( new EdtНеизвестный( н ).загрузить() );
+                        group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
                     node = group;
             }
         else
         {
             Group group = new Group();
             for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
-                group.getChildren().add( new EdtНеизвестный( н ).загрузить() );
+                group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
             node = group;
         }
         

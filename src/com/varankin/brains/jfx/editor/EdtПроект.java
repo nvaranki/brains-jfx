@@ -20,18 +20,19 @@ class EdtПроект extends EdtАтрибутныйЭлемент<Проект
         super( элемент );
     }
     
-    Node загрузить()
+    Node загрузить( boolean изменяемый )
     {
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
         
-        group.getChildren().add( createMarker( 3d ) );
+        if( изменяемый )
+            group.getChildren().add( createMarker( 3d ) );
         group.getChildren().add( createBounds() );
         
         for( Фрагмент фрагмент : ЭЛЕМЕНТ.фрагменты() )
-            group.getChildren().add( new EdtФрагмент( фрагмент ).загрузить() );
+            group.getChildren().add( new EdtФрагмент( фрагмент ).загрузить( изменяемый ) );
         for( Сигнал сигнал : ЭЛЕМЕНТ.сигналы() )
-            group.getChildren().add( new EdtСигнал( сигнал ).загрузить() );
+            group.getChildren().add( new EdtСигнал( сигнал ).загрузить( изменяемый ) );
         
         return group;
     }

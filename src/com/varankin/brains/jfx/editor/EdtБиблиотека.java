@@ -14,7 +14,7 @@ class EdtБиблиотека extends EdtАтрибутныйЭлемент<Би
         super( элемент );
     }
     
-    Node загрузить()
+    Node загрузить( boolean изменяемый )
     {
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
