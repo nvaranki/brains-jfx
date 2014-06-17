@@ -32,6 +32,7 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
     Node загрузить( boolean изменяемый )
     {
         Node node;
+        String s;
         
         if( XmlSvg.XMLNS_SVG.equals( ЭЛЕМЕНТ.тип().uri() ) )
             switch( ЭЛЕМЕНТ.тип().название() )
@@ -53,14 +54,42 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
                         {
                             text.setText( "DEBUG: text is here" );
                         }
+                    s = toSvgString( SVG_ATTR_FILL, null );
+                    if( s != null ) text.setFill( toSvgColor( s ) );
+                    s = toSvgString( SVG_ATTR_STROKE, null );
+                    if( s != null ) text.setStroke( toSvgColor( s ) );
                     node = text;
+                    break;
+                    
+                case XmlSvg.SVG_ELEMENT_LINE:
+                    Line line = new Line();
+                    line.setStartX( toSvgDouble( SVG_ATTR_X1, 0d ) );
+                    line.setStartY( toSvgDouble( SVG_ATTR_Y1, 0d ) );
+                    line.setEndX( toSvgDouble( SVG_ATTR_X2, 0d ) );
+                    line.setEndY( toSvgDouble( SVG_ATTR_Y2, 0d ) );
+                    s = toSvgString( SVG_ATTR_STROKE, null );
+                    if( s != null ) line.setStroke( toSvgColor( s ) );
+                    node = line;
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_POLYLINE:
                     Polyline path = new Polyline();
                     path.getPoints().setAll( toSvgPoints( SVG_ATTR_POINTS, new Double[]{0d,0d} ) );
-                    path.setStroke( Color.valueOf( toSvgString( SVG_ATTR_STROKE, "black" ) ) );
+                    s = toSvgString( SVG_ATTR_STROKE, null );
+                    if( s != null ) path.setStroke( toSvgColor( s ) );
                     node = path;
+                    break;
+                    
+                case XmlSvg.SVG_ELEMENT_CIRCLE:
+                    Circle circle = new Circle();
+                    circle.setCenterX( toSvgDouble( SVG_ATTR_CX, 0d ) );
+                    circle.setCenterY( toSvgDouble( SVG_ATTR_CY, 0d ) );
+                    circle.setRadius( toSvgDouble( SVG_ATTR_R, 0d ) );
+                    s = toSvgString( SVG_ATTR_STROKE, null );
+                    if( s != null ) circle.setStroke( toSvgColor( s ) );
+                    s = toSvgString( SVG_ATTR_FILL, null );
+                    if( s != null ) circle.setFill( toSvgColor( s ) );
+                    node = circle;
                     break;
                     
                 default:
@@ -79,6 +108,11 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
         
         node.setUserData( ЭЛЕМЕНТ );
         return node;
+    }
+
+    protected static Color toSvgColor( String s )
+    {
+        return "none".equals( s ) ? null : Color.valueOf( s );
     }
     
     

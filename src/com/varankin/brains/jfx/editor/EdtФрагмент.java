@@ -8,6 +8,7 @@ import com.varankin.brains.db.Модуль;
 import com.varankin.brains.db.Неизвестный;
 import com.varankin.brains.db.Поле;
 import com.varankin.brains.db.Расчет;
+import com.varankin.brains.db.Соединение;
 import com.varankin.brains.db.Фрагмент;
 import com.varankin.brains.db.Элемент;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<Фраг
         if( изменяемый )
             group.getChildren().add( createMarker( 3d ) );
 
+        String атрибутName  = toStringValue( ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "" ) );
+        
         Элемент экземпляр = ЭЛЕМЕНТ.экземпляр();
         if( экземпляр instanceof Модуль )
             group.getChildren().add( new EdtМодуль( (Модуль)экземпляр ).загрузить( false ) );
@@ -54,9 +57,9 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<Фраг
             group.getChildren().add( new EdtРасчет( (Расчет)экземпляр ).загрузить( false ) );
         else
             LOGGER.log( Level.SEVERE, "Unknown instance of fragment: {0}", экземпляр );
-        
-        String атрибутName  = toStringValue( ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "" ) );
-        
+
+        for( Соединение соединение : ЭЛЕМЕНТ.соединения() )
+            group.getChildren().add( new EdtСоединение( соединение ).загрузить( изменяемый ) );
         for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
         

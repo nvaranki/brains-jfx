@@ -1,22 +1,20 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.xml.XmlBrains;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.brains.db.neo4j.Architect.toStringValue;
 import com.varankin.brains.db.Неизвестный;
-import com.varankin.brains.db.Сигнал;
-import javafx.scene.*;
-
-import static com.varankin.brains.db.neo4j.Architect.*;
+import com.varankin.brains.db.Процессор;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
+import javafx.scene.*;
 
 /**
  *
  * @author Николай
  */
-class EdtСигнал extends EdtАтрибутныйЭлемент<Сигнал>
+class EdtПроцессор extends EdtАтрибутныйЭлемент<Процессор>
 {
-    EdtСигнал( Сигнал элемент )
+    EdtПроцессор( Процессор элемент )
     {
         super( элемент );
     }
@@ -25,12 +23,10 @@ class EdtСигнал extends EdtАтрибутныйЭлемент<Сигнал
     {
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
-
+        
         String ts = toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
-        String атрибутName  = toStringValue( ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "" ) );
-        
         for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
         
