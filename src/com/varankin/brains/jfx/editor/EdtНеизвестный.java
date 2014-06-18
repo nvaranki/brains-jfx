@@ -10,8 +10,14 @@ import com.varankin.brains.db.Неизвестный;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.text.*;
@@ -41,7 +47,7 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
                     Text text = new Text();
                     text.setX( toSvgDouble( SVG_ATTR_X, 0d ) );
                     text.setY( toSvgDouble( SVG_ATTR_Y, 0d ) );
-                    for( Неизвестный н : ЭЛЕМЕНТ.прочее())
+                    for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
                         if( н.тип().название() == null )
                         {
                             text.setText( н.атрибут( Xml.XML_TEXT, "" ) );
@@ -58,6 +64,41 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
                     if( s != null ) text.setFill( toSvgColor( s ) );
                     s = toSvgString( SVG_ATTR_STROKE, null );
                     if( s != null ) text.setStroke( toSvgColor( s ) );
+                    if( изменяемый ) 
+                    {
+                        text.setOnMouseClicked( (MouseEvent event) ->
+                        {
+                            Parent parent = text.getParent();
+                            if( parent instanceof Group )
+                            {
+                                Group group = (Group)parent;
+                                TextField editor = new TextField();
+                                editor.setTranslateX( text.getX() );
+                                editor.setTranslateY( text.getY() - text.getBaselineOffset() );
+                                editor.setText( text.getText() ); //TODO Инструкция
+                                editor.setOnAction( (ActionEvent e) ->
+                                {
+                                    text.setText( editor.getText() ); //TODO Инструкция
+                                    group.getChildren().remove( editor );
+                                    text.visibleProperty().setValue( true );
+                                    event.consume();
+                                });
+                                editor.setOnKeyPressed( (KeyEvent e) -> 
+                                {
+                                    if( KeyCode.ESCAPE.equals( e.getCode() ) )
+                                    {
+                                        group.getChildren().remove( editor );
+                                        text.visibleProperty().setValue( true );
+                                        event.consume();
+                                    }
+                                } );
+                                text.visibleProperty().setValue( false );
+                                group.getChildren().add( editor );
+                                editor.requestFocus();
+                                event.consume();
+                            }
+                        });
+                    }
                     node = text;
                     break;
                     
