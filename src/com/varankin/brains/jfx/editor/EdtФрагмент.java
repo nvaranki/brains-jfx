@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.artificial.io.xml.XmlBrains;
+import static com.varankin.brains.artificial.io.xml.XmlBrains.BRAINS_ATTR_NAME;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
 import static com.varankin.brains.db.neo4j.Architect.*;
 import com.varankin.brains.db.Коммутируемый;
@@ -39,7 +40,7 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<Фраг
         Group group = new Group();
         if( изменяемый )
             group.setUserData( ЭЛЕМЕНТ );
-        
+
         String ts = toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
@@ -47,22 +48,36 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<Фраг
             group.getChildren().add( createMarker( 3d ) );
 
         String атрибутName  = toStringValue( ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "" ) );
-        
-        Элемент экземпляр = ЭЛЕМЕНТ.экземпляр();
-        if( экземпляр instanceof Модуль )
-            group.getChildren().add( new EdtМодуль( (Модуль)экземпляр ).загрузить( false ) );
-        else if( экземпляр instanceof Поле )
-            group.getChildren().add( new EdtПоле( (Поле)экземпляр ).загрузить( false ) );
-        else if( экземпляр instanceof Расчет )
-            group.getChildren().add( new EdtРасчет( (Расчет)экземпляр ).загрузить( false ) );
-        else
-            LOGGER.log( Level.SEVERE, "Unknown instance of fragment: {0}", экземпляр );
 
-        for( Соединение соединение : ЭЛЕМЕНТ.соединения() )
-            group.getChildren().add( new EdtСоединение( соединение ).загрузить( изменяемый ) );
+        Коммутируемый экземпляр = ЭЛЕМЕНТ.экземпляр();
+//        if( экземпляр instanceof Модуль )
+//            group.getChildren().add( new EdtМодуль( (Модуль)экземпляр ).загрузить( false ) );
+//        else if( экземпляр instanceof Поле )
+//            group.getChildren().add( new EdtПоле( (Поле)экземпляр ).загрузить( false ) );
+//        else if( экземпляр instanceof Расчет )
+//            group.getChildren().add( new EdtРасчет( (Расчет)экземпляр ).загрузить( false ) );
+//        else
+//            LOGGER.log( Level.SEVERE, "Unknown instance of fragment: {0}", экземпляр );
+
+        for( Соединение снаружи : ЭЛЕМЕНТ.соединения() )
+        {
+            group.getChildren().add( new EdtСоединение( снаружи ).загрузить( изменяемый ) );
+            String ref = снаружи.атрибут( BRAINS_ATTR_NAME, "" );
+            for( Соединение внутри : экземпляр.соединения() )
+            {
+                String id = внутри.атрибут( BRAINS_ATTR_NAME, "" );
+                if( ref.equals( id ) )
+                {
+                    Node image = new EdtСоединение( внутри ).загрузить( false );
+                    image.getTransforms().clear();
+                    group.getChildren().add( image );
+                    //TODO relocatePins();
+                }
+            }
+        }
         for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
-        
+
         return group;
     }
     

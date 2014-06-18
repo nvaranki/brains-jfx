@@ -61,6 +61,19 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
                     node = text;
                     break;
                     
+                case XmlSvg.SVG_ELEMENT_RECT:
+                    Rectangle rect = new Rectangle();
+                    rect.setX( toSvgDouble( SVG_ATTR_X, 0d ) );
+                    rect.setY( toSvgDouble( SVG_ATTR_Y, 0d ) );
+                    rect.setWidth( toSvgDouble( SVG_ATTR_WIDTH, 0d ) );
+                    rect.setHeight(toSvgDouble( SVG_ATTR_HEIGHT, 0d ) );
+                    s = toSvgString( SVG_ATTR_STROKE, null );
+                    if( s != null ) rect.setStroke( toSvgColor( s ) );
+                    s = toSvgString( SVG_ATTR_FILL, null );
+                    if( s != null ) rect.setFill( toSvgColor( s ) );
+                    node = rect;
+                    break;
+                    
                 case XmlSvg.SVG_ELEMENT_LINE:
                     Line line = new Line();
                     line.setStartX( toSvgDouble( SVG_ATTR_X1, 0d ) );
