@@ -1,9 +1,16 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.Атрибутный;
-
 import static com.varankin.brains.db.neo4j.Architect.toDoubleValue;
 import static com.varankin.brains.db.neo4j.Architect.toStringValue;
+import com.varankin.brains.db.Атрибутный;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 /**
@@ -29,6 +36,18 @@ public interface InPlaceEditorBuilder
     {
         String s = asString( элемент, атрибут, нет );
         return s == null || "none".equals( s ) ? null : Color.valueOf( s );
+    }
+    
+    public static Collection<Node> childrenOf( Parent parent )
+    {
+        Collection<Node> children;
+        if( parent instanceof Group )
+            children = ((Group)parent).getChildren();
+        else if( parent instanceof Pane )
+            children = ((Pane)parent).getChildren();
+        else
+            children = null;//new ArrayList<>(); //TODO LOGGER.log()
+        return children;
     }
 
 }
