@@ -7,6 +7,7 @@ import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.*;
 import com.varankin.util.LoggerX;
 import java.util.Collection;
 import java.util.logging.Level;
+import javafx.beans.binding.Bindings;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.scene.*;
@@ -27,15 +28,14 @@ public final class SvgTextController implements Builder<Text>
     private static final String CSS_CLASS = "svg-text";
     
     private final Неизвестный ЭЛЕМЕНТ;
-    
-    private TextField editor;
-    private EventHandler<? super MouseEvent> handlerMouseClick;
+    private final EventHandler<? super MouseEvent> handlerMouseClick;
     
     @FXML private Text text;
     
-    public SvgTextController( Неизвестный элемент ) 
+    public SvgTextController( Неизвестный элемент, boolean изменяемый ) 
     {
         ЭЛЕМЕНТ = элемент;
+        handlerMouseClick = изменяемый ? this::handleMouseClick : null;
     }
 
     /**
@@ -62,6 +62,32 @@ public final class SvgTextController implements Builder<Text>
     {
         text.setX( asDouble( ЭЛЕМЕНТ, SVG_ATTR_X, 0d ) );
         text.setY( asDouble( ЭЛЕМЕНТ, SVG_ATTR_Y, 0d ) );
+        text.setFill( asColor( ЭЛЕМЕНТ, SVG_ATTR_FILL, null ) );
+        text.setStroke( asColor( ЭЛЕМЕНТ, SVG_ATTR_STROKE, null ) );
+        text.setOnMouseClicked( handlerMouseClick );
+        text.textProperty().bind( Bindings.createStringBinding( 
+                () -> getContent(), text.visibleProperty() )); //TODO (1) on set vis=true only (2) extend approach on x,y,...
+    }
+    
+    @FXML
+    private void handleMouseClick( MouseEvent event )
+    {
+        if( MouseButton.PRIMARY == event.getButton() )
+            switch( event.getClickCount() )
+            {
+                case 2: 
+                    raiseInPlaceEditor( event.isControlDown() ); 
+                    event.consume();
+                    break;
+                case 1: 
+                    select(); 
+                    event.consume();
+                    break;
+            }
+    }
+
+    private String getContent()
+    {
         String update = "";
         for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
@@ -69,18 +95,10 @@ public final class SvgTextController implements Builder<Text>
             else if( н instanceof Инструкция )
                 update = ((Инструкция)н).выполнить();
         if( update.trim().isEmpty() ) update = "?";
-        text.setText( update );
-        text.setFill( asColor( ЭЛЕМЕНТ, SVG_ATTR_FILL, null ) );
-        text.setStroke( asColor( ЭЛЕМЕНТ, SVG_ATTR_STROKE, null ) );
-        text.setOnMouseClicked( handlerMouseClick );
-    }
-    
-    void setEditable( boolean значение )
-    {
-        handlerMouseClick = значение ? this::handleMouseClick : null;
+        return update;
     }
 
-    private void handleMouseClick( MouseEvent event )
+    private void raiseInPlaceEditor( boolean controlDown )
     {
         Collection<Node> children = childrenOf( text.getParent() );
         if( children == null )
@@ -89,19 +107,19 @@ public final class SvgTextController implements Builder<Text>
             return;
         }
         
-        if( editor == null ) 
-        {
-            SvgTextFieldController controller = new SvgTextFieldController( ЭЛЕМЕНТ, text );
-            editor = controller.build();
-        }
-        event.isControlDown(); //TODO change attribute or reference to attribute
-        text.setVisible( false );
+        Builder<TextField> controller = new SvgTextFieldController( ЭЛЕМЕНТ, text, controlDown );
+        TextField editor = controller.build();
         editor.setTranslateX( text.getX() );
         editor.setTranslateY( text.getY() - text.getBaselineOffset() );
+        
+        text.setVisible( false );
         children.add( editor );
         editor.requestFocus();
-        
-        event.consume();
+    }
+
+    private void select()
+    {
+        //throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

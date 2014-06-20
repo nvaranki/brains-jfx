@@ -9,7 +9,6 @@ import com.varankin.brains.jfx.JavaFX;
 import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.childrenOf;
 import com.varankin.util.LoggerX;
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -35,14 +34,16 @@ public class SvgTextFieldController implements Builder<TextField>
     private final Неизвестный ЭЛЕМЕНТ;
     private final Text text;
     private final Collection<Node> children;
+    private final boolean instruction;
     
     @FXML private TextField editor;
     
-    public SvgTextFieldController( Неизвестный элемент, Text text_ ) 
+    public SvgTextFieldController( Неизвестный элемент, Text text_, boolean instruction ) 
     {
         ЭЛЕМЕНТ = элемент;
         text = text_;
         children = childrenOf( text.getParent() );
+        this.instruction = instruction;
     }
 
     /**
@@ -55,6 +56,8 @@ public class SvgTextFieldController implements Builder<TextField>
     public TextField build()
     {
         editor = new TextField();
+        editor.setOnAction( this::onAction );
+        editor.setOnKeyPressed( this::onKeyPressed );
         
         editor.getStyleClass().add( CSS_CLASS );
         //text.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -63,20 +66,14 @@ public class SvgTextFieldController implements Builder<TextField>
         
         return editor;
     }
-        
+    
     @FXML
     protected void initialize()
     {
-        for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
-            if( н.тип().название() == null )
-                editor.setText( н.атрибут( Xml.XML_TEXT, "?" ) );
-            else if( н instanceof Инструкция )
-                editor.setText( н.атрибут( Xml.PI_ATTR_INSTRUCTION, "{?}" ) );
-
-        editor.setOnAction( this::onAction );
-        editor.setOnKeyPressed( this::onKeyPressed );
+        editor.setText( getContent() );
     }
     
+    @FXML
     private void onAction( ActionEvent e )
     {
         String input = editor.getText().trim();
@@ -89,6 +86,7 @@ public class SvgTextFieldController implements Builder<TextField>
         e.consume();
     }
     
+    @FXML
     private void onKeyPressed( KeyEvent e )
     {
         if( KeyCode.ESCAPE.equals( e.getCode() ) )
@@ -99,7 +97,57 @@ public class SvgTextFieldController implements Builder<TextField>
         }
     }
     
-    private class DbUpdater extends Task<String>
+    private String getContent()
+    {
+        String t = "?";
+        for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+            if( н.тип().название() == null )
+                t = н.атрибут( Xml.XML_TEXT, "?" );
+            else if( н instanceof Инструкция )
+                if( instruction )
+                    t = ((Инструкция)н).код();
+                else
+                    t = ((Инструкция)н).выполнить();
+        return t;
+    }
+    
+    private void setContent( String input )
+    {
+        Инструкция инструкция = null;
+        Неизвестный текст = null;
+        for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+            if( н.тип().название() == null )
+                текст = н;
+            else if( н instanceof Инструкция )
+                инструкция = ((Инструкция)н);
+
+        if( input.matches( "\\{.*\\@.*\\}" ) )
+            if( инструкция != null )
+            {
+                инструкция.код( input );
+            }
+            else
+            {
+                ЭЛЕМЕНТ.прочее().clear();
+                ЭЛЕМЕНТ.инструкция( "xpath", input );
+            }
+        else if( инструкция != null )
+        {
+            if( !инструкция.определить( input ) )
+                LOGGER.log( Level.SEVERE, "Failure to setup attribute by instruction." );
+        }
+        else if( текст != null )
+        {
+            текст.определить( Xml.XML_TEXT, null, input );
+        }
+        else
+        {
+            ЭЛЕМЕНТ.прочее().clear();
+            ЭЛЕМЕНТ.addTextBlock( input );
+        }
+    }
+    
+    private class DbUpdater extends Task<Void>
     {
         final String input;
         
@@ -109,50 +157,29 @@ public class SvgTextFieldController implements Builder<TextField>
         }
         
         @Override
-        public String call() throws Exception
+        public Void call() throws Exception
         {
             Архив архив = JavaFX.getInstance().контекст.архив;
             Транзакция транзакция = архив.транзакция();
             транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
             boolean завершено = false;
-            String update = null;
             try
             {
-                ЭЛЕМЕНТ.прочее().clear();
-                if( input.matches( "\\{.*\\@.*\\}" ) )
-                {
-                    Инструкция инструкция = ЭЛЕМЕНТ.addInstructionBlock( "xpath", input );
-                    update = инструкция.выполнить();
-                }
-                else
-                {
-                    ЭЛЕМЕНТ.addTextBlock( input );
-                    update = input;
-                }
+                setContent( input );
                 завершено = true;
             }
             finally
             {
                 транзакция.завершить( завершено );
             }
-            return update;
+            return null;
         }
         
         @Override protected void succeeded()
         {
             super.succeeded();
-            try
-            {
-                String update = get();
-                if( update.trim().isEmpty() ) update = "?";
-                text.setText( update );
-                children.remove( editor );
-                text.setVisible( true );
-            }
-            catch( InterruptedException | ExecutionException ex )
-            {
-                LOGGER.log( Level.SEVERE, "Failure to get text: {0}.", ex.getMessage() );
-            }
+            children.remove( editor );
+            text.setVisible( true );
         }
         
         @Override protected void failed() 
