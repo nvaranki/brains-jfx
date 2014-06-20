@@ -29,8 +29,7 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
             switch( ЭЛЕМЕНТ.тип().название() )
             {
                 case XmlSvg.SVG_ELEMENT_TEXT:
-                    SvgTextController tc = new SvgTextController( ЭЛЕМЕНТ, изменяемый );
-                    node = tc.build();
+                    node = new SvgTextController( ЭЛЕМЕНТ, изменяемый ).build();
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_RECT:
