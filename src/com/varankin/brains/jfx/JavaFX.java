@@ -156,8 +156,8 @@ public final class JavaFX
             protected Void call() throws Exception
             {
                 //TODO should not be called!!!
-                контекст.архив.проекты().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
-                контекст.архив.библиотеки().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
+                контекст.архив.пакеты().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
+                контекст.архив.namespaces().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
                 return null;
             }
         } );
