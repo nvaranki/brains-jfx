@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.jfx.archive.ArchiveController;
 import com.varankin.brains.jfx.browser.BrowserView;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
@@ -54,14 +55,14 @@ class GuiBuilder
     {
         int spacing = 3;
         TitledPane панель0 = навигаторПоРабочемуПроекту( spacing );
-        TitledPane панель2 = навигаторПоАрхивуПроектов( spacing );
-        TitledPane панель3 = навигаторПоАрхивуБиблиотек( spacing );
+//        TitledPane панель2 = навигаторПоАрхивуПроектов( spacing );
+//        TitledPane панель3 = навигаторПоАрхивуБиблиотек( spacing );
         панель0.setPrefWidth( 250d );
-        панель2.setPrefWidth( 250d );
-        панель3.setPrefWidth( 250d );
+//        панель2.setPrefWidth( 250d );
+//        панель3.setPrefWidth( 250d );
         // панель обозревателей
         Accordion обозреватели = new Accordion();
-        обозреватели.getPanes().addAll( панель0, панель2, панель3 );
+        обозреватели.getPanes().addAll( панель0, new ArchiveController().build() );//TODO , панель2, панель3 );
         обозреватели.setExpandedPane( панель0 );
         обозреватели.setPrefWidth( 250d );
         return обозреватели;
