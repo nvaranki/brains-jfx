@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.editor;
 
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.db.neo4j.Architect.toStringValue;
+import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Модуль;
 import com.varankin.brains.db.Процессор;
@@ -26,7 +26,7 @@ class EdtБиблиотека extends EdtАтрибутныйЭлемент<Би
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
         
-        String ts = toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
+        String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
         for( Модуль модуль : ЭЛЕМЕНТ.модули() )

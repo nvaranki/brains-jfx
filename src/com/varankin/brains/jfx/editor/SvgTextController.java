@@ -6,6 +6,7 @@ import com.varankin.brains.db.*;
 import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.*;
 import com.varankin.util.LoggerX;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 import javafx.beans.binding.Bindings;
 import javafx.event.*;
@@ -13,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
 
@@ -27,15 +29,16 @@ public final class SvgTextController implements Builder<Text>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgText.css";
     private static final String CSS_CLASS = "svg-text";
     
-    private final Неизвестный ЭЛЕМЕНТ;
-    private final EventHandler<? super MouseEvent> handlerMouseClick;
+    private final Атрибутный ЭЛЕМЕНТ;
+    private final EventHandler<? super MouseEvent> handlerMouseClick, handlerMouseDrag;
     
     @FXML private Text text;
     
-    public SvgTextController( Неизвестный элемент, boolean изменяемый ) 
+    public SvgTextController( Атрибутный элемент, boolean изменяемый ) 
     {
         ЭЛЕМЕНТ = элемент;
         handlerMouseClick = изменяемый ? this::handleMouseClick : null;
+        handlerMouseDrag  = изменяемый ? this::handleMouseDrag  : null;
     }
 
     /**
@@ -65,6 +68,7 @@ public final class SvgTextController implements Builder<Text>
         text.setFill( asColor( ЭЛЕМЕНТ, SVG_ATTR_FILL, null ) );
         text.setStroke( asColor( ЭЛЕМЕНТ, SVG_ATTR_STROKE, null ) );
         text.setOnMouseClicked( handlerMouseClick );
+        text.setOnDragDetected( handlerMouseDrag );
         text.textProperty().bind( Bindings.createStringBinding( 
                 () -> getContent(), text.visibleProperty() )); //TODO (1) on set vis=true only (2) extend approach on x,y,...
     }
@@ -85,11 +89,24 @@ public final class SvgTextController implements Builder<Text>
                     break;
             }
     }
+    
+    @FXML
+    private void handleMouseDrag( MouseEvent event )
+    {
+        if( MouseButton.PRIMARY == event.getButton() )
+        {
+            SnapshotParameters snapParams = new SnapshotParameters();
+            snapParams.setFill( Color.TRANSPARENT );
+            Dragboard dndb = text.startDragAndDrop( TransferMode.MOVE );
+            dndb.setDragView( text.snapshot( snapParams, null ) );
+            dndb.setContent( Collections.singletonMap( DataFormat.PLAIN_TEXT, text.getText() ) );
+        }
+    }
 
     private String getContent()
     {
         String update = "";
-        for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
                 update = н.атрибут( Xml.XML_TEXT, "?" );
             else if( н instanceof Инструкция )

@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.artificial.io.xml.XmlSvg;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
+import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Неизвестный;
 import javafx.scene.*;
 import javafx.scene.paint.*;
@@ -12,10 +13,10 @@ import javafx.scene.shape.*;
  *
  * @author Николай
  */
-class EdtНеизвестный extends EdtАтрибутныйЭлемент<Неизвестный>
+class EdtНеизвестный extends EdtАтрибутныйЭлемент<Атрибутный>
 {
 
-    EdtНеизвестный( Неизвестный элемент )
+    EdtНеизвестный( Атрибутный элемент )
     {
         super( элемент );
     }
@@ -78,14 +79,14 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Н
                     
                 default:
                     Group group = new Group();
-                    for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+                    for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
                         group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
                     node = group;
             }
         else
         {
             Group group = new Group();
-            for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+            for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
                 group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
             node = group;
         }

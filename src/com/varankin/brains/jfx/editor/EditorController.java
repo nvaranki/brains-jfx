@@ -2,10 +2,12 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -16,6 +18,8 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Builder;
 
@@ -54,7 +58,7 @@ public final class EditorController implements Builder<Node>
         ProgressIndicator progress = new ProgressIndicator();
         progress.setPrefSize( 50, 50 );
         progress.setMaxSize( 150, 150 );
-        BorderPane content = new BorderPane( progress);
+        BorderPane content = new BorderPane( progress );
         
         pane = new ScrollPane();
         pane.setContent( content );
@@ -77,6 +81,24 @@ public final class EditorController implements Builder<Node>
     {
     }
     
+    @FXML
+    protected void onDragOver( DragEvent event )
+    {
+        Object acceptingObject = event.getAcceptingObject();
+        Object gestureSource = event.getGestureSource();
+        event.acceptTransferModes( TransferMode.MOVE );
+        event.consume();
+    }
+
+    @FXML
+    protected void onDragDropped( DragEvent event )
+    {
+        Object acceptingObject = event.getAcceptingObject();
+        Object gestureSource = event.getGestureSource();
+        event.setDropCompleted( true );
+        event.consume();
+    }
+
     public void setContent( Элемент элемент )
     {
         Архив архив = JavaFX.getInstance().контекст.архив;
@@ -91,7 +113,13 @@ public final class EditorController implements Builder<Node>
                 content = new EdtБиблиотека( (Библиотека)элемент ).загрузить( true );
             else
                 content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
-            Platform.runLater( () -> { pane.setContent( content ); pane.setUserData( элемент ); } );
+            Platform.runLater( () -> 
+            { 
+                pane.setContent( content ); 
+                pane.setUserData( элемент ); 
+                content.setOnDragOver( this::onDragOver );
+                content.setOnDragDropped( this::onDragDropped );
+            } );
         }
         catch( Exception ex )
         {

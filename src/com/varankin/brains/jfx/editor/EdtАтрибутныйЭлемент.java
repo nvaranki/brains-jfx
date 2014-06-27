@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.editor;
 
-import static com.varankin.brains.db.neo4j.Architect.*;
 import com.varankin.brains.db.Атрибутный;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +24,13 @@ abstract class EdtАтрибутныйЭлемент<T extends Атрибутн�
 
     double toSvgDouble( String атрибут, double нет )
     {
-        Double v = toDoubleValue( ЭЛЕМЕНТ.атрибут( атрибут, null, нет ) );
+        Double v = Атрибутный.toDoubleValue( ЭЛЕМЕНТ.атрибут( атрибут, null, нет ) );
         return v != null ? v : нет;
     }
 
     String toSvgString( String атрибут, String нет )
     {
-        String v = toStringValue( ЭЛЕМЕНТ.атрибут( атрибут, null, нет ) );
+        String v = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( атрибут, null, нет ) );
         return v != null ? v : нет;
     }
 
@@ -43,7 +42,7 @@ abstract class EdtАтрибутныйЭлемент<T extends Атрибутн�
             return нет;
         }
         List<Double> v = new ArrayList<>();
-        for( String p : toStringValue( a ).split( "\\s" ) )
+        for( String p : Атрибутный.toStringValue( a ).split( "\\s" ) )
         {
             String[] xy = p.split( "," );
             v.add( Double.valueOf( xy[0].trim() ) );

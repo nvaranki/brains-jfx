@@ -2,8 +2,8 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.artificial.io.xml.Xml;
 import com.varankin.brains.db.Архив;
+import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Инструкция;
-import com.varankin.brains.db.Неизвестный;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.childrenOf;
@@ -31,14 +31,14 @@ public class SvgTextFieldController implements Builder<TextField>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgTextField.css";
     private static final String CSS_CLASS = "svg-text-field";
     
-    private final Неизвестный ЭЛЕМЕНТ;
+    private final Атрибутный ЭЛЕМЕНТ;
     private final Text text;
     private final Collection<Node> children;
     private final boolean instruction;
     
     @FXML private TextField editor;
     
-    public SvgTextFieldController( Неизвестный элемент, Text text_, boolean instruction ) 
+    public SvgTextFieldController( Атрибутный элемент, Text text_, boolean instruction ) 
     {
         ЭЛЕМЕНТ = элемент;
         text = text_;
@@ -100,7 +100,7 @@ public class SvgTextFieldController implements Builder<TextField>
     private String getContent()
     {
         String t = "?";
-        for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
                 t = н.атрибут( Xml.XML_TEXT, "?" );
             else if( н instanceof Инструкция )
@@ -114,8 +114,8 @@ public class SvgTextFieldController implements Builder<TextField>
     private void setContent( String input )
     {
         Инструкция инструкция = null;
-        Неизвестный текст = null;
-        for( Неизвестный н : ЭЛЕМЕНТ.прочее() )
+        Атрибутный текст = null;
+        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
                 текст = н;
             else if( н instanceof Инструкция )
@@ -129,7 +129,7 @@ public class SvgTextFieldController implements Builder<TextField>
             else
             {
                 ЭЛЕМЕНТ.прочее().clear();
-                ЭЛЕМЕНТ.инструкция( "xpath", input );
+                //TODO ЭЛЕМЕНТ.инструкция( "xpath", input );
             }
         else if( инструкция != null )
         {
@@ -143,7 +143,7 @@ public class SvgTextFieldController implements Builder<TextField>
         else
         {
             ЭЛЕМЕНТ.прочее().clear();
-            ЭЛЕМЕНТ.addTextBlock( input );
+            //TODO ЭЛЕМЕНТ.addTextBlock( input );
         }
     }
     

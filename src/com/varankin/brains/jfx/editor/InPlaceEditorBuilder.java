@@ -1,12 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
-import static com.varankin.brains.db.neo4j.Architect.toDoubleValue;
-import static com.varankin.brains.db.neo4j.Architect.toStringValue;
 import com.varankin.brains.db.Атрибутный;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -22,13 +17,13 @@ public interface InPlaceEditorBuilder
 
     public static double asDouble( Атрибутный элемент, String атрибут, double нет )
     {
-        Double v = toDoubleValue( элемент.атрибут( атрибут, null, нет ) );
+        Double v = Атрибутный.toDoubleValue( элемент.атрибут( атрибут, null, нет ) );
         return v != null ? v : нет;
     }
 
     public static String asString( Атрибутный элемент, String атрибут, String нет )
     {
-        String v = toStringValue( элемент.атрибут( атрибут, null, нет ) );
+        String v = Атрибутный.toStringValue( элемент.атрибут( атрибут, null, нет ) );
         return v != null ? v : нет;
     }
 
