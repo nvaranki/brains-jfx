@@ -10,50 +10,41 @@ import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-
-import static com.varankin.brains.jfx.JavaFX.icon;
+import javafx.scene.image.ImageView;
 
 /**
+ * Ячейка (строка) навигатора.
  *
- * @author Николай
+ * @author &copy; 2014 Николай Варанкин
  */
-class CellUpdateTask extends Task<Void>
+final class CellUpdateTask extends Task<Void>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( CellUpdateTask.class );
 
-    private final TreeCell<Атрибутный> cell;
+    private final TreeCell<Атрибутный> treeCell;
+    private final TreeItem<Атрибутный> treeItem;
     private final Collection<Атрибутный> indb;
-    private final Атрибутный item;
+    private final boolean loadGraphic;
     
     private volatile String название;
     private volatile Node картинка;
 
     CellUpdateTask( TreeCell<Атрибутный> cell )
     {
-        this.cell = cell;
-        this.item = cell.getItem();
-        this.indb = new ArrayList<>();
+        treeCell = cell;
+        treeItem = cell.getTreeItem();
+        loadGraphic = treeItem.getGraphic() == null;
+        indb = new ArrayList<>();
     }
 
     @Override
     protected Void call() throws Exception
     {
-        if( item instanceof Элемент )
+        Атрибутный item = treeItem.getValue();
+        try( Транзакция т = item.транзакция() )
         {
-            Элемент элемент = (Элемент)item;
-            try( Транзакция т = элемент.пакет().архив().транзакция() )
-            {
-                загрузить( элемент );
-                т.завершить( true );
-            }
-        }
-        else
-        {
-            try( Транзакция т = JavaFX.getInstance().контекст.архив.транзакция() )
-            {
-                загрузить( item );
-                т.завершить( true );
-            }
+            загрузить( item );
+            т.завершить( true );
         }
         return null;
     }
@@ -61,21 +52,18 @@ class CellUpdateTask extends Task<Void>
     @Override
     protected void succeeded()
     {
-        TreeItem<Атрибутный> treeItem = cell.getTreeItem();
-        if( treeItem != null && item.equals( treeItem.getValue() ) )
+        // пока call() работала, ячейка могла выйти из употребления!
+        if( treeItem.equals( treeCell.getTreeItem() ) )
         {
-            cell.setGraphic( картинка );
-            cell.setText( название );
+            treeCell.setText( название );
+            if( loadGraphic )
+                treeItem.setGraphic( картинка ); // cell.setGraphic( картинка );
             // use indb to verify current contents
             ObservableList<TreeItem<Атрибутный>> children = treeItem.getChildren();
             for( TreeItem<Атрибутный> i : children )
-            {
                 indb.remove( i.getValue() );
-            }
             for( Атрибутный v : indb )
-            {
                 children.add( new TreeItem<>( v ) ); //TODO position
-            }
         }
     }
 
@@ -298,6 +286,12 @@ class CellUpdateTask extends Task<Void>
             название = LOGGER.text( "cell.attributive" );
             indb.addAll( узел.прочее() );
         }
+    }
+    
+    private ImageView icon( String path )
+    {
+        // вызывается очень часто, а делается долго
+        return loadGraphic ? JavaFX.icon( path ) : null;
     }
     
 }
