@@ -1,9 +1,13 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ResourceBundle;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
@@ -48,7 +52,27 @@ public final class ArchiveController implements Builder<TitledPane>
         навигатор.setEditable( false );
         навигатор.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         навигатор.setContextMenu( buildContextMenu() );
-        навигатор.setCellFactory( new CellFactoryАтрибутный() );
+        навигатор.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
+        навигатор.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
+                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
+        {
+
+            @Override
+            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
+            {
+                event.getTreeItem();
+            }
+        });
+        навигатор.addEventHandler( TreeItem.<Атрибутный>branchCollapsedEvent(), 
+                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
+        {
+
+            @Override
+            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
+            {
+                event.getTreeItem();
+            }
+        });
 
         Pane box = new HBox();// spacing );
         box.setPrefWidth( 250d );
@@ -158,8 +182,11 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     protected void initialize()
     {
-        Атрибутный архив = JavaFX.getInstance().контекст.архив;
-        навигатор.getRoot().getChildren().add( new TreeItem<>( архив ) );
+        Архив архив = JavaFX.getInstance().контекст.архив;
+        TreeItem<Атрибутный> item = new TreeItem<>( архив );
+//        архив.пакеты().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
+//        архив.namespaces().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
+        навигатор.getRoot().getChildren().add( item );
     }
     
 }
