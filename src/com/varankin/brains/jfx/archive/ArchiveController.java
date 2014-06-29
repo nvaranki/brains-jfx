@@ -7,6 +7,7 @@ import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
@@ -93,22 +94,39 @@ public final class ArchiveController implements Builder<TitledPane>
     {
         MenuItem menuLoad = new MenuItem( 
                 LOGGER.text( "archive.popup.load" ), icon( "icons16x16/load.png" ) );
+        menuLoad.setOnAction( this::onActionLoad );
+        
         MenuItem menuNew = new MenuItem( 
                 LOGGER.text( "archive.popup.new" ), icon( "icons16x16/new-library.png" ) );
+        menuNew.setOnAction( this::onActionNew );
+        
         MenuItem menuPreview = new MenuItem( 
                 LOGGER.text( "archive.popup.preview" ), icon( "icons16x16/preview.png" ) );
+        menuPreview.setOnAction( this::onActionPreview );
+        
         MenuItem menuEdit = new MenuItem( 
                 LOGGER.text( "archive.popup.edit" ), icon( "icons16x16/edit.png" ) );
+        menuEdit.setOnAction( this::onActionEdit );
+        
         MenuItem menuRemove = new MenuItem( 
                 LOGGER.text( "archive.popup.remove" ), icon( "icons16x16/remove.png" ) );
+        menuRemove.setOnAction( this::onActionRemove );
+        
         MenuItem menuImportFile = new MenuItem( 
                 LOGGER.text( "archive.popup.import.file" ), icon( "icons16x16/file-xml.png" ) );
+        menuImportFile.setOnAction( this::onActionImportFile );
+        
         MenuItem menuImportNet = new MenuItem( 
                 LOGGER.text( "archive.popup.import.network" ), icon( "icons16x16/load-internet.png" ) );
+        menuImportNet.setOnAction( this::onActionImportNet );
+        
         MenuItem menuExport = new MenuItem( 
                 LOGGER.text( "archive.popup.export" ), icon( "icons16x16/file-export.png" ) );
+        menuExport.setOnAction( this::onActionExport );
+        
         MenuItem menuProperties = new MenuItem( 
                 LOGGER.text( "archive.popup.properties" ), icon( "icons16x16/properties.png" ) );
+        menuProperties.setOnAction( this::onActionProperties );
         
         ContextMenu menu = new ContextMenu();
         menu.getItems().addAll
@@ -134,30 +152,47 @@ public final class ArchiveController implements Builder<TitledPane>
         Button buttonLoad = new Button();
         buttonLoad.setTooltip( new Tooltip( LOGGER.text( "archive.popup.load" ) ) );
         buttonLoad.setGraphic( icon( "icons16x16/load.png" ) );
+        buttonLoad.setOnAction( this::onActionLoad );
+        
         Button buttonNew = new Button();
         buttonNew.setTooltip( new Tooltip( LOGGER.text( "archive.popup.new" ) ) );
         buttonNew.setGraphic( icon( "icons16x16/new-library.png" ) );
+        buttonNew.setOnAction( this::onActionNew );
+        
         Button buttonPreview = new Button();
         buttonPreview.setTooltip( new Tooltip( LOGGER.text( "archive.popup.preview" ) ) );
         buttonPreview.setGraphic( icon( "icons16x16/preview.png" ) );
+        buttonPreview.setOnAction( this::onActionPreview );
+        
         Button buttonEdit = new Button();
         buttonEdit.setTooltip( new Tooltip( LOGGER.text( "archive.popup.edit" ) ) );
         buttonEdit.setGraphic( icon( "icons16x16/edit.png" ) );
+        buttonEdit.setOnAction( this::onActionEdit );
+        
         Button buttonRemove = new Button();
         buttonRemove.setTooltip( new Tooltip( LOGGER.text( "archive.popup.remove" ) ) );
         buttonRemove.setGraphic( icon( "icons16x16/remove.png" ) );
+        buttonRemove.setOnAction( this::onActionRemove );
+        
         Button buttonImportFile = new Button();
         buttonImportFile.setTooltip( new Tooltip( LOGGER.text( "archive.popup.import.file" ) ) );
         buttonImportFile.setGraphic( icon( "icons16x16/file-xml.png" ) );
+        buttonImportFile.setOnAction( this::onActionImportFile );
+        
         Button buttonImportNet = new Button();
         buttonImportNet.setTooltip( new Tooltip( LOGGER.text( "archive.popup.import.network" ) ) );
         buttonImportNet.setGraphic( icon( "icons16x16/load-internet.png" ) );
+        buttonImportNet.setOnAction( this::onActionImportNet );
+        
         Button buttonExport = new Button();
         buttonExport.setTooltip( new Tooltip( LOGGER.text( "archive.popup.export" ) ) );
         buttonExport.setGraphic( icon( "icons16x16/file-export.png" ) );
+        buttonExport.setOnAction( this::onActionExport );
+        
         Button buttonProperties = new Button();
         buttonProperties.setTooltip( new Tooltip( LOGGER.text( "archive.popup.properties" ) ) );
         buttonProperties.setGraphic( icon( "icons16x16/properties.png" ) );
+        buttonProperties.setOnAction( this::onActionProperties );
         
         ToolBar toolbar = new ToolBar();
         toolbar.setOrientation( Orientation.VERTICAL );
@@ -187,6 +222,69 @@ public final class ArchiveController implements Builder<TitledPane>
 //        архив.пакеты().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
 //        архив.namespaces().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
         навигатор.getRoot().getChildren().add( item );
+    }
+    
+    @FXML
+    private void onActionNew( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionLoad( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionPreview( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionEdit( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionRemove( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionImportFile( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionImportNet( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionExport( ActionEvent event )
+    {
+        
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionProperties( ActionEvent event )
+    {
+        
+        event.consume();
     }
     
 }
