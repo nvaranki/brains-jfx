@@ -53,26 +53,26 @@ public final class ArchiveController implements Builder<TitledPane>
         навигатор.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         навигатор.setContextMenu( buildContextMenu() );
         навигатор.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
-        навигатор.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
-                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
-        {
-
-            @Override
-            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
-            {
-                event.getTreeItem();
-            }
-        });
-        навигатор.addEventHandler( TreeItem.<Атрибутный>branchCollapsedEvent(), 
-                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
-        {
-
-            @Override
-            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
-            {
-                event.getTreeItem();
-            }
-        });
+//        навигатор.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
+//                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
+//        {
+//
+//            @Override
+//            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
+//            {
+//                event.getTreeItem();
+//            }
+//        });
+//        навигатор.addEventHandler( TreeItem.<Атрибутный>branchCollapsedEvent(), 
+//                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
+//        {
+//
+//            @Override
+//            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
+//            {
+//                event.getTreeItem();
+//            }
+//        });
 
         Pane box = new HBox();// spacing );
         box.setPrefWidth( 250d );
