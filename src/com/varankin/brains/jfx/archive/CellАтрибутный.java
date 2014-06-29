@@ -5,7 +5,6 @@ import com.varankin.brains.jfx.JavaFX;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.*;
-import javafx.concurrent.Task;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 
@@ -43,8 +42,8 @@ class CellАтрибутный extends TreeCell<Атрибутный>
             // initiate check of name and children
             //TODO fails to reset value back! setText( "Loading..." ); textProperty().setValue( "Loading..." );
             setGraphic( treeItem.getGraphic() );
-            Task task = new CellUpdateTask( this );
-            JavaFX.getInstance().getExecutorService().submit( task );
+
+            JavaFX.getInstance().getExecutorService().submit( new CellUpdateTask( this ) );
             
 //            if( !мониторы.isEmpty() )
 //            {
