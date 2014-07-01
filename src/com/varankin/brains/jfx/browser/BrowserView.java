@@ -114,7 +114,7 @@ public class BrowserView extends TreeView<Элемент>
         ActionProcessControl( Текст словарь, ThresholdChecker монитор, Действие... действия )
         {
             super( JFX, словарь );
-            ДЕЙСТВИЕ = new ДействияПоПорядку( JFX.контекст, Приоритет.КОНТЕКСТ, действия );
+            ДЕЙСТВИЕ = new ДействияПоПорядку( Приоритет.КОНТЕКСТ, действия );
             ActionProcessControl.this.disableProperty().bind( монитор );
         }
         
