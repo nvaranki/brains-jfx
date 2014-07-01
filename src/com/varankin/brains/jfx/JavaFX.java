@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.biz.action.Действие;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Элемент;
@@ -236,6 +237,26 @@ public final class JavaFX
     public boolean useFxmlLoader()
     {
         return false; //TODO appl. setup
+    }
+    
+    public <T> void execute( Task<T> действие )
+    {
+        es.submit( действие );
+    }
+    
+    /**
+     * Выполняет действие в заданном контексте.
+     * Используется нить процесса, отличная от "JavaFX Application thread".
+     * 
+     * @param <T>      тип контекста действия.
+     * @param действие действие для выполнения.
+     * @param контекст контекста действия.
+     */
+    public <T> void execute( Действие<T> действие, T контекст )
+    {
+        //es.submit( new ApplicationActionWorker<>( действие, контекст ) );
+        new ApplicationActionWorker<>( действие, контекст ).execute( this ); //TODO ( this.контекст  )
+        //TODO this.контекст.выполнить( действие, контекст );
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">

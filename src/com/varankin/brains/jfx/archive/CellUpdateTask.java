@@ -127,6 +127,7 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.archive" );
         потомки.addAll( узел.пакеты() );
         потомки.addAll( узел.namespaces() );
+        потомки.addAll( узел.мусор() );
     }
     
     private void загрузить( Библиотека узел )
@@ -303,6 +304,15 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.прочее() );
     }
     
+    private void загрузить( Мусор узел )
+    {
+        картинка = icon( "icons16x16/remove.png" );
+        название = LOGGER.text( "cell.basket" );
+        подсказка = LOGGER.text( "cell.basket" );
+        потомки.addAll( узел.мусор() );
+        потомки.addAll( узел.прочее() );
+    }
+    
     private void загрузить( XmlNameSpace узел )
     {
         картинка = null;//icon( "icons16x16/load.png" );
@@ -352,6 +362,7 @@ final class CellUpdateTask extends Task<Void>
         else if( узел instanceof Инструкция    ) загрузить( (Инструкция)узел );
         else if( узел instanceof ТекстовыйБлок ) загрузить( (ТекстовыйБлок)узел );
         else if( узел instanceof Неизвестный   ) загрузить( (Неизвестный)узел );
+        else if( узел instanceof Мусор         ) загрузить( (Мусор)узел );
         else
         {
             картинка = null;//картинка( узел );

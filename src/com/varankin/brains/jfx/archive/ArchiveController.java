@@ -1,12 +1,24 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.appl.ДействияПоПорядку;
+import com.varankin.brains.appl.СоздатьНовыйПакет;
+import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
+import com.varankin.brains.db.Пакет;
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.jfx.ApplicationActionWorker;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,6 +28,7 @@ import javafx.scene.layout.*;
 import javafx.util.Builder;
 import javafx.util.Callback;
 
+import static com.varankin.brains.artificial.io.xml.XmlBrains.*;
 import static com.varankin.brains.jfx.JavaFX.icon;
 
 /**
@@ -227,7 +240,8 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionNew( ActionEvent event )
     {
-        
+        Архив архив = JavaFX.getInstance().контекст.архив; //TODO other object types?
+        JavaFX.getInstance().execute( new СоздатьНовыйПакет(), архив );
         event.consume();
     }
     
@@ -255,7 +269,12 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionRemove( ActionEvent event )
     {
-        
+        List<TreeItem<Атрибутный>> ceлектор = навигатор.getSelectionModel().getSelectedItems();
+        Collection<Атрибутный> элементы = new ArrayList<>( ceлектор.size() );
+        ceлектор.forEach( ( TreeItem<Атрибутный> t ) -> элементы.add( t.getValue() ) );
+        //TODO confirmation dialog
+        JavaFX.getInstance().execute( new ДействияПоПорядку<Атрибутный>( 
+                ДействияПоПорядку.Приоритет.КОНТЕКСТ, new УдалитьИзАрхива() ), элементы );
         event.consume();
     }
     
