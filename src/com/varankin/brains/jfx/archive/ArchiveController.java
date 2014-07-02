@@ -3,12 +3,18 @@ package com.varankin.brains.jfx.archive;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.СоздатьНовыйПакет;
 import com.varankin.brains.appl.УдалитьИзАрхива;
+import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
+import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
+import com.varankin.brains.jfx.ApplicationActionWorker;
+import com.varankin.brains.jfx.ExportFileSelector;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.TitledSceneGraph;
+import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +47,8 @@ public final class ArchiveController implements Builder<TitledPane>
     public static final String RESOURCE_FXML  = "/fxml/editor/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
+    private Provider<File> fileProviderExport;
+    
     @FXML private TreeView<Атрибутный> навигатор;
 
 
@@ -308,7 +316,24 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionExport( ActionEvent event )
     {
-        
+        List<TreeItem<Атрибутный>> сeлектор = new ArrayList<>( навигатор.getSelectionModel().getSelectedItems() );
+        if( сeлектор.size() != 1 )
+            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", сeлектор.size() );
+        else
+        {
+            Атрибутный элемент = сeлектор.get( 0 ).getValue();
+            if( элемент instanceof Элемент )
+            {
+                if( fileProviderExport == null ) 
+                    fileProviderExport = new ExportFileSelector( JavaFX.getInstance() );
+                File file = fileProviderExport.newInstance();
+                if( file != null )
+                    JavaFX.getInstance().execute( new ЭкспортироватьSvg( JavaFX.getInstance().контекст ), 
+                            new ЭкспортироватьSvg.Контекст( (Элемент)элемент, file ) );
+            }
+            else
+                LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be exported: {0}", элемент.getClass().getName());
+        }
         event.consume();
     }
     

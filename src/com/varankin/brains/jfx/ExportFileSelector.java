@@ -11,9 +11,9 @@ import javafx.stage.Stage;
 /**
  * Форма выбора файла для экспорта данных.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
-class ExportFileSelector implements Provider<File>
+public class ExportFileSelector implements Provider<File>
 {
     static private final Logger LOGGER = Logger.getLogger( ExportFileSelector.class.getName() );
 
@@ -21,7 +21,7 @@ class ExportFileSelector implements Provider<File>
     private final Stage платформа;
     private final FileChooser селектор;
 
-    ExportFileSelector( JavaFX jfx )
+    public ExportFileSelector( JavaFX jfx )
     {
         словарь = Текст.ПАКЕТЫ.словарь( ExportFileSelector.class, jfx.контекст.специфика );
         платформа = jfx.платформа;
