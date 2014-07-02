@@ -5,30 +5,26 @@ import com.varankin.brains.appl.СоздатьНовыйПакет;
 import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Пакет;
-import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.jfx.ApplicationActionWorker;
+import com.varankin.brains.db.Элемент;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.TitledSceneGraph;
 import com.varankin.util.LoggerX;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import javafx.concurrent.Task;
+import java.util.function.Predicate;
+import java.util.logging.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.web.WebView;
 import javafx.util.Builder;
-import javafx.util.Callback;
 
-import static com.varankin.brains.artificial.io.xml.XmlBrains.*;
 import static com.varankin.brains.jfx.JavaFX.icon;
 
 /**
@@ -255,7 +251,24 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionPreview( ActionEvent event )
     {
-        
+        Predicate<TitledSceneGraph> inBrowser = ( TitledSceneGraph tsg ) -> tsg.node instanceof WebView;
+        for( TreeItem<Атрибутный> item : навигатор.selectionModelProperty().getValue().getSelectedItems() )
+        {
+            Атрибутный value = item.getValue();
+            if( value instanceof Элемент )
+            {
+                Элемент элемент = (Элемент)value;
+                WebView view = new WebView();
+                view.setUserData( элемент );
+                SimpleStringProperty название = new SimpleStringProperty();
+                JavaFX jfx = JavaFX.getInstance();
+                jfx.execute( new WebViewLoaderTask( элемент, название, view.getEngine() ) );
+                Image icon = JavaFX.icon( "icons16x16/preview.png" ).getImage();
+                jfx.show( элемент, inBrowser, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+            }
+            else
+                LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be drawn separately: {0}", value.getClass().getName());
+        }
         event.consume();
     }
     

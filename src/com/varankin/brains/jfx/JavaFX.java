@@ -91,7 +91,7 @@ public final class JavaFX
         return o.isPresent() ? o.get() : null;
     }
     
-    <E extends Элемент> TitledSceneGraph show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
+    public <E extends Элемент> TitledSceneGraph show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
             Фабрика<E,TitledSceneGraph> фабрика )
     {
         List<TitledSceneGraph> список = views.getValue();

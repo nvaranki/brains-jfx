@@ -10,13 +10,13 @@ import javafx.scene.image.Image;
  * @author &copy; 2012 Николай Варанкин
  */
 @Deprecated // use Node.getProperties()
-class TitledSceneGraph 
+public class TitledSceneGraph 
 {
-    final Node node;
-    final Image icon;
-    final ObservableStringValue title;
+    public final Node node;
+    public final Image icon;
+    public final ObservableStringValue title;
 
-    TitledSceneGraph( Node node, Image icon, ObservableStringValue title )
+    public TitledSceneGraph( Node node, Image icon, ObservableStringValue title )
     {
         this.node = node;
         this.icon = icon;
