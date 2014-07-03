@@ -7,9 +7,7 @@ import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Элемент;
-import com.varankin.brains.jfx.ApplicationActionWorker;
 import com.varankin.brains.jfx.ExportFileSelector;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.TitledSceneGraph;
@@ -112,39 +110,43 @@ public final class ArchiveController implements Builder<TitledPane>
     private ContextMenu buildContextMenu()
     {
         MenuItem menuLoad = new MenuItem( 
-                LOGGER.text( "archive.popup.load" ), icon( "icons16x16/load.png" ) );
+                LOGGER.text( "archive.action.load" ), icon( "icons16x16/load.png" ) );
         menuLoad.setOnAction( this::onActionLoad );
         
         MenuItem menuNew = new MenuItem( 
-                LOGGER.text( "archive.popup.new" ), icon( "icons16x16/new-library.png" ) );
+                LOGGER.text( "archive.action.new" ), icon( "icons16x16/new-library.png" ) );
         menuNew.setOnAction( this::onActionNew );
         
         MenuItem menuPreview = new MenuItem( 
-                LOGGER.text( "archive.popup.preview" ), icon( "icons16x16/preview.png" ) );
+                LOGGER.text( "archive.action.preview" ), icon( "icons16x16/preview.png" ) );
         menuPreview.setOnAction( this::onActionPreview );
         
         MenuItem menuEdit = new MenuItem( 
-                LOGGER.text( "archive.popup.edit" ), icon( "icons16x16/edit.png" ) );
+                LOGGER.text( "archive.action.edit" ), icon( "icons16x16/edit.png" ) );
         menuEdit.setOnAction( this::onActionEdit );
         
         MenuItem menuRemove = new MenuItem( 
-                LOGGER.text( "archive.popup.remove" ), icon( "icons16x16/remove.png" ) );
+                LOGGER.text( "archive.action.remove" ), icon( "icons16x16/remove.png" ) );
         menuRemove.setOnAction( this::onActionRemove );
         
         MenuItem menuImportFile = new MenuItem( 
-                LOGGER.text( "archive.popup.import.file" ), icon( "icons16x16/file-xml.png" ) );
+                LOGGER.text( "archive.action.import.file" ), icon( "icons16x16/file-xml.png" ) );
         menuImportFile.setOnAction( this::onActionImportFile );
         
         MenuItem menuImportNet = new MenuItem( 
-                LOGGER.text( "archive.popup.import.network" ), icon( "icons16x16/load-internet.png" ) );
+                LOGGER.text( "archive.action.import.network" ), icon( "icons16x16/load-internet.png" ) );
         menuImportNet.setOnAction( this::onActionImportNet );
         
-        MenuItem menuExport = new MenuItem( 
-                LOGGER.text( "archive.popup.export" ), icon( "icons16x16/file-export.png" ) );
-        menuExport.setOnAction( this::onActionExport );
+        MenuItem menuExportXml = new MenuItem( 
+                LOGGER.text( "archive.action.export.xml" ), icon( "icons16x16/file-export.png" ) );
+        menuExportXml.setOnAction( this::onActionExportXml );
+        
+        MenuItem menuExportPic = new MenuItem( 
+                LOGGER.text( "archive.action.export.pic" ), icon( "icons16x16/file-export.png" ) );
+        menuExportPic.setOnAction( this::onActionExportPic );
         
         MenuItem menuProperties = new MenuItem( 
-                LOGGER.text( "archive.popup.properties" ), icon( "icons16x16/properties.png" ) );
+                LOGGER.text( "archive.action.properties" ), icon( "icons16x16/properties.png" ) );
         menuProperties.setOnAction( this::onActionProperties );
         
         ContextMenu menu = new ContextMenu();
@@ -159,7 +161,8 @@ public final class ArchiveController implements Builder<TitledPane>
                 menuNew,
                 menuImportFile,
                 menuImportNet,
-                menuExport,
+                menuExportXml,
+                menuExportPic,
                 new SeparatorMenuItem(),
                 menuProperties
         );
@@ -169,47 +172,52 @@ public final class ArchiveController implements Builder<TitledPane>
     private ToolBar buildToolBar()
     {
         Button buttonLoad = new Button();
-        buttonLoad.setTooltip( new Tooltip( LOGGER.text( "archive.popup.load" ) ) );
+        buttonLoad.setTooltip( new Tooltip( LOGGER.text( "archive.action.load" ) ) );
         buttonLoad.setGraphic( icon( "icons16x16/load.png" ) );
         buttonLoad.setOnAction( this::onActionLoad );
         
         Button buttonNew = new Button();
-        buttonNew.setTooltip( new Tooltip( LOGGER.text( "archive.popup.new" ) ) );
+        buttonNew.setTooltip( new Tooltip( LOGGER.text( "archive.action.new" ) ) );
         buttonNew.setGraphic( icon( "icons16x16/new-library.png" ) );
         buttonNew.setOnAction( this::onActionNew );
         
         Button buttonPreview = new Button();
-        buttonPreview.setTooltip( new Tooltip( LOGGER.text( "archive.popup.preview" ) ) );
+        buttonPreview.setTooltip( new Tooltip( LOGGER.text( "archive.action.preview" ) ) );
         buttonPreview.setGraphic( icon( "icons16x16/preview.png" ) );
         buttonPreview.setOnAction( this::onActionPreview );
         
         Button buttonEdit = new Button();
-        buttonEdit.setTooltip( new Tooltip( LOGGER.text( "archive.popup.edit" ) ) );
+        buttonEdit.setTooltip( new Tooltip( LOGGER.text( "archive.action.edit" ) ) );
         buttonEdit.setGraphic( icon( "icons16x16/edit.png" ) );
         buttonEdit.setOnAction( this::onActionEdit );
         
         Button buttonRemove = new Button();
-        buttonRemove.setTooltip( new Tooltip( LOGGER.text( "archive.popup.remove" ) ) );
+        buttonRemove.setTooltip( new Tooltip( LOGGER.text( "archive.action.remove" ) ) );
         buttonRemove.setGraphic( icon( "icons16x16/remove.png" ) );
         buttonRemove.setOnAction( this::onActionRemove );
         
         Button buttonImportFile = new Button();
-        buttonImportFile.setTooltip( new Tooltip( LOGGER.text( "archive.popup.import.file" ) ) );
+        buttonImportFile.setTooltip( new Tooltip( LOGGER.text( "archive.action.import.file" ) ) );
         buttonImportFile.setGraphic( icon( "icons16x16/file-xml.png" ) );
         buttonImportFile.setOnAction( this::onActionImportFile );
         
         Button buttonImportNet = new Button();
-        buttonImportNet.setTooltip( new Tooltip( LOGGER.text( "archive.popup.import.network" ) ) );
+        buttonImportNet.setTooltip( new Tooltip( LOGGER.text( "archive.action.import.network" ) ) );
         buttonImportNet.setGraphic( icon( "icons16x16/load-internet.png" ) );
         buttonImportNet.setOnAction( this::onActionImportNet );
         
-        Button buttonExport = new Button();
-        buttonExport.setTooltip( new Tooltip( LOGGER.text( "archive.popup.export" ) ) );
-        buttonExport.setGraphic( icon( "icons16x16/file-export.png" ) );
-        buttonExport.setOnAction( this::onActionExport );
+        Button buttonExportXml = new Button();
+        buttonExportXml.setTooltip( new Tooltip( LOGGER.text( "archive.action.export.xml" ) ) );
+        buttonExportXml.setGraphic( icon( "icons16x16/file-export.png" ) );
+        buttonExportXml.setOnAction( this::onActionExportXml );
+        
+        Button buttonExportPic = new Button();
+        buttonExportPic.setTooltip( new Tooltip( LOGGER.text( "archive.action.export.pic" ) ) );
+        buttonExportPic.setGraphic( icon( "icons16x16/file-export.png" ) );
+        buttonExportPic.setOnAction( this::onActionExportPic );
         
         Button buttonProperties = new Button();
-        buttonProperties.setTooltip( new Tooltip( LOGGER.text( "archive.popup.properties" ) ) );
+        buttonProperties.setTooltip( new Tooltip( LOGGER.text( "archive.action.properties" ) ) );
         buttonProperties.setGraphic( icon( "icons16x16/properties.png" ) );
         buttonProperties.setOnAction( this::onActionProperties );
         
@@ -226,7 +234,8 @@ public final class ArchiveController implements Builder<TitledPane>
                 buttonNew,
                 buttonImportFile,
                 buttonImportNet,
-                buttonExport,
+                buttonExportXml,
+                buttonExportPic,
                 new Separator( Orientation.HORIZONTAL ),
                 buttonProperties
         );
@@ -324,7 +333,19 @@ public final class ArchiveController implements Builder<TitledPane>
     }
     
     @FXML
-    private void onActionExport( ActionEvent event )
+    private void onActionExportXml( ActionEvent event )
+    {
+        List<TreeItem<Атрибутный>> сeлектор = new ArrayList<>( навигатор.getSelectionModel().getSelectedItems() );
+        JavaFX jfx = JavaFX.getInstance();
+//        Provider<InputStream> provider = jfx.getExportXmlFilelProvider().newInstance();
+//        if( provider != null )
+//            jfx.execute( new Экспортировать( jfx.контекст ), new Экспортировать.Контекст( 
+//                    provider, jfx.контекст.архив ) );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionExportPic( ActionEvent event )
     {
         List<TreeItem<Атрибутный>> сeлектор = new ArrayList<>( навигатор.getSelectionModel().getSelectedItems() );
         if( сeлектор.size() != 1 )
