@@ -1,28 +1,27 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ДействияПоПорядку;
+import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
+import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.СоздатьНовыйПакет;
 import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
-import com.varankin.brains.db.Архив;
-import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Элемент;
-import com.varankin.brains.jfx.BuilderFX;
-import com.varankin.brains.jfx.ExportFileSelector;
-import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.TitledSceneGraph;
+import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
+import com.varankin.brains.db.*;
+import com.varankin.brains.jfx.*;
 import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
@@ -32,14 +31,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 import javafx.util.Builder;
 
 import static com.varankin.brains.jfx.JavaFX.icon;
-import static com.varankin.brains.jfx.archive.PropertiesController.RESOURCE_FXML;
 
 /**
  * FXML-контроллер навигатора по архиву. 
@@ -51,7 +46,10 @@ public final class ArchiveController implements Builder<TitledPane>
     private static final LoggerX LOGGER = LoggerX.getLogger( ArchiveController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/Archive.css";
     private static final String CSS_CLASS = "archive";
-    
+    private static final Действие<Проект> действиеЗагрузитьПроект 
+        = new ЗагрузитьАрхивныйПроект( JavaFX.getInstance().контекст, 
+            DbФабрикаКомпозитныхЭлементов.class );
+
     public static final String RESOURCE_FXML  = "/fxml/editor/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
@@ -272,7 +270,22 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionLoad( ActionEvent event )
     {
-        
+        List<Проект> ceлектор = new ArrayList<>();
+        ObservableList<TreeItem<Атрибутный>> selection = навигатор.getSelectionModel().getSelectedItems();
+        ceлектор.addAll( selection.stream()
+                .filter( ( TreeItem<Атрибутный> i ) -> i.getValue() instanceof Проект )
+                .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( (Проект)i.getValue() ) )
+                .collect( Collectors.toList() ) );
+//TODO org.neo4j.graphdb.NotInTransactionException : .проекты()       
+//        ceлектор.addAll( selection.stream()
+//                .filter( ( TreeItem<Атрибутный> i ) -> i.getValue() instanceof Пакет )
+//                .flatMap( ( TreeItem<Атрибутный> i ) -> ((Пакет)i.getValue()).проекты().stream() )
+//                .collect( Collectors.toList() ) );
+        if( ceлектор.isEmpty() )
+            LOGGER.log( Level.INFO, "002005002I" );
+        else
+            JavaFX.getInstance().execute( new ДействияПоПорядку<>( 
+                Приоритет.КОНТЕКСТ, действиеЗагрузитьПроект ), ceлектор );
         event.consume();
     }
     
