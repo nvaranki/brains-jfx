@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
-import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.stage.*;
 
@@ -32,14 +31,7 @@ final class ValuePropertiesStage extends Stage
         setHeight( 150d ); //TODO save/restore size&pos
         setWidth( 350d );
         setScene( new Scene( builder.getNode() ) );
-        setOnShowing( new EventHandler<WindowEvent>() 
-        {
-            @Override
-            public void handle( WindowEvent event )
-            {
-                controller.reset();
-            }
-        } );
+        setOnShowing( ( WindowEvent e ) -> controller.reset() );
     }
 
     ValuePropertiesController getController()
