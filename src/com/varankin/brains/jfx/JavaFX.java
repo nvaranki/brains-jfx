@@ -5,6 +5,7 @@ import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.Контекст;
+import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
 import java.io.File;
@@ -59,6 +60,7 @@ public final class JavaFX
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
     private final ScheduledExecutorService ses;
+    private final Provider<Provider<InputStream>> xmlFileSelector, xmlUrlSelector;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -75,6 +77,8 @@ public final class JavaFX
             new SynchronousQueue<>() );
         ses = new ScheduledThreadPoolExecutor( 10 ); //TODO appl config
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
+        xmlFileSelector = new XmlFileSelector( JavaFX.this );
+        xmlUrlSelector  = new XmlUrlSelector( JavaFX.this );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -257,6 +261,14 @@ public final class JavaFX
         //es.submit( new ApplicationActionWorker<>( действие, контекст ) );
         new ApplicationActionWorker<>( действие, контекст ).execute( this ); //TODO ( this.контекст  )
         //TODO this.контекст.выполнить( действие, контекст );
+    }
+    
+    public Provider<Provider<InputStream>> getImportXmlFilelProvider() {
+        return xmlFileSelector;
+    }
+
+    public Provider<Provider<InputStream>> getImportXmlUrlProvider() {
+        return xmlUrlSelector;
     }
 
     //<editor-fold defaultstate="collapsed" desc="классы">

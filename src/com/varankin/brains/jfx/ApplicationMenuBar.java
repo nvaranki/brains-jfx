@@ -62,12 +62,10 @@ class ApplicationMenuBar
                     new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1.2", специфика ),
                         new MenuNode( new ApplicationActionImportXml( 
                             (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
-                            new Импортировать.Контекст( jfx.контекст, null ),
-                            jfx, new XmlFileSelector( jfx ), historyXml ) ),
+                            jfx.getImportXmlFilelProvider(), historyXml ) ),
                         new MenuNode( new ApplicationActionImportXml( 
                             (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
-                            new Импортировать.Контекст( jfx.контекст, null ),
-                            jfx, new XmlUrlSelector( jfx ), historyXml ) ),
+                            jfx.getImportXmlUrlProvider(), historyXml ) ),
                         null,
                         new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 1, providersXml ) ), 
                         new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 2, providersXml ) ), 
@@ -100,7 +98,7 @@ class ApplicationMenuBar
         ApplicationActionHistory<Импортировать.Контекст,Provider<InputStream>> действие = 
             new ApplicationActionHistory<>(
                 (СогласованноеДействие)jfx.контекст.действие( индекс ), 
-                new Импортировать.Контекст( jfx.контекст, new HistoricProvider<>( история, позиция ) ),
+                new Импортировать.Контекст( new HistoricProvider<>( история, позиция ), jfx.контекст.архив ),
                 jfx, история, позиция );
         поставщики.addListener( действие );
         return действие;

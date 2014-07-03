@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.ДействияПоПорядку;
+import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.СоздатьНовыйПакет;
 import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
@@ -15,6 +16,7 @@ import com.varankin.brains.jfx.TitledSceneGraph;
 import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -302,14 +304,22 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionImportFile( ActionEvent event )
     {
-        
+        JavaFX jfx = JavaFX.getInstance();
+        Provider<InputStream> provider = jfx.getImportXmlFilelProvider().newInstance();
+        if( provider != null )
+            jfx.execute( new Импортировать( jfx.контекст ), new Импортировать.Контекст( 
+                    provider, jfx.контекст.архив ) );
         event.consume();
     }
     
     @FXML
     private void onActionImportNet( ActionEvent event )
     {
-        
+        JavaFX jfx = JavaFX.getInstance();
+        Provider<InputStream> provider = jfx.getImportXmlUrlProvider().newInstance();
+        if( provider != null )
+            jfx.execute( new Импортировать( jfx.контекст ), new Импортировать.Контекст( 
+                    provider, jfx.контекст.архив ) );
         event.consume();
     }
     
