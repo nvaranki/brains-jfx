@@ -5,13 +5,9 @@ import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -24,7 +20,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер элемента управления прорисовкой отметок.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public final class LegendValueController implements Builder<CheckBox>
 {
@@ -62,49 +58,23 @@ public final class LegendValueController implements Builder<CheckBox>
     /**
      * Создает элемент управления прорисовкой отметок.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return элемент управления.
      */
     @Override
     public CheckBox build()
     {
         menuItemShow = new MenuItem();
-        menuItemShow.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionShow( event );
-            }
-        } );
+        menuItemShow.setOnAction( this::onActionShow );
         
         menuItemHide = new MenuItem();
-        menuItemHide.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionHide( event );
-            }
-        } );
+        menuItemHide.setOnAction( this::onActionHide );
         
         menuItemRemove = new MenuItem();
-        menuItemRemove.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionRemove( event );
-            }
-        } );
+        menuItemRemove.setOnAction( this::onActionRemove );
         
         menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
-        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionProperties( event );
-            }
-        } );
+        menuItemProperties.setOnAction( this::onActionProperties );
         
         popup = new ContextMenu();
         popup.setId( "popup" );
@@ -162,19 +132,21 @@ public final class LegendValueController implements Builder<CheckBox>
     }
 
     @FXML
-    private void onActionShow( ActionEvent __ )
+    private void onActionShow( ActionEvent event )
     {
         legend.selectedProperty().setValue( Boolean.TRUE );
+        event.consume();
     }
     
     @FXML
-    private void onActionHide( ActionEvent __ )
+    private void onActionHide( ActionEvent event )
     {
         legend.selectedProperty().setValue( Boolean.FALSE );
+        event.consume();
     }
     
     @FXML
-    private void onActionRemove( ActionEvent __ )
+    private void onActionRemove( ActionEvent event )
     {
         // остановить прорисовку
         legend.selectedProperty().setValue( Boolean.FALSE );
@@ -185,10 +157,11 @@ public final class LegendValueController implements Builder<CheckBox>
         else
             LOGGER.log( "001002002W", legend.getText() );
         // TODO what to do with open queue?
+        event.consume();
     }
         
     @FXML
-    private void onActionProperties( ActionEvent __ )
+    private void onActionProperties( ActionEvent event )
     {
         if( properties == null )
         {
@@ -203,6 +176,7 @@ public final class LegendValueController implements Builder<CheckBox>
         }
         properties.show();
         properties.toFront();
+        event.consume();
     }
         
     /**
