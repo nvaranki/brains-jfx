@@ -8,6 +8,7 @@ import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Элемент;
+import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.ExportFileSelector;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.TitledSceneGraph;
@@ -25,13 +26,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 
 import static com.varankin.brains.jfx.JavaFX.icon;
+import static com.varankin.brains.jfx.archive.PropertiesController.RESOURCE_FXML;
 
 /**
  * FXML-контроллер навигатора по архиву. 
@@ -47,6 +55,7 @@ public final class ArchiveController implements Builder<TitledPane>
     public static final String RESOURCE_FXML  = "/fxml/editor/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
+    private Stage properties;
     private Provider<File> fileProviderExport;
     
     @FXML private TreeView<Атрибутный> навигатор;
@@ -371,7 +380,35 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionProperties( ActionEvent event )
     {
-        
+        if( properties == null )
+        {
+            BuilderFX<Parent,PropertiesController> builder = new BuilderFX<>();
+            builder.init( PropertiesController.class, 
+                PropertiesController.RESOURCE_FXML, PropertiesController.RESOURCE_BUNDLE );
+            PropertiesController controller = builder.getController();
+
+            properties = new Stage();
+            properties.initStyle( StageStyle.DECORATED );
+            properties.initModality( Modality.NONE );
+            properties.initOwner( JavaFX.getInstance().платформа );
+            properties.getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+
+            properties.setResizable( true );
+            properties.setMinHeight( 150d );
+            properties.setMinWidth( 350d );
+            properties.setHeight( 150d ); //TODO save/restore size&pos
+            properties.setWidth( 350d );
+            properties.setScene( new Scene( builder.getNode() ) );
+            properties.setOnShowing( ( WindowEvent e ) -> controller.reset() );
+
+            properties.titleProperty().bind( controller.titleProperty() );
+//            controller.bindColorProperty( colorProperty );
+//            controller.bindPatternProperty( patternProperty );
+//            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
+            controller.reset();
+        }
+        properties.show();
+        properties.toFront();
         event.consume();
     }
     
