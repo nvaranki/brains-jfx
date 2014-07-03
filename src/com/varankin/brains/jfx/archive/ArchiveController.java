@@ -8,8 +8,8 @@ import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.СоздатьНовыйПакет;
 import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
-import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
 import com.varankin.brains.db.*;
+import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
 import com.varankin.brains.jfx.*;
 import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +36,7 @@ import javafx.stage.*;
 import javafx.util.Builder;
 
 import static com.varankin.brains.jfx.JavaFX.icon;
+import static javafx.beans.binding.Bindings.createBooleanBinding;
 
 /**
  * FXML-контроллер навигатора по архиву. 
@@ -55,6 +57,7 @@ public final class ArchiveController implements Builder<TitledPane>
 
     private Stage properties;
     private Provider<File> fileProviderExport;
+    private BooleanBinding disableLoad, disableRemove, disableProperties;
     
     @FXML private TreeView<Атрибутный> навигатор;
 
@@ -76,7 +79,6 @@ public final class ArchiveController implements Builder<TitledPane>
         навигатор.setShowRoot( false );
         навигатор.setEditable( false );
         навигатор.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
-        навигатор.setContextMenu( buildContextMenu() );
         навигатор.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
 //        навигатор.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
 //                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
@@ -99,6 +101,13 @@ public final class ArchiveController implements Builder<TitledPane>
 //            }
 //        });
 
+        ObservableList selection = навигатор.getSelectionModel().getSelectedItems();
+        disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
+        disableRemove = createBooleanBinding( () -> disableActionRemove(), selection );
+        disableProperties = createBooleanBinding( () -> disableActionProperties(), selection );
+        
+        навигатор.setContextMenu( buildContextMenu() );
+
         Pane box = new HBox();// spacing );
         box.setPrefWidth( 250d );
         HBox.setHgrow( навигатор, Priority.ALWAYS );
@@ -119,6 +128,7 @@ public final class ArchiveController implements Builder<TitledPane>
         MenuItem menuLoad = new MenuItem( 
                 LOGGER.text( "archive.action.load" ), icon( "icons16x16/load.png" ) );
         menuLoad.setOnAction( this::onActionLoad );
+        menuLoad.disableProperty().bind( disableLoad );
         
         MenuItem menuNew = new MenuItem( 
                 LOGGER.text( "archive.action.new" ), icon( "icons16x16/new-library.png" ) );
@@ -135,6 +145,7 @@ public final class ArchiveController implements Builder<TitledPane>
         MenuItem menuRemove = new MenuItem( 
                 LOGGER.text( "archive.action.remove" ), icon( "icons16x16/remove.png" ) );
         menuRemove.setOnAction( this::onActionRemove );
+        menuRemove.disableProperty().bind( disableRemove );
         
         MenuItem menuImportFile = new MenuItem( 
                 LOGGER.text( "archive.action.import.file" ), icon( "icons16x16/file-xml.png" ) );
@@ -155,6 +166,7 @@ public final class ArchiveController implements Builder<TitledPane>
         MenuItem menuProperties = new MenuItem( 
                 LOGGER.text( "archive.action.properties" ), icon( "icons16x16/properties.png" ) );
         menuProperties.setOnAction( this::onActionProperties );
+        menuProperties.disableProperty().bind( disableProperties );
         
         ContextMenu menu = new ContextMenu();
         menu.getItems().addAll
@@ -182,6 +194,7 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonLoad.setTooltip( new Tooltip( LOGGER.text( "archive.action.load" ) ) );
         buttonLoad.setGraphic( icon( "icons16x16/load.png" ) );
         buttonLoad.setOnAction( this::onActionLoad );
+        buttonLoad.disableProperty().bind( disableLoad );
         
         Button buttonNew = new Button();
         buttonNew.setTooltip( new Tooltip( LOGGER.text( "archive.action.new" ) ) );
@@ -202,6 +215,7 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonRemove.setTooltip( new Tooltip( LOGGER.text( "archive.action.remove" ) ) );
         buttonRemove.setGraphic( icon( "icons16x16/remove.png" ) );
         buttonRemove.setOnAction( this::onActionRemove );
+        buttonRemove.disableProperty().bind( disableRemove );
         
         Button buttonImportFile = new Button();
         buttonImportFile.setTooltip( new Tooltip( LOGGER.text( "archive.action.import.file" ) ) );
@@ -227,6 +241,7 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonProperties.setTooltip( new Tooltip( LOGGER.text( "archive.action.properties" ) ) );
         buttonProperties.setGraphic( icon( "icons16x16/properties.png" ) );
         buttonProperties.setOnAction( this::onActionProperties );
+        buttonProperties.disableProperty().bind( disableProperties );
         
         ToolBar toolbar = new ToolBar();
         toolbar.setOrientation( Orientation.VERTICAL );
@@ -421,5 +436,27 @@ public final class ArchiveController implements Builder<TitledPane>
         properties.toFront();
         event.consume();
     }
-    
+  
+    private boolean disableActionLoad()
+    {
+        List<TreeItem<Атрибутный>> s = навигатор.getSelectionModel().getSelectedItems();
+        return s.isEmpty() || !s.stream()
+            .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+            .allMatch( ( Атрибутный i ) -> i instanceof Проект ); 
+    }
+
+    private boolean disableActionRemove()
+    {
+        List<TreeItem<Атрибутный>> s = навигатор.getSelectionModel().getSelectedItems();
+        return s.isEmpty() || s.stream()
+            .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+            .anyMatch( ( Атрибутный i ) -> i instanceof Архив ); 
+    }
+
+    private boolean disableActionProperties()
+    {
+        List<TreeItem<Атрибутный>> s = навигатор.getSelectionModel().getSelectedItems();
+        return s.size() != 1; 
+    }
+
 }
