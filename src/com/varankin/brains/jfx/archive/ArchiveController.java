@@ -273,14 +273,13 @@ public final class ArchiveController implements Builder<TitledPane>
         List<Проект> ceлектор = new ArrayList<>();
         ObservableList<TreeItem<Атрибутный>> selection = навигатор.getSelectionModel().getSelectedItems();
         ceлектор.addAll( selection.stream()
-                .filter( ( TreeItem<Атрибутный> i ) -> i.getValue() instanceof Проект )
-                .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( (Проект)i.getValue() ) )
+                .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+//TODO org.neo4j.graphdb.NotInTransactionException : i.пакеты() i.проекты()       
+//                .flatMap( ( Атрибутный i ) -> i instanceof Архив ? ((Архив)i).пакеты().stream() : Stream.of( i ) )
+//                .flatMap( ( Атрибутный i ) -> i instanceof Пакет ? ((Пакет)i).проекты().stream() : Stream.of( i ) )
+                .filter(  ( Атрибутный i ) -> i instanceof Проект )
+                .flatMap( ( Атрибутный i ) -> Stream.of( (Проект)i ) )
                 .collect( Collectors.toList() ) );
-//TODO org.neo4j.graphdb.NotInTransactionException : .проекты()       
-//        ceлектор.addAll( selection.stream()
-//                .filter( ( TreeItem<Атрибутный> i ) -> i.getValue() instanceof Пакет )
-//                .flatMap( ( TreeItem<Атрибутный> i ) -> ((Пакет)i.getValue()).проекты().stream() )
-//                .collect( Collectors.toList() ) );
         if( ceлектор.isEmpty() )
             LOGGER.log( Level.INFO, "002005002I" );
         else
