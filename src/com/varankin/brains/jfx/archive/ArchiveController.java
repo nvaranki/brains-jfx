@@ -270,16 +270,14 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionLoad( ActionEvent event )
     {
-        List<Проект> ceлектор = new ArrayList<>();
-        ObservableList<TreeItem<Атрибутный>> selection = навигатор.getSelectionModel().getSelectedItems();
-        ceлектор.addAll( selection.stream()
-                .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+        List<Проект> ceлектор = навигатор.getSelectionModel().getSelectedItems().stream()
+            .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
 //TODO org.neo4j.graphdb.NotInTransactionException : i.пакеты() i.проекты()       
-//                .flatMap( ( Атрибутный i ) -> i instanceof Архив ? ((Архив)i).пакеты().stream() : Stream.of( i ) )
-//                .flatMap( ( Атрибутный i ) -> i instanceof Пакет ? ((Пакет)i).проекты().stream() : Stream.of( i ) )
-                .filter(  ( Атрибутный i ) -> i instanceof Проект )
-                .flatMap( ( Атрибутный i ) -> Stream.of( (Проект)i ) )
-                .collect( Collectors.toList() ) );
+//            .flatMap( ( Атрибутный i ) -> i instanceof Архив ? ((Архив)i).пакеты().stream() : Stream.of( i ) )
+//            .flatMap( ( Атрибутный i ) -> i instanceof Пакет ? ((Пакет)i).проекты().stream() : Stream.of( i ) )
+            .filter(  ( Атрибутный i ) -> i instanceof Проект )
+            .flatMap( ( Атрибутный i ) -> Stream.of( (Проект)i ) )
+            .collect( Collectors.toList() );
         if( ceлектор.isEmpty() )
             LOGGER.log( Level.INFO, "002005002I" );
         else
