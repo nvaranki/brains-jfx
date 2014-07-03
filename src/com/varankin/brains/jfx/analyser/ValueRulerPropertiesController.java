@@ -59,6 +59,8 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
     /**
      * Создает панель диалога для выбора и установки параметров оси значений.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель диалога.
      */
     @Override
     public BorderPane build()
@@ -71,36 +73,15 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
         buttonOK = new Button( LOGGER.text( "button.ok" ) );
         buttonOK.setId( "buttonOK" );
         buttonOK.setDefaultButton( true );
-        buttonOK.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionOK( event );
-            }
-        } );
+        buttonOK.setOnAction( this::onActionOK );
 
         buttonApply = new Button( LOGGER.text( "button.apply" ) );
         buttonApply.setId( "buttonApply" );
-        buttonApply.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionApply( event );
-            }
-        } );
+        buttonApply.setOnAction( this::onActionApply );
 
         Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
         buttonCancel.setCancelButton( true );
-        buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionCancel( event );
-            }
-        } );
+        buttonCancel.setOnAction( this::onActionCancel );
 
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
@@ -136,18 +117,21 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
     {
         applyChanges();
         buttonApply.getScene().getWindow().hide();
+        event.consume();
     }
     
     @FXML
     void onActionApply( ActionEvent event )
     {
         applyChanges();
+        event.consume();
     }
     
     @FXML
     void onActionCancel( ActionEvent event )
     {
         buttonApply.getScene().getWindow().hide();
+        event.consume();
     }
 
     void bindValueMinProperty( Property<Float> property )
