@@ -57,7 +57,7 @@ public final class ArchiveController implements Builder<TitledPane>
 
     private Stage properties;
     private Provider<File> fileProviderExport;
-    private BooleanBinding disableLoad, disableRemove, disableProperties;
+    private BooleanBinding disableNew, disableLoad, disableRemove, disableProperties;
     
     @FXML private TreeView<Атрибутный> навигатор;
 
@@ -102,6 +102,7 @@ public final class ArchiveController implements Builder<TitledPane>
 //        });
 
         ObservableList selection = навигатор.getSelectionModel().getSelectedItems();
+        disableNew = createBooleanBinding( () -> disableActionNew(), selection );
         disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
         disableRemove = createBooleanBinding( () -> disableActionRemove(), selection );
         disableProperties = createBooleanBinding( () -> disableActionProperties(), selection );
@@ -130,9 +131,99 @@ public final class ArchiveController implements Builder<TitledPane>
         menuLoad.setOnAction( this::onActionLoad );
         menuLoad.disableProperty().bind( disableLoad );
         
-        MenuItem menuNew = new MenuItem( 
-                LOGGER.text( "archive.action.new" ), icon( "icons16x16/new-library.png" ) );
-        menuNew.setOnAction( this::onActionNew );
+        MenuItem menuNewБиблиотека = new MenuItem( 
+                LOGGER.text( "cell.library" ), icon( "icons16x16/new-library.png" ) );
+        menuNewБиблиотека.setOnAction( this::onActionNewБиблиотека );
+        
+        MenuItem menuNewЗаметка = new MenuItem( 
+                LOGGER.text( "cell.note" ), icon( "icons16x16/properties.png" ) );
+        menuNewЗаметка.setOnAction( this::onActionNewЗаметка );
+        
+        MenuItem menuNewИнструкция = new MenuItem( 
+                LOGGER.text( "cell.instruction" ) );//, icon( "icons16x16/new-library.png" ) );
+        menuNewИнструкция.setOnAction( this::onActionNewИнструкция );
+        
+        MenuItem menuNewКлассJava = new MenuItem( 
+                LOGGER.text( "cell.class.java" ) );//, icon( "icons16x16/new-library.png" ) );
+        menuNewКлассJava.setOnAction( this::onActionNewКлассJava );
+        
+        MenuItem menuNewКонтакт = new MenuItem( 
+                LOGGER.text( "cell.pin" ), icon( "icons16x16/pin.png" ) );
+        menuNewКонтакт.setOnAction( this::onActionNewКонтакт );
+        
+        MenuItem menuNewМодуль = new MenuItem( 
+                LOGGER.text( "cell.module" ), icon( "icons16x16/module.png" ) );
+        menuNewМодуль.setOnAction( this::onActionNewМодуль );
+        
+        MenuItem menuNewПакет = new MenuItem( 
+                LOGGER.text( "cell.package" ), icon( "icons16x16/file-xml.png" ) );
+        menuNewПакет.setOnAction( this::onActionNewПакет );
+        
+        MenuItem menuNewПоле = new MenuItem( 
+                LOGGER.text( "cell.field" ), icon( "icons16x16/field2.png" ) );
+        menuNewПоле.setOnAction( this::onActionNewПоле );
+        
+        MenuItem menuNewПроект = new MenuItem( 
+                LOGGER.text( "cell.project" ), icon( "icons16x16/new-project.png" ) );
+        menuNewПроект.setOnAction( this::onActionNewПроект );
+        
+        MenuItem menuNewПроцессор = new MenuItem( 
+                LOGGER.text( "cell.processor" ), icon( "icons16x16/processor2.png" ) );
+        menuNewПроцессор.setOnAction( this::onActionNewПроцессор );
+        
+        MenuItem menuNewСигнал = new MenuItem( 
+                LOGGER.text( "cell.signal" ), icon( "icons16x16/signal.png" ) );
+        menuNewСигнал.setOnAction( this::onActionNewСигнал );
+        
+        MenuItem menuNewСоединение = new MenuItem( 
+                LOGGER.text( "cell.connector" ), icon( "icons16x16/connector.png" ) );
+        menuNewСоединение.setOnAction( this::onActionNewСоединение );
+        
+        MenuItem menuNewТекстовыйБлок = new MenuItem( 
+                LOGGER.text( "cell.text" ), icon( "icons16x16/file.png" ) );
+        menuNewТекстовыйБлок.setOnAction( this::onActionNewТекстовыйБлок );
+        
+        MenuItem menuNewТочка = new MenuItem( 
+                LOGGER.text( "cell.point" ), icon( "icons16x16/point.png" ) );
+        menuNewТочка.setOnAction( this::onActionNewТочка );
+        
+        MenuItem menuNewФрагмент = new MenuItem( 
+                LOGGER.text( "cell.fragment" ), icon( "icons16x16/fragment.png" ) );
+        menuNewФрагмент.setOnAction( this::onActionNewФрагмент );
+        
+        MenuItem menuNewXmlNameSpace = new MenuItem( 
+                LOGGER.text( "cell.namespace" ) );//, icon( "icons16x16/.png" ) );
+        menuNewXmlNameSpace.setOnAction( this::onActionNewXmlNameSpace );
+        
+        Menu menuNew = new Menu( LOGGER.text( "archive.action.new" ) );
+                //, icon( "icons16x16/new-library.png" ) );
+        //menuNew.setOnAction( this::onActionNew );
+        //menuNew.disableProperty().bind( disableNew );
+        menuNew.getItems().addAll
+        ( 
+                menuNewПакет,
+                new SeparatorMenuItem(),
+                menuNewПроект,
+                menuNewБиблиотека,
+                new SeparatorMenuItem(),
+                menuNewФрагмент,
+                menuNewСигнал,
+                menuNewСоединение,
+                menuNewКонтакт,
+                new SeparatorMenuItem(),
+                menuNewМодуль,
+                menuNewПоле, 
+                menuNewПроцессор,
+                new SeparatorMenuItem(),
+                menuNewТочка,
+                new SeparatorMenuItem(),
+                menuNewЗаметка,
+                menuNewИнструкция,
+                menuNewКлассJava,
+                menuNewТекстовыйБлок,
+                new SeparatorMenuItem(),
+                menuNewXmlNameSpace
+        );
         
         MenuItem menuPreview = new MenuItem( 
                 LOGGER.text( "archive.action.preview" ), icon( "icons16x16/preview.png" ) );
@@ -176,14 +267,13 @@ public final class ArchiveController implements Builder<TitledPane>
                 menuPreview,
                 menuEdit,
                 menuRemove,
-                new SeparatorMenuItem(),
                 menuNew,
+                menuProperties,
+                new SeparatorMenuItem(),
                 menuImportFile,
                 menuImportNet,
                 menuExportXml,
-                menuExportPic,
-                new SeparatorMenuItem(),
-                menuProperties
+                menuExportPic
         );
         return menu;
     }
@@ -200,6 +290,7 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonNew.setTooltip( new Tooltip( LOGGER.text( "archive.action.new" ) ) );
         buttonNew.setGraphic( icon( "icons16x16/new-library.png" ) );
         buttonNew.setOnAction( this::onActionNew );
+        buttonNew.disableProperty().bind( disableNew );
         
         Button buttonPreview = new Button();
         buttonPreview.setTooltip( new Tooltip( LOGGER.text( "archive.action.preview" ) ) );
@@ -277,8 +368,136 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionNew( ActionEvent event )
     {
-        Архив архив = JavaFX.getInstance().контекст.архив; //TODO other object types?
-        JavaFX.getInstance().execute( new СоздатьНовыйПакет(), архив );
+        List<TreeItem<Атрибутный>> s = навигатор.getSelectionModel().getSelectedItems();
+        if( s.size() == 1 )
+        {
+            Атрибутный value = s.get( 0 ).getValue();
+            if( value instanceof Архив )
+                onActionNewПакет( event );
+            else if( value instanceof Пакет )
+                onActionNewПроект( event );
+            else
+                LOGGER.log( Level.WARNING, "Uncertain what to create for {0}.", 
+                        value.getClass().getSimpleName() );
+        }
+        else
+            LOGGER.log( Level.WARNING, "Uncertain what to create for {0}.", "selection" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewБиблиотека( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewЗаметка( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewИнструкция( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewКлассJava( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewКонтакт( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewМодуль( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewПакет( ActionEvent event )
+    {
+//        Архив архив = JavaFX.getInstance().контекст.архив; //TODO other object types?
+//        JavaFX.getInstance().execute( new СоздатьНовыйПакет(), архив );
+//        Атрибутный value = s.get(0).getValue();
+//        return !( value instanceof Архив || value instanceof Пакет );
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewПоле( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewПроект( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewПроцессор( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewСигнал( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewСоединение( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewТекстовыйБлок( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewТочка( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewФрагмент( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewXmlNameSpace( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
         event.consume();
     }
     
@@ -457,6 +676,16 @@ public final class ArchiveController implements Builder<TitledPane>
     {
         List<TreeItem<Атрибутный>> s = навигатор.getSelectionModel().getSelectedItems();
         return s.size() != 1; 
+    }
+
+    private boolean disableActionNew()
+    {
+        List<TreeItem<Атрибутный>> s = навигатор.getSelectionModel().getSelectedItems();
+        if( s.size() != 1 ) return true;
+        for( TreeItem<Атрибутный> item = s.get(0); item != null; item = item.getParent() )
+            if( item.getValue() instanceof Мусор ) return true;
+        Атрибутный value = s.get(0).getValue();
+        return !( value instanceof Архив || value instanceof Пакет );
     }
 
 }
