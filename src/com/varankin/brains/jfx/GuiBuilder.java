@@ -60,9 +60,12 @@ class GuiBuilder
         панель0.setPrefWidth( 250d );
 //        панель2.setPrefWidth( 250d );
 //        панель3.setPrefWidth( 250d );
+        BuilderFX<TitledPane,ArchiveController> фабрикаНавигатораАрхива = new BuilderFX<>();
+        фабрикаНавигатораАрхива.init( ArchiveController.class, 
+            ArchiveController.RESOURCE_FXML, ArchiveController.RESOURCE_BUNDLE );
         // панель обозревателей
         Accordion обозреватели = new Accordion();
-        обозреватели.getPanes().addAll( панель0, new ArchiveController().build() );//TODO , панель2, панель3 );
+        обозреватели.getPanes().addAll( панель0, фабрикаНавигатораАрхива.getNode() );//TODO , панель2, панель3 );
         обозреватели.setExpandedPane( панель0 );
         обозреватели.setPrefWidth( 250d );
         return обозреватели;
