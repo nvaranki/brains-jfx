@@ -42,11 +42,6 @@ class ApplicationMenuBar
     {
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
         
-        ListProperty<Provider<InputStream>> providersXml 
-                = new SimpleListProperty<>( FXCollections.<Provider<InputStream>>observableArrayList() );
-        providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
-        HistoryList<Provider<InputStream>> historyXml 
-                = new HistoryList<>( providersXml, ApplicationActionImportXml.class );
 
         return new MenuNode[]
         {
@@ -62,14 +57,16 @@ class ApplicationMenuBar
                     new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1.2", специфика ),
                         new MenuNode( new ApplicationActionImportXml( 
                             (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
-                            jfx.getImportXmlFilelProvider(), historyXml ) ),
+                            jfx.getImportXmlFilelProvider(), jfx.historyXml ) ),
                         new MenuNode( new ApplicationActionImportXml( 
                             (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
-                            jfx.getImportXmlUrlProvider(), historyXml ) ),
+                            jfx.getImportXmlUrlProvider(), jfx.historyXml ) ),
                         null,
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 1, providersXml ) ), 
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 2, providersXml ) ), 
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, historyXml, 3, providersXml ) ) ),
+                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 1 ) ), 
+                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 2 ) ), 
+                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 3 ) ),
+                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 4 ) ),
+                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 5 ) ) ),
                     null,
                     new MenuNode( new ApplicationActionExit( jfx ) ) ),
 
@@ -91,16 +88,14 @@ class ApplicationMenuBar
         };
     }
     
-    static private AbstractJfxAction повторИмпортаXml( КаталогДействий.Индекс индекс, JavaFX jfx, 
-            HistoryList<Provider<InputStream>> история, int позиция, 
-            ListProperty<Provider<InputStream>> поставщики ) 
+    static private AbstractJfxAction повторИмпортаXml( КаталогДействий.Индекс индекс, JavaFX jfx, int позиция ) 
     {
         ApplicationActionHistory<Импортировать.Контекст,Provider<InputStream>> действие = 
             new ApplicationActionHistory<>(
                 (СогласованноеДействие)jfx.контекст.действие( индекс ), 
-                new Импортировать.Контекст( new HistoricProvider<>( история, позиция ), jfx.контекст.архив ),
-                jfx, история, позиция );
-        поставщики.addListener( действие );
+                new Импортировать.Контекст( new HistoricProvider<>( jfx.historyXml, позиция ), jfx.контекст.архив ),
+                jfx, jfx.historyXml, позиция );
+        jfx.providersXml.addListener( действие );
         return действие;
     }
     

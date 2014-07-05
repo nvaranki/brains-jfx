@@ -6,6 +6,7 @@ import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Элемент;
 import com.varankin.brains.Контекст;
 import com.varankin.io.container.Provider;
+import com.varankin.util.HistoryList;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
 import java.io.File;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
@@ -61,6 +64,9 @@ public final class JavaFX
     private final ExecutorService es;
     private final ScheduledExecutorService ses;
     private final Provider<Provider<InputStream>> xmlFileSelector, xmlUrlSelector;
+    public final ListProperty<Provider<InputStream>> providersXml; 
+    public final HistoryList<Provider<InputStream>> historyXml;
+            
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -79,6 +85,9 @@ public final class JavaFX
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
         xmlFileSelector = new XmlFileSelector( JavaFX.this );
         xmlUrlSelector  = new XmlUrlSelector( JavaFX.this );
+        providersXml = new SimpleListProperty<>( FXCollections.observableArrayList() );
+        providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
+        historyXml = new HistoryList<>( providersXml, ApplicationActionImportXml.class );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()

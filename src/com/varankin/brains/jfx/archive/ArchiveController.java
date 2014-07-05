@@ -15,6 +15,7 @@ import com.varankin.util.LoggerX;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
@@ -48,9 +49,13 @@ public final class ArchiveController implements Builder<TitledPane>
     private static final LoggerX LOGGER = LoggerX.getLogger( ArchiveController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/Archive.css";
     private static final String CSS_CLASS = "archive";
+    private static final Function<TreeItem<Атрибутный>, Stream<? extends Атрибутный>> TO_VALUE 
+            = ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() );
     private static final Действие<Проект> действиеЗагрузитьПроект 
         = new ЗагрузитьАрхивныйПроект( JavaFX.getInstance().контекст, 
             DbФабрикаКомпозитныхЭлементов.class );
+    private static final Импортировать импортировать
+        = new Импортировать( JavaFX.getInstance().контекст );
 
     public static final String RESOURCE_FXML  = "/fxml/archive/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
@@ -653,22 +658,14 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionImportFile( ActionEvent event )
     {
-        JavaFX jfx = JavaFX.getInstance();
-        Provider<InputStream> provider = jfx.getImportXmlFilelProvider().newInstance();
-        if( provider != null )
-            jfx.execute( new Импортировать( jfx.контекст ), new Импортировать.Контекст( 
-                    provider, jfx.контекст.архив ) );
+        импортироватьXml( JavaFX.getInstance().getImportXmlFilelProvider() );
         event.consume();
     }
     
     @FXML
     private void onActionImportNet( ActionEvent event )
     {
-        JavaFX jfx = JavaFX.getInstance();
-        Provider<InputStream> provider = jfx.getImportXmlUrlProvider().newInstance();
-        if( provider != null )
-            jfx.execute( new Импортировать( jfx.контекст ), new Импортировать.Контекст( 
-                    provider, jfx.контекст.архив ) );
+        импортироватьXml( JavaFX.getInstance().getImportXmlUrlProvider() );
         event.consume();
     }
     
@@ -895,14 +892,14 @@ public final class ArchiveController implements Builder<TitledPane>
     
     private boolean disableActionImportFile()
     {
-        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
-        return false;
+        return selection.size() != 1 || !selection.stream().flatMap( TO_VALUE )
+                .allMatch( ( Атрибутный i ) -> i instanceof Архив );
     }
     
     private boolean disableActionImportNet()
     {
-        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
-        return false;
+        return selection.size() != 1 || !selection.stream().flatMap( TO_VALUE )
+                .allMatch( ( Атрибутный i ) -> i instanceof Архив );
     }
     
     private boolean disableActionExportXml()
@@ -918,5 +915,33 @@ public final class ArchiveController implements Builder<TitledPane>
     }
     
     //</editor-fold>
+    
+    private void импортироватьXml( Provider<Provider<InputStream>> селектор )
+    {
+        JavaFX jfx = JavaFX.getInstance();
+        List<Архив> архивы = selection.stream().flatMap( TO_VALUE )
+            .flatMap( ( Атрибутный i ) -> i instanceof Архив ? Stream.of( (Архив)i ) : Stream.empty() )
+            .collect( Collectors.toList() );
+        if( архивы.isEmpty() )
+            LOGGER.log( "002005003I" );
+        else if( архивы.size() > 1 )
+            LOGGER.log( "002005004I", архивы.size() );
+        else
+        {
+            Архив архив = архивы.get( 0 );
+            Provider<InputStream> поставщик = селектор.newInstance();
+            if( поставщик != null )
+                jfx.execute( new ApplicationActionWorker<Импортировать.Контекст>( 
+                        импортировать, new Импортировать.Контекст( поставщик, архив ) )
+                {
+                    @Override
+                    protected void succeeded()
+                    {
+                        super.succeeded();
+                        jfx.historyXml.advance( контекст().поставщик() );
+                    }
+                } );
+        }
+    }
     
 }

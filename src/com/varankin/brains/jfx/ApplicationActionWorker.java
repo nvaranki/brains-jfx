@@ -7,18 +7,19 @@ import javafx.concurrent.Task;
 /**
  * Действие для выполнения в среде JavaFX.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2014 Николай Варанкин
  */
 public class ApplicationActionWorker<КОНТЕКСТ> extends Task<Результат>
 {
     private final Действие<КОНТЕКСТ> действие;
     private final КОНТЕКСТ контекст;
-    private volatile ResultLogger репортер;
+    private final ResultLogger репортер;
 
     public ApplicationActionWorker( Действие<КОНТЕКСТ> действие, КОНТЕКСТ контекст )
     {
         this.действие = действие;
         this.контекст = контекст;
+        this.репортер = JavaFX.getInstance().контекст.репортер;
     }
 
     protected final КОНТЕКСТ контекст()
@@ -71,9 +72,10 @@ public class ApplicationActionWorker<КОНТЕКСТ> extends Task<Резуль
      * 
      * @param координатор сервис блокировки действий на время выполнения.
      */
+    @Deprecated
     public void execute( JavaFX jfx ) 
     {
-        репортер = jfx.контекст.репортер;
+        //репортер = jfx.контекст.репортер;
         jfx.getExecutorService().execute( this );
     }
 
