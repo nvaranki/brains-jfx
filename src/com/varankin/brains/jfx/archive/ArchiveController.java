@@ -5,7 +5,6 @@ import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ДействияПоПорядку.Приоритет;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.Импортировать;
-import com.varankin.brains.appl.СоздатьНовыйПакет;
 import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.*;
@@ -20,15 +19,14 @@ import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.binding.*;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -37,6 +35,7 @@ import javafx.stage.*;
 import javafx.util.Builder;
 
 import static com.varankin.brains.jfx.JavaFX.icon;
+import static javafx.beans.binding.Bindings.bindContentBidirectional;
 import static javafx.beans.binding.Bindings.createBooleanBinding;
 
 /**
@@ -56,15 +55,54 @@ public final class ArchiveController implements Builder<TitledPane>
     public static final String RESOURCE_FXML  = "/fxml/archive/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
+    private final ObservableList<TreeItem<Атрибутный>> selection;
+    
     private Stage properties;
     private Provider<File> fileProviderExport;
-    private BooleanBinding disableNew, disableLoad, disableRemove, disableProperties;
     
+    @FXML private final BooleanBinding  //TODO RT-37820
+            disableNew, disableLoad, 
+            disablePreview, disableEdit, disableRemove, 
+            disableNewАрхив, disableNewПакет, 
+            disableNewПроект, disableNewБиблиотека, disableNewФрагмент, 
+            disableNewСигнал, disableNewСоединение, disableNewКонтакт, 
+            disableNewМодуль, disableNewПоле, disableNewПроцессор, 
+            disableNewТочка, disableNewЗаметка, disableNewИнструкция, 
+            disableNewКлассJava, disableNewТекстовыйБлок, disableNewXmlNameSpace, 
+            disableProperties, 
+            disableImportFile, disableImportNet, disableExportXml, disableExportPic;
     @FXML private TreeView<Атрибутный> tree;
-
 
     public ArchiveController()
     {
+        selection = FXCollections.observableArrayList();
+        disableNew = createBooleanBinding( () -> disableActionNew(), selection );
+        disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
+        disablePreview = createBooleanBinding( () -> disableActionPreview(), selection );
+        disableEdit = createBooleanBinding( () -> disableActionEdit(), selection );
+        disableRemove = createBooleanBinding( () -> disableActionRemove(), selection );
+        disableNewАрхив = createBooleanBinding( () -> disableActionNewАрхив(), selection );
+        disableNewПакет = createBooleanBinding( () -> disableActionNewПакет(), selection );
+        disableNewПроект = createBooleanBinding( () -> disableActionNewПроект(), selection );
+        disableNewБиблиотека = createBooleanBinding( () -> disableActionNewБиблиотека(), selection );
+        disableNewФрагмент = createBooleanBinding( () -> disableActionNewФрагмент(), selection );
+        disableNewСигнал = createBooleanBinding( () -> disableActionNewСигнал(), selection );
+        disableNewСоединение = createBooleanBinding( () -> disableActionNewСоединение(), selection );
+        disableNewКонтакт = createBooleanBinding( () -> disableActionNewКонтакт(), selection );
+        disableNewМодуль = createBooleanBinding( () -> disableActionNewМодуль(), selection );
+        disableNewПоле = createBooleanBinding( () -> disableActionNewПоле(), selection );
+        disableNewПроцессор = createBooleanBinding( () -> disableActionNewПроцессор(), selection );
+        disableNewТочка = createBooleanBinding( () -> disableActionNewТочка(), selection );
+        disableNewЗаметка = createBooleanBinding( () -> disableActionNewЗаметка(), selection );
+        disableNewИнструкция = createBooleanBinding( () -> disableActionNewИнструкция(), selection );
+        disableNewКлассJava = createBooleanBinding( () -> disableActionNewКлассJava(), selection );
+        disableNewТекстовыйБлок = createBooleanBinding( () -> disableActionNewТекстовыйБлок(), selection );
+        disableNewXmlNameSpace = createBooleanBinding( () -> disableActionNewXmlNameSpace(), selection );
+        disableProperties = createBooleanBinding( () -> disableActionProperties(), selection );
+        disableImportFile = createBooleanBinding( () -> disableActionImportFile(), selection );
+        disableImportNet = createBooleanBinding( () -> disableActionImportNet(), selection );
+        disableExportXml = createBooleanBinding( () -> disableActionExportXml(), selection );
+        disableExportPic = createBooleanBinding( () -> disableActionExportPic(), selection );
     }
 
     /**
@@ -80,11 +118,9 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setShowRoot( false );
         tree.setEditable( false );
 
-        ObservableList selection = tree.getSelectionModel().getSelectedItems();
-        disableNew = createBooleanBinding( () -> disableActionNew(), selection );
-        disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
-        disableRemove = createBooleanBinding( () -> disableActionRemove(), selection );
-        disableProperties = createBooleanBinding( () -> disableActionProperties(), selection );
+        //ObservableList selection = 
+        //Bindings.b
+        //selection.bind( //Bindings.createObjectBinding( null, dependencies )
         
         Menu menuNew = new Menu( LOGGER.text( "archive.action.new" ) );
         menuNew.getItems().addAll( buildContextMenuNew() );
@@ -110,156 +146,186 @@ public final class ArchiveController implements Builder<TitledPane>
         
         return pane;
     }
+
+    //<editor-fold defaultstate="collapsed" desc="buildXxx()">
     
     private Collection<MenuItem>  buildContextMenu( Menu menuNew )
     {
-        MenuItem menuLoad = new MenuItem( 
+        MenuItem menuLoad = new MenuItem(
                 LOGGER.text( "archive.action.load" ), icon( "icons16x16/load.png" ) );
         menuLoad.setOnAction( this::onActionLoad );
         menuLoad.disableProperty().bind( disableLoad );
         
-        MenuItem menuPreview = new MenuItem( 
+        MenuItem menuPreview = new MenuItem(
                 LOGGER.text( "archive.action.preview" ), icon( "icons16x16/preview.png" ) );
         menuPreview.setOnAction( this::onActionPreview );
+        menuPreview.disableProperty().bind( disablePreview );
         
-        MenuItem menuEdit = new MenuItem( 
+        MenuItem menuEdit = new MenuItem(
                 LOGGER.text( "archive.action.edit" ), icon( "icons16x16/edit.png" ) );
         menuEdit.setOnAction( this::onActionEdit );
+        menuEdit.disableProperty().bind( disableEdit );
         
-        MenuItem menuRemove = new MenuItem( 
+        MenuItem menuRemove = new MenuItem(
                 LOGGER.text( "archive.action.remove" ), icon( "icons16x16/remove.png" ) );
         menuRemove.setOnAction( this::onActionRemove );
         menuRemove.disableProperty().bind( disableRemove );
         
-        MenuItem menuImportFile = new MenuItem( 
+        MenuItem menuImportFile = new MenuItem(
                 LOGGER.text( "archive.action.import.file" ), icon( "icons16x16/file-xml.png" ) );
         menuImportFile.setOnAction( this::onActionImportFile );
+        menuImportFile.disableProperty().bind( disableImportFile );
         
-        MenuItem menuImportNet = new MenuItem( 
+        MenuItem menuImportNet = new MenuItem(
                 LOGGER.text( "archive.action.import.network" ), icon( "icons16x16/load-internet.png" ) );
         menuImportNet.setOnAction( this::onActionImportNet );
+        menuImportNet.disableProperty().bind( disableImportNet );
         
-        MenuItem menuExportXml = new MenuItem( 
+        MenuItem menuExportXml = new MenuItem(
                 LOGGER.text( "archive.action.export.xml" ), icon( "icons16x16/file-export.png" ) );
         menuExportXml.setOnAction( this::onActionExportXml );
+        menuExportXml.disableProperty().bind( disableExportXml );
         
-        MenuItem menuExportPic = new MenuItem( 
+        MenuItem menuExportPic = new MenuItem(
                 LOGGER.text( "archive.action.export.pic" ), icon( "icons16x16/file-export.png" ) );
         menuExportPic.setOnAction( this::onActionExportPic );
+        menuExportPic.disableProperty().bind( disableExportPic );
         
-        MenuItem menuProperties = new MenuItem( 
+        MenuItem menuProperties = new MenuItem(
                 LOGGER.text( "archive.action.properties" ), icon( "icons16x16/properties.png" ) );
         menuProperties.setOnAction( this::onActionProperties );
         menuProperties.disableProperty().bind( disableProperties );
         
         return Arrays.<MenuItem>asList
-        ( 
-                menuLoad,
-                new SeparatorMenuItem(),
-                menuPreview,
-                menuEdit,
-                menuRemove,
-                menuNew,
-                menuProperties,
-                new SeparatorMenuItem(),
-                menuImportFile,
-                menuImportNet,
-                menuExportXml,
-                menuExportPic
-        );
+                (
+                        menuLoad,
+                        new SeparatorMenuItem(),
+                        menuPreview,
+                        menuEdit,
+                        menuRemove,
+                        menuNew,
+                        menuProperties,
+                        new SeparatorMenuItem(),
+                        menuImportFile,
+                        menuImportNet,
+                        menuExportXml,
+                        menuExportPic
+                );
     }
     
     private Collection<MenuItem> buildContextMenuNew()
     {
-        MenuItem menuNewБиблиотека = new MenuItem( 
+        MenuItem menuNewАрхив = new MenuItem(
+                LOGGER.text( "cell.archive" ) );//, icon( "icons16x16/archive.png" ) );
+        menuNewАрхив.setOnAction( this::onActionNewАрхив );
+        menuNewАрхив.disableProperty().bind( disableNewАрхив );
+        
+        MenuItem menuNewБиблиотека = new MenuItem(
                 LOGGER.text( "cell.library" ), icon( "icons16x16/new-library.png" ) );
         menuNewБиблиотека.setOnAction( this::onActionNewБиблиотека );
+        menuNewБиблиотека.disableProperty().bind( disableNewБиблиотека );
         
-        MenuItem menuNewЗаметка = new MenuItem( 
+        MenuItem menuNewЗаметка = new MenuItem(
                 LOGGER.text( "cell.note" ), icon( "icons16x16/properties.png" ) );
         menuNewЗаметка.setOnAction( this::onActionNewЗаметка );
+        menuNewЗаметка.disableProperty().bind( disableNewЗаметка );
         
-        MenuItem menuNewИнструкция = new MenuItem( 
+        MenuItem menuNewИнструкция = new MenuItem(
                 LOGGER.text( "cell.instruction" ) );//, icon( "icons16x16/new-library.png" ) );
         menuNewИнструкция.setOnAction( this::onActionNewИнструкция );
+        menuNewИнструкция.disableProperty().bind( disableNewИнструкция );
         
-        MenuItem menuNewКлассJava = new MenuItem( 
+        MenuItem menuNewКлассJava = new MenuItem(
                 LOGGER.text( "cell.class.java" ) );//, icon( "icons16x16/new-library.png" ) );
         menuNewКлассJava.setOnAction( this::onActionNewКлассJava );
+        menuNewКлассJava.disableProperty().bind( disableNewКлассJava );
         
-        MenuItem menuNewКонтакт = new MenuItem( 
+        MenuItem menuNewКонтакт = new MenuItem(
                 LOGGER.text( "cell.pin" ), icon( "icons16x16/pin.png" ) );
         menuNewКонтакт.setOnAction( this::onActionNewКонтакт );
+        menuNewКонтакт.disableProperty().bind( disableNewКонтакт );
         
-        MenuItem menuNewМодуль = new MenuItem( 
+        MenuItem menuNewМодуль = new MenuItem(
                 LOGGER.text( "cell.module" ), icon( "icons16x16/module.png" ) );
         menuNewМодуль.setOnAction( this::onActionNewМодуль );
+        menuNewМодуль.disableProperty().bind( disableNewМодуль );
         
-        MenuItem menuNewПакет = new MenuItem( 
+        MenuItem menuNewПакет = new MenuItem(
                 LOGGER.text( "cell.package" ), icon( "icons16x16/file-xml.png" ) );
         menuNewПакет.setOnAction( this::onActionNewПакет );
+        menuNewПакет.disableProperty().bind( disableNewПакет );
         
-        MenuItem menuNewПоле = new MenuItem( 
+        MenuItem menuNewПоле = new MenuItem(
                 LOGGER.text( "cell.field" ), icon( "icons16x16/field2.png" ) );
         menuNewПоле.setOnAction( this::onActionNewПоле );
+        menuNewПоле.disableProperty().bind( disableNewПоле );
         
-        MenuItem menuNewПроект = new MenuItem( 
+        MenuItem menuNewПроект = new MenuItem(
                 LOGGER.text( "cell.project" ), icon( "icons16x16/new-project.png" ) );
         menuNewПроект.setOnAction( this::onActionNewПроект );
+        menuNewПроект.disableProperty().bind( disableNewПроект );
         
-        MenuItem menuNewПроцессор = new MenuItem( 
+        MenuItem menuNewПроцессор = new MenuItem(
                 LOGGER.text( "cell.processor" ), icon( "icons16x16/processor2.png" ) );
         menuNewПроцессор.setOnAction( this::onActionNewПроцессор );
+        menuNewПроцессор.disableProperty().bind( disableNewПроцессор );
         
-        MenuItem menuNewСигнал = new MenuItem( 
+        MenuItem menuNewСигнал = new MenuItem(
                 LOGGER.text( "cell.signal" ), icon( "icons16x16/signal.png" ) );
         menuNewСигнал.setOnAction( this::onActionNewСигнал );
+        menuNewСигнал.disableProperty().bind( disableNewСигнал );
         
-        MenuItem menuNewСоединение = new MenuItem( 
+        MenuItem menuNewСоединение = new MenuItem(
                 LOGGER.text( "cell.connector" ), icon( "icons16x16/connector.png" ) );
         menuNewСоединение.setOnAction( this::onActionNewСоединение );
+        menuNewСоединение.disableProperty().bind( disableNewСоединение );
         
-        MenuItem menuNewТекстовыйБлок = new MenuItem( 
+        MenuItem menuNewТекстовыйБлок = new MenuItem(
                 LOGGER.text( "cell.text" ), icon( "icons16x16/file.png" ) );
         menuNewТекстовыйБлок.setOnAction( this::onActionNewТекстовыйБлок );
+        menuNewТекстовыйБлок.disableProperty().bind( disableNewТекстовыйБлок );
         
-        MenuItem menuNewТочка = new MenuItem( 
+        MenuItem menuNewТочка = new MenuItem(
                 LOGGER.text( "cell.point" ), icon( "icons16x16/point.png" ) );
         menuNewТочка.setOnAction( this::onActionNewТочка );
+        menuNewТочка.disableProperty().bind( disableNewТочка );
         
-        MenuItem menuNewФрагмент = new MenuItem( 
+        MenuItem menuNewФрагмент = new MenuItem(
                 LOGGER.text( "cell.fragment" ), icon( "icons16x16/fragment.png" ) );
         menuNewФрагмент.setOnAction( this::onActionNewФрагмент );
+        menuNewФрагмент.disableProperty().bind( disableNewФрагмент );
         
-        MenuItem menuNewXmlNameSpace = new MenuItem( 
+        MenuItem menuNewXmlNameSpace = new MenuItem(
                 LOGGER.text( "cell.namespace" ) );//, icon( "icons16x16/.png" ) );
         menuNewXmlNameSpace.setOnAction( this::onActionNewXmlNameSpace );
+        menuNewXmlNameSpace.disableProperty().bind( disableNewXmlNameSpace );
         
         return Arrays.<MenuItem>asList
-        ( 
-                menuNewПакет,
-                new SeparatorMenuItem(),
-                menuNewПроект,
-                menuNewБиблиотека,
-                new SeparatorMenuItem(),
-                menuNewФрагмент,
-                menuNewСигнал,
-                menuNewСоединение,
-                menuNewКонтакт,
-                new SeparatorMenuItem(),
-                menuNewМодуль,
-                menuNewПоле, 
-                menuNewПроцессор,
-                new SeparatorMenuItem(),
-                menuNewТочка,
-                new SeparatorMenuItem(),
-                menuNewЗаметка,
-                menuNewИнструкция,
-                menuNewКлассJava,
-                menuNewТекстовыйБлок,
-                new SeparatorMenuItem(),
-                menuNewXmlNameSpace
-        );
+                (
+                        menuNewАрхив,
+                        menuNewПакет,
+                        new SeparatorMenuItem(),
+                        menuNewПроект,
+                        menuNewБиблиотека,
+                        new SeparatorMenuItem(),
+                        menuNewФрагмент,
+                        menuNewСигнал,
+                        menuNewСоединение,
+                        menuNewКонтакт,
+                        new SeparatorMenuItem(),
+                        menuNewМодуль,
+                        menuNewПоле,
+                        menuNewПроцессор,
+                        new SeparatorMenuItem(),
+                        menuNewТочка,
+                        new SeparatorMenuItem(),
+                        menuNewЗаметка,
+                        menuNewИнструкция,
+                        menuNewКлассJava,
+                        menuNewТекстовыйБлок,
+                        new SeparatorMenuItem(),
+                        menuNewXmlNameSpace
+                );
     }
     
     private Collection<Node> buildToolBarButtons()
@@ -280,11 +346,13 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonPreview.setTooltip( new Tooltip( LOGGER.text( "archive.action.preview" ) ) );
         buttonPreview.setGraphic( icon( "icons16x16/preview.png" ) );
         buttonPreview.setOnAction( this::onActionPreview );
+        buttonPreview.disableProperty().bind( disablePreview );
         
         Button buttonEdit = new Button();
         buttonEdit.setTooltip( new Tooltip( LOGGER.text( "archive.action.edit" ) ) );
         buttonEdit.setGraphic( icon( "icons16x16/edit.png" ) );
         buttonEdit.setOnAction( this::onActionEdit );
+        buttonEdit.disableProperty().bind( disableEdit );
         
         Button buttonRemove = new Button();
         buttonRemove.setTooltip( new Tooltip( LOGGER.text( "archive.action.remove" ) ) );
@@ -296,21 +364,25 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonImportFile.setTooltip( new Tooltip( LOGGER.text( "archive.action.import.file" ) ) );
         buttonImportFile.setGraphic( icon( "icons16x16/file-xml.png" ) );
         buttonImportFile.setOnAction( this::onActionImportFile );
+        buttonImportFile.disableProperty().bind( disableImportFile );
         
         Button buttonImportNet = new Button();
         buttonImportNet.setTooltip( new Tooltip( LOGGER.text( "archive.action.import.network" ) ) );
         buttonImportNet.setGraphic( icon( "icons16x16/load-internet.png" ) );
         buttonImportNet.setOnAction( this::onActionImportNet );
+        buttonImportNet.disableProperty().bind( disableImportNet );
         
         Button buttonExportXml = new Button();
         buttonExportXml.setTooltip( new Tooltip( LOGGER.text( "archive.action.export.xml" ) ) );
         buttonExportXml.setGraphic( icon( "icons16x16/file-export.png" ) );
         buttonExportXml.setOnAction( this::onActionExportXml );
+        buttonExportXml.disableProperty().bind( disableExportXml );
         
         Button buttonExportPic = new Button();
         buttonExportPic.setTooltip( new Tooltip( LOGGER.text( "archive.action.export.pic" ) ) );
         buttonExportPic.setGraphic( icon( "icons16x16/file-export.png" ) );
         buttonExportPic.setOnAction( this::onActionExportPic );
+        buttonExportPic.disableProperty().bind( disableExportPic );
         
         Button buttonProperties = new Button();
         buttonProperties.setTooltip( new Tooltip( LOGGER.text( "archive.action.properties" ) ) );
@@ -319,21 +391,23 @@ public final class ArchiveController implements Builder<TitledPane>
         buttonProperties.disableProperty().bind( disableProperties );
         
         return Arrays.<Node>asList
-        ( 
-                buttonLoad,
-                new Separator( Orientation.HORIZONTAL ),
-                buttonPreview,
-                buttonEdit,
-                buttonRemove,
-                buttonNew,
-                buttonProperties,
-                new Separator( Orientation.HORIZONTAL ),
-                buttonImportFile,
-                buttonImportNet,
-                buttonExportXml,
-                buttonExportPic
-        );
+                (
+                        buttonLoad,
+                        new Separator( Orientation.HORIZONTAL ),
+                        buttonPreview,
+                        buttonEdit,
+                        buttonRemove,
+                        buttonNew,
+                        buttonProperties,
+                        new Separator( Orientation.HORIZONTAL ),
+                        buttonImportFile,
+                        buttonImportNet,
+                        buttonExportXml,
+                        buttonExportPic
+                );
     }
+    
+    //</editor-fold>
     
     @FXML
     protected void initialize()
@@ -346,6 +420,7 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
         tree.setRoot( new TreeItem<>() );
         tree.getRoot().getChildren().add( item );
+        bindContentBidirectional( selection, tree.getSelectionModel().getSelectedItems() );
 //        tree.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
 //                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
 //        {
@@ -368,6 +443,8 @@ public final class ArchiveController implements Builder<TitledPane>
 //        });
     }
     
+    //<editor-fold defaultstate="collapsed" desc="onActionXxx()">
+    
     @FXML
     private void onActionNew( ActionEvent event )
     {
@@ -385,6 +462,13 @@ public final class ArchiveController implements Builder<TitledPane>
         }
         else
             LOGGER.log( Level.WARNING, "Uncertain what to create for {0}.", "selection" );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewАрхив( ActionEvent event )
+    {
+            LOGGER.log( Level.WARNING, "Unable to create {0}", "" );
         event.consume();
     }
     
@@ -630,16 +714,16 @@ public final class ArchiveController implements Builder<TitledPane>
         if( properties == null )
         {
             BuilderFX<Parent,PropertiesController> builder = new BuilderFX<>();
-            builder.init( PropertiesController.class, 
-                PropertiesController.RESOURCE_FXML, PropertiesController.RESOURCE_BUNDLE );
+            builder.init( PropertiesController.class,
+                    PropertiesController.RESOURCE_FXML, PropertiesController.RESOURCE_BUNDLE );
             PropertiesController controller = builder.getController();
-
+            
             properties = new Stage();
             properties.initStyle( StageStyle.DECORATED );
             properties.initModality( Modality.NONE );
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
-
+            
             properties.setResizable( true );
             properties.setMinHeight( 150d );
             properties.setMinWidth( 350d );
@@ -647,7 +731,7 @@ public final class ArchiveController implements Builder<TitledPane>
             properties.setWidth( 350d );
             properties.setScene( new Scene( builder.getNode() ) );
             properties.setOnShowing( ( WindowEvent e ) -> controller.reset() );
-
+            
             properties.titleProperty().bind( controller.titleProperty() );
 //            controller.bindColorProperty( colorProperty );
 //            controller.bindPatternProperty( patternProperty );
@@ -658,29 +742,11 @@ public final class ArchiveController implements Builder<TitledPane>
         properties.toFront();
         event.consume();
     }
-  
-    private boolean disableActionLoad()
-    {
-        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
-        return s.isEmpty() || !s.stream()
-            .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
-            .allMatch( ( Атрибутный i ) -> i instanceof Проект ); 
-    }
 
-    private boolean disableActionRemove()
-    {
-        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
-        return s.isEmpty() || s.stream()
-            .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
-            .anyMatch( ( Атрибутный i ) -> i instanceof Архив ); 
-    }
-
-    private boolean disableActionProperties()
-    {
-        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
-        return s.size() != 1; 
-    }
-
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="disableXxx()">
+    
     private boolean disableActionNew()
     {
         List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
@@ -691,4 +757,166 @@ public final class ArchiveController implements Builder<TitledPane>
         return !( value instanceof Архив || value instanceof Пакет );
     }
 
+    private boolean disableActionLoad()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return s.isEmpty() || !s.stream()
+                .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+                .allMatch( ( Атрибутный i ) -> i instanceof Проект );
+    }
+    
+    private boolean disableActionPreview()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionEdit()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionRemove()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return s.isEmpty() || s.stream()
+                .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+                .anyMatch( ( Атрибутный i ) -> i instanceof Архив );
+    }
+    
+    private boolean disableActionNewАрхив()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewПакет()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewПроект()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewБиблиотека()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewФрагмент()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewСигнал()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewСоединение()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewКонтакт()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewМодуль()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewПоле()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewПроцессор()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewТочка()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewЗаметка()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewИнструкция()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewКлассJava()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewТекстовыйБлок()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionNewXmlNameSpace()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionProperties()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return s.size() != 1;
+    }
+    
+    private boolean disableActionImportFile()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionImportNet()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionExportXml()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    private boolean disableActionExportPic()
+    {
+        List<TreeItem<Атрибутный>> s = tree.getSelectionModel().getSelectedItems();
+        return false;
+    }
+    
+    //</editor-fold>
+    
 }

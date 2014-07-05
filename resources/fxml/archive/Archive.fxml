@@ -26,7 +26,7 @@
             <children>
                 <ToolBar orientation="VERTICAL" >
                     <items>
-                        <Button onAction="#onActionLoad" >
+                        <Button onAction="#onActionLoad" disable="${disableLoad}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.load" />
                             </tooltip>
@@ -39,7 +39,7 @@
                             </graphic>
                         </Button>
                         <Separator orientation="HORIZONTAL" /> 
-                        <Button onAction="#onActionPreview" >
+                        <Button onAction="#onActionPreview" disable="${disablePreview}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.preview" />
                             </tooltip>
@@ -51,7 +51,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionEdit" >
+                        <Button onAction="#onActionEdit" disable="${disableEdit}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.edit" />
                             </tooltip>
@@ -63,7 +63,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionRemove" >
+                        <Button onAction="#onActionRemove" disable="${disableRemove}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.remove" />
                             </tooltip>
@@ -75,7 +75,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionNew" >
+                        <Button onAction="#onActionNew" disable="${disableNew}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.new" />
                             </tooltip>
@@ -87,7 +87,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionProperties" >
+                        <Button onAction="#onActionProperties" disable="${disableProperties}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.properties" />
                             </tooltip>
@@ -100,7 +100,7 @@
                             </graphic>
                         </Button>
                         <Separator orientation="HORIZONTAL" /> 
-                        <Button onAction="#onActionImportFile" >
+                        <Button onAction="#onActionImportFile" disable="${disableImportFile}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.import.file" />
                             </tooltip>
@@ -112,7 +112,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionImportNet" >
+                        <Button onAction="#onActionImportNet" disable="${disableImportNet}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.import.network" />
                             </tooltip>
@@ -124,7 +124,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionExportXml" >
+                        <Button onAction="#onActionExportXml" disable="${disableExportXml}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.export.xml" />
                             </tooltip>
@@ -136,7 +136,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button onAction="#onActionExportPic" >
+                        <Button onAction="#onActionExportPic" disable="${disableExportPic}" >
                             <tooltip>
                                 <Tooltip text="%archive.action.export.pic" />
                             </tooltip>
@@ -154,7 +154,7 @@
                     <contextMenu>
                         <ContextMenu>
                             <items>
-                                <MenuItem onAction="#onActionLoad" text="%archive.action.load" >
+                                <MenuItem onAction="#onActionLoad" text="%archive.action.load" disable="${disableLoad}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -164,7 +164,7 @@
                                     </graphic>
                                 </MenuItem>
                                 <SeparatorMenuItem />
-                                <MenuItem onAction="#onActionPreview" text="%archive.action.preview" >
+                                <MenuItem onAction="#onActionPreview" text="%archive.action.preview" disable="${disablePreview}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -173,7 +173,7 @@
                                         </ImageView>
                                     </graphic>
                                 </MenuItem>
-                                <MenuItem onAction="#onActionEdit" text="%archive.action.edit" >
+                                <MenuItem onAction="#onActionEdit" text="%archive.action.edit" disable="${disableEdit}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -182,7 +182,7 @@
                                         </ImageView>
                                     </graphic>
                                 </MenuItem>
-                                <MenuItem onAction="#onActionRemove" text="%archive.action.remove" >
+                                <MenuItem onAction="#onActionRemove" text="%archive.action.remove" disable="${disableRemove}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -193,7 +193,16 @@
                                 </MenuItem>
                                 <Menu text="%archive.action.new" >
                                     <items>
-                                        <MenuItem onAction="#onActionNewПакет" text="%cell.package" >
+                                        <MenuItem onAction="#onActionNewАрхив" text="%cell.archive" disable="${disableNewАрхив}" >
+                                            <!--graphic>
+                                                <ImageView >
+                                                    <image>
+                                                        <Image url="@/icons16x16/file-xml.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic-->
+                                        </MenuItem>
+                                        <MenuItem onAction="#onActionNewПакет" text="%cell.package" disable="${disableNewПакет}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -203,7 +212,7 @@
                                             </graphic>
                                         </MenuItem>
                                         <SeparatorMenuItem />
-                                        <MenuItem onAction="#onActionNewПроект" text="%cell.project" >
+                                        <MenuItem onAction="#onActionNewПроект" text="%cell.project" disable="${disableNewПроект}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -212,7 +221,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewБиблиотека" text="%cell.library" >
+                                        <MenuItem onAction="#onActionNewБиблиотека" text="%cell.library" disable="${disableNewБиблиотека}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -222,7 +231,7 @@
                                             </graphic>
                                         </MenuItem>
                                         <SeparatorMenuItem />
-                                        <MenuItem onAction="#onActionNewФрагмент" text="%cell.fragment" >
+                                        <MenuItem onAction="#onActionNewФрагмент" text="%cell.fragment" disable="${disableNewФрагмент}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -231,7 +240,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewСигнал" text="%cell.signal" >
+                                        <MenuItem onAction="#onActionNewСигнал" text="%cell.signal" disable="${disableNewСигнал}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -240,7 +249,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewСоединение" text="%cell.connector" >
+                                        <MenuItem onAction="#onActionNewСоединение" text="%cell.connector" disable="${disableNewСоединение}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -249,7 +258,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewКонтакт" text="%cell.pin" >
+                                        <MenuItem onAction="#onActionNewКонтакт" text="%cell.pin" disable="${disableNewКонтакт}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -259,7 +268,7 @@
                                             </graphic>
                                         </MenuItem>
                                         <SeparatorMenuItem />
-                                        <MenuItem onAction="#onActionNewМодуль" text="%cell.module" >
+                                        <MenuItem onAction="#onActionNewМодуль" text="%cell.module" disable="${disableNewМодуль}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -268,7 +277,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewПоле" text="%cell.field" >
+                                        <MenuItem onAction="#onActionNewПоле" text="%cell.field" disable="${disableNewПоле}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -277,7 +286,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewПроцессор" text="%cell.processor" >
+                                        <MenuItem onAction="#onActionNewПроцессор" text="%cell.processor" disable="${disableNewПроцессор}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -287,7 +296,7 @@
                                             </graphic>
                                         </MenuItem>
                                         <SeparatorMenuItem />
-                                        <MenuItem onAction="#onActionNewТочка" text="%cell.point" >
+                                        <MenuItem onAction="#onActionNewТочка" text="%cell.point" disable="${disableNewТочка}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -297,7 +306,7 @@
                                             </graphic>
                                         </MenuItem>
                                         <SeparatorMenuItem />
-                                        <MenuItem onAction="#onActionNewЗаметка" text="%cell.note" >
+                                        <MenuItem onAction="#onActionNewЗаметка" text="%cell.note" disable="${disableNewЗаметка}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -306,7 +315,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewИнструкция" text="%cell.instruction" >
+                                        <MenuItem onAction="#onActionNewИнструкция" text="%cell.instruction" disable="${disableNewИнструкция}" >
                                             <!--graphic>
                                                 <ImageView >
                                                     <image>
@@ -315,7 +324,7 @@
                                                 </ImageView>
                                             </graphic-->
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewКлассJava" text="%cell.class.java" >
+                                        <MenuItem onAction="#onActionNewКлассJava" text="%cell.class.java" disable="${disableNewКлассJava}" >
                                             <!--graphic>
                                                 <ImageView >
                                                     <image>
@@ -324,7 +333,7 @@
                                                 </ImageView>
                                             </graphic-->
                                         </MenuItem>
-                                        <MenuItem onAction="#onActionNewТекстовыйБлок" text="%cell.text" >
+                                        <MenuItem onAction="#onActionNewТекстовыйБлок" text="%cell.text" disable="${disableNewТекстовыйБлок}" >
                                             <graphic>
                                                 <ImageView >
                                                     <image>
@@ -334,7 +343,7 @@
                                             </graphic>
                                         </MenuItem>
                                         <SeparatorMenuItem />
-                                        <MenuItem onAction="#onActionNewXmlNameSpace" text="%cell.namespace" >
+                                        <MenuItem onAction="#onActionNewXmlNameSpace" text="%cell.namespace" disable="${disableNewXmlNameSpace}" >
                                             <!--graphic>
                                                 <ImageView >
                                                     <image>
@@ -345,7 +354,7 @@
                                         </MenuItem>
                                     </items>
                                 </Menu>
-                                <MenuItem onAction="#onActionProperties" text="%archive.action.properties" >
+                                <MenuItem onAction="#onActionProperties" text="%archive.action.properties" disable="${disableProperties}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -355,7 +364,7 @@
                                     </graphic>
                                 </MenuItem>
                                 <SeparatorMenuItem />
-                                <MenuItem onAction="#onActionImportFile" text="%archive.action.import.file" >
+                                <MenuItem onAction="#onActionImportFile" text="%archive.action.import.file" disable="${disableImportFile}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -364,7 +373,7 @@
                                         </ImageView>
                                     </graphic>
                                 </MenuItem>
-                                <MenuItem onAction="#onActionImportNet" text="%archive.action.import.network" >
+                                <MenuItem onAction="#onActionImportNet" text="%archive.action.import.network" disable="${disableImportNet}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -373,7 +382,7 @@
                                         </ImageView>
                                     </graphic>
                                 </MenuItem>
-                                <MenuItem onAction="#onActionExportXml" text="%archive.action.export.xml" >
+                                <MenuItem onAction="#onActionExportXml" text="%archive.action.export.xml" disable="${disableExportXml}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
@@ -382,7 +391,7 @@
                                         </ImageView>
                                     </graphic>
                                 </MenuItem>
-                                <MenuItem onAction="#onActionExportPic" text="%archive.action.export.pic" >
+                                <MenuItem onAction="#onActionExportPic" text="%archive.action.export.pic" disable="${disableExportPic}" >
                                     <graphic>
                                         <ImageView >
                                             <image>
