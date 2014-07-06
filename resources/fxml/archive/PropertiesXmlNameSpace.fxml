@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель выбора и установки параметров объекта пространства имен XML.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.archive.PropertiesXmlNameSpaceController" 
+    styleClass="properties-xml-ns"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@PropertiesXmlNameSpace.css"/>
+    </stylesheets>
+    
+  <children>
+    <Label 
+        text="%properties.ns.prefix" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField 
+        fx:id="prefix"
+        prefColumnCount="6"
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0" 
+    />   
+    <Label 
+        text="%properties.ns.uri" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <TextField 
+        fx:id="uri"
+        prefColumnCount="24"  
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1" 
+    />   
+  </children>
+  
+</GridPane>

@@ -1,0 +1,11 @@
+/* 
+    Description: Панель выбора и установки параметров объекта пространства имен XML.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.properties-xml-ns
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

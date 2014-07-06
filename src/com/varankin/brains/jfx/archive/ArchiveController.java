@@ -708,35 +708,17 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     private void onActionProperties( ActionEvent event )
     {
-        if( properties == null )
+        if( selection.isEmpty() )
+            LOGGER.log( "002005005I" );
+        else if( selection.size() > 1 )
+            LOGGER.log( "002005006I", selection.size() );
+        else
         {
-            BuilderFX<Parent,PropertiesController> builder = new BuilderFX<>();
-            builder.init( PropertiesController.class,
-                    PropertiesController.RESOURCE_FXML, PropertiesController.RESOURCE_BUNDLE );
-            PropertiesController controller = builder.getController();
-            
-            properties = new Stage();
-            properties.initStyle( StageStyle.DECORATED );
-            properties.initModality( Modality.NONE );
-            properties.initOwner( JavaFX.getInstance().платформа );
-            properties.getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
-            
-            properties.setResizable( true );
-            properties.setMinHeight( 150d );
-            properties.setMinWidth( 350d );
-            properties.setHeight( 150d ); //TODO save/restore size&pos
-            properties.setWidth( 350d );
-            properties.setScene( new Scene( builder.getNode() ) );
-            properties.setOnShowing( ( WindowEvent e ) -> controller.reset() );
-            
-            properties.titleProperty().bind( controller.titleProperty() );
-//            controller.bindColorProperty( colorProperty );
-//            controller.bindPatternProperty( patternProperty );
-//            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
-            controller.reset();
+            if( properties == null ) properties = buildProperties();
+            properties.getScene().getRoot().setUserData( selection.get( 0 ).getValue() );
+            properties.show();
+            properties.toFront();
         }
-        properties.show();
-        properties.toFront();
         event.consume();
     }
 
@@ -915,6 +897,35 @@ public final class ArchiveController implements Builder<TitledPane>
     }
     
     //</editor-fold>
+    
+    private Stage buildProperties()
+    {
+        BuilderFX<Parent,PropertiesController> builder = new BuilderFX<>();
+        builder.init( PropertiesController.class,
+                PropertiesController.RESOURCE_FXML, PropertiesController.RESOURCE_BUNDLE );
+        PropertiesController controller = builder.getController();
+
+        Stage stage = new Stage();
+        stage.initStyle( StageStyle.DECORATED );
+        stage.initModality( Modality.NONE );
+        stage.initOwner( JavaFX.getInstance().платформа );
+        stage.getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+
+        stage.setResizable( true );
+        stage.setMinHeight( 350d );
+        stage.setMinWidth( 400d );
+        stage.setHeight( 350d ); //TODO save/restore size&pos
+        stage.setWidth( 400d );
+        stage.setScene( new Scene( builder.getNode() ) );
+        stage.setOnShowing( ( WindowEvent e ) -> controller.reset() );
+
+        stage.titleProperty().bind( controller.titleProperty() );
+//            controller.bindColorProperty( colorProperty );
+//            controller.bindPatternProperty( patternProperty );
+//            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
+        controller.reset();
+        return stage;
+    }
     
     private void импортироватьXml( Provider<Provider<InputStream>> селектор )
     {

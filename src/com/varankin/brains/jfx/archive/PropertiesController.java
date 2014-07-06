@@ -1,9 +1,12 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.db.XmlNameSpace;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
+import javafx.collections.MapChangeListener;
+import javafx.collections.WeakMapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -31,6 +34,7 @@ public class PropertiesController implements Builder<Parent>
     
     private BooleanBinding changedBinding;
     
+    @FXML private BorderPane pane;
     @FXML private Pane properties;
     @FXML private Button buttonOK, buttonApply;
     //@FXML private PropertiesPaneController propertiesController;
@@ -65,8 +69,8 @@ public class PropertiesController implements Builder<Parent>
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
 
-        BorderPane pane = new BorderPane();
-        //pane.setCenter( properties );
+        pane = new BorderPane();
+        pane.setId( "pane" );
         pane.setBottom( buttonBar );
 
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -76,16 +80,20 @@ public class PropertiesController implements Builder<Parent>
         
         return pane;
     }
+    private PaneChanger paneChanger;
 
     @FXML
     protected void initialize()
     {
+        paneChanger = new PaneChanger( pane );
+        pane.getProperties().addListener( new WeakMapChangeListener<>( paneChanger ) );
     }
     
     @FXML
     void onActionOK( ActionEvent event )
     {
-        event.consume();
+        onActionApply( event );
+        buttonApply.getScene().getWindow().hide();
     }
     
     @FXML
@@ -109,7 +117,38 @@ public class PropertiesController implements Builder<Parent>
     void reset(  )
     {
         // сбросить прежние значения и установить текущие значения
-        titleProperty.setValue( "Properties ?" ); //LOGGER.text( "properties.title", legend.getText() )
+        //titleProperty.setValue( "Properties ?" ); //LOGGER.text( "properties.title", legend.getText() )
+    }
+    
+    private class PaneChanger implements MapChangeListener<Object,Object>
+    {
+        final BorderPane pane;
+
+        PaneChanger( BorderPane pane )
+        {
+            this.pane = pane;
+        }
+        
+        @Override
+        public void onChanged( MapChangeListener.Change<? extends Object, ? extends Object> change )
+        {
+            if( change.wasAdded() )
+            {
+                Object value = change.getValueAdded();
+                if( value instanceof XmlNameSpace )
+                {
+                    PropertiesXmlNameSpaceController controller = new PropertiesXmlNameSpaceController();
+                    pane.setCenter( controller.build() );
+                    titleProperty.setValue( null );
+                    controller.reset( (XmlNameSpace)value, titleProperty, buttonApply );
+                }
+                else
+                {
+                    pane.setCenter( null );
+                    titleProperty.setValue( null );
+                }
+            }
+        }
     }
     
 }
