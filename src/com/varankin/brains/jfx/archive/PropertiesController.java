@@ -8,6 +8,7 @@ import javafx.beans.property.*;
 import javafx.collections.MapChangeListener;
 import javafx.collections.WeakMapChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -92,7 +93,8 @@ public class PropertiesController implements Builder<Parent>
     @FXML
     void onActionOK( ActionEvent event )
     {
-        onActionApply( event );
+        EventHandler<ActionEvent> handler = buttonApply.getOnAction();
+        if( handler != null ) handler.handle( event );
         buttonApply.getScene().getWindow().hide();
     }
     
@@ -139,8 +141,9 @@ public class PropertiesController implements Builder<Parent>
                 {
                     PropertiesXmlNameSpaceController controller = new PropertiesXmlNameSpaceController();
                     pane.setCenter( controller.build() );
-                    titleProperty.setValue( null );
-                    controller.reset( (XmlNameSpace)value, titleProperty, buttonApply );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.namespace" ) ) );
+                    buttonApply.setOnAction( controller::onActionApply );
+                    controller.reset( (XmlNameSpace)value );
                 }
                 else
                 {

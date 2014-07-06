@@ -80,11 +80,9 @@ public final class PropertiesXmlNameSpaceController implements Builder<Pane>
         JavaFX.getInstance().execute( new SaveTask( prefix.getText(), uri.getText() )  );
     }
 
-    void reset( XmlNameSpace xmlNameSpace, StringProperty titleProperty, Button apply )
+    void reset( XmlNameSpace xmlNameSpace )
     {
         this.xmlNameSpace = xmlNameSpace;
-        titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.namespace" ) ) );
-        apply.setOnAction( this::onActionApply );
         JavaFX.getInstance().execute( new ReadTask()  );
     }
     
