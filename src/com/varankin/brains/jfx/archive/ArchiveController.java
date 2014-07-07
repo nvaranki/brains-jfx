@@ -15,7 +15,6 @@ import com.varankin.util.LoggerX;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
@@ -49,8 +48,6 @@ public final class ArchiveController implements Builder<TitledPane>
     private static final LoggerX LOGGER = LoggerX.getLogger( ArchiveController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/Archive.css";
     private static final String CSS_CLASS = "archive";
-    private static final Function<TreeItem<Атрибутный>, Stream<? extends Атрибутный>> TO_VALUE 
-            = ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() );
     private static final Действие<Проект> действиеЗагрузитьПроект 
         = new ЗагрузитьАрхивныйПроект( JavaFX.getInstance().контекст, 
             DbФабрикаКомпозитныхЭлементов.class );
@@ -60,7 +57,7 @@ public final class ArchiveController implements Builder<TitledPane>
     public static final String RESOURCE_FXML  = "/fxml/archive/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private final ObservableList<TreeItem<Атрибутный>> selection;
+    private final SelectionListBinding selection;
     
     private Stage properties;
     private Provider<File> fileProviderExport;
@@ -80,7 +77,7 @@ public final class ArchiveController implements Builder<TitledPane>
 
     public ArchiveController()
     {
-        selection = FXCollections.observableArrayList();
+        selection = new SelectionListBinding();
         disableNew = createBooleanBinding( () -> disableActionNew(), selection );
         disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
         disablePreview = createBooleanBinding( () -> disableActionPreview(), selection );
@@ -425,7 +422,10 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
         tree.setRoot( new TreeItem<>() );
         tree.getRoot().getChildren().add( item );
-        bindContentBidirectional( selection, tree.getSelectionModel().getSelectedItems() );
+        selection.bind( tree.getSelectionModel().getSelectedItems() );
+
+
+
 //        tree.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
 //                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
 //        {
@@ -715,7 +715,7 @@ public final class ArchiveController implements Builder<TitledPane>
         else
         {
             if( properties == null ) properties = buildProperties();
-            properties.getScene().getRoot().setUserData( selection.get( 0 ).getValue() );
+            properties.getScene().getRoot().setUserData( selection.get( 0 ) );
             properties.show();
             properties.toFront();
         }
@@ -874,13 +874,13 @@ public final class ArchiveController implements Builder<TitledPane>
     
     private boolean disableActionImportFile()
     {
-        return selection.size() != 1 || !selection.stream().flatMap( TO_VALUE )
+        return selection.size() != 1 || !selection.stream()
                 .allMatch( ( Атрибутный i ) -> i instanceof Архив );
     }
     
     private boolean disableActionImportNet()
     {
-        return selection.size() != 1 || !selection.stream().flatMap( TO_VALUE )
+        return selection.size() != 1 || !selection.stream()
                 .allMatch( ( Атрибутный i ) -> i instanceof Архив );
     }
     
@@ -930,7 +930,7 @@ public final class ArchiveController implements Builder<TitledPane>
     private void импортироватьXml( Provider<Provider<InputStream>> селектор )
     {
         JavaFX jfx = JavaFX.getInstance();
-        List<Архив> архивы = selection.stream().flatMap( TO_VALUE )
+        List<Архив> архивы = selection.stream()
             .flatMap( ( Атрибутный i ) -> i instanceof Архив ? Stream.of( (Архив)i ) : Stream.empty() )
             .collect( Collectors.toList() );
         if( архивы.isEmpty() )
@@ -953,6 +953,36 @@ public final class ArchiveController implements Builder<TitledPane>
                     }
                 } );
         }
+    }
+    
+    /**
+     * Список выбранных {@linkplain Атрибутный элементов} архива.
+     */
+    private class SelectionListBinding extends ListBinding<Атрибутный>
+    {
+        final ObservableList<Атрибутный> LIST = FXCollections.<Атрибутный>observableArrayList();
+        
+        /**
+         * Связывает данный список со списком выбора в {@link TreeView}.
+         * 
+         * @param list список выбора в {@link TreeView}.
+         */
+        void bind( ObservableList<TreeItem<Атрибутный>> list )
+        {
+            super.bind( list );
+        }
+        
+        @Override
+        protected ObservableList<Атрибутный> computeValue()
+        {
+            List<Атрибутный> value = tree == null ? Collections.emptyList() :
+                    tree.getSelectionModel().getSelectedItems().stream()
+                    .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+                    .collect( Collectors.toList() );
+            LIST.setAll( value );
+            return LIST;
+        }
+        
     }
     
 }
