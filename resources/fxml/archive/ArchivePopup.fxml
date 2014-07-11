@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Контекстное меню навигатора по архиву.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<ContextMenu 
+    fx:controller="com.varankin.brains.jfx.archive.ArchivePopupController" 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+
+    <items>
+        <MenuItem 
+                onAction="#onActionLoad" 
+                text="%archive.action.load" 
+                disable="${controller.disableLoad}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/load.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionPreview" 
+                text="%archive.action.preview" 
+                disable="${controller.disablePreview}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/preview.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionEdit" 
+                text="%archive.action.edit" 
+                disable="${controller.disableEdit}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/edit.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionRemove" 
+                text="%archive.action.remove" 
+                disable="${controller.disableRemove}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/remove.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <fx:include fx:id="menuNew" source="ArchivePopupNew.fxml" />
+        <MenuItem 
+                onAction="#onActionProperties" 
+                text="%archive.action.properties" 
+                disable="${controller.disableProperties}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/properties.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionImportFile" 
+                text="%archive.action.import.file" 
+                disable="${controller.disableImportFile}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-xml.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionImportNet" 
+                text="%archive.action.import.network" 
+                disable="${controller.disableImportNet}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/load-internet.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionExportXml" 
+                text="%archive.action.export.xml" 
+                disable="${controller.disableExportXml}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-export.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionExportPic" 
+                text="%archive.action.export.pic" 
+                disable="${controller.disableExportPic}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-export.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+    </items>
+    
+</ContextMenu>
