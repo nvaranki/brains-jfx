@@ -230,7 +230,8 @@ final class ActionProcessor //TODO RT-37820
     
     boolean disableActionPreview()
     {
-        return false;
+        return selection.isEmpty() || !selection.stream()
+                .allMatch( ( Атрибутный i ) -> i instanceof Элемент );
     }
     
     boolean disableActionEdit()
