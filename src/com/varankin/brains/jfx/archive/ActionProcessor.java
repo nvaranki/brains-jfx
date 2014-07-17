@@ -9,6 +9,7 @@ import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.*;
 import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
 import com.varankin.brains.jfx.*;
+import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
@@ -141,7 +143,47 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionEdit( ActionEvent event )
     {
+        Predicate<TitledSceneGraph> inEditor = ( TitledSceneGraph tsg ) -> tsg!=null;//tsg.node instanceof Pane; //TODO identification;
+        for( Атрибутный value : selection )
+            if( value instanceof Элемент )
+            {
+                Элемент элемент = (Элемент)value;
+                
+                // Создать, разместить и показатеть пустой редактор
+                BuilderFX<Node,EditorController> builder = new BuilderFX<>();
+                builder.init( EditorController.class, EditorController.RESOURCE_FXML, EditorController.RESOURCE_BUNDLE );
+                EditorController controller = builder.getController();
+                Parent view = controller.build();
+                SimpleStringProperty название = new SimpleStringProperty();
+                Image icon = JavaFX.icon( "icons16x16/edit.png" ).getImage();
+                JavaFX jfx = JavaFX.getInstance();
+                jfx.show( элемент, inEditor, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+
+                // загрузить элемент для редактирования
+                jfx.getExecutorService().submit( () -> 
+                { 
+                    try( Транзакция т = элемент.транзакция() )
+                    {
+                        controller.setContent( элемент );
+                        String текст = элемент.название();
+                        Platform.runLater( () -> название.setValue( текст ) );
+                        т.завершить( true );
+                    }
+                    catch( Exception ex )
+                    {
+                        LOGGER.getLogger().log( Level.SEVERE, "Failure to set editing context.", ex );
+                    }
+                } );
         
+//                if( jfx.isShown( элемент, inEditor ) != null )
+//                    LOGGER.log( Level.INFO, "002002002W", элемент.название() );
+//                else
+//                {
+//                    
+//                }
+            }
+            else
+                LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be edited separately: {0}", value.getClass().getName());
     }
     
     void onActionRemove( ActionEvent event )
@@ -236,7 +278,8 @@ final class ActionProcessor //TODO RT-37820
     
     boolean disableActionEdit()
     {
-        return false;
+        return selection.isEmpty() || !selection.stream()
+                .allMatch( ( Атрибутный i ) -> i instanceof Элемент );
     }
     
     boolean disableActionRemove()
