@@ -19,12 +19,10 @@ import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.scene.*;
-import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.web.WebView;
 import javafx.stage.*;
@@ -129,16 +127,23 @@ final class ActionProcessor //TODO RT-37820
             if( value instanceof Элемент )
             {
                 Элемент элемент = (Элемент)value;
-                WebView view = new WebView();
-                view.setUserData( элемент );
-                SimpleStringProperty название = new SimpleStringProperty();
                 JavaFX jfx = JavaFX.getInstance();
-                jfx.execute( new WebViewLoaderTask( элемент, название, view.getEngine() ) );
-                Image icon = JavaFX.icon( "icons16x16/preview.png" ).getImage();
-                jfx.show( элемент, inBrowser, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+                if( jfx.isShown( элемент, inBrowser ) )
+                    LOGGER.log( Level.INFO, "002005008I", элемент.название() );
+                else
+                {
+                    // Создать, разместить и показатеть пустой навигатор
+                    WebView view = new WebView();
+                    view.setUserData( элемент );
+                    SimpleStringProperty название = new SimpleStringProperty();
+                    Image icon = JavaFX.icon( "icons16x16/preview.png" ).getImage();
+                    jfx.show( элемент, inBrowser, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+                    // загрузить элемент для просмотра
+                    jfx.execute( new WebViewLoaderTask( элемент, название, view.getEngine() ) );
+                }
             }
             else
-                LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be drawn separately: {0}", value.getClass().getName());
+                LOGGER.log( Level.WARNING, "002005010W", value.getClass().getName());
     }
     
     void onActionEdit( ActionEvent event )
@@ -148,42 +153,25 @@ final class ActionProcessor //TODO RT-37820
             if( value instanceof Элемент )
             {
                 Элемент элемент = (Элемент)value;
-                
-                // Создать, разместить и показатеть пустой редактор
-                BuilderFX<Node,EditorController> builder = new BuilderFX<>();
-                builder.init( EditorController.class, EditorController.RESOURCE_FXML, EditorController.RESOURCE_BUNDLE );
-                EditorController controller = builder.getController();
-                Parent view = controller.build();
-                SimpleStringProperty название = new SimpleStringProperty();
-                Image icon = JavaFX.icon( "icons16x16/edit.png" ).getImage();
                 JavaFX jfx = JavaFX.getInstance();
-                jfx.show( элемент, inEditor, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
-
-                // загрузить элемент для редактирования
-                jfx.getExecutorService().submit( () -> 
-                { 
-                    try( Транзакция т = элемент.транзакция() )
-                    {
-                        controller.setContent( элемент );
-                        String текст = элемент.название();
-                        Platform.runLater( () -> название.setValue( текст ) );
-                        т.завершить( true );
-                    }
-                    catch( Exception ex )
-                    {
-                        LOGGER.getLogger().log( Level.SEVERE, "Failure to set editing context.", ex );
-                    }
-                } );
-        
-//                if( jfx.isShown( элемент, inEditor ) != null )
-//                    LOGGER.log( Level.INFO, "002002002W", элемент.название() );
-//                else
-//                {
-//                    
-//                }
+                if( jfx.isShown( элемент, inEditor ) )
+                    LOGGER.log( Level.INFO, "002005009I", элемент.название() );
+                else
+                {
+                    // Создать, разместить и показатеть пустой редактор
+                    BuilderFX<Node,EditorController> builder = new BuilderFX<>();
+                    builder.init( EditorController.class, EditorController.RESOURCE_FXML, EditorController.RESOURCE_BUNDLE );
+                    EditorController controller = builder.getController();
+                    Parent view = controller.build();
+                    SimpleStringProperty название = new SimpleStringProperty();
+                    Image icon = JavaFX.icon( "icons16x16/edit.png" ).getImage();
+                    jfx.show( элемент, inEditor, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+                    // загрузить элемент для редактирования
+                    jfx.execute( new EditLoaderTask( элемент, название, controller ) );
+                }
             }
             else
-                LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be edited separately: {0}", value.getClass().getName());
+                LOGGER.log( Level.WARNING, "002005011W", value.getClass().getName());
     }
     
     void onActionRemove( ActionEvent event )

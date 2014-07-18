@@ -95,26 +95,30 @@ public final class JavaFX
         return views;
     }
     
-    TitledSceneGraph isShown( Элемент элемент, Predicate<? super TitledSceneGraph> predicate )
+    public boolean isShown( Элемент элемент, Predicate<? super TitledSceneGraph> predicate )
     {
         Optional<TitledSceneGraph> o = views.getValue().stream()
             .filter( predicate )
             .filter( ( TitledSceneGraph tsg ) -> элемент.equals( tsg.node.getUserData() ) )
             .findFirst();
-        return o.isPresent() ? o.get() : null;
+        return o.isPresent();
     }
     
-    public <E extends Элемент> TitledSceneGraph show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
+    public <E extends Элемент> void show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
             Фабрика<E,TitledSceneGraph> фабрика )
     {
         List<TitledSceneGraph> список = views.getValue();
-        TitledSceneGraph tsg = isShown( элемент, predicate );
-        if( tsg == null )
-            список.add( tsg = фабрика.создать( элемент ) );
+        if( !isShown( элемент, predicate ) )
+            список.add( фабрика.создать( элемент ) );
         else
+        {
             //TODO временный обходной вариант для активации view
+            TitledSceneGraph tsg = views.getValue().stream()
+                .filter( predicate )
+                .filter( ( TitledSceneGraph g ) -> элемент.equals( g.node.getUserData() ) )
+                .findFirst().get();
             список.set( список.indexOf( tsg ), new TitledSceneGraph( tsg.node, tsg.icon, tsg.title ) );
-        return tsg;
+        }
     }
 
     /**
