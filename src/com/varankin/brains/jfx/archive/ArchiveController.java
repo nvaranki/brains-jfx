@@ -29,15 +29,12 @@ public final class ArchiveController implements Builder<TitledPane>
     public static final String RESOURCE_FXML  = "/fxml/archive/Archive.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private final SelectionListBinding selection;
-    
     @FXML private ArchiveToolBarController toolbarController;
     @FXML private ArchivePopupController popupController;
     @FXML private TreeView<Атрибутный> tree;
 
     public ArchiveController()
     {
-        selection = new SelectionListBinding();
     }
 
     /**
@@ -76,7 +73,7 @@ public final class ArchiveController implements Builder<TitledPane>
     protected void initialize()
     {
         Архив архив = JavaFX.getInstance().контекст.архив;
-        TreeItem<Атрибутный> item = new TreeItem<>( архив );
+        TreeItem<Атрибутный> item = new TitledTreeItem<>( архив );
 //        архив.пакеты().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
 //        архив.namespaces().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
@@ -84,10 +81,7 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setRoot( new TreeItem<>() );
         tree.getRoot().getChildren().add( item );
         
-        selection.bind( tree.getSelectionModel().getSelectedItems() );
-        
-        ActionProcessor processor = new ActionProcessor();
-        processor.selectionProperty().bind( selection );
+        ActionProcessor processor = new ActionProcessor( tree.getSelectionModel() );
         toolbarController.setProcessor( processor );
         popupController.setProcessor( processor );
 
@@ -112,36 +106,6 @@ public final class ArchiveController implements Builder<TitledPane>
 //                event.getTreeItem();
 //            }
 //        });
-    }
-    
-    /**
-     * Список выбранных {@linkplain Атрибутный элементов} архива.
-     */
-    private class SelectionListBinding extends ListBinding<Атрибутный>
-    {
-        final ObservableList<Атрибутный> LIST = FXCollections.<Атрибутный>observableArrayList();
-        
-        /**
-         * Связывает данный список со списком выбора в {@link TreeView}.
-         * 
-         * @param list список выбора в {@link TreeView}.
-         */
-        void bind( ObservableList<TreeItem<Атрибутный>> list )
-        {
-            super.bind( list );
-        }
-        
-        @Override
-        protected ObservableList<Атрибутный> computeValue()
-        {
-            List<Атрибутный> value = tree == null ? Collections.emptyList() :
-                    tree.getSelectionModel().getSelectedItems().stream()
-                    .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
-                    .collect( Collectors.toList() );
-            LIST.setAll( value );
-            return LIST;
-        }
-        
     }
     
 }

@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.archive;
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.TitledTreeItem;
 import com.varankin.util.LoggerX;
 import java.util.*;
 import java.util.logging.*;
@@ -75,6 +76,8 @@ final class CellUpdateTask extends Task<Void>
                 treeCell.setGraphic( картинка ); // иначе отображение разваливается!!! Java v.8u5
             if( loadGraphic )
                 treeItem.setGraphic( картинка );
+            if( treeItem instanceof TitledTreeItem )
+                ((TitledTreeItem)treeItem).titleProperty().set( название );
             
             // обновить потомки ячейки по indb, иначе ячейку не раскрыть!
             List<Атрибутный> показать = new LinkedList<>( потомки );
@@ -85,7 +88,7 @@ final class CellUpdateTask extends Task<Void>
                     исчезло.add( i ); // показан, но уже не существует
             показано.removeAll( исчезло );
             for( Атрибутный v : показать )
-                вставить( new TreeItem<>( v ), показано ); // в правильную позицию
+                вставить( new TitledTreeItem<>( v ), показано ); // в правильную позицию
         }
     }
     

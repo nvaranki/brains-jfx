@@ -20,9 +20,14 @@ import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.ListBinding;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.*;
+import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.web.WebView;
 import javafx.stage.*;
@@ -42,7 +47,8 @@ final class ActionProcessor //TODO RT-37820
     private static final Импортировать импортировать
         = new Импортировать( JavaFX.getInstance().контекст );
     
-    private final ListProperty<Атрибутный> selection;
+    private final MultipleSelectionModel<TreeItem<Атрибутный>> selectionModel;
+    private final SelectionListBinding selection;
 
     private Stage properties;
     private Provider<File> fileProviderExport;
@@ -53,9 +59,11 @@ final class ActionProcessor //TODO RT-37820
         disableProperties, 
         disableImportFile, disableImportNet, disableExportXml, disableExportPic;
     
-    ActionProcessor()
+    ActionProcessor( MultipleSelectionModel<TreeItem<Атрибутный>> selectionModel )
     {
-        selection = new SimpleListProperty<>();
+        this.selectionModel = selectionModel;
+        selection = new SelectionListBinding();
+        selection.bind( selectionModel.getSelectedItems() );
         
         disableNew = createBooleanBinding( () -> disableActionNew(), selection );
         disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
@@ -68,12 +76,7 @@ final class ActionProcessor //TODO RT-37820
         disableExportXml = createBooleanBinding( () -> disableActionExportXml(), selection );
         disableExportPic = createBooleanBinding( () -> disableActionExportPic(), selection );
     }
-    
-    ListProperty<Атрибутный> selectionProperty()
-    {
-        return selection;
-    }
-    
+
     BooleanBinding disableNewProperty() { return disableNew; }
     BooleanBinding disableLoadProperty() { return disableLoad; }
     BooleanBinding disablePreviewProperty() { return disablePreview; }
@@ -123,13 +126,16 @@ final class ActionProcessor //TODO RT-37820
     void onActionPreview( ActionEvent event )
     {
         Predicate<TitledSceneGraph> inBrowser = ( TitledSceneGraph tsg ) -> tsg.node instanceof WebView;
-        for( Атрибутный value : selection )
+        for( TreeItem<Атрибутный> item : selectionModel.getSelectedItems() )
+        {
+            Атрибутный value = item.getValue();
             if( value instanceof Элемент )
             {
                 Элемент элемент = (Элемент)value;
                 JavaFX jfx = JavaFX.getInstance();
                 if( jfx.isShown( элемент, inBrowser ) )
-                    LOGGER.log( Level.INFO, "002005008I", элемент.название() );
+                    LOGGER.log( Level.INFO, "002005008I", item instanceof TitledTreeItem ? 
+                            ((TitledTreeItem)item).getTitle() : item.toString() );
                 else
                 {
                     // Создать, разместить и показатеть пустой навигатор
@@ -143,19 +149,24 @@ final class ActionProcessor //TODO RT-37820
                 }
             }
             else
-                LOGGER.log( Level.WARNING, "002005010W", value.getClass().getName());
+                LOGGER.log( Level.WARNING, "002005010W", item instanceof TitledTreeItem ? 
+                            ((TitledTreeItem)item).getTitle() : item.toString() );
+        }
     }
     
     void onActionEdit( ActionEvent event )
     {
         Predicate<TitledSceneGraph> inEditor = ( TitledSceneGraph tsg ) -> tsg!=null;//tsg.node instanceof Pane; //TODO identification;
-        for( Атрибутный value : selection )
+        for( TreeItem<Атрибутный> item : selectionModel.getSelectedItems() )
+        {
+            Атрибутный value = item.getValue();
             if( value instanceof Элемент )
             {
                 Элемент элемент = (Элемент)value;
                 JavaFX jfx = JavaFX.getInstance();
                 if( jfx.isShown( элемент, inEditor ) )
-                    LOGGER.log( Level.INFO, "002005009I", элемент.название() );
+                    LOGGER.log( Level.INFO, "002005009I", item instanceof TitledTreeItem ? 
+                            ((TitledTreeItem)item).getTitle() : item.toString() );
                 else
                 {
                     // Создать, разместить и показатеть пустой редактор
@@ -171,7 +182,9 @@ final class ActionProcessor //TODO RT-37820
                 }
             }
             else
-                LOGGER.log( Level.WARNING, "002005011W", value.getClass().getName());
+                LOGGER.log( Level.WARNING, "002005011W", item instanceof TitledTreeItem ? 
+                            ((TitledTreeItem)item).getTitle() : item.toString() );
+        }
     }
     
     void onActionRemove( ActionEvent event )
@@ -361,6 +374,36 @@ final class ActionProcessor //TODO RT-37820
 //            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         controller.reset();
         return stage;
+    }
+    
+    /**
+     * Список выбранных {@linkplain Атрибутный элементов} архива.
+     */
+    private class SelectionListBinding extends ListBinding<Атрибутный>
+    {
+        final ObservableList<Атрибутный> LIST = FXCollections.<Атрибутный>observableArrayList();
+        
+        /**
+         * Связывает данный список со списком выбора в {@link TreeView}.
+         * 
+         * @param list список выбора в {@link TreeView}.
+         */
+        void bind( ObservableList<TreeItem<Атрибутный>> list )
+        {
+            super.bind( list );
+        }
+        
+        @Override
+        protected ObservableList<Атрибутный> computeValue()
+        {
+            List<Атрибутный> value = //tree == null ? Collections.emptyList() :
+                    selectionModel.getSelectedItems().stream()
+                    .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
+                    .collect( Collectors.toList() );
+            LIST.setAll( value );
+            return LIST;
+        }
+        
     }
     
 }
