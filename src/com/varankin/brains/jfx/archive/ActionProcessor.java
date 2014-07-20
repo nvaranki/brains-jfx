@@ -258,11 +258,12 @@ final class ActionProcessor //TODO RT-37820
     
     boolean disableActionNew()
     {
-        if( selection.size() != 1 ) return true;
-//        for( Атрибутный item = tree.getSelectionModel().getSelectedItems().get(0); item != null; item = item.getParent() )
-//            if( item.getValue() instanceof Мусор ) return true;
-        Атрибутный value = selection.get(0);
-        return !( value instanceof Архив || value instanceof Пакет );
+//        if( selection.size() != 1 ) return true;
+////        for( Атрибутный item = tree.getSelectionModel().getSelectedItems().get(0); item != null; item = item.getParent() )
+////            if( item.getValue() instanceof Мусор ) return true;
+//        Атрибутный value = selection.get(0);
+//        return !( value instanceof Архив || value instanceof Пакет );
+        return true;
     }
 
     boolean disableActionLoad()
@@ -308,7 +309,7 @@ final class ActionProcessor //TODO RT-37820
     
     boolean disableActionExportXml()
     {
-        return false;
+        return true;
     }
     
     boolean disableActionExportPic()
