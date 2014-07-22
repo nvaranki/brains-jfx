@@ -1,14 +1,14 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.factory.Proxy;
+import com.varankin.brains.db.Коллекция;
+import com.varankin.brains.jfx.TitledTreeItem;
 import com.varankin.property.MonitoredCollection;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -33,12 +33,12 @@ class МониторКоллекции implements PropertyChangeListener
     {
         switch( evt.getPropertyName() )
         {
-            case MonitoredCollection.PROPERTY_ADDED:
-                Platform.runLater( new OnElementAdded( (Атрибутный)evt.getNewValue() ) );
+            case Коллекция.PROPERTY_ADDED:
+                Platform.runLater( () -> onElementAdded( (Атрибутный)evt.getNewValue() ) );
                 break;
 
-            case MonitoredCollection.PROPERTY_REMOVED:
-                Platform.runLater( new OnElementRemoved( (Атрибутный)evt.getOldValue() ) );
+            case Коллекция.PROPERTY_REMOVED:
+                Platform.runLater( () -> onElementRemoved( (Атрибутный)evt.getOldValue() ) );
                 break;
 
 //            case Процесс.СОСТОЯНИЕ:
@@ -54,50 +54,20 @@ class МониторКоллекции implements PropertyChangeListener
         }            
     }
     
-    private class OnElementAdded implements Runnable
+    private void onElementAdded( Атрибутный элемент )
     {
-        private final Атрибутный ЭЛЕМЕНТ;
-
-        OnElementAdded( Атрибутный элемент )
-        {
-            ЭЛЕМЕНТ = элемент;
-        }
-
-        @Override
-        public void run()
-        {
-//            BrowserNode узел = СТРОИТЕЛЬ.узел( ЭЛЕМЕНТ );
-//            ITEMS.add( СТРОИТЕЛЬ.позиция( узел, ITEMS ), узел );
-//            узел.expand( СТРОИТЕЛЬ );
-        }
-
-    };
-
-    private class OnElementRemoved implements Runnable
+        CellUpdateTask.вставить( new TitledTreeItem<>( элемент ), ITEMS );
+    }
+    
+    private void onElementRemoved( Атрибутный элемент )
     {
-        private final Атрибутный ЭЛЕМЕНТ;
-
-        OnElementRemoved( Атрибутный элемент )
-        {
-            ЭЛЕМЕНТ = элемент;
-        }
-
-        @Override
-        public void run()
-        {
-            TreeItem<Атрибутный> удаляемый = null;
-            for( TreeItem<Атрибутный> узел : ITEMS )
-                if( ЭЛЕМЕНТ.equals( узел.getValue() ) )
-                {
-                    удаляемый = узел;
-                    break;
-                }
-            if( удаляемый != null )
-            {
-//                removeTreeItemChildren( удаляемый );
-//                ITEMS.remove( удаляемый );
-            }
-        }
-    };
-
+        Collection<TreeItem<Атрибутный>> удалить = new ArrayList<>();
+        for( TreeItem<Атрибутный> узел : ITEMS )
+            if( элемент.equals( узел.getValue() ) )
+                удалить.add( узел );
+        
+        //removeTreeItemChildren( удаляемый );
+        ITEMS.removeAll( удалить );
+    }
+    
 }

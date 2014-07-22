@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.property.PropertyMonitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.*;
@@ -16,7 +17,8 @@ import javafx.scene.control.TreeItem;
 class CellАтрибутный extends TreeCell<Атрибутный>
 {
     private static final Logger LOGGER = Logger.getLogger( CellАтрибутный.class.getName() );
-    Collection<МониторКоллекции> мониторы = new ArrayList<>();
+    
+    static final Object PCL = new Object(), CCPCL = new Object();
 
     @Override
     public void updateItem( Атрибутный item, boolean empty )
@@ -25,15 +27,14 @@ class CellАтрибутный extends TreeCell<Атрибутный>
 
         if( empty )
         {
-//            if( item instanceof Архив )
-//            {
-//                Архив архив = (Архив)item;
-//                архив.пакеты().наблюдатели().removeAll( мониторы );
-//                архив.namespaces().наблюдатели().removeAll( мониторы );
-//            }
-//            мониторы.clear();
             setText( null );
             setGraphic( null );
+            Object pcl = getProperties().remove( PCL );
+            Object ccpcl = getProperties().remove( CCPCL );
+            if( ccpcl instanceof Collection )
+                for( Object pm : (Collection)ccpcl )
+                    if( pm instanceof PropertyMonitor )
+                        ((PropertyMonitor)pm).наблюдатели().remove( pcl );
         }
         else
         {
@@ -42,29 +43,11 @@ class CellАтрибутный extends TreeCell<Атрибутный>
             // initiate check of name and children
             //TODO fails to reset value back! setText( "Loading..." ); textProperty().setValue( "Loading..." );
             setGraphic( treeItem.getGraphic() );
-
+            if( !getProperties().containsKey( PCL ) ) 
+                getProperties().put( PCL, new МониторКоллекции( treeItem.getChildren() ) );
+            if( !getProperties().containsKey( CCPCL ) ) 
+                getProperties().put( CCPCL, new ArrayList<>() );
             JavaFX.getInstance().getExecutorService().submit( new CellUpdateTask( this ) );
-            
-//            if( !мониторы.isEmpty() )
-//            {
-//                return;
-//            }
-//            ObservableList<TreeItem<Атрибутный>> children = treeItem.getChildren();
-//            if( item instanceof Архив )
-//            {
-//                Архив архив = (Архив)item;
-//                МониторКоллекции мк;
-//                мк = new МониторКоллекции( children );
-//                if( архив.пакеты().наблюдатели().add( мк ) )
-//                {
-//                    мониторы.add( мк );
-//                }
-//                мк = new МониторКоллекции( children );
-//                if( архив.namespaces().наблюдатели().add( мк ) )
-//                {
-//                    мониторы.add( мк );
-//                }
-//            }
         }
     }
     

@@ -4,7 +4,9 @@ import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.TitledTreeItem;
+import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.logging.*;
 import javafx.concurrent.Task;
@@ -30,6 +32,8 @@ final class CellUpdateTask extends Task<Void>
     private final TreeItem<Атрибутный> treeItem;
     private final Collection<Атрибутный> потомки;
     private final boolean loadGraphic;
+    private final PropertyChangeListener наблюдатель;
+    private final Collection<PropertyMonitor> мониторы;
     
     private volatile String название, подсказка;
     private volatile Node картинка;
@@ -40,6 +44,8 @@ final class CellUpdateTask extends Task<Void>
         treeItem = cell.getTreeItem();
         loadGraphic = treeItem.getGraphic() == null;
         потомки = new ArrayList<>();
+        наблюдатель = (МониторКоллекции)cell.getProperties().get( CellАтрибутный.PCL );
+        мониторы = (Collection<PropertyMonitor>)cell.getProperties().get( CellАтрибутный.CCPCL );
     }
 
     /**
@@ -56,6 +62,10 @@ final class CellUpdateTask extends Task<Void>
         {
             загрузить( item );
             т.завершить( true );
+        }
+        for( PropertyMonitor м : мониторы )
+        {
+            м.наблюдатели().add( наблюдатель );
         }
         return null;
     }
@@ -103,16 +113,16 @@ final class CellUpdateTask extends Task<Void>
         }
     }
     
-    private void вставить( TreeItem<Атрибутный> item, List<TreeItem<Атрибутный>> items )
+    static void вставить( TreeItem<Атрибутный> item, List<TreeItem<Атрибутный>> items )
     {
         Атрибутный value = item.getValue();
         int b = 0, e = items.size(), pos = ( b + e )/2;
         while( b != e )
         {
-            if( b == pos )
-                b++;
-            else if( CMP.compare( value, items.get( pos ).getValue() ) < 0 )
+            if( CMP.compare( value, items.get( pos ).getValue() ) < 0 )
                 e = pos;
+            else if( b == pos )
+                b++;
             else
                 b = pos;
             pos = ( b + e )/2;
@@ -131,6 +141,9 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.пакеты() );
         потомки.addAll( узел.namespaces() );
         потомки.addAll( узел.мусор() );
+        мониторы.add( узел.пакеты() );
+        мониторы.add( узел.namespaces() );
+        мониторы.add( узел.мусор() );
     }
     
     private void загрузить( Библиотека узел )
@@ -144,6 +157,12 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.расчеты() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.модули() );
+        мониторы.add( узел.поля() );
+        мониторы.add( узел.процессоры() );
+        мониторы.add( узел.расчеты() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Заметка узел )
@@ -153,6 +172,8 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.note" );
         потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.тексты() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Инструкция узел )
@@ -161,6 +182,7 @@ final class CellUpdateTask extends Task<Void>
         название = LOGGER.text( "cell.instruction" );
         подсказка = LOGGER.text( "cell.instruction" );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( КлассJava узел )
@@ -170,6 +192,8 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.class.java" );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Контакт узел )
@@ -179,6 +203,8 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.pin" );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Модуль узел )
@@ -193,6 +219,13 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.процессоры() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.библиотеки() );
+        мониторы.add( узел.фрагменты() );
+        мониторы.add( узел.соединения() );
+        мониторы.add( узел.сигналы() );
+        мониторы.add( узел.процессоры() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Неизвестный узел )
@@ -201,6 +234,7 @@ final class CellUpdateTask extends Task<Void>
         название = LOGGER.text( "cell.unknown" );
         подсказка = LOGGER.text( "cell.unknown" );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Пакет узел )
@@ -211,6 +245,9 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.библиотеки() );
         потомки.addAll( узел.проекты() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.библиотеки() );
+        мониторы.add( узел.проекты() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Поле узел )
@@ -222,6 +259,10 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.сигналы() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.соединения() );
+        мониторы.add( узел.сигналы() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Проект узел )
@@ -235,6 +276,12 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.процессоры() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.библиотеки() );
+        мониторы.add( узел.фрагменты() );
+        мониторы.add( узел.сигналы() );
+        мониторы.add( узел.процессоры() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Процессор узел )
@@ -245,6 +292,9 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.классы() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Расчет узел )
@@ -256,6 +306,10 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.точки() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.соединения() );
+        мониторы.add( узел.точки() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Сигнал узел )
@@ -266,6 +320,9 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.классы() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Соединение узел )
@@ -276,6 +333,9 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.контакты() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.контакты() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( ТекстовыйБлок узел )
@@ -284,6 +344,7 @@ final class CellUpdateTask extends Task<Void>
         название = LOGGER.text( "cell.text" );
         подсказка = LOGGER.text( "cell.text" );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Точка узел )
@@ -295,6 +356,10 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.точки() );
+        мониторы.add( узел.классы() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Фрагмент узел )
@@ -305,6 +370,9 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.соединения() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.соединения() );
+        мониторы.add( узел.заметки() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Мусор узел )
@@ -314,6 +382,8 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.basket" );
         потомки.addAll( узел.мусор() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.мусор() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( XmlNameSpace узел )
@@ -330,6 +400,7 @@ final class CellUpdateTask extends Task<Void>
         }
         подсказка = LOGGER.text( "cell.namespace" );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( Элемент узел )
@@ -352,6 +423,8 @@ final class CellUpdateTask extends Task<Void>
             название = замена( узел.название(), "cell.element" );
             потомки.addAll( узел.заметки() );
             потомки.addAll( узел.прочее() );
+            мониторы.add( узел.заметки() );
+            мониторы.add( узел.прочее() );
         }
     }
     
@@ -371,6 +444,7 @@ final class CellUpdateTask extends Task<Void>
             картинка = null;//картинка( узел );
             название = LOGGER.text( "cell.attributive" );
             потомки.addAll( узел.прочее() );
+            мониторы.add( узел.прочее() );
         }
     }
     
