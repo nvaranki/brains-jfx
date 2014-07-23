@@ -34,7 +34,7 @@ class CellАтрибутный extends TreeCell<Атрибутный>
             if( ccpcl instanceof Collection )
                 for( Object pm : (Collection)ccpcl )
                     if( pm instanceof PropertyMonitor )
-                        ((PropertyMonitor)pm).наблюдатели().remove( pcl );
+                        ((PropertyMonitor)pm).listeners().remove( pcl );
         }
         else
         {

@@ -95,7 +95,7 @@ class Value
     {
         if( property != null && монитор != null )
         {
-            монитор.наблюдатели().add( наблюдатель_p = this::onPropertyChange );
+            монитор.listeners().add( наблюдатель_p = this::onPropertyChange );
         }
         else if( свойство != null )
         {
@@ -107,7 +107,7 @@ class Value
     {
         if( property != null && монитор != null )
         {
-            монитор.наблюдатели().remove( наблюдатель_p );
+            монитор.listeners().remove( наблюдатель_p );
             наблюдатель_p = null;
         }
         else if( свойство != null )

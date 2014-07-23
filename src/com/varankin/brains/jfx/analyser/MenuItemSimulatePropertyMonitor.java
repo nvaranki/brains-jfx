@@ -77,7 +77,7 @@ class MenuItemSimulatePropertyMonitor extends MenuItem
         final Collection<PropertyChangeListener> listeners = new ArrayList<>();
 
         @Override
-        public Collection<PropertyChangeListener> наблюдатели()
+        public Collection<PropertyChangeListener> listeners()
         {
             return listeners;
         }

@@ -46,13 +46,13 @@ class BrowserNode extends TreeItem<Элемент>
         if( элемент instanceof PropertyMonitor )
         {
             монитор = фабрика.создать( this );
-            ( (PropertyMonitor)элемент ).наблюдатели().add( монитор );
+            ( (PropertyMonitor)элемент ).listeners().add( монитор );
         }
         if( элемент instanceof Proxy )
         {
             Элемент оригинал = ((Proxy)элемент).оригинал();
             if( оригинал instanceof PropertyMonitor )
-                ( (PropertyMonitor)оригинал ).наблюдатели().add( монитор );
+                ( (PropertyMonitor)оригинал ).listeners().add( монитор );
         }
     }
 
@@ -62,12 +62,12 @@ class BrowserNode extends TreeItem<Элемент>
         if( монитор != null )
         {
             if( элемент instanceof PropertyMonitor )
-                ( (PropertyMonitor)элемент ).наблюдатели().remove( монитор );
+                ( (PropertyMonitor)элемент ).listeners().remove( монитор );
             if( элемент instanceof Proxy )
             {
                 Элемент оригинал = ((Proxy)элемент).оригинал();
                 if( оригинал instanceof PropertyMonitor )
-                    ( (PropertyMonitor)оригинал ).наблюдатели().remove( монитор );
+                    ( (PropertyMonitor)оригинал ).listeners().remove( монитор );
             }
             монитор = null;
         }

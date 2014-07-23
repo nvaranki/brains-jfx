@@ -65,7 +65,7 @@ final class CellUpdateTask extends Task<Void>
         }
         for( PropertyMonitor м : мониторы )
         {
-            м.наблюдатели().add( наблюдатель );
+            м.listeners().add( наблюдатель );
         }
         return null;
     }

@@ -22,7 +22,7 @@ class ObservableValueList<T> extends ObservableValueBase<ObservableList<T>>
     ObservableValueList( Коллекция<T> элементы ) 
     {
         LIST = FXCollections.<T>observableArrayList();
-        элементы.наблюдатели().add( new PropertyChangeListenerImpl( элементы ) ); //TODO .removeProperty...()
+        элементы.listeners().add( new PropertyChangeListenerImpl( элементы ) ); //TODO .removeProperty...()
     }
 
     @Override
