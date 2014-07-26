@@ -284,6 +284,11 @@ public final class JavaFX
         return xmlUrlSelector;
     }
 
+    public boolean isRemovePermanently()
+    {
+        return false; //TODO ext. param.
+    }
+
     //<editor-fold defaultstate="collapsed" desc="классы">
     
     private class ObservableObjectList<T> extends ObservableValueBase<ObservableList<T>>

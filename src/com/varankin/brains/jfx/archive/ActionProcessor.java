@@ -190,8 +190,10 @@ final class ActionProcessor //TODO RT-37820
     void onActionRemove( ActionEvent event )
     {
         //TODO confirmation dialog
-        JavaFX.getInstance().execute( new ДействияПоПорядку<Атрибутный>( 
-                ДействияПоПорядку.Приоритет.КОНТЕКСТ, new УдалитьИзАрхива() ), new ArrayList<>( selection.getValue() ) );
+        JavaFX jfx = JavaFX.getInstance();
+        jfx.execute( new ДействияПоПорядку<Атрибутный>( 
+                ДействияПоПорядку.Приоритет.КОНТЕКСТ, new УдалитьИзАрхива( jfx.isRemovePermanently() ) ), 
+                new ArrayList<>( selection.getValue() ) );
     }
     
     void onActionImportFile( ActionEvent event )
