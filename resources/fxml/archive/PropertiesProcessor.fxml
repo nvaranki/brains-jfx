@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель выбора и установки параметров процессора.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.archive.PropertiesXmlNameSpaceController" 
+    styleClass="properties-xml-ns"
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@PropertiesProcessor.css"/>
+    </stylesheets>
+
+    <children>
+    </children>
+
+</GridPane>

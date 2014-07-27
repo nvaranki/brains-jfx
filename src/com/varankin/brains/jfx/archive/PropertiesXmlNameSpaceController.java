@@ -4,12 +4,9 @@ import com.varankin.brains.db.XmlNameSpace;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -33,10 +30,6 @@ public final class PropertiesXmlNameSpaceController implements Builder<Pane>
     @FXML private TextField prefix;
     @FXML private TextField uri;
 
-    public PropertiesXmlNameSpaceController()
-    {
-    }
-    
     /**
      * Создает панель выбора и установки параметров объекта пространства имен XML.
      * Применяется в конфигурации без FXML.

@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.XmlNameSpace;
+import com.varankin.brains.db.Процессор;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.binding.BooleanBinding;
@@ -145,10 +146,19 @@ public class PropertiesController implements Builder<Parent>
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (XmlNameSpace)value );
                 }
+                else if( value instanceof Процессор )
+                {
+                    PropertiesProcessorController controller = new PropertiesProcessorController();
+                    pane.setCenter( controller.build() );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.processor" ) ) );
+                    buttonApply.setOnAction( controller::onActionApply );
+                    controller.reset( (Процессор)value );
+                }
                 else
                 {
                     pane.setCenter( null );
                     titleProperty.setValue( null );
+                    buttonApply.setOnAction( null );
                 }
             }
         }
