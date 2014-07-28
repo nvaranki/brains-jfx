@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- 
+    Description: Панель выбора и установки параметров процессора.
+    Author     : (c) 2014 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,8 +10,51 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.archive.TabProcessorController" 
+    fx:id="processor"
+    styleClass="properties-tab-processor"
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    
     <stylesheets>
         <URL value="@TabProcessorController.css"/>
     </stylesheets>
-</AnchorPane>
+  
+  <children>
+    <Label 
+        text="%properties.processor.pause" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField
+        fx:id="pause"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0"  
+        focusTraversable="true"      
+    />
+    <Label 
+        text="%properties.processor.restart" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <CheckBox
+        fx:id="restart"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
+        focusTraversable="true"      
+    />
+    <Label 
+        text="%properties.processor.strategy" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <ComboBox
+        fx:id="strategy"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2"  
+        focusTraversable="true"
+        editable="false"       
+    />
+  </children>
+  
+</GridPane>

@@ -1,0 +1,11 @@
+/* 
+    Description: Панель выбора и установки общих параметров.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.properties-tab-element
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

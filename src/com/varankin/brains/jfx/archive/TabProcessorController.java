@@ -57,12 +57,9 @@ public final class TabProcessorController implements Builder<GridPane>
         restart = new CheckBox();
         restart.setFocusTraversable( true );
         
-        strategy = new ComboBox<>( FXCollections.observableArrayList( Стратегия.values() ));
+        strategy = new ComboBox<>();
         strategy.setFocusTraversable( true );
         strategy.setEditable( false );
-        strategy.setVisibleRowCount( Стратегия.values().length );
-        strategy.setCellFactory( ( ListView<Стратегия> lv ) -> new ListCellСтратегия() );
-        strategy.setButtonCell( new ListCellСтратегия() );
         
         GridPane pane = new GridPane();
         pane.setId( "processor" );
@@ -85,6 +82,10 @@ public final class TabProcessorController implements Builder<GridPane>
     @FXML
     protected void initialize()
     {
+        strategy.getItems().addAll( Стратегия.values() );
+        strategy.setVisibleRowCount( Стратегия.values().length );
+        strategy.setCellFactory( ( ListView<Стратегия> lv ) -> new ListCellСтратегия() );
+        strategy.setButtonCell( new ListCellСтратегия() );
         pauseProperty.bind( Bindings.createLongBinding( () -> convertPause(), pause.textProperty() ) );
     }
     

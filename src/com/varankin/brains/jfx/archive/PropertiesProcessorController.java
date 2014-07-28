@@ -26,6 +26,7 @@ public class PropertiesProcessorController implements Builder<TabPane>
     private volatile Процессор процессор;
     
     @FXML TabProcessorController processorController;
+    @FXML TabElementController elementController;
 
     public PropertiesProcessorController()
     {
@@ -42,6 +43,7 @@ public class PropertiesProcessorController implements Builder<TabPane>
     public TabPane build()
     {
         processorController = new TabProcessorController();
+        elementController = new TabElementController();
         
         Tab proc = new Tab( LOGGER.text( "properties.processor.tab.processor" ) );
         proc.setClosable( false );
@@ -49,12 +51,13 @@ public class PropertiesProcessorController implements Builder<TabPane>
         
         Tab elem = new Tab( LOGGER.text( "properties.common.tab.element" ) );
         elem.setClosable( false );
+        elem.setContent( elementController.build() );
         
-        Tab ext = new Tab( LOGGER.text( "properties.common.tab.external" ) );
-        ext.setClosable( false );
+//        Tab ext = new Tab( LOGGER.text( "properties.common.tab.external" ) );
+//        ext.setClosable( false );
         
         TabPane pane = new TabPane();
-        pane.getTabs().addAll( proc, elem, ext );
+        pane.getTabs().addAll( proc, elem );//, ext );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -68,6 +71,7 @@ public class PropertiesProcessorController implements Builder<TabPane>
     protected void initialize()
     {
         agents.addAll( processorController.getAgents() );
+        agents.addAll( elementController.getAgents() );
     }
     
     @FXML
@@ -81,6 +85,7 @@ public class PropertiesProcessorController implements Builder<TabPane>
     {
         this.процессор = процессор;
         processorController.reset( процессор );
+        elementController.reset( процессор );
         JavaFX.getInstance().execute( new StorageToScreenTask( процессор, agents ) );
     }
     
