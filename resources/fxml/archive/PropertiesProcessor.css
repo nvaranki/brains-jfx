@@ -1,11 +1,8 @@
 /* 
-    Description: Панель выбора и установки параметров процессора.
+    Description: Панель закладок для установки параметров процессора.
     Author     : (c) 2014 Николай Варанкин
 */
 
-.properties-processor #processor
+.properties-processor
 {
-    -fx-hgap: 10px;
-    -fx-vgap: 10px;
-    -fx-padding: 10px;
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    Description: Панель выбора и установки параметров процессора.
+    Description: Панель закладок для установки параметров процессора.
     Author     : (c) 2014 Николай Варанкин
 -->
 <?import java.lang.*?>
@@ -10,16 +10,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane 
+<TabPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
     fx:controller="com.varankin.brains.jfx.archive.PropertiesXmlNameSpaceController" 
-    styleClass="properties-xml-ns"
-    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    styleClass="properties-processor"
+    >
     
     <stylesheets>
         <URL value="@PropertiesProcessor.css"/>
     </stylesheets>
 
-    <children>
-    </children>
+    <tabs>
+        <Tab 
+            text="%properties.processor.tab.processor" 
+            closable="false"
+            >
+            <fx:include fx:id="processor" source="TabProcessor.fxml" />
+        </Tab>
+        <Tab 
+            text="%properties.processor.tab.element" 
+            closable="false"
+            >
+            <fx:include fx:id="element" source="TabElement.fxml" />
+        </Tab>
+    </tabs>
 
-</GridPane>
+</TabPane>

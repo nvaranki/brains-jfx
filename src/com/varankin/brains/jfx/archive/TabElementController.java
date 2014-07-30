@@ -17,7 +17,7 @@ import javafx.util.Builder;
 public final class TabElementController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabElementController.class );
-    private static final String RESOURCE_CSS  = "/fxml/archive/TabElementController.css";
+    private static final String RESOURCE_CSS  = "/fxml/archive/TabElement.css";
     private static final String CSS_CLASS = "properties-tab-element";
 
     private final AttributeAgent nameAgent;

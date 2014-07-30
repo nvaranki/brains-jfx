@@ -17,7 +17,7 @@
     xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
     
     <stylesheets>
-        <URL value="@TabProcessorController.css"/>
+        <URL value="@TabProcessor.css"/>
     </stylesheets>
   
   <children>

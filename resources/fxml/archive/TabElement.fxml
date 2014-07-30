@@ -11,13 +11,14 @@
 <?import javafx.scene.layout.*?>
 
 <GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
     fx:controller="com.varankin.brains.jfx.archive.TabElementController" 
     fx:id="element"
     styleClass="properties-tab-element"
-    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+>
     
     <stylesheets>
-        <URL value="@TabElementController.css"/>
+        <URL value="@TabElement.css"/>
     </stylesheets>
   
   <children>

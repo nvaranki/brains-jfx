@@ -8,7 +8,6 @@ import java.util.Collection;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -22,7 +21,7 @@ import javafx.util.Builder;
 public final class TabProcessorController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabProcessorController.class );
-    private static final String RESOURCE_CSS  = "/fxml/archive/TabProcessorController.css";
+    private static final String RESOURCE_CSS  = "/fxml/archive/TabProcessor.css";
     private static final String CSS_CLASS = "properties-tab-processor";
 
     private final LongProperty pauseProperty;

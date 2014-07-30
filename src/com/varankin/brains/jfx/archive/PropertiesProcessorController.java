@@ -11,7 +11,7 @@ import javafx.scene.control.*;
 import javafx.util.Builder;
 
 /**
- * FXML-контроллер панели выбора и установки параметров процессора.
+ * FXML-контроллер панели закладок для установки параметров процессора.
  * 
  * @author &copy; 2014 Николай Варанкин
  */
@@ -53,11 +53,8 @@ public class PropertiesProcessorController implements Builder<TabPane>
         elem.setClosable( false );
         elem.setContent( elementController.build() );
         
-//        Tab ext = new Tab( LOGGER.text( "properties.common.tab.external" ) );
-//        ext.setClosable( false );
-        
         TabPane pane = new TabPane();
-        pane.getTabs().addAll( proc, elem );//, ext );
+        pane.getTabs().addAll( proc, elem );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
