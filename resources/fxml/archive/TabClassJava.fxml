@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель установки параметров класса Java.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabProcessorController" 
+    fx:id="processor"
+    styleClass="properties-tab-processor"
+    >
+    
+    <stylesheets>
+        <URL value="@TabClassJava.css"/>
+    </stylesheets>
+    
+    <children>
+        <Label 
+            text="%properties.class.main" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <CheckBox
+            fx:id="restart"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+        />
+        <Label 
+            text="%properties.class.code" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextArea
+            fx:id="code"
+            prefColumnCount="40"
+            prefRowCount="15"  
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            GridPane.columnSpan="2" 
+        />
+    </children>
+    
+</GridPane>
