@@ -69,6 +69,7 @@ public class PropertiesClassJavaController implements Builder<TabPane>
     {
         agents.addAll( codeController.getAgents() );
         agents.addAll( elementController.getAgents() );
+        codeController.classNameProperty().bind( elementController.nameProperty() );
     }
     
     @FXML

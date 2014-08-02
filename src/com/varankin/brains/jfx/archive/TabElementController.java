@@ -4,6 +4,7 @@ import com.varankin.brains.db.Элемент;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -65,6 +66,11 @@ public final class TabElementController implements Builder<GridPane>
     Collection<AttributeAgent> getAgents()
     {
         return Arrays.asList( nameAgent );
+    }
+
+    ReadOnlyStringProperty nameProperty()
+    {
+        return name.textProperty();
     }
 
     void reset( Элемент элемент )

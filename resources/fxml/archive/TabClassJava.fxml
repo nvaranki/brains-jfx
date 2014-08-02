@@ -23,12 +23,23 @@
     
     <children>
         <Label 
+            text="%properties.class.name" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <CheckBox
+            fx:id="name"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+        />
+        <Label 
             text="%properties.class.main" 
             GridPane.columnIndex="0" 
             GridPane.rowIndex="1" 
         />
         <CheckBox
-            fx:id="restart"
+            fx:id="main"
             focusTraversable="true"      
             GridPane.columnIndex="1" 
             GridPane.rowIndex="1"  
@@ -36,15 +47,15 @@
         <Label 
             text="%properties.class.code" 
             GridPane.columnIndex="0" 
-            GridPane.rowIndex="1" 
+            GridPane.rowIndex="2" 
         />
         <TextArea
             fx:id="code"
             prefColumnCount="40"
             prefRowCount="15"  
             focusTraversable="true"      
-            GridPane.columnIndex="1" 
-            GridPane.rowIndex="1"  
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="3"  
             GridPane.columnSpan="2" 
         />
     </children>
