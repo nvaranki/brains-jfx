@@ -21,15 +21,17 @@ public final class TabElementController implements Builder<GridPane>
     private static final String RESOURCE_CSS  = "/fxml/archive/TabElement.css";
     private static final String CSS_CLASS = "properties-tab-element";
 
-    private final AttributeAgent nameAgent;
+    private final AttributeAgent pathAgent, nameAgent;
 
     private Элемент элемент;
     
+    @FXML private Label path;
     @FXML private TextField name;
 
     public TabElementController()
     {
         nameAgent = new NameAgent();
+        pathAgent = new PathAgent();
     }
     
     /**
@@ -41,6 +43,8 @@ public final class TabElementController implements Builder<GridPane>
     @Override
     public GridPane build()
     {
+        path = new Label();
+        
         name = new TextField();
         name.setFocusTraversable( true );
         name.setId( "name" );
@@ -48,7 +52,9 @@ public final class TabElementController implements Builder<GridPane>
         GridPane pane = new GridPane();
         pane.setId( "element" );
         pane.add( new Label( LOGGER.text( "properties.element.name" ) ), 0, 0 );
-        pane.add( name, 1, 0 );
+        pane.add( path, 1, 0 );
+        pane.add( new Label( LOGGER.text( "properties.element.name" ) ), 0, 1 );
+        pane.add( name, 1, 1 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -65,7 +71,7 @@ public final class TabElementController implements Builder<GridPane>
     
     Collection<AttributeAgent> getAgents()
     {
-        return Arrays.asList( nameAgent );
+        return Arrays.asList( pathAgent, nameAgent );
     }
 
     ReadOnlyStringProperty nameProperty()
@@ -76,6 +82,34 @@ public final class TabElementController implements Builder<GridPane>
     void reset( Элемент элемент )
     {
         this.элемент = элемент;
+    }
+    
+    private class PathAgent implements AttributeAgent
+    {
+        volatile String значение;
+
+        @Override
+        public void fromScreen()
+        {
+        }
+        
+        @Override
+        public void toScreen()
+        {
+            path.setText( значение );
+        }
+        
+        @Override
+        public void fromStorage()
+        {
+            значение = элемент.название( "", "/" );
+        }
+        
+        @Override
+        public void toStorage()
+        {
+        }
+
     }
     
     private class NameAgent implements AttributeAgent
@@ -105,7 +139,7 @@ public final class TabElementController implements Builder<GridPane>
         {
             элемент.название( значение );
         }
-
+        
     }
     
 }

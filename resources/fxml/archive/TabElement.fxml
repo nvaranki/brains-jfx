@@ -27,10 +27,20 @@
         GridPane.columnIndex="0" 
         GridPane.rowIndex="0" 
     />
+    <Label 
+        fx:id="path"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0" 
+    />
+    <Label 
+        text="%properties.element.name" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
     <TextField
         fx:id="name"
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="0"  
+        GridPane.rowIndex="1"  
         focusTraversable="true"      
     />
   </children>
