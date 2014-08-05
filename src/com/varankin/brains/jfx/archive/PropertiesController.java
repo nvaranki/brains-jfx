@@ -1,9 +1,11 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.XmlNameSpace;
+import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.КлассJava;
 import com.varankin.brains.db.Процессор;
 import com.varankin.brains.db.ТекстовыйБлок;
+import com.varankin.brains.db.Элемент;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.binding.BooleanBinding;
@@ -168,14 +170,22 @@ public class PropertiesController implements Builder<Parent>
                 {
                     TextController controller = new TextController();
                     pane.setCenter( controller.build() );
-                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.class.java" ) ) );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.text" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (ТекстовыйБлок)value );
+                }
+                else if( value instanceof Элемент )
+                {
+                    PropertiesElementController controller = new PropertiesElementController();
+                    pane.setCenter( controller.build() );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.element" ) ) );
+                    buttonApply.setOnAction( controller::onActionApply );
+                    controller.reset( (Элемент)value );
                 }
                 else
                 {
                     pane.setCenter( null );
-                    titleProperty.setValue( null );
+                    titleProperty.setValue( LOGGER.text( "properties.title", "" ) );
                     buttonApply.setOnAction( null );
                 }
             }

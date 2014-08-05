@@ -15,7 +15,7 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2014 Николай Варанкин
  */
-public final class TabElementController implements Builder<GridPane>
+public class TabElementController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabElementController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabElement.css";
