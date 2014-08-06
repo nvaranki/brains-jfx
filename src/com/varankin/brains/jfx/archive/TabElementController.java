@@ -51,7 +51,7 @@ public class TabElementController implements Builder<GridPane>
         
         GridPane pane = new GridPane();
         pane.setId( "element" );
-        pane.add( new Label( LOGGER.text( "properties.element.name" ) ), 0, 0 );
+        pane.add( new Label( LOGGER.text( "properties.element.path" ) ), 0, 0 );
         pane.add( path, 1, 0 );
         pane.add( new Label( LOGGER.text( "properties.element.name" ) ), 0, 1 );
         pane.add( name, 1, 1 );
@@ -102,7 +102,8 @@ public class TabElementController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            значение = элемент.название( "", "/" );
+            значение = элемент.название( "/", "/" );
+            значение = значение.substring( 0, значение.length() - элемент.название().length() );
         }
         
         @Override
