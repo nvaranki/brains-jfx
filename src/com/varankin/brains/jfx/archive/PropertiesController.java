@@ -1,11 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.XmlNameSpace;
-import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.КлассJava;
-import com.varankin.brains.db.Процессор;
-import com.varankin.brains.db.ТекстовыйБлок;
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.*;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.binding.BooleanBinding;
