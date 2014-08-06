@@ -228,6 +228,15 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
+    private void загрузить( Графика узел )
+    {
+        картинка = null;//картинка( узел );
+        название = LOGGER.text( "cell.graphic" );
+        подсказка = LOGGER.text( "cell.graphic" );
+        потомки.addAll( узел.прочее() );
+        мониторы.add( узел.прочее() );
+    }
+    
     private void загрузить( Неизвестный узел )
     {
         картинка = null;//картинка( узел );
@@ -437,6 +446,7 @@ final class CellUpdateTask extends Task<Void>
         else if( узел instanceof Заметка       ) загрузить( (Заметка)узел );
         else if( узел instanceof Инструкция    ) загрузить( (Инструкция)узел );
         else if( узел instanceof ТекстовыйБлок ) загрузить( (ТекстовыйБлок)узел );
+        else if( узел instanceof Графика       ) загрузить( (Графика)узел );
         else if( узел instanceof Неизвестный   ) загрузить( (Неизвестный)узел );
         else if( узел instanceof Мусор         ) загрузить( (Мусор)узел );
         else
