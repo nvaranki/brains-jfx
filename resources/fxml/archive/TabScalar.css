@@ -1,0 +1,11 @@
+/* 
+    Description: Закладка для установки скалярного значения.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.tab-scalar
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
