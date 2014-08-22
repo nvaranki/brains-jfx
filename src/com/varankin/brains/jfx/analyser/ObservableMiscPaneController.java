@@ -158,7 +158,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         {
             Базовый o = (Базовый)object;
             items.add( o.шаблон().название() );
-            items.add( o.шаблон().название( "", "." ) );
+            items.add( o.шаблон().положение( "." ) );
             String alias = alias( basicClassOf( o.шаблон().getClass(), CLASS_DB ) );
             items.add( alias + '_' + o.шаблон().название() );
             items.add( alias + suffix );
