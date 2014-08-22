@@ -4,6 +4,7 @@ import com.varankin.brains.db.КлассJava;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -16,22 +17,23 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2014 Николай Варанкин
  */
-public final class TabClassJavaController implements Builder<GridPane>
+public class TabClassJavaController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabClassJavaController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabClassJava.css";
-    private static final String CSS_CLASS = "properties-tab-class-java";
+    private static final String CSS_CLASS = "tab-class-java";
 
-    private final AttributeAgent mainAgent, codeAgent;
+    private final AttributeAgent nameAgent, mainAgent, codeAgent;
 
     private КлассJava класс;
     
+    @FXML private TextField name;
     @FXML private CheckBox main;
     @FXML private TextArea code;
-    @FXML private Label name;
 
     public TabClassJavaController()
     {
+        nameAgent = new NameAgent();
         mainAgent = new MainAgent();
         codeAgent = new CodeAgent();
     }
@@ -45,7 +47,8 @@ public final class TabClassJavaController implements Builder<GridPane>
     @Override
     public GridPane build()
     {
-        name = new Label();
+        name = new TextField();
+        name.setFocusTraversable( true );
         
         main = new CheckBox();
         main.setFocusTraversable( true );
@@ -56,11 +59,11 @@ public final class TabClassJavaController implements Builder<GridPane>
         code.setPrefRowCount( 15 );
         
         GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "properties.class.name" ) ), 0, 0 );
+        pane.add( new Label( LOGGER.text( "tab.class.name" ) ), 0, 0 );
         pane.add( name, 1, 0 );
-        pane.add( new Label( LOGGER.text( "properties.class.main" ) ), 0, 1 );
+        pane.add( new Label( LOGGER.text( "tab.class.main" ) ), 0, 1 );
         pane.add( main, 1, 1 );
-        pane.add( new Label( LOGGER.text( "properties.class.code" ) ), 0, 2 );
+        pane.add( new Label( LOGGER.text( "tab.class.code" ) ), 0, 2 );
         pane.add( code, 0, 3, 2, 1 );
         
         pane.getStyleClass().add( CSS_CLASS );
@@ -75,14 +78,13 @@ public final class TabClassJavaController implements Builder<GridPane>
     protected void initialize()
     {
         code.disableProperty().bind( Bindings.createBooleanBinding( 
-                () -> name.getText() != null && name.getText().trim().startsWith( "java.lang" ),
+                () -> name.getText() != null && isNativeClass( name.getText().trim() ),
                 name.textProperty() ) );
-        //TODO NullPointerException on click into empty TextArea when enabled
     }
     
     Collection<AttributeAgent> getAgents()
     {
-        return Arrays.asList( mainAgent, codeAgent );
+        return Arrays.asList( nameAgent, mainAgent, codeAgent );
     }
     
     StringProperty classNameProperty()
@@ -93,6 +95,36 @@ public final class TabClassJavaController implements Builder<GridPane>
     void reset( КлассJava класс )
     {
         this.класс = класс;
+    }
+    
+    private class NameAgent implements AttributeAgent
+    {
+        volatile String текст;
+
+        @Override
+        public void fromScreen()
+        {
+            текст = name.getText();
+        }
+        
+        @Override
+        public void toScreen()
+        {
+            name.setText( текст );
+        }
+        
+        @Override
+        public void fromStorage()
+        {
+            текст = класс.название();
+        }
+        
+        @Override
+        public void toStorage()
+        {
+            класс.название( текст );
+        }
+
     }
     
     private class MainAgent implements AttributeAgent
@@ -153,6 +185,30 @@ public final class TabClassJavaController implements Builder<GridPane>
             класс.код( текст );
         }
 
+    }
+    
+    private static final List<String> NATIVE_CLASS_NAMES;
+    
+    static
+    {
+        NATIVE_CLASS_NAMES = Arrays.asList
+        (
+            byte.class.getName(),
+            boolean.class.getName(),
+            char.class.getName(),
+            double.class.getName(),
+            float.class.getName(),
+            int.class.getName(),
+            long.class.getName(),
+            short.class.getName()
+        );
+    }
+        
+    private static boolean isNativeClass( String name )
+    {
+        return name.startsWith( "java.lang." ) 
+            || NATIVE_CLASS_NAMES.contains( name )
+            || NATIVE_CLASS_NAMES.contains( name.split( "\\[", 2 )[0] );
     }
     
 }

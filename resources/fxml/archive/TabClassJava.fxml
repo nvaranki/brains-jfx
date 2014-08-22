@@ -12,9 +12,8 @@
 
 <GridPane 
     xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
-    fx:controller="com.varankin.brains.jfx.archive.TabProcessorController" 
-    fx:id="processor"
-    styleClass="properties-tab-processor"
+    fx:controller="com.varankin.brains.jfx.archive.TabClassJavaController" 
+    styleClass="tab-class-java"
     >
     
     <stylesheets>
@@ -22,19 +21,19 @@
     </stylesheets>
     
     <children>
-        <Label 
-            text="%properties.class.name" 
+        <CheckBox 
+            text="%tab.class.name" 
             GridPane.columnIndex="0" 
             GridPane.rowIndex="0" 
         />
-        <CheckBox
+        <TextField
             fx:id="name"
             focusTraversable="true"      
             GridPane.columnIndex="1" 
             GridPane.rowIndex="0"  
         />
         <Label 
-            text="%properties.class.main" 
+            text="%tab.class.main" 
             GridPane.columnIndex="0" 
             GridPane.rowIndex="1" 
         />
@@ -45,7 +44,7 @@
             GridPane.rowIndex="1"  
         />
         <Label 
-            text="%properties.class.code" 
+            text="%tab.class.code" 
             GridPane.columnIndex="0" 
             GridPane.rowIndex="2" 
         />

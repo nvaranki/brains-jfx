@@ -102,7 +102,7 @@ public class TabElementController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            значение = элемент.название( "/", "/" );
+            значение = элемент.положение( "/" );
             значение = значение.substring( 0, значение.length() - элемент.название().length() );
         }
         
