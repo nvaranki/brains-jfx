@@ -60,7 +60,7 @@ class Value
         this.монитор = pm;
         this.свойство = null;
         this.property = property;
-        this.convertor = convertor != null ? convertor : new СтандартныйРанжировщик();
+        this.convertor = convertor;//TODO != null ? convertor : new СтандартныйРанжировщик();
         this.painter = painter;
         this.title = title;
         this.color = color;
@@ -84,7 +84,7 @@ class Value
         this.монитор = pm;
         this.свойство = property;
         this.property = null;
-        this.convertor = convertor != null ? convertor : new СтандартныйРанжировщик();
+        this.convertor = convertor;//TODO != null ? convertor : new СтандартныйРанжировщик();
         this.painter = painter;
         this.title = title;
         this.color = color;
@@ -130,10 +130,11 @@ class Value
     
     private void onPropertyChange( Object прежнее, Object актуальное )
     {
+/*TODO
         if( convertor instanceof СтандартныйРанжировщик )
             ((СтандартныйРанжировщик)convertor).setOldValue( прежнее );
-
-        Dot dot = new Dot( convertor.значение( актуальное ), System.currentTimeMillis() );
+*/
+        Dot dot = new Dot( 0f/*TODO convertor.значение( актуальное )*/, System.currentTimeMillis() );
 
         if( !painter.offer( dot ) )
             LOGGER.log( Level.FINEST, "Painter of \"{0}\" rejected a dot.", title );
