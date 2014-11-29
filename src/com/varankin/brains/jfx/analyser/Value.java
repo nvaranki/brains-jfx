@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.artificial.rating.Ранжируемый;
 import com.varankin.brains.artificial.rating.СтандартныйРанжировщик;
-import com.varankin.brains.artificial.Ранжировщик;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.НаблюдаемоеСвойство;
 import com.varankin.characteristic.Наблюдатель;
@@ -34,7 +34,7 @@ class Value
     final PropertyMonitor монитор;
     final String property;
     final НаблюдаемоеСвойство свойство;
-    final Ранжировщик convertor;
+    final Ранжируемый convertor;
     final DotPainter painter;
     final int[][] pattern;
     final Color color;
@@ -53,7 +53,7 @@ class Value
      * @param title     название значения для отображения на графике.
      */
     Value( PropertyMonitor pm, String property, 
-            Ранжировщик convertor,
+            Ранжируемый convertor,
             DotPainter painter,
             int[][] pattern, Color color, String title )
     {
@@ -77,7 +77,7 @@ class Value
      * @param title     название значения для отображения на графике.
      */
     Value( PropertyMonitor pm, НаблюдаемоеСвойство property, 
-            Ранжировщик convertor,
+            Ранжируемый convertor,
             DotPainter painter,
             int[][] pattern, Color color, String title )
     {
@@ -130,11 +130,10 @@ class Value
     
     private void onPropertyChange( Object прежнее, Object актуальное )
     {
-/*TODO
         if( convertor instanceof СтандартныйРанжировщик )
             ((СтандартныйРанжировщик)convertor).setOldValue( прежнее );
-*/
-        Dot dot = new Dot( 0f/*TODO convertor.значение( актуальное )*/, System.currentTimeMillis() );
+
+        Dot dot = new Dot( convertor.значение( актуальное ), System.currentTimeMillis() );
 
         if( !painter.offer( dot ) )
             LOGGER.log( Level.FINEST, "Painter of \"{0}\" rejected a dot.", title );

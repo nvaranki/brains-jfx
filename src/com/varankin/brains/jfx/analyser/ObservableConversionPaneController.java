@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.appl.RatedObservable;
-import com.varankin.brains.artificial.Ранжировщик;
+import com.varankin.brains.artificial.rating.Ранжируемый;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
 import com.varankin.characteristic.Именованный;
@@ -31,13 +31,13 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     private static final String CSS_CLASS = "observable-conversion-pane";
 
     private final SingleSelectionProperty<RatedObservable> parameterProperty;
-    private final SingleSelectionProperty<Ранжировщик> convertorProperty;
+    private final SingleSelectionProperty<Ранжируемый> convertorProperty;
     private final ReadOnlyBooleanWrapper validProperty;
     
-    private AutoComboBoxSelector<Ранжировщик> convertorAutoSelector;
+    private AutoComboBoxSelector<Ранжируемый> convertorAutoSelector;
 
     @FXML private ComboBox<RatedObservable> parameter;
-    @FXML private ComboBox<Ранжировщик> convertor;
+    @FXML private ComboBox<Ранжируемый> convertor;
 
     public ObservableConversionPaneController()
     {
@@ -107,7 +107,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         return parameterProperty;
     }
 
-    ReadOnlyProperty<Ранжировщик> convertorProperty()
+    ReadOnlyProperty<Ранжируемый> convertorProperty()
     {
         return convertorProperty;
     }
@@ -136,7 +136,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     /**
      * Генератор списка доступных вариантов конвертеров.
      */
-    private class ConvertorBinding extends ListBinding<Ранжировщик>
+    private class ConvertorBinding extends ListBinding<Ранжируемый>
     {
 
         ConvertorBinding()
@@ -145,9 +145,9 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         }
         
         @Override
-        protected ObservableList<Ранжировщик> computeValue()
+        protected ObservableList<Ранжируемый> computeValue()
         {
-            ObservableList<Ранжировщик> list = FXCollections.observableArrayList();
+            ObservableList<Ранжируемый> list = FXCollections.observableArrayList();
             RatedObservable observable = parameterProperty.getValue();
             if( observable != null ) 
                 list.addAll( observable.ранжировщики() );
@@ -176,15 +176,15 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     }
     
     private static class ConvertorCellFactory 
-        implements Callback<ListView<Ранжировщик>,ListCell<Ранжировщик>>
+        implements Callback<ListView<Ранжируемый>,ListCell<Ранжируемый>>
     {
         @Override
-        public ListCell<Ранжировщик> call( final ListView<Ранжировщик> param )
+        public ListCell<Ранжируемый> call( final ListView<Ранжируемый> param )
         {
-            return new ListCell<Ранжировщик>()
+            return new ListCell<Ранжируемый>()
             {
                 @Override
-                protected void updateItem( Ранжировщик item, boolean empty )
+                protected void updateItem( Ранжируемый item, boolean empty )
                 {
                     // calling super here is very important - don't skip this!
                     super.updateItem( item, empty );
