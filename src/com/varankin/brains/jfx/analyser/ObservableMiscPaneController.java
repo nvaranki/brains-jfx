@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.factory.structured.Структурный;
-import com.varankin.brains.db.factory.Базовый;
+import com.varankin.brains.db.Базовый;
 import com.varankin.brains.jfx.IntegerConverter;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.ObjectBindings;

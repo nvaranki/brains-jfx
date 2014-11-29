@@ -8,6 +8,7 @@ import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.db.*;
 import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
+import com.varankin.brains.factory.IФабрикаБазовыхЭлементов;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
@@ -43,7 +44,7 @@ final class ActionProcessor //TODO RT-37820
     private static final LoggerX LOGGER = LoggerX.getLogger( ActionProcessor.class );
     private static final Действие<Проект> действиеЗагрузитьПроект 
         = new ЗагрузитьАрхивныйПроект( JavaFX.getInstance().контекст, 
-            DbФабрикаКомпозитныхЭлементов.class );
+            IФабрикаБазовыхЭлементов.class );
     private static final Импортировать импортировать
         = new Импортировать( JavaFX.getInstance().контекст );
     
