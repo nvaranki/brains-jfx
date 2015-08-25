@@ -5,7 +5,6 @@ import com.varankin.brains.artificial.io.svg.*;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.HtmlGenerator;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.io.container.Provider;
 import com.varankin.util.Текст;
 
 import java.util.logging.*;
@@ -13,10 +12,12 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.scene.web.WebEngine;
 
+import static com.varankin.brains.appl.ЭкспортироватьSvg.providerOf;
+
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
 class WebViewLoaderTask extends Task<String>
 {
@@ -42,7 +43,7 @@ class WebViewLoaderTask extends Task<String>
         {
             название = элемент.название();
             Сборка сборка = new Сборка( элемент );
-            SvgService<Элемент> service = ( Элемент э ) -> генератор( э, сборка );
+            SvgService<Атрибутный> service = ( Атрибутный э ) -> providerOf( э, сборка );
             String code = service.генератор( элемент ).newInstance(); //TODO Отображаемый.MIME_SVG
             т.завершить( true );
             return code;
@@ -66,25 +67,4 @@ class WebViewLoaderTask extends Task<String>
         LOGGER.log( Level.SEVERE, msg, exception );
     }
 
-    @SuppressWarnings("Confusing indentation")
-    private static Provider<String> генератор( Атрибутный элемент, Сборка сборка )
-    {
-        Provider<String> p;
-        if( элемент instanceof Библиотека ) p = new SvgБиблиотека( (Библиотека)элемент, сборка ); else
-        if( элемент instanceof Заметка    ) p = new SvgЗаметка( (Заметка)элемент ); else
-        if( элемент instanceof Контакт    ) p = new SvgКонтакт( (Контакт)элемент, сборка ); else
-        if( элемент instanceof Модуль     ) p = new SvgМодуль( (Модуль)элемент, сборка ); else
-        if( элемент instanceof Поле       ) p = new SvgПоле( (Поле)элемент, сборка ); else
-        if( элемент instanceof Проект     ) p = new SvgПроект( (Проект)элемент, сборка ); else
-        if( элемент instanceof Процессор  ) p = new SvgПроцессор( (Процессор)элемент, сборка ); else
-        if( элемент instanceof Расчет     ) p = new SvgРасчет( (Расчет)элемент, сборка ); else
-        if( элемент instanceof Сигнал     ) p = new SvgСигнал( (Сигнал)элемент, сборка ); else
-        if( элемент instanceof Соединение ) p = new SvgСоединение( (Соединение)элемент, сборка ); else
-        if( элемент instanceof Точка      ) p = new SvgТочка( (Точка)элемент, сборка ); else
-        if( элемент instanceof Фрагмент   ) p = new SvgФрагмент( (Фрагмент)элемент, сборка ); else
-        if( элемент instanceof Библиотека ) p = new SvgБиблиотека( (Библиотека)элемент, сборка ); else
-        p = new SvgНеизвестный( элемент );
-        return p;
-    }
-    
 }
