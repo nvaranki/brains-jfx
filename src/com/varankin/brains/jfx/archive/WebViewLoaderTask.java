@@ -5,6 +5,7 @@ import com.varankin.brains.artificial.io.svg.*;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.HtmlGenerator;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.filter.*;
 import com.varankin.util.Текст;
 
 import java.util.logging.*;
@@ -12,7 +13,9 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.scene.web.WebEngine;
 
-import static com.varankin.brains.appl.ЭкспортироватьSvg.providerOf;
+import static com.varankin.brains.appl.ЭкспортироватьSvg.*;
+import static com.varankin.filter.И.и;
+import static com.varankin.filter.НЕ.не;
 
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
@@ -42,7 +45,7 @@ class WebViewLoaderTask extends Task<String>
         try( Транзакция т = элемент.транзакция() )
         {
             название = элемент.название();
-            Сборка сборка = new Сборка( элемент );
+            Фильтр<Элемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
             SvgService<Атрибутный> service = ( Атрибутный э ) -> providerOf( э, сборка );
             String code = service.генератор( элемент ).newInstance(); //TODO Отображаемый.MIME_SVG
             т.завершить( true );
@@ -66,5 +69,5 @@ class WebViewLoaderTask extends Task<String>
         engine.loadContent( HtmlGenerator.toHtml( msg, exception ), Отображаемый.MIME_TEXT );
         LOGGER.log( Level.SEVERE, msg, exception );
     }
-
+    
 }
