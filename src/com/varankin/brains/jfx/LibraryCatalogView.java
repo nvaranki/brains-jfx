@@ -4,25 +4,28 @@ import com.varankin.brains.appl.УдалитьАрхивныеБиблиотек
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
+import com.varankin.brains.db.XmlNameSpace;
+
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XMLNS_BRAINS;
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_LIBRARY;
 import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_NAME;
-import com.varankin.brains.artificial.io.Фабрика;
+
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Библиотека;
 import com.varankin.brains.db.Коллекция;
+import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.io.container.Provider;
 import java.util.Arrays;
 import java.util.logging.*;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
+
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_BRAINS;
 
 /**
  * Каталог библиотек архива.
@@ -34,10 +37,11 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
     private final Image iconEditor;
+    @Deprecated private final Пакет пакет = null;
     
     LibraryCatalogView( JavaFX jfx )
     {
-        super( jfx, jfx.контекст.архив.библиотеки() );
+        super( jfx, null );//jfx.контекст.архив.библиотеки() );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setCellFactory( new RowBuilder() );
         
@@ -49,8 +53,8 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 return new SvgБиблиотека( библиотека, new Сборка( библиотека ) );
             }
         };
-        УдалитьАрхивныеБиблиотеки действиеУдалить = new УдалитьАрхивныеБиблиотеки( jfx.контекст.архив );
-        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
+        УдалитьАрхивныеБиблиотеки действиеУдалить = null;//new УдалитьАрхивныеБиблиотеки( jfx.контекст.архив );
+        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg( jfx.контекст );
         
         ActionNew actionNew = new ActionNew();
         ActionPreview actionPreview = new ActionPreview( svg );
@@ -129,10 +133,10 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 Архив архив = jfx.контекст.архив;
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
-                String название = "New library #" + архив.библиотеки().size();
-                Библиотека элемент = архив.архитектор().newElementInstance( Библиотека.class );
-                элемент.определить( XML_NAME, null, название );
-                архив.библиотеки().add( элемент );
+                XmlNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
+                Библиотека элемент = (Библиотека)архив.создатьНовыйЭлемент( XML_LIBRARY, ns, null );
+                элемент.определить( XML_NAME, null, null, "New library #" + пакет.библиотеки().size() );
+                пакет.библиотеки().add( элемент );
                 транзакция.завершить( true );
                 
                 транзакция = архив.транзакция();

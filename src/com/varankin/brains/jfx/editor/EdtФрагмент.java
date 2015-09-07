@@ -42,7 +42,7 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<Фраг
         if( изменяемый )
             group.getChildren().add( createMarker( 3d ) );
 
-        String атрибутName  = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "" ) );
+        String атрибутName  = ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, "" );
 
         Коммутируемый экземпляр = ЭЛЕМЕНТ.экземпляр();
 //        if( экземпляр instanceof Модуль )

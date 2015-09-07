@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.XmlNameSpace;
 import com.varankin.brains.db.Атрибутный;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +25,19 @@ abstract class EdtАтрибутныйЭлемент<T extends Атрибутн�
 
     double toSvgDouble( String атрибут, double нет )
     {
-        Double v = Атрибутный.toDoubleValue( ЭЛЕМЕНТ.атрибут( атрибут, null, нет ) );
+        Double v = ЭЛЕМЕНТ.атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
     String toSvgString( String атрибут, String нет )
     {
-        String v = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( атрибут, null, нет ) );
+        String v = ЭЛЕМЕНТ.атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
     Double[] toSvgPoints( String атрибут, Double[] нет )
     {
-        Object a = ЭЛЕМЕНТ.атрибут( атрибут, null, null );
+        Object a = ЭЛЕМЕНТ.атрибут( атрибут, (XmlNameSpace)null, null );
         if( a == null )
         {
             return нет;

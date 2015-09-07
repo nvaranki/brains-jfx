@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.appl.NativeJavaClasses;
 import com.varankin.brains.db.КлассJava;
 import com.varankin.util.LoggerX;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -187,23 +189,9 @@ public class TabClassJavaController implements Builder<GridPane>
 
     }
     
-    private static final List<String> NATIVE_CLASS_NAMES;
+    private static final List<String> NATIVE_CLASS_NAMES 
+        = new ArrayList<>( NativeJavaClasses.getInstance().keySet() );
     
-    static
-    {
-        NATIVE_CLASS_NAMES = Arrays.asList
-        (
-            byte.class.getName(),
-            boolean.class.getName(),
-            char.class.getName(),
-            double.class.getName(),
-            float.class.getName(),
-            int.class.getName(),
-            long.class.getName(),
-            short.class.getName()
-        );
-    }
-        
     private static boolean isNativeClass( String name )
     {
         return name.startsWith( "java.lang." ) 

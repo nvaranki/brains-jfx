@@ -17,13 +17,13 @@ public interface InPlaceEditorBuilder
 
     public static double asDouble( Атрибутный элемент, String атрибут, double нет )
     {
-        Double v = Атрибутный.toDoubleValue( элемент.атрибут( атрибут, null, нет ) );
+        Double v = элемент.атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
     public static String asString( Атрибутный элемент, String атрибут, String нет )
     {
-        String v = Атрибутный.toStringValue( элемент.атрибут( атрибут, null, нет ) );
+        String v = элемент.атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 

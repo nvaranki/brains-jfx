@@ -167,7 +167,7 @@ public class TabArrayController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            Object v = массив.значение();
+            Object v = null;//TODO массив.значение();
             текст = 
                 v == null ? null : 
                 !v.getClass().isArray() ? v.toString() :

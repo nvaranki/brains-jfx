@@ -8,28 +8,32 @@ import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgПроект;
+import com.varankin.brains.db.XmlNameSpace;
+
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XMLNS_BRAINS;
 import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_NAME;
-import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.factory.DbФабрикаКомпозитныхЭлементов;
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_PROJECT;
+
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Коллекция;
+import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.Проект;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.factory.IФабрикаБазовыхЭлементов;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
-import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.*;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
+
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XMLNS_BRAINS;
+import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_BRAINS;
 
 /**
  * Каталог проектов архива.
@@ -41,10 +45,11 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
     
     private final Image iconEditor;
+    @Deprecated private final Пакет пакет = null;
     
     ProjectCatalogView( JavaFX jfx )
     {
-        super( jfx, jfx.контекст.архив.проекты() );
+        super( jfx, null );//jfx.контекст.архив.проекты() );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setCellFactory( new RowBuilder() );
 
@@ -56,10 +61,9 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
-        Действие<Проект> действиеЗагрузить = 
-            new ЗагрузитьАрхивныйПроект( jfx.контекст, DbФабрикаКомпозитныхЭлементов.class );
-        УдалитьАрхивныеПроекты действиеУдалить = new УдалитьАрхивныеПроекты( jfx.контекст.архив );
-        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
+        Действие<Проект> действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст );
+        Действие действиеУдалить = new УдалитьАрхивныеПроекты( null );//jfx.контекст.архив );
+        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg( jfx.контекст );
         
         ActionLoad actionLoad = new ActionLoad( действиеЗагрузить );
         ActionNew actionNew = new ActionNew();
@@ -142,9 +146,10 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 Архив архив = jfx.контекст.архив;
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
-                Проект элемент = архив.архитектор().newElementInstance( Проект.class );
-                элемент.определить( XML_NAME, null, "New project #" + архив.проекты().size() );
-                архив.проекты().add( элемент );
+                XmlNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
+                Проект элемент = (Проект)архив.создатьНовыйЭлемент( XML_PROJECT, ns, null );
+                элемент.определить( XML_NAME, null, null, "New project #" + пакет.проекты().size() );
+                пакет.проекты().add( элемент );
                 транзакция.завершить( true );
                 
                 транзакция = архив.транзакция();
@@ -170,7 +175,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         ActionLoad( Действие<Проект> действие )
         {
             super( jfx, jfx.словарь( ActionLoad.class ) );
-            ДЕЙСТВИЕ = new ДействияПоПорядку<>( jfx.контекст, Приоритет.КОНТЕКСТ, действие );
+            ДЕЙСТВИЕ = new ДействияПоПорядку<>( Приоритет.КОНТЕКСТ, действие );
         }
         
         @Override

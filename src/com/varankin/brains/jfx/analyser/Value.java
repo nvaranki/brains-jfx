@@ -9,6 +9,7 @@ import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.logging.Level;
 import javafx.scene.paint.Color;
 
@@ -31,9 +32,7 @@ class Value
 {
     static private final LoggerX LOGGER = LoggerX.getLogger( Value.class );
     
-    final PropertyMonitor монитор;
     final String property;
-    final НаблюдаемоеСвойство свойство;
     final Ранжируемый convertor;
     final DotPainter painter;
     final int[][] pattern;
@@ -42,6 +41,8 @@ class Value
 
     private PropertyChangeListener наблюдатель_p;
     private Наблюдатель наблюдатель;
+    private final Collection<PropertyChangeListener> наблюдатели_p;
+    private final Collection наблюдатели;
     
     /**
      * @param pm        источник значений.
@@ -57,8 +58,8 @@ class Value
             DotPainter painter,
             int[][] pattern, Color color, String title )
     {
-        this.монитор = pm;
-        this.свойство = null;
+        this.наблюдатели_p = pm.listeners();
+        this.наблюдатели = null;
         this.property = property;
         this.convertor = convertor;//TODO != null ? convertor : new СтандартныйРанжировщик();
         this.painter = painter;
@@ -68,7 +69,6 @@ class Value
     }
     
     /**
-     * @param pm        источник значений.
      * @param property  название значения как атрибута в источнике значений.
      * @param convertor преобразователь значения в тип {@link Float}.
      * @param painter   менеджер рисования отметок в графической зоне.
@@ -76,13 +76,13 @@ class Value
      * @param color     цвет рисования шаблона отметки на графике.
      * @param title     название значения для отображения на графике.
      */
-    Value( PropertyMonitor pm, НаблюдаемоеСвойство property, 
+    Value( НаблюдаемоеСвойство property, 
             Ранжируемый convertor,
             DotPainter painter,
             int[][] pattern, Color color, String title )
     {
-        this.монитор = pm;
-        this.свойство = property;
+        this.наблюдатели_p = null;
+        this.наблюдатели = property.наблюдатели();
         this.property = null;
         this.convertor = convertor;//TODO != null ? convertor : new СтандартныйРанжировщик();
         this.painter = painter;
@@ -93,26 +93,26 @@ class Value
     
     void startMonitoring()
     {
-        if( property != null && монитор != null )
+        if( наблюдатели_p != null )
         {
-            монитор.listeners().add( наблюдатель_p = this::onPropertyChange );
+            наблюдатели_p.add( наблюдатель_p = this::onPropertyChange );
         }
-        else if( свойство != null )
+        else if( наблюдатели != null )
         {
-            свойство.наблюдатели().add( наблюдатель = this::onPropertyChange );
+            наблюдатели.add( наблюдатель = this::onPropertyChange );
         }
     }
     
     void stopMonitoring()
     {
-        if( property != null && монитор != null )
+        if( наблюдатели_p != null )
         {
-            монитор.listeners().remove( наблюдатель_p );
+            наблюдатели_p.remove( наблюдатель_p );
             наблюдатель_p = null;
         }
-        else if( свойство != null )
+        else if( наблюдатели != null )
         {
-            свойство.наблюдатели().remove( наблюдатель );
+            наблюдатели.remove( наблюдатель );
             наблюдатель = null;
         }
     }

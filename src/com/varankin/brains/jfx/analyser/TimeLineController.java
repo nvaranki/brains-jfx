@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.observable.НаблюдаемыйЭлемент;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.List;
@@ -143,17 +145,22 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void onDragOver( DragEvent event )
     {
-        PropertyMonitor m = monitor( event );
-        if( m != null ) event.acceptTransferModes( TransferMode.LINK );
-        else event.acceptTransferModes( TransferMode.NONE );
+        if( monitor( event, НаблюдаемыйЭлемент.class ) != null ) 
+            event.acceptTransferModes( TransferMode.LINK );
+        else if( monitor( event, PropertyMonitor.class ) != null ) 
+            event.acceptTransferModes( TransferMode.LINK );
+        else 
+            event.acceptTransferModes( TransferMode.NONE );
         event.consume();
     }
 
     @FXML
     protected void onDragDropped( DragEvent event )
     {
-        PropertyMonitor m = monitor( event );
-        if( m != null )
+        НаблюдаемыйЭлемент нэ;
+        PropertyMonitor pm;
+        
+        if( ( нэ = monitor( event, НаблюдаемыйЭлемент.class ) ) != null )
         {
             if( properties == null )
             {
@@ -161,36 +168,45 @@ public final class TimeLineController implements Builder<Pane>
                 properties.initOwner( JavaFX.getInstance().платформа );
                 properties.setTitle( LOGGER.text( "properties.observable.title" ) );
             }
-            properties.setMonitor( m );
-            properties.showAndWait();
-            //properties.toFront();
-            Value value = properties.createValueInstance();
-            List<Value> observables = legendController.valuesProperty().getValue();
-            boolean completed = value != null && observables.add( value );
-            event.setDropCompleted( completed );
-            if( value != null && value.painter != null && completed )
+            properties.getController().setMonitor( нэ );
+        }
+        else if( ( pm = monitor( event, PropertyMonitor.class ) ) != null )
+        {
+            if( properties == null )
             {
-                value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-                value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-                value.painter.writableImageProperty().bind( graphController.writableImageProperty() );
+                properties = new ObservableSetupStage();
+                properties.initOwner( JavaFX.getInstance().платформа );
+                properties.setTitle( LOGGER.text( "properties.observable.title" ) );
             }
+            properties.getController().setMonitor( pm );
         }
         else
         {
-            event.setDropCompleted( false );
+//            event.setDropCompleted( false );
+//            event.consume();
+            return;
+        }
+        
+        properties.showAndWait();
+        //properties.toFront();
+        Value value = properties.getController().createValueInstance();
+        List<Value> observables = legendController.valuesProperty().getValue();
+        boolean completed = value != null && observables.add( value );
+        event.setDropCompleted( completed );
+        if( value != null && value.painter != null && completed )
+        {
+            value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+            value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+            value.painter.writableImageProperty().bind( graphController.writableImageProperty() );
         }
         event.consume();
     }
     
-    private static PropertyMonitor monitor( DragEvent event )
+    private static <T> T monitor( DragEvent event, Class<T> класс )
     {
         Object gs = event.getGestureSource();
         if( gs instanceof Node )
-        {
-            Object userData = ((Node)gs).getUserData();
-            if( userData instanceof PropertyMonitor )
-                return (PropertyMonitor)userData;
-        }
+            return Вложенный.извлечь( класс, ((Node)gs).getUserData() );
         return null;
     }
 

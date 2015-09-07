@@ -161,6 +161,30 @@ public class PropertiesController implements Builder<Parent>
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (КлассJava)value );
                 }
+                else if( value instanceof Конвертер )
+                {
+                    PropertiesConverterController controller = new PropertiesConverterController();
+                    pane.setCenter( controller.build() );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.converter" ) ) );
+                    buttonApply.setOnAction( controller::onActionApply );
+                    controller.reset( (Конвертер)value );
+                }
+                else if( value instanceof Скаляр )
+                {
+                    PropertiesScalarController controller = new PropertiesScalarController();
+                    pane.setCenter( controller.build() );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.scalar" ) ) );
+                    buttonApply.setOnAction( controller::onActionApply );
+                    controller.reset( (Скаляр)value );
+                }
+                else if( value instanceof Массив )
+                {
+                    PropertiesArrayController controller = new PropertiesArrayController();
+                    pane.setCenter( controller.build() );
+                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.array" ) ) );
+                    buttonApply.setOnAction( controller::onActionApply );
+                    controller.reset( (Массив)value );
+                }
                 else if( value instanceof ТекстовыйБлок )
                 {
                     TextController controller = new TextController();

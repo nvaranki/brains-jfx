@@ -138,7 +138,7 @@ public class SvgTextFieldController implements Builder<TextField>
         }
         else if( текст != null )
         {
-            текст.определить( Xml.XML_TEXT, null, input );
+            текст.определить( Xml.XML_TEXT, null, null, input );
         }
         else
         {

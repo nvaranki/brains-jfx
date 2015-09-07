@@ -112,7 +112,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
             for( E элемент : selectionModelProperty().getValue().getSelectedItems() )
                 if( элемент == null )
                     LOGGER.log( Level.FINE, "002002001E" );
-                else if( jfx.isShown( элемент, inEditor ) != null )
+                else if( jfx.isShown( элемент, inEditor ) )
                     LOGGER.log( Level.INFO, "002002002W", элемент.название() );
                 else
                     handleEditElement( ( Void v ) -> элемент, getIconImage() );
@@ -187,7 +187,7 @@ abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
                 {
                     E элемент = сeлектор.get( 0 );
                     ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст(
-                            контекст.контекст, элемент, new Сборка( элемент ), file );
+                            элемент, file );
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
                             .execute( jfx );
                 }

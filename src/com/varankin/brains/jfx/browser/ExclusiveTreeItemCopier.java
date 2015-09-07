@@ -1,39 +1,38 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.factory.Proxy;
-import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.ObservableListMirror;
+import com.varankin.filter.Фильтр;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javafx.scene.control.TreeItem;
 
 /**
- * Агент эксклюзивный копирования. Копирует исходный список только 
+ * Агент эксклюзивного копирования. Копирует исходный список только 
  * если ВСЕ его элементы - заданного типа.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
-class ExclusiveTreeItemCopier implements ObservableListMirror.Copier<TreeItem<Элемент>>
+class ExclusiveTreeItemCopier<E> implements ObservableListMirror.Copier<TreeItem<E>>
 {
-    private final Class<?> КЛАСС;
+    private final Фильтр<E> ФИЛЬТР;
 
     /**
      * @param класс класс - фильтр объектов в TreeItem.
      */
-    ExclusiveTreeItemCopier( Class<?> класс )
+    ExclusiveTreeItemCopier( Фильтр<E> фильтр )
     {
-        КЛАСС = класс;
+        ФИЛЬТР = фильтр;
     }
     
     @Override
-    public void copy( List<TreeItem<Элемент>> source, List<TreeItem<Элемент>> target )
+    public void copy( List<TreeItem<E>> source, List<TreeItem<E>> target )
     {
         target.retainAll( source ); // .retainAll(...) сигналит по необходимости :)
-        Collection<TreeItem<Элемент>> tmp = new ArrayList<>( source );
+        Collection<TreeItem<E>> tmp = new ArrayList<>( source );
         tmp.removeAll( target );
-        for( TreeItem<Элемент> item : tmp )
-            if( item == null || !isInstance( item.getValue(), КЛАСС ) )
+        for( TreeItem<E> item : tmp )
+            if( item == null || !ФИЛЬТР.пропускает( item.getValue() ) )
             {
                 target.clear(); // это означает Exclusive
                 return;
@@ -42,20 +41,4 @@ class ExclusiveTreeItemCopier implements ObservableListMirror.Copier<TreeItem<Э
             target.addAll( tmp );
     }
     
-    private static boolean isInstance( Элемент элемент, Class cls )
-    {
-        if( cls.isInstance( элемент ) )
-        {
-            return true;
-        }
-        else if( элемент instanceof Proxy )
-        {
-            return cls.isInstance( ((Proxy)элемент).оригинал() );
-        }
-        else
-        {
-            return false;
-        }
-    }
-
 }

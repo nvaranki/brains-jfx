@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.browser;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.artificial.Элемент;
+import com.varankin.brains.factory.runtime.RtЭлемент;
 import com.varankin.property.MonitoredCollection;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -14,16 +15,16 @@ import javafx.scene.control.TreeItem;
 /**
  * Монитор {@linkplain BrowserNode узла}.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
-class BrowserMonitor implements PropertyChangeListener
+class BrowserMonitor<T> implements PropertyChangeListener
 {
     private static final Logger LOGGER = Logger.getLogger( BrowserMonitor.class.getName() );
     
-    private final BrowserNode УЗЕЛ;
-    private final BrowserNodeBuilder СТРОИТЕЛЬ;
+    private final BrowserNode<T> УЗЕЛ;
+    private final BrowserNodeBuilder<T> СТРОИТЕЛЬ;
 
-    BrowserMonitor( BrowserNode узел, BrowserNodeBuilder строитель )
+    BrowserMonitor( BrowserNode<T> узел, BrowserNodeBuilder<T> строитель )
     {
         УЗЕЛ = узел;
         СТРОИТЕЛЬ = строитель;
@@ -35,16 +36,20 @@ class BrowserMonitor implements PropertyChangeListener
         switch( evt.getPropertyName() )
         {
             case MonitoredCollection.PROPERTY_ADDED:
-                Platform.runLater( new OnElementAdded( (Элемент)evt.getNewValue() ) );
+                Platform.runLater( new OnElementAdded( (T)evt.getNewValue() ) ); //TODO cast
                 break;
 
             case MonitoredCollection.PROPERTY_REMOVED:
-                Platform.runLater( new OnElementRemoved( (Элемент)evt.getOldValue() ) );
+                Platform.runLater( new OnElementRemoved( (T)evt.getOldValue() ) ); //TODO cast
                 break;
 
             case Процесс.СОСТОЯНИЕ:
-                Элемент элемент = УЗЕЛ.getValue();
-                Процесс процесс = Вложенный.извлечь( Процесс.class, элемент );
+                T value = УЗЕЛ.getValue();
+                Процесс процесс;
+                if( value instanceof RtЭлемент )
+                    процесс = RtЭлемент.извлечь( Процесс.class, (RtЭлемент)value );
+                else
+                    процесс = Вложенный.извлечь( Процесс.class, (Элемент)value );
                 if( процесс != null )
                     Platform.runLater( new OnStatusChangeded( 
                             (Процесс.Состояние)evt.getNewValue() ) );
@@ -73,9 +78,9 @@ class BrowserMonitor implements PropertyChangeListener
 
     private class OnElementAdded implements Runnable
     {
-        private final Элемент ЭЛЕМЕНТ;
+        private final T ЭЛЕМЕНТ;
 
-        OnElementAdded( Элемент элемент )
+        OnElementAdded( T элемент )
         {
             ЭЛЕМЕНТ = элемент;
         }
@@ -92,9 +97,9 @@ class BrowserMonitor implements PropertyChangeListener
 
     private class OnElementRemoved implements Runnable
     {
-        private final Элемент ЭЛЕМЕНТ;
+        private final T ЭЛЕМЕНТ;
 
-        OnElementRemoved( Элемент элемент )
+        OnElementRemoved( T элемент )
         {
             ЭЛЕМЕНТ = элемент;
         }
@@ -102,8 +107,8 @@ class BrowserMonitor implements PropertyChangeListener
         @Override
         public void run()
         {
-            TreeItem<Элемент> удаляемый = null;
-            for( TreeItem<Элемент> узел : УЗЕЛ.getChildren() )
+            TreeItem<T> удаляемый = null;
+            for( TreeItem<T> узел : УЗЕЛ.getChildren() )
                 if( ЭЛЕМЕНТ.equals( узел.getValue() ) )
                 {
                     удаляемый = узел;

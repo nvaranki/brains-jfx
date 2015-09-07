@@ -9,6 +9,7 @@ import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
+import com.varankin.brains.factory.runtime.RtЭлемент;
 import com.varankin.brains.jfx.AbstractContextJfxAction;
 import com.varankin.brains.jfx.AbstractJfxAction;
 import com.varankin.brains.jfx.ApplicationActionWorker;
@@ -31,16 +32,16 @@ import javafx.scene.control.*;
  *
  * @author &copy; 2015 Николай Варанкин
  */
-public class BrowserView extends TreeView<Элемент> 
+public class BrowserViewRt extends TreeView<RtЭлемент> 
 {
-    private static final Logger LOGGER = Logger.getLogger( BrowserView.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(BrowserViewRt.class.getName() );
     
     private final JavaFX JFX;
     private final Контекст КОНТЕКСТ;
     private final ReadOnlyStringProperty title;
     private final List<AbstractJfxAction> actions;
 
-    public BrowserView( JavaFX jfx )
+    public BrowserViewRt( JavaFX jfx )
     {
         JFX = jfx;
         Map<Locale.Category,Locale> специфика = jfx.контекст.специфика;
@@ -48,9 +49,9 @@ public class BrowserView extends TreeView<Элемент>
         Текст словарь = Текст.ПАКЕТЫ.словарь( getClass(), КОНТЕКСТ.специфика );
         title = new ReadOnlyStringWrapper( словарь.текст( "Name" ) );
 
-        BrowserNodeBuilder<Элемент> строитель = new BrowserNodeBuilder<>( (TreeView<Элемент>)this, специфика );
+        BrowserNodeBuilder<RtЭлемент> строитель = new BrowserNodeBuilder( (TreeView<RtЭлемент>)this, специфика );
         setCellFactory( строитель.фабрика() );
-        BrowserNode<Элемент> узел = строитель.узел( КОНТЕКСТ.мыслитель );
+        BrowserNode узел = строитель.узел( new RtЭлемент( КОНТЕКСТ.мыслитель, null, "Мыслитель" ) );
         setRoot( узел );
         узел.expand( строитель );
         setShowRoot( true );
@@ -59,15 +60,15 @@ public class BrowserView extends TreeView<Элемент>
         setMinWidth( w );
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
 
-        ObservableList<TreeItem<Элемент>> selection = selection();
-        ThresholdChecker процесс_1_N = new ThresholdChecker( new ObservableListMirror<>( selection, 
-                new ExclusiveTreeItemCopier<>( ( Элемент э ) -> Вложенный.извлечь( Процесс.class, э ) != null  ) ), 
+        ObservableList<TreeItem<RtЭлемент>> selection = selection();
+        ThresholdChecker процесс_1_N = new ThresholdChecker( new ObservableListMirror( selection, 
+                new ExclusiveTreeItemCopier<>( ( RtЭлемент э ) -> RtЭлемент.извлечь( Процесс.class, э ) != null ) ),
                 false, 1, Integer.MAX_VALUE );
-        ThresholdChecker проект_1_N  = new ThresholdChecker( new ObservableListMirror<>( selection, 
-                new ExclusiveTreeItemCopier<>( ( Элемент э ) -> Вложенный.извлечь( Проект.class, э ) != null  ) ), 
+        ThresholdChecker проект_1_N  = new ThresholdChecker( new ObservableListMirror( selection, 
+                new ExclusiveTreeItemCopier<>( ( RtЭлемент э ) -> RtЭлемент.извлечь( Проект.class, э ) != null ) ),
                 false,  1, Integer.MAX_VALUE );
-        ThresholdChecker элемент_1_1 = new ThresholdChecker( new ObservableListMirror<>( selection, 
-                new ExclusiveTreeItemCopier<>( ( Элемент э ) -> Вложенный.извлечь( Элемент.class, э ) != null ) ), 
+        ThresholdChecker элемент_1_1 = new ThresholdChecker( new ObservableListMirror( selection, 
+                new ExclusiveTreeItemCopier<>( ( RtЭлемент э ) -> RtЭлемент.извлечь( Элемент.class, э ) != null ) ),
                 false, 1, 1 );
 
         ActionStart actionStart = new ActionStart( процесс_1_N );
@@ -93,7 +94,7 @@ public class BrowserView extends TreeView<Элемент>
                 actionProperties ) );
     }
     
-    private ObservableList<TreeItem<Элемент>> selection()
+    private ObservableList<TreeItem<RtЭлемент>> selection()
     {
         return selectionModelProperty().getValue().getSelectedItems();
     }
@@ -130,7 +131,7 @@ public class BrowserView extends TreeView<Элемент>
         private List<T> ceлектор()
         {
             List<T> список = new ArrayList<>();
-            for( TreeItem<Элемент> ti : BrowserView.this.getSelectionModel().getSelectedItems() )
+            for( TreeItem<RtЭлемент> ti : BrowserViewRt.this.getSelectionModel().getSelectedItems() )
             {
                 T элемент = convert( ti.getValue() );
                 if( элемент != null )
@@ -139,11 +140,11 @@ public class BrowserView extends TreeView<Элемент>
             return список;
         }
         
-        abstract T convert( Элемент элемент ); //TODO Фильтр
+        abstract T convert( RtЭлемент элемент ); //TODO Фильтр
         
-        protected <T> T convert( Элемент элемент, Class<T> cls )
+        protected <T> T convert( RtЭлемент элемент, Class<T> cls )
         {
-            return Вложенный.извлечь( cls, элемент );
+            return Вложенный.извлечь( cls, элемент );//TODO NOT IMPL
         }
     }
     
@@ -156,7 +157,7 @@ public class BrowserView extends TreeView<Элемент>
         }
         
         @Override
-        Процесс convert( Элемент элемент )
+        Процесс convert( RtЭлемент элемент )
         {
             return convert( элемент, Процесс.class );
         }
@@ -172,7 +173,7 @@ public class BrowserView extends TreeView<Элемент>
         }
         
         @Override
-        Процесс convert( Элемент элемент )
+        Процесс convert( RtЭлемент элемент )
         {
             return convert( элемент, Процесс.class );
         }
@@ -188,7 +189,7 @@ public class BrowserView extends TreeView<Элемент>
         }
         
         @Override
-        Процесс convert( Элемент элемент )
+        Процесс convert( RtЭлемент элемент )
         {
             return convert( элемент, Процесс.class );
         }
@@ -205,7 +206,7 @@ public class BrowserView extends TreeView<Элемент>
         }
         
         @Override
-        Проект convert( Элемент элемент )
+        Проект convert( RtЭлемент элемент )
         {
             return convert( элемент, Проект.class );
         }

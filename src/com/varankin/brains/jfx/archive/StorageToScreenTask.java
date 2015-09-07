@@ -2,8 +2,10 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.*;
 import javafx.concurrent.Task;
 
 /**
@@ -12,6 +14,8 @@ import javafx.concurrent.Task;
  */
 class StorageToScreenTask extends Task<Void>
 {
+    private static final LoggerX LOGGER = LoggerX.getLogger( StorageToScreenTask.class );
+    
     private final Атрибутный lock;
     private final Collection<AttributeAgent> agents;
 
@@ -38,6 +42,13 @@ class StorageToScreenTask extends Task<Void>
     {
         for( AttributeAgent agent : agents )
             agent.toScreen();
+    }
+
+    @Override
+    protected void failed()
+    {
+        Throwable t = getException();
+        LOGGER.getLogger().log( Level.SEVERE, "Failure to retreive archive data.", t );
     }
     
 }

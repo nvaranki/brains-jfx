@@ -2,13 +2,14 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
-import static com.varankin.brains.jfx.analyser.ObservableSetupController.*;
-import com.varankin.property.PropertyMonitor;
+
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+
+import static com.varankin.brains.jfx.analyser.ObservableSetupController.*;
 
 /**
  * Диалог выбора параметров рисования наблюдаемого значения.
@@ -37,22 +38,9 @@ final class ObservableSetupStage extends Stage
         setOnShowing( (WindowEvent e) -> { controller.setApproved( false ); } );
     }
 
-    /**
-     * Устанавливает монитор наблюдаемого значения.
-     * 
-     * @param value монитор.
-     */
-    void setMonitor( PropertyMonitor value )
+    ObservableSetupController getController()
     {
-        controller.setMonitor( value );
-    }
-
-    /**
-     * Создает новое значение, отображаемое на графике.
-     */ 
-    Value createValueInstance()
-    {
-        return controller.createValueInstance(  );
+        return controller;
     }
 
 }

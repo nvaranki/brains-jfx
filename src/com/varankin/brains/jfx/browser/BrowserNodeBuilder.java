@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.appl.*;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.artificial.Элемент;
 import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -16,25 +15,25 @@ import javafx.util.Callback;
  * Контроллер обозревателя объектов.
  * Управляет структурой узлов модели в {@linkplain BrowserView форме просмотра структуры объектов}.
  *
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
-final class BrowserNodeBuilder
+final class BrowserNodeBuilder<T>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( BrowserNodeBuilder.class );
     
-    private final TreeView<Элемент> модель;
+    private final TreeView<T> модель;
     private final ФабрикаНазваний фабрикаНазваний;
     private final BrowserRenderer фабрикаКартинок;
-    private final Фабрика<BrowserNode,PropertyChangeListener> фабрикаМониторов;
-    private final Callback<TreeView<Элемент>,TreeCell<Элемент>> ФАБРИКА;
+    private final Фабрика<BrowserNode<T>,PropertyChangeListener> фабрикаМониторов;
+    private final Callback<TreeView<T>,TreeCell<T>> ФАБРИКА;
 
-    BrowserNodeBuilder( TreeView<Элемент> модель, Map<Locale.Category,Locale> специфика )
+    BrowserNodeBuilder( TreeView<T> модель, Map<Locale.Category,Locale> специфика )
     {
         this.модель = модель;
         this.фабрикаНазваний = new ФабрикаНазваний( специфика );
         this.фабрикаКартинок = new BrowserRenderer();
-        this.фабрикаМониторов = (BrowserNode узел) -> new BrowserMonitor( узел, BrowserNodeBuilder.this );
-        ФАБРИКА = ( TreeView<Элемент> treeView ) -> new BrowserTreeCell( treeView );
+        this.фабрикаМониторов = (BrowserNode<T> узел) -> new BrowserMonitor<>( узел, BrowserNodeBuilder.this );
+        ФАБРИКА = ( TreeView<T> treeView ) -> new BrowserTreeCell<>( treeView );
     }
     
     BrowserRenderer фабрикаКартинок()
@@ -42,7 +41,7 @@ final class BrowserNodeBuilder
         return фабрикаКартинок;
     }
 
-    Фабрика<BrowserNode,PropertyChangeListener> фабрикаМониторов()
+    Фабрика<BrowserNode<T>,PropertyChangeListener> фабрикаМониторов()
     {
         return фабрикаМониторов;
     }
@@ -53,9 +52,9 @@ final class BrowserNodeBuilder
      * @param элемент элемент узла.
      * @return созданный узел.
      */
-    BrowserNode узел( Элемент элемент )
+    BrowserNode<T> узел( T элемент )
     {
-        BrowserNode узел = new BrowserNode( элемент, 
+        BrowserNode<T> узел = new BrowserNode<>( элемент, 
                      фабрикаНазваний.метка( (Object)элемент ), 
                      фабрикаКартинок.getIcon( элемент ) );
         узел.addMonitor( фабрикаМониторов );
@@ -69,14 +68,14 @@ final class BrowserNodeBuilder
      * @param список список, куда будет вставлен узел.
      * @return позиция для вставки узла.
      */
-    int позиция( TreeItem<Элемент> узел, List<TreeItem<Элемент>> список )
+    int позиция( TreeItem<T> узел, List<TreeItem<T>> список )
     {
-        int индексУзла = ФабрикаНазваний.индекс( узел.getValue().getClass() );
+        int индексУзла = ФабрикаНазваний.индекс( узел.getValue() );
         int позиция = 0;
         for( int max = список.size(); позиция < max; позиция++ )
         {
-            TreeItem<Элемент> тест = список.get( позиция );
-            int индексТеста = ФабрикаНазваний.индекс( тест.getValue().getClass() );
+            TreeItem<T> тест = список.get( позиция );
+            int индексТеста = ФабрикаНазваний.индекс( тест.getValue() );
             if( индексТеста < индексУзла ) continue;
             if( индексТеста > индексУзла ) break;
             if( тест.toString().compareTo( узел.toString() ) > 0 ) break;
@@ -84,7 +83,7 @@ final class BrowserNodeBuilder
         return позиция;
     }
 
-    Callback<TreeView<Элемент>,TreeCell<Элемент>> фабрика()
+    Callback<TreeView<T>,TreeCell<T>> фабрика()
     {
         return ФАБРИКА;
     }
@@ -92,15 +91,11 @@ final class BrowserNodeBuilder
     /**
      * Элемент отображения произвольного узла дерева.
      */
-    private static class BrowserTreeCell extends TreeCell<Элемент>
+    private static class BrowserTreeCell<T> extends TreeCell<T>
     {
-        private final TreeView<Элемент> treeView;
-
-        BrowserTreeCell( TreeView<Элемент> treeView ) 
+        BrowserTreeCell( TreeView<T> treeView ) 
         {
-            this.treeView = treeView;
-        
-            this.setOnDragDetected( (MouseEvent e)-> 
+            setOnDragDetected( (MouseEvent e)-> 
             {
                 LOGGER.getLogger().fine( "C: OnDragDetected" ); 
                 SnapshotParameters snapParams = new SnapshotParameters();
@@ -114,7 +109,7 @@ final class BrowserNodeBuilder
         }
         
         @Override
-        public void updateItem( Элемент элемент, boolean empty ) 
+        public void updateItem( T элемент, boolean empty ) 
         {
             super.updateItem( элемент, empty );
             if( empty )
@@ -125,7 +120,7 @@ final class BrowserNodeBuilder
             }
             else
             {
-                TreeItem<Элемент> item = getTreeItem();
+                TreeItem<T> item = getTreeItem();
                 setText( item.toString() );
                 setGraphic( item.getGraphic() );
                 setUserData( элемент );

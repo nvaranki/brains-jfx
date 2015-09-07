@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.appl.RatedObservable;
 import com.varankin.brains.artificial.rating.Ранжируемый;
+import com.varankin.brains.observable.НаблюдаемыйЭлемент;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.*;
@@ -32,7 +33,6 @@ public final class ObservableSetupController implements Builder<Parent>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private boolean approved;
-    private PropertyMonitor monitor;
     private Iterator<Color> colors = new CyclicIterator<>( Arrays.asList( Color.RED, Color.BLUE, Color.GREEN ) );
     private Iterator<int[][]> patterns = new CyclicIterator<>( Arrays.asList( DotPainter.CROSS, DotPainter.CROSS45, DotPainter.BOX ) );
     
@@ -130,9 +130,22 @@ public final class ObservableSetupController implements Builder<Parent>
      * 
      * @param value монитор.
      */
+    void setMonitor( НаблюдаемыйЭлемент value )
+    {
+        observableMiscPaneController.setMonitor( value );
+        observableConversionPaneController.setMonitor( value );
+        valuePropertiesPaneController.colorProperty().setValue( colors.next() );
+        valuePropertiesPaneController.patternProperty().setValue( patterns.next() );
+        valuePropertiesPaneController.resetColorPicker();
+    }
+
+    /**
+     * Устанавливает монитор наблюдаемого значения.
+     * 
+     * @param value монитор.
+     */
     void setMonitor( PropertyMonitor value )
     {
-        monitor = value;
         observableMiscPaneController.setMonitor( value );
         observableConversionPaneController.setMonitor( value );
         valuePropertiesPaneController.colorProperty().setValue( colors.next() );
@@ -145,7 +158,7 @@ public final class ObservableSetupController implements Builder<Parent>
      */ 
     Value createValueInstance()
     {
-        if( monitor == null || !approved ) return null;
+        if( !approved ) return null;
 
         RatedObservable property = observableConversionPaneController.parameterProperty().getValue();
         Ранжируемый convertor = observableConversionPaneController.convertorProperty().getValue();
@@ -155,7 +168,7 @@ public final class ObservableSetupController implements Builder<Parent>
         int buffer = observableMiscPaneController.bufferProperty().getValue();
         BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
         DotPainter painter = buffer > 0 ? new BufferedDotPainter( queue, buffer ) : new DotPainter( queue );
-        return new Value( monitor, property.свойство(), convertor, painter, pattern, color, title );
+        return new Value( property.свойство(), convertor, painter, pattern, color, title );
     }
     
     private static class CyclicIterator<E> implements Iterator<E>

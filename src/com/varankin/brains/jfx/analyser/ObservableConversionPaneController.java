@@ -122,7 +122,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
      * 
      * @param monitor монитор.
      */
-    void setMonitor( PropertyMonitor monitor )
+    void setMonitor( Object monitor )
     {
         parameter.getItems().clear();
         convertor.getItems().clear();

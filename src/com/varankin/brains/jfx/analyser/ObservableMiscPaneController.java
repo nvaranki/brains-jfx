@@ -122,7 +122,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
      * 
      * @param monitor монитор.
      */
-    void setMonitor( PropertyMonitor monitor )
+    void setMonitor( Object monitor )
     {
         title.getItems().clear();
         title.getItems().addAll( suggestTitles( monitor ) );
@@ -135,6 +135,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
      * @param object объект.
      * @return набор названий.
      */
+    @Deprecated // TODO misuse of interfaces
     private Collection<String> suggestTitles( Object object ) 
     {
         Collection<String> items = new LinkedHashSet<>();
