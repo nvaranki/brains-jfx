@@ -125,7 +125,7 @@ class GuiBuilder
 
     private TitledPane навигаторПоРабочемуПроекту( int spacing )
     {
-        BrowserView view = new BrowserView( JFX );
+        BrowserView view = new BrowserView();
         return навигатор( view, spacing, view.getActions(), view.titleProperty() );
     }
 

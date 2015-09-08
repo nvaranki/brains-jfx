@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.appl.*;
 import com.varankin.brains.artificial.io.Фабрика;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -27,10 +28,10 @@ final class BrowserNodeBuilder<T>
     private final Фабрика<BrowserNode<T>,PropertyChangeListener> фабрикаМониторов;
     private final Callback<TreeView<T>,TreeCell<T>> ФАБРИКА;
 
-    BrowserNodeBuilder( TreeView<T> модель, Map<Locale.Category,Locale> специфика )
+    BrowserNodeBuilder( TreeView<T> модель )
     {
         this.модель = модель;
-        this.фабрикаНазваний = new ФабрикаНазваний( специфика );
+        this.фабрикаНазваний = new ФабрикаНазваний( JavaFX.getInstance().контекст.специфика );
         this.фабрикаКартинок = new BrowserRenderer();
         this.фабрикаМониторов = (BrowserNode<T> узел) -> new BrowserMonitor<>( узел, BrowserNodeBuilder.this );
         ФАБРИКА = ( TreeView<T> treeView ) -> new BrowserTreeCell<>( treeView );
