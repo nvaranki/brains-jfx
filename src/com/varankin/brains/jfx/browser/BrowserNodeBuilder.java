@@ -33,7 +33,7 @@ final class BrowserNodeBuilder<T>
         this.модель = модель;
         this.фабрикаНазваний = new ФабрикаНазваний( JavaFX.getInstance().контекст.специфика );
         this.фабрикаКартинок = new BrowserRenderer();
-        this.фабрикаМониторов = (BrowserNode<T> узел) -> new BrowserMonitor<>( узел, BrowserNodeBuilder.this );
+        this.фабрикаМониторов = (BrowserNode<T> узел) -> new BrowserMonitor<>( узел );
         ФАБРИКА = ( TreeView<T> treeView ) -> new BrowserTreeCell<>( treeView );
     }
     
@@ -57,7 +57,7 @@ final class BrowserNodeBuilder<T>
     {
         BrowserNode<T> узел = new BrowserNode<>( элемент, 
                      фабрикаНазваний.метка( (Object)элемент ), 
-                     фабрикаКартинок.getIcon( элемент ) );
+                     фабрикаКартинок.getIcon( элемент ), this );
         узел.addMonitor( фабрикаМониторов );
         return узел;
     }

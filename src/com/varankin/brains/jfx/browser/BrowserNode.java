@@ -1,90 +1,111 @@
 package com.varankin.brains.jfx.browser;
 
+import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.factory.structured.Структурный;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.factory.runtime.RtЭлемент;
 import com.varankin.property.PropertyMonitor;
 import java.beans.PropertyChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 
-import static com.varankin.brains.factory.Вложенный.извлечь;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import static com.varankin.brains.factory.Вложенный.извлечь;
+
 /**
  * Узел дерева для произвольного элемента.
+ *
+ * @author &copy; 2015 Николай Варанкин
  */
 class BrowserNode<T> extends TreeItem<T>
 {
-    private final String метка;
+    private final String МЕТКА;
+    private final Consumer<? super T> РАСКРЫВАТЕЛЬ;
+    private final Consumer<? super Процесс.Состояние> МАЛЯР;
     private PropertyChangeListener монитор;
 
-    BrowserNode( T элемент, String метка, Node image )
+    /**
+     * @param элемент
+     * @param метка
+     * @param image
+     * @param строитель построитель узлов.
+     */
+    BrowserNode( T элемент, String метка, Node image, BrowserNodeBuilder<T> строитель )
     {
         super( элемент, image );
-        this.метка = метка;
+        МЕТКА = метка;
+        РАСКРЫВАТЕЛЬ = ( T t ) ->
+        {
+            BrowserNode<T> вставка = строитель.узел( t );
+            getChildren().add( строитель.позиция( вставка, getChildren() ), вставка );
+            вставка.expand();
+        };
+        МАЛЯР = ( Процесс.Состояние с ) ->
+        {
+            строитель.фабрикаКартинок().setBgColor( getGraphic(), с );
+        };
+    }
+    
+    void вставить( T элемент )
+    {
+        РАСКРЫВАТЕЛЬ.accept( элемент );
+    }
+    
+    void раскрасить( Процесс.Состояние состояние )
+    {
+        МАЛЯР.accept( состояние );
+    }
+    
+    void удалить( T элемент )
+    {
+        TreeItem<T> удаляемый = null;
+        for( TreeItem<T> узел : getChildren() )
+            if( элемент.equals( узел.getValue() ) )
+            {
+                удаляемый = узел;
+                break;
+            }
+        if( удаляемый != null )
+        {
+            removeTreeItemChildren( удаляемый );
+            getChildren().remove( удаляемый );
+        }
     }
     
     /**
      * Строит поддерево от данного узла.
-     * 
-     * @param строитель построитель узлов.
      */
-    void expand( BrowserNodeBuilder<T> строитель )
+    void expand()
     {
-        Consumer<? super T> expander = ( T t ) ->
-            {
-                BrowserNode<T> вставка = строитель.узел( t );
-                getChildren().add( строитель.позиция( вставка, getChildren() ), вставка );
-                вставка.expand( строитель );
-            };
         T value = getValue();
         if( value instanceof RtЭлемент )
         {
-            ((RtЭлемент)value).части().значение().stream().forEach( expander );
+            ((RtЭлемент)value).части().значение().stream().forEach( РАСКРЫВАТЕЛЬ );
         }
         else
         {
             Структурный узел = извлечь( Структурный.class, value );
             if( узел != null )
-                ((Collection)узел.элементы()).stream().forEach( expander );
+                ((Collection)узел.элементы()).stream().forEach( РАСКРЫВАТЕЛЬ );
         }
     }
     
     void addMonitor( Фабрика<BrowserNode<T>,PropertyChangeListener> фабрика )
     {
-        T элемент = getValue();
-        if( элемент instanceof PropertyMonitor )
-        {
-            монитор = фабрика.создать( this );
-            ( (PropertyMonitor)элемент ).listeners().add( монитор );
-        }
-        if( элемент instanceof Вложенный )
-        {
-            Object оригинал = ((Вложенный)элемент).вложение();
-            if( оригинал instanceof PropertyMonitor )
-                ( (PropertyMonitor)оригинал ).listeners().add( монитор );
-        }
+        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, getValue() );
+        if( pm != null )
+            pm.listeners().add( монитор = фабрика.создать( this ) );
     }
 
     void removeMonitor()
     {
-        T элемент = getValue();
-        if( монитор != null )
-        {
-            if( элемент instanceof PropertyMonitor )
-                ( (PropertyMonitor)элемент ).listeners().remove( монитор );
-            if( элемент instanceof Вложенный )
-            {
-                Object оригинал = ((Вложенный)элемент).вложение();
-                if( оригинал instanceof PropertyMonitor )
-                    ( (PropertyMonitor)оригинал ).listeners().remove( монитор );
-            }
-            монитор = null;
-        }
+        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, getValue() );
+        if( pm != null )
+            pm.listeners().remove( монитор );
+        монитор = null;
     }
     
     @Override
@@ -103,7 +124,19 @@ class BrowserNode<T> extends TreeItem<T>
     @Override
     public String toString()
     {
-        return метка;
+        return МЕТКА;
     }
     
+    private static <T> void removeTreeItemChildren( TreeItem<T> узел )
+    {
+        if( !узел.isLeaf() )
+        {
+            for( TreeItem<T> c : узел.getChildren() )
+                removeTreeItemChildren( c );
+            узел.getChildren().clear();
+        }
+        if( узел instanceof BrowserNode )
+            ((BrowserNode)узел).removeMonitor();
+    }
+
 }

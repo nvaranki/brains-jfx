@@ -5,12 +5,11 @@ import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.factory.runtime.RtЭлемент;
 import com.varankin.property.MonitoredCollection;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javafx.application.Platform;
-import javafx.scene.control.TreeItem;
 
 /**
  * Монитор {@linkplain BrowserNode узла}.
@@ -22,12 +21,10 @@ class BrowserMonitor<T> implements PropertyChangeListener
     private static final Logger LOGGER = Logger.getLogger( BrowserMonitor.class.getName() );
     
     private final BrowserNode<T> УЗЕЛ;
-    private final BrowserNodeBuilder<T> СТРОИТЕЛЬ;
 
-    BrowserMonitor( BrowserNode<T> узел, BrowserNodeBuilder<T> строитель )
+    BrowserMonitor( BrowserNode<T> узел )
     {
         УЗЕЛ = узел;
-        СТРОИТЕЛЬ = строитель;
     }
 
     @Override
@@ -36,11 +33,11 @@ class BrowserMonitor<T> implements PropertyChangeListener
         switch( evt.getPropertyName() )
         {
             case MonitoredCollection.PROPERTY_ADDED:
-                Platform.runLater( new OnElementAdded( (T)evt.getNewValue() ) ); //TODO cast
+                Platform.runLater( () -> УЗЕЛ.вставить( (T)evt.getNewValue() ) ); //TODO cast
                 break;
 
             case MonitoredCollection.PROPERTY_REMOVED:
-                Platform.runLater( new OnElementRemoved( (T)evt.getOldValue() ) ); //TODO cast
+                Platform.runLater( () -> УЗЕЛ.удалить( (T)evt.getOldValue() ) ); //TODO cast
                 break;
 
             case Процесс.СОСТОЯНИЕ:
@@ -51,87 +48,12 @@ class BrowserMonitor<T> implements PropertyChangeListener
                 else
                     процесс = Вложенный.извлечь( Процесс.class, (Элемент)value );
                 if( процесс != null )
-                    Platform.runLater( new OnStatusChangeded( 
-                            (Процесс.Состояние)evt.getNewValue() ) );
+                    Platform.runLater( () -> УЗЕЛ.раскрасить( (Процесс.Состояние)evt.getNewValue() ) );
                 break;
 
             default:
                 LOGGER.log( Level.FINE, "Unsupported change to node received: {0}", evt.getPropertyName() );
         }            
-    }
-
-    private class OnStatusChangeded implements Runnable
-    {
-        final Процесс.Состояние СОСТОЯНИЕ;
-
-        OnStatusChangeded( Процесс.Состояние состояние )
-        {
-            СОСТОЯНИЕ = состояние;
-        }
-
-        @Override
-        public void run()
-        {
-            СТРОИТЕЛЬ.фабрикаКартинок().setBgColor( УЗЕЛ.getGraphic(), СОСТОЯНИЕ );
-        }
-    }
-
-    private class OnElementAdded implements Runnable
-    {
-        private final T ЭЛЕМЕНТ;
-
-        OnElementAdded( T элемент )
-        {
-            ЭЛЕМЕНТ = элемент;
-        }
-
-        @Override
-        public void run()
-        {
-            BrowserNode узел = СТРОИТЕЛЬ.узел( ЭЛЕМЕНТ );
-            УЗЕЛ.getChildren().add( СТРОИТЕЛЬ.позиция( узел, УЗЕЛ.getChildren() ), узел );
-            узел.expand( СТРОИТЕЛЬ );
-        }
-
-    };
-
-    private class OnElementRemoved implements Runnable
-    {
-        private final T ЭЛЕМЕНТ;
-
-        OnElementRemoved( T элемент )
-        {
-            ЭЛЕМЕНТ = элемент;
-        }
-
-        @Override
-        public void run()
-        {
-            TreeItem<T> удаляемый = null;
-            for( TreeItem<T> узел : УЗЕЛ.getChildren() )
-                if( ЭЛЕМЕНТ.equals( узел.getValue() ) )
-                {
-                    удаляемый = узел;
-                    break;
-                }
-            if( удаляемый != null )
-            {
-                removeTreeItemChildren( удаляемый );
-                УЗЕЛ.getChildren().remove( удаляемый );
-            }
-        }
-    };
-
-    private static <T> void removeTreeItemChildren( TreeItem<T> узел )
-    {
-        if( !узел.isLeaf() )
-        {
-            for( TreeItem<T> c : узел.getChildren() )
-                removeTreeItemChildren( c );
-            узел.getChildren().clear();
-        }
-        if( узел instanceof BrowserNode )
-            ((BrowserNode)узел).removeMonitor();
     }
 
 }
