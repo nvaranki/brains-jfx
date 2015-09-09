@@ -1,10 +1,9 @@
 package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.appl.*;
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.beans.PropertyChangeListener;
+
 import java.util.*;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
@@ -25,7 +24,6 @@ final class BrowserNodeBuilder<T>
     private final TreeView<T> модель;
     private final ФабрикаНазваний фабрикаНазваний;
     private final BrowserRenderer фабрикаКартинок;
-    private final Фабрика<BrowserNode<T>,PropertyChangeListener> фабрикаМониторов;
     private final Callback<TreeView<T>,TreeCell<T>> ФАБРИКА;
 
     BrowserNodeBuilder( TreeView<T> модель )
@@ -33,7 +31,6 @@ final class BrowserNodeBuilder<T>
         this.модель = модель;
         this.фабрикаНазваний = new ФабрикаНазваний( JavaFX.getInstance().контекст.специфика );
         this.фабрикаКартинок = new BrowserRenderer();
-        this.фабрикаМониторов = (BrowserNode<T> узел) -> new BrowserMonitor<>( узел );
         ФАБРИКА = ( TreeView<T> treeView ) -> new BrowserTreeCell<>( treeView );
     }
     
@@ -42,11 +39,6 @@ final class BrowserNodeBuilder<T>
         return фабрикаКартинок;
     }
 
-    Фабрика<BrowserNode<T>,PropertyChangeListener> фабрикаМониторов()
-    {
-        return фабрикаМониторов;
-    }
-    
     /**
      * Создает новый узел дерева для элемента.
      * 
@@ -58,7 +50,7 @@ final class BrowserNodeBuilder<T>
         BrowserNode<T> узел = new BrowserNode<>( элемент, 
                      фабрикаНазваний.метка( (Object)элемент ), 
                      фабрикаКартинок.getIcon( элемент ), this );
-        узел.addMonitor( фабрикаМониторов );
+        узел.addMonitor();
         return узел;
     }
     

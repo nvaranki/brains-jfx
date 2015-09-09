@@ -2,18 +2,16 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
-import com.varankin.brains.factory.structured.Структурный;
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.factory.runtime.RtЭлемент;
+import com.varankin.brains.factory.structured.Структурный;
+import com.varankin.characteristic.Наблюдатель;
 import com.varankin.property.PropertyMonitor;
-import java.beans.PropertyChangeListener;
-import javafx.scene.Node;
-import javafx.scene.control.TreeItem;
 
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.function.Consumer;
-
-import static com.varankin.brains.factory.Вложенный.извлечь;
+import javafx.scene.Node;
+import javafx.scene.control.TreeItem;
 
 /**
  * Узел дерева для произвольного элемента.
@@ -26,6 +24,7 @@ class BrowserNode<T> extends TreeItem<T>
     private final Consumer<? super T> РАСКРЫВАТЕЛЬ;
     private final Consumer<? super Процесс.Состояние> МАЛЯР;
     private PropertyChangeListener монитор;
+    private Наблюдатель<T> наблюдатель;
 
     /**
      * @param элемент
@@ -49,14 +48,14 @@ class BrowserNode<T> extends TreeItem<T>
         };
     }
     
-    void вставить( T элемент )
-    {
-        РАСКРЫВАТЕЛЬ.accept( элемент );
-    }
-    
     void раскрасить( Процесс.Состояние состояние )
     {
         МАЛЯР.accept( состояние );
+    }
+    
+    void вставить( T элемент )
+    {
+        РАСКРЫВАТЕЛЬ.accept( элемент );
     }
     
     void удалить( T элемент )
@@ -87,25 +86,39 @@ class BrowserNode<T> extends TreeItem<T>
         }
         else
         {
-            Структурный узел = извлечь( Структурный.class, value );
+            Структурный узел = Вложенный.извлечь( Структурный.class, value );
             if( узел != null )
                 ((Collection)узел.элементы()).stream().forEach( РАСКРЫВАТЕЛЬ );
         }
     }
     
-    void addMonitor( Фабрика<BrowserNode<T>,PropertyChangeListener> фабрика )
+    void addMonitor()
     {
-        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, getValue() );
+        T value = getValue();
+        
+        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, value );
         if( pm != null )
-            pm.listeners().add( монитор = фабрика.создать( this ) );
+            pm.listeners().add( монитор = new BrowserMonitor<>( this ) );
+        
+        if( value instanceof RtЭлемент )
+            ((RtЭлемент)value).части().наблюдатели()
+                    .add( наблюдатель = new BrowserObserver<>( this ) );
+        //TODO Процесс.СОСТОЯНИЕ
     }
 
     void removeMonitor()
     {
-        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, getValue() );
+        T value = getValue();
+        
+        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, value );
         if( pm != null )
             pm.listeners().remove( монитор );
         монитор = null;
+        
+        if( value instanceof RtЭлемент )
+            ((RtЭлемент)value).части().наблюдатели().remove( наблюдатель );
+        наблюдатель = null;
+        //TODO Процесс.СОСТОЯНИЕ
     }
     
     @Override
