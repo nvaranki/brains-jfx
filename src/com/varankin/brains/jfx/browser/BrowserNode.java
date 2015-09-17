@@ -3,12 +3,11 @@ package com.varankin.brains.jfx.browser;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.factory.runtime.RtЭлемент;
-import com.varankin.brains.factory.structured.Структурный;
+import com.varankin.brains.factory.Составной;
 import com.varankin.characteristic.Наблюдатель;
 import com.varankin.property.PropertyMonitor;
 
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -86,9 +85,9 @@ class BrowserNode<T> extends TreeItem<T>
         }
         else
         {
-            Структурный узел = Вложенный.извлечь( Структурный.class, value );
+            Составной узел = Вложенный.извлечь( Составной.class, value );
             if( узел != null )
-                ((Collection)узел.элементы()).stream().forEach( РАСКРЫВАТЕЛЬ );
+                узел.состав().stream().forEach( РАСКРЫВАТЕЛЬ );
         }
     }
     

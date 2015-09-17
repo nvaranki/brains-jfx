@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.observable.НаблюдаемыйЭлемент;
+import com.varankin.brains.factory.observable.НаблюдаемыйЭлемент;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.List;
