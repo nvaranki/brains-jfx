@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.appl.AbstractIconLocator;
 import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.factory.runtime.RtЭлемент;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
