@@ -8,6 +8,7 @@ import com.varankin.characteristic.Наблюдатель;
 import com.varankin.property.PropertyMonitor;
 
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -38,7 +39,8 @@ class BrowserNode<T> extends TreeItem<T>
         РАСКРЫВАТЕЛЬ = ( T t ) ->
         {
             BrowserNode<T> вставка = строитель.узел( t );
-            getChildren().add( строитель.позиция( вставка, getChildren() ), вставка );
+            List<TreeItem<T>> children = getChildren();
+            children.add( строитель.позиция( вставка, children ), вставка );
             вставка.expand();
         };
         МАЛЯР = ( Процесс.Состояние с ) ->
