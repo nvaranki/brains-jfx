@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.factory.structured.Структурный;
 import com.varankin.brains.db.Базовый;
+import com.varankin.brains.factory.observable.wrapped.НаблюдаемыйЭлемент;
 import com.varankin.brains.jfx.IntegerConverter;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.ObjectBindings;
@@ -122,7 +123,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
      * 
      * @param monitor монитор.
      */
-    void setMonitor( Object monitor )
+    void setMonitor( НаблюдаемыйЭлемент monitor )
     {
         title.getItems().clear();
         title.getItems().addAll( suggestTitles( monitor ) );

@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.appl.RatedObservable;
 import com.varankin.brains.artificial.rating.Ранжируемый;
-import com.varankin.brains.factory.observable.НаблюдаемыйЭлемент;
+import com.varankin.brains.factory.observable.wrapped.НаблюдаемыйЭлемент;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.*;
@@ -131,20 +131,6 @@ public final class ObservableSetupController implements Builder<Parent>
      * @param value монитор.
      */
     void setMonitor( НаблюдаемыйЭлемент value )
-    {
-        observableMiscPaneController.setMonitor( value );
-        observableConversionPaneController.setMonitor( value );
-        valuePropertiesPaneController.colorProperty().setValue( colors.next() );
-        valuePropertiesPaneController.patternProperty().setValue( patterns.next() );
-        valuePropertiesPaneController.resetColorPicker();
-    }
-
-    /**
-     * Устанавливает монитор наблюдаемого значения.
-     * 
-     * @param value монитор.
-     */
-    void setMonitor( PropertyMonitor value )
     {
         observableMiscPaneController.setMonitor( value );
         observableConversionPaneController.setMonitor( value );

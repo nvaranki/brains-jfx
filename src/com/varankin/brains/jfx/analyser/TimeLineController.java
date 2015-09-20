@@ -2,8 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.factory.observable.НаблюдаемыйЭлемент;
-import com.varankin.property.PropertyMonitor;
+import com.varankin.brains.factory.observable.wrapped.НаблюдаемыйЭлемент;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -28,7 +27,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер графика динамического изменения значений по времени.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
 public final class TimeLineController implements Builder<Pane>
 {
@@ -145,9 +144,8 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void onDragOver( DragEvent event )
     {
-        if( monitor( event, НаблюдаемыйЭлемент.class ) != null ) 
-            event.acceptTransferModes( TransferMode.LINK );
-        else if( monitor( event, PropertyMonitor.class ) != null ) 
+        Object gs = event.getGestureSource();
+        if( gs instanceof Node && ((Node)gs).getUserData() instanceof НаблюдаемыйЭлемент )
             event.acceptTransferModes( TransferMode.LINK );
         else 
             event.acceptTransferModes( TransferMode.NONE );
@@ -157,29 +155,21 @@ public final class TimeLineController implements Builder<Pane>
     @FXML
     protected void onDragDropped( DragEvent event )
     {
-        НаблюдаемыйЭлемент нэ;
-        PropertyMonitor pm;
-        
-        if( ( нэ = monitor( event, НаблюдаемыйЭлемент.class ) ) != null )
+        Object gs = event.getGestureSource();
+        if( gs instanceof Node )
         {
-            if( properties == null )
+            Object userData = ((Node)gs).getUserData();
+            if( userData instanceof НаблюдаемыйЭлемент )
             {
-                properties = new ObservableSetupStage();
-                properties.initOwner( JavaFX.getInstance().платформа );
-                properties.setTitle( LOGGER.text( "properties.observable.title" ) );
+                if( properties == null )
+                {
+                    properties = new ObservableSetupStage();
+                    properties.initOwner( JavaFX.getInstance().платформа );
+                    properties.setTitle( LOGGER.text( "properties.observable.title" ) );
+                }
+                properties.getController().setMonitor( (НаблюдаемыйЭлемент)userData );
             }
-            properties.getController().setMonitor( нэ );
-        }
-        else if( ( pm = monitor( event, PropertyMonitor.class ) ) != null )
-        {
-            if( properties == null )
-            {
-                properties = new ObservableSetupStage();
-                properties.initOwner( JavaFX.getInstance().платформа );
-                properties.setTitle( LOGGER.text( "properties.observable.title" ) );
-            }
-            properties.getController().setMonitor( pm );
-        }
+        }            
         else
         {
 //            event.setDropCompleted( false );
@@ -202,15 +192,7 @@ public final class TimeLineController implements Builder<Pane>
         event.consume();
     }
     
-    private static <T> T monitor( DragEvent event, Class<T> класс )
-    {
-        Object gs = event.getGestureSource();
-        if( gs instanceof Node )
-            return Вложенный.извлечь( класс, ((Node)gs).getUserData() );
-        return null;
-    }
-
-    @FXML
+   @FXML
     protected void onContextMenuRequested( ContextMenuEvent event )
     {
         popup.show( pane, event.getScreenX(), event.getScreenY() );
