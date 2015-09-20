@@ -2,7 +2,6 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.jfx.archive.ArchiveController;
 import com.varankin.brains.jfx.browser.BrowserView;
-import com.varankin.brains.jfx.browser.BrowserViewRt;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
 import com.varankin.util.Текст;
@@ -56,7 +55,7 @@ class GuiBuilder
     {
         int spacing = 3;
         TitledPane панель0 = навигаторПоРабочемуПроекту( spacing );
-        TitledPane панель1 = навигаторПоРабочемуПроектуRt( spacing );
+//        TitledPane панель1 = навигаторПоРабочемуПроектуRt( spacing );
 //        TitledPane панель2 = навигаторПоАрхивуПроектов( spacing );
 //        TitledPane панель3 = навигаторПоАрхивуБиблиотек( spacing );
         панель0.setPrefWidth( 250d );
@@ -67,7 +66,7 @@ class GuiBuilder
             ArchiveController.RESOURCE_FXML, ArchiveController.RESOURCE_BUNDLE );
         // панель обозревателей
         Accordion обозреватели = new Accordion();
-        обозреватели.getPanes().addAll( панель0, панель1, фабрикаНавигатораАрхива.getNode() );//TODO , панель2, панель3 );
+        обозреватели.getPanes().addAll( панель0, /*панель1,*/ фабрикаНавигатораАрхива.getNode() );//TODO , панель2, панель3 );
         обозреватели.setExpandedPane( панель0 );
         обозреватели.setPrefWidth( 250d );
         return обозреватели;
@@ -125,11 +124,11 @@ class GuiBuilder
         return spoc;
     }
 
-    private TitledPane навигаторПоРабочемуПроектуRt( int spacing )
-    {
-        BrowserViewRt view = new BrowserViewRt();
-        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
-    }
+//    private TitledPane навигаторПоРабочемуПроектуRt( int spacing )
+//    {
+//        BrowserViewRt view = new BrowserViewRt();
+//        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
+//    }
 
     private TitledPane навигаторПоРабочемуПроекту( int spacing )
     {

@@ -15,7 +15,7 @@ public class BrowserViewRt extends AbstractBrowserView<RtЭлемент>
 {
     public BrowserViewRt()
     {
-        super( JavaFX.getInstance().контекст.rtt,
+        super( null,//TODO JavaFX.getInstance().контекст.rtt,
                ( RtЭлемент э ) -> RtЭлемент.извлечь( Проект.class,  э ) != null,
                ( RtЭлемент э ) -> RtЭлемент.извлечь( Процесс.class, э ) != null, 
                ( RtЭлемент э ) -> RtЭлемент.извлечь( Элемент.class, э ) != null );
