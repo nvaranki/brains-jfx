@@ -371,7 +371,7 @@ final class CellUpdateTask extends Task<Void>
     
     private void загрузить( Расчет узел )
     {
-        картинка = icon( "icons16x16/start.png" );
+        картинка = icon( "icons16x16/function.png" );
         название = замена( узел.название(), "cell.compute" );
         подсказка = LOGGER.text( "cell.compute" );
         потомки.addAll( узел.соединения() );
