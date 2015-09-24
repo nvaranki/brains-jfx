@@ -1,14 +1,13 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.factory.structured.Структурный;
 import com.varankin.brains.db.Базовый;
-import com.varankin.brains.factory.observable.wrapped.НаблюдаемыйЭлемент;
+import com.varankin.brains.factory.structured.Структурный;
 import com.varankin.brains.jfx.IntegerConverter;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.ObjectBindings;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.Контекст;
-import com.varankin.property.PropertyMonitor;
+import com.varankin.characteristic.Свойственный;
 import com.varankin.util.LoggerX;
 import java.util.*;
 import java.util.ResourceBundle;
@@ -123,7 +122,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
      * 
      * @param monitor монитор.
      */
-    void setMonitor( НаблюдаемыйЭлемент monitor )
+    void setMonitor( Свойственный monitor )
     {
         title.getItems().clear();
         title.getItems().addAll( suggestTitles( monitor ) );

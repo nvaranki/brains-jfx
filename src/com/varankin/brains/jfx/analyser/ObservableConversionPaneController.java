@@ -3,13 +3,9 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.appl.RatedObservable;
 import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.rating.Ранжируемый;
-import com.varankin.brains.factory.observable.wrapped.НаблюдаемыйЭлемент;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
-import com.varankin.characteristic.Именованный;
-import com.varankin.characteristic.НаблюдаемоеСвойство;
-import com.varankin.characteristic.Свойственный;
-import com.varankin.characteristic.Свойство;
+import com.varankin.characteristic.*;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -130,7 +126,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
      * 
      * @param monitor монитор.
      */
-    void setMonitor( НаблюдаемыйЭлемент monitor )
+    void setMonitor( Свойственный monitor )
     {
         parameter.getItems().clear();
         convertor.getItems().clear();

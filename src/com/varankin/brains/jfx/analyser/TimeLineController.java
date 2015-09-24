@@ -1,8 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.factory.observable.wrapped.НаблюдаемыйЭлемент;
+import com.varankin.characteristic.Свойственный;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -145,7 +144,7 @@ public final class TimeLineController implements Builder<Pane>
     protected void onDragOver( DragEvent event )
     {
         Object gs = event.getGestureSource();
-        if( gs instanceof Node && ((Node)gs).getUserData() instanceof НаблюдаемыйЭлемент )
+        if( gs instanceof Node && ((Node)gs).getUserData() instanceof Свойственный )
             event.acceptTransferModes( TransferMode.LINK );
         else 
             event.acceptTransferModes( TransferMode.NONE );
@@ -159,7 +158,7 @@ public final class TimeLineController implements Builder<Pane>
         if( gs instanceof Node )
         {
             Object userData = ((Node)gs).getUserData();
-            if( userData instanceof НаблюдаемыйЭлемент )
+            if( userData instanceof Свойственный )
             {
                 if( properties == null )
                 {
@@ -167,7 +166,7 @@ public final class TimeLineController implements Builder<Pane>
                     properties.initOwner( JavaFX.getInstance().платформа );
                     properties.setTitle( LOGGER.text( "properties.observable.title" ) );
                 }
-                properties.getController().setMonitor( (НаблюдаемыйЭлемент)userData );
+                properties.getController().setMonitor( (Свойственный)userData );
             }
         }            
         else
