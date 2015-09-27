@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.util.LoggerX;
 import java.util.logging.*;
@@ -18,13 +18,13 @@ class EditLoaderTask extends Task<Void>
     private static final LoggerX LOGGER = LoggerX.getLogger( EditLoaderTask.class );
     
     
-    private final Элемент элемент;
+    private final DbЭлемент элемент;
     private final StringProperty название;
     private final EditorController controller;
     
     private volatile String текст;
 
-    EditLoaderTask( Элемент элемент, StringProperty название, EditorController controller )
+    EditLoaderTask( DbЭлемент элемент, StringProperty название, EditorController controller )
     {
         this.элемент = элемент;
         this.название = название;

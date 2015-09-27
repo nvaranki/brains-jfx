@@ -3,7 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.Контекст;
 import com.varankin.io.container.Provider;
 import com.varankin.util.HistoryList;
@@ -95,7 +95,7 @@ public final class JavaFX
         return views;
     }
     
-    public boolean isShown( Элемент элемент, Predicate<? super TitledSceneGraph> predicate )
+    public boolean isShown( DbЭлемент элемент, Predicate<? super TitledSceneGraph> predicate )
     {
         Optional<TitledSceneGraph> o = views.getValue().stream()
             .filter( predicate )
@@ -104,7 +104,7 @@ public final class JavaFX
         return o.isPresent();
     }
     
-    public <E extends Элемент> void show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
+    public <E extends DbЭлемент> void show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
             Фабрика<E,TitledSceneGraph> фабрика )
     {
         List<TitledSceneGraph> список = views.getValue();

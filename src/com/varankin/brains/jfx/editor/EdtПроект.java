@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.Проект;
+import com.varankin.brains.db.DbПроект;
 import com.varankin.brains.db.*;
 import javafx.scene.*;
 import javafx.scene.paint.*;
@@ -13,9 +13,9 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
  *
  * @author Николай
  */
-class EdtПроект extends EdtАтрибутныйЭлемент<Проект>
+class EdtПроект extends EdtАтрибутныйЭлемент<DbПроект>
 {
-    EdtПроект( Проект элемент )
+    EdtПроект( DbПроект элемент )
     {
         super( элемент );
     }
@@ -32,15 +32,15 @@ class EdtПроект extends EdtАтрибутныйЭлемент<Проект
             group.getChildren().add( createMarker( 3d ) );
         group.getChildren().add( createBounds() );
         
-        for( Фрагмент фрагмент : ЭЛЕМЕНТ.фрагменты() )
+        for( DbФрагмент фрагмент : ЭЛЕМЕНТ.фрагменты() )
             group.getChildren().add( new EdtФрагмент( фрагмент ).загрузить( изменяемый ) );
-        for( Процессор процессор : ЭЛЕМЕНТ.процессоры() )
+        for( DbПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
             group.getChildren().add( new EdtПроцессор( процессор ).загрузить( изменяемый ) );
-        for( Сигнал сигнал : ЭЛЕМЕНТ.сигналы() )
+        for( DbСигнал сигнал : ЭЛЕМЕНТ.сигналы() )
             group.getChildren().add( new EdtСигнал( сигнал ).загрузить( изменяемый ) );
         for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
-        for( Библиотека библиотека : ЭЛЕМЕНТ.библиотеки() )
+        for( DbБиблиотека библиотека : ЭЛЕМЕНТ.библиотеки() )
             group.getChildren().add( new EdtБиблиотека( библиотека ).загрузить( изменяемый ) );
         
         return group;

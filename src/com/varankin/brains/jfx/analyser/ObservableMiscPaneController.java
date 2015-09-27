@@ -1,5 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.artificial.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Базовый;
 import com.varankin.brains.factory.structured.Структурный;
 import com.varankin.brains.jfx.IntegerConverter;
@@ -172,8 +174,8 @@ public final class ObservableMiscPaneController implements Builder<Pane>
         return items;
     }
     
-    private static final Class CLASS_APPL = com.varankin.brains.artificial.Элемент.class;
-    private static final Class CLASS_DB   = com.varankin.brains.db.Элемент.class;
+    private static final Class CLASS_APPL = Элемент.class;
+    private static final Class CLASS_DB   = DbЭлемент.class;
     
     /**
      * Находит ближайший к {@code pattern} субинтерфейс, реализованный в {@code original).

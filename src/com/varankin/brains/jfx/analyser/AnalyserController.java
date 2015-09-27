@@ -160,7 +160,7 @@ public final class AnalyserController implements Builder<Node>
             if( removed )
                 for( int i = 0; i < box.getChildren().size(); i++ )
                     if( i % 2 == 0 && box.getChildren().get( i ) instanceof Separator )
-                        box.getChildren().remove( i-- );
+                        box.getChildren().remove( i-- );//TODO java.lang.UnsupportedOperationException
         }
     }
     

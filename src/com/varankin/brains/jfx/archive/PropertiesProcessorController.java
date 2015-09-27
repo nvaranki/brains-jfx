@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Процессор;
+import com.varankin.brains.db.DbПроцессор;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class PropertiesProcessorController implements Builder<TabPane>
 
     private final Collection<AttributeAgent> agents;
 
-    private volatile Процессор процессор;
+    private volatile DbПроцессор процессор;
     
     @FXML TabProcessorController processorController;
     @FXML TabElementController elementController;
@@ -78,7 +78,7 @@ public class PropertiesProcessorController implements Builder<TabPane>
         JavaFX.getInstance().execute( new ScreenToStorageTask( процессор, agents ) );
     }
 
-    void reset( Процессор процессор )
+    void reset( DbПроцессор процессор )
     {
         this.процессор = процессор;
         processorController.reset( процессор );

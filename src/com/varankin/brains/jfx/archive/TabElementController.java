@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class TabElementController implements Builder<GridPane>
 
     private final AttributeAgent pathAgent, nameAgent;
 
-    private Элемент элемент;
+    private DbЭлемент элемент;
     
     @FXML private Label path;
     @FXML private TextField name;
@@ -79,7 +79,7 @@ public class TabElementController implements Builder<GridPane>
         return name.textProperty();
     }
 
-    void reset( Элемент элемент )
+    void reset( DbЭлемент элемент )
     {
         this.элемент = элемент;
     }

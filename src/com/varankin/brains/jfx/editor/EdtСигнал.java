@@ -4,7 +4,7 @@ import com.varankin.brains.artificial.io.xml.XmlBrains;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Сигнал;
+import com.varankin.brains.db.DbСигнал;
 import javafx.scene.*;
 
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
@@ -13,9 +13,9 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
  *
  * @author Николай
  */
-class EdtСигнал extends EdtАтрибутныйЭлемент<Сигнал>
+class EdtСигнал extends EdtАтрибутныйЭлемент<DbСигнал>
 {
-    EdtСигнал( Сигнал элемент )
+    EdtСигнал( DbСигнал элемент )
     {
         super( элемент );
     }

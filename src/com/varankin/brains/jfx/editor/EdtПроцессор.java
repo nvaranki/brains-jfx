@@ -3,7 +3,7 @@ package com.varankin.brains.jfx.editor;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Процессор;
+import com.varankin.brains.db.DbПроцессор;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 import javafx.scene.*;
 
@@ -11,9 +11,9 @@ import javafx.scene.*;
  *
  * @author Николай
  */
-class EdtПроцессор extends EdtАтрибутныйЭлемент<Процессор>
+class EdtПроцессор extends EdtАтрибутныйЭлемент<DbПроцессор>
 {
-    EdtПроцессор( Процессор элемент )
+    EdtПроцессор( DbПроцессор элемент )
     {
         super( элемент );
     }

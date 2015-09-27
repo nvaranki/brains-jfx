@@ -6,7 +6,7 @@ import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Сборка;
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
@@ -34,7 +34,7 @@ import javafx.util.Callback;
  *
  * @author Николай
  */
-abstract class AbstractCatalogView<E extends Элемент> extends ListView<E>
+abstract class AbstractCatalogView<E extends DbЭлемент> extends ListView<E>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( AbstractCatalogView.class );
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();

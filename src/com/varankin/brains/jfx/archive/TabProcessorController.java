@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.artificial.ПроцессорРасчета.Стратегия;
-import com.varankin.brains.db.Процессор;
+import com.varankin.brains.db.DbПроцессор;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +27,7 @@ public final class TabProcessorController implements Builder<GridPane>
     private final LongProperty pauseProperty;
     private final AttributeAgent pauseAgent, restartAgent, strategyAgent;
 
-    private Процессор процессор;
+    private DbПроцессор процессор;
     
     @FXML private TextField pause;
     @FXML private CheckBox restart;
@@ -93,7 +93,7 @@ public final class TabProcessorController implements Builder<GridPane>
         return Arrays.asList( pauseAgent, restartAgent, strategyAgent );
     }
 
-    void reset( Процессор процессор )
+    void reset( DbПроцессор процессор )
     {
         this.процессор = процессор;
     }

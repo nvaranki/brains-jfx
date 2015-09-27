@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;

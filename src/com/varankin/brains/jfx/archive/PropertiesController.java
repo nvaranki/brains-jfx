@@ -145,13 +145,13 @@ public class PropertiesController implements Builder<Parent>
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (XmlNameSpace)value );
                 }
-                else if( value instanceof Процессор )
+                else if( value instanceof DbПроцессор )
                 {
                     PropertiesProcessorController controller = new PropertiesProcessorController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.processor" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (Процессор)value );
+                    controller.reset( (DbПроцессор)value );
                 }
                 else if( value instanceof КлассJava )
                 {
@@ -169,21 +169,21 @@ public class PropertiesController implements Builder<Parent>
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (Конвертер)value );
                 }
-                else if( value instanceof Скаляр )
+                else if( value instanceof DbСкаляр )
                 {
                     PropertiesScalarController controller = new PropertiesScalarController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.scalar" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (Скаляр)value );
+                    controller.reset( (DbСкаляр)value );
                 }
-                else if( value instanceof Массив )
+                else if( value instanceof DbМассив )
                 {
                     PropertiesArrayController controller = new PropertiesArrayController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.array" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (Массив)value );
+                    controller.reset( (DbМассив)value );
                 }
                 else if( value instanceof ТекстовыйБлок )
                 {
@@ -193,13 +193,13 @@ public class PropertiesController implements Builder<Parent>
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (ТекстовыйБлок)value );
                 }
-                else if( value instanceof Элемент )
+                else if( value instanceof DbЭлемент )
                 {
                     PropertiesElementController controller = new PropertiesElementController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.element" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (Элемент)value );
+                    controller.reset( (DbЭлемент)value );
                 }
                 else
                 {

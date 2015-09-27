@@ -17,7 +17,7 @@ import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_PROJECT;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Пакет;
-import com.varankin.brains.db.Проект;
+import com.varankin.brains.db.DbПроект;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.factory.IФабрикаБазовыхЭлементов;
@@ -40,7 +40,7 @@ import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_BRAINS;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class ProjectCatalogView extends AbstractCatalogView<Проект>
+class ProjectCatalogView extends AbstractCatalogView<DbПроект>
 {
     private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
     
@@ -53,15 +53,15 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setCellFactory( new RowBuilder() );
 
-        SvgService<Проект> svg = new SvgService<Проект>() 
+        SvgService<DbПроект> svg = new SvgService<DbПроект>() 
         {
             @Override
-            public Provider<String> генератор( Проект проект )
+            public Provider<String> генератор( DbПроект проект )
             {
                 return new SvgПроект( проект, new Сборка( проект ) );
             }
         };
-        Действие<Проект> действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст );
+        Действие<DbПроект> действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст );
         Действие действиеУдалить = new УдалитьАрхивныеПроекты( null );//jfx.контекст.архив );
         ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg( jfx.контекст );
         
@@ -115,19 +115,19 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     
         //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class RowBuilder implements Callback<ListView<Проект>, ListCell<Проект>>
+    private class RowBuilder implements Callback<ListView<DbПроект>, ListCell<DbПроект>>
     {
         @Override
-        public ListCell<Проект> call( ListView<Проект> __ )
+        public ListCell<DbПроект> call( ListView<DbПроект> __ )
         {
             return new VisibleRow();
         }
     }
 
-    static private class VisibleRow extends ListCell<Проект>
+    static private class VisibleRow extends ListCell<DbПроект>
     {
         @Override
-        public void updateItem( Проект item, boolean empty ) 
+        public void updateItem( DbПроект item, boolean empty ) 
         {
             super.updateItem( item, empty );
             setText( empty ? null : item.название() );
@@ -136,7 +136,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     
     private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
-        final Callback<Void,Проект> фабрика;
+        final Callback<Void,DbПроект> фабрика;
         
         ActionNew()
         {
@@ -147,7 +147,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
                 XmlNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
-                Проект элемент = (Проект)архив.создатьНовыйЭлемент( XML_PROJECT, ns, null );
+                DbПроект элемент = (DbПроект)архив.создатьНовыйЭлемент( XML_PROJECT, ns, null );
                 элемент.определить( XML_NAME, null, null, "New project #" + пакет.проекты().size() );
                 пакет.проекты().add( элемент );
                 транзакция.завершить( true );
@@ -170,9 +170,9 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
     
     private class ActionLoad extends AbstractContextJfxAction<JavaFX>
     {
-        Действие<Iterable<? extends Проект>> ДЕЙСТВИЕ;
+        Действие<Iterable<? extends DbПроект>> ДЕЙСТВИЕ;
         
-        ActionLoad( Действие<Проект> действие )
+        ActionLoad( Действие<DbПроект> действие )
         {
             super( jfx, jfx.словарь( ActionLoad.class ) );
             ДЕЙСТВИЕ = new ДействияПоПорядку<>( Приоритет.КОНТЕКСТ, действие );
@@ -182,7 +182,7 @@ class ProjectCatalogView extends AbstractCatalogView<Проект>
         public void handle( ActionEvent __ )
         {
             // собрать выделенные элементы немедленно, ибо список может затем измениться другими процессами
-            List<Проект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
+            List<DbПроект> ceлектор = new ArrayList<>( getSelectionModel().getSelectedItems() );
             //TODO confirmation dialog
             new ApplicationActionWorker<>( ДЕЙСТВИЕ, ceлектор ).execute( контекст );
         }

@@ -5,8 +5,8 @@ import static com.varankin.brains.artificial.io.xml.XmlBrains.BRAINS_ATTR_NAME;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Коммутируемый;
-import com.varankin.brains.db.Соединение;
-import com.varankin.brains.db.Фрагмент;
+import com.varankin.brains.db.DbСоединение;
+import com.varankin.brains.db.DbФрагмент;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -21,11 +21,11 @@ import javafx.scene.transform.Translate;
  *
  * @author Николай
  */
-class EdtФрагмент extends EdtАтрибутныйЭлемент<Фрагмент>
+class EdtФрагмент extends EdtАтрибутныйЭлемент<DbФрагмент>
 {
     static private final Logger LOGGER = Logger.getLogger( EdtФрагмент.class.getName() );
 
-    EdtФрагмент( Фрагмент элемент )
+    EdtФрагмент( DbФрагмент элемент )
     {
         super( элемент );
     }
@@ -54,11 +54,11 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<Фраг
 //        else
 //            LOGGER.log( Level.SEVERE, "Unknown instance of fragment: {0}", экземпляр );
 
-        for( Соединение снаружи : ЭЛЕМЕНТ.соединения() )
+        for( DbСоединение снаружи : ЭЛЕМЕНТ.соединения() )
         {
             group.getChildren().add( new EdtСоединение( снаружи ).загрузить( изменяемый ) );
             String ref = снаружи.атрибут( BRAINS_ATTR_NAME, "" );
-            for( Соединение внутри : экземпляр.соединения() )
+            for( DbСоединение внутри : экземпляр.соединения() )
             {
                 String id = внутри.атрибут( BRAINS_ATTR_NAME, "" );
                 if( ref.equals( id ) )

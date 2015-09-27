@@ -146,7 +146,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.мусор() );
     }
     
-    private void загрузить( Библиотека узел )
+    private void загрузить( DbБиблиотека узел )
     {
         картинка = icon( "icons16x16/new-library.png" );
         название = замена( узел.название(), "cell.library" );
@@ -200,7 +200,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Параметр узел )
+    private void загрузить( DbПараметр узел )
     {
         картинка = null;//картинка( узел );
         название = замена( узел.название(), "cell.parameter.java" );
@@ -213,7 +213,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Скаляр узел )
+    private void загрузить( DbСкаляр узел )
     {
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.scalar" );
@@ -224,7 +224,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Массив узел )
+    private void загрузить( DbМассив узел )
     {
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.array" );
@@ -237,7 +237,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Контакт узел )
+    private void загрузить( DbКонтакт узел )
     {
         картинка = icon( "icons16x16/pin.png" );
         название = замена( узел.название(), "cell.pin" );
@@ -248,7 +248,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Модуль узел )
+    private void загрузить( DbМодуль узел )
     {
         картинка = icon( "icons16x16/module.png" );
         название = замена( узел.название(), "cell.module" );
@@ -309,7 +309,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Поле узел )
+    private void загрузить( DbПоле узел )
     {
         картинка = icon( "icons16x16/field2.png" );
         название = замена( узел.название(), "cell.field" );
@@ -324,7 +324,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Лента узел )
+    private void загрузить( DbЛента узел )
     {
         картинка = null;//TODO icon( "icons16x16/field2.png" );
         название = замена( узел.название(), "cell.timeline" );
@@ -337,7 +337,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Проект узел )
+    private void загрузить( DbПроект узел )
     {
         картинка = icon( "icons16x16/new-project.png" );
         название = замена( узел.название(), "cell.project" );
@@ -356,7 +356,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Процессор узел )
+    private void загрузить( DbПроцессор узел )
     {
         картинка = icon( "icons16x16/processor2.png" );
         название = замена( узел.название(), "cell.processor" );
@@ -369,7 +369,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Расчет узел )
+    private void загрузить( DbРасчет узел )
     {
         картинка = icon( "icons16x16/function.png" );
         название = замена( узел.название(), "cell.compute" );
@@ -384,7 +384,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Сигнал узел )
+    private void загрузить( DbСигнал узел )
     {
         картинка = icon( "icons16x16/signal.png" );
         название = замена( узел.название(), "cell.signal" );
@@ -397,7 +397,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Соединение узел )
+    private void загрузить( DbСоединение узел )
     {
         картинка = icon( "icons16x16/connector.png" );
         название = замена( узел.название(), "cell.connector" );
@@ -419,7 +419,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Точка узел )
+    private void загрузить( DbТочка узел )
     {
         картинка = icon( "icons16x16/point.png" );
         название = замена( узел.название(), "cell.point" );
@@ -436,7 +436,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Фрагмент узел )
+    private void загрузить( DbФрагмент узел )
     {
         картинка = icon( "icons16x16/fragment.png" );
         название = замена( узел.название(), "cell.fragment" );
@@ -477,21 +477,21 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Элемент узел )
+    private void загрузить( DbЭлемент узел )
     {
-        if(      узел instanceof Библиотека ) загрузить( (Библиотека)узел );
-        else if( узел instanceof Контакт    ) загрузить( (Контакт)узел );
-        else if( узел instanceof Лента      ) загрузить( (Лента)узел );
-        else if( узел instanceof Модуль     ) загрузить( (Модуль)узел );
-        else if( узел instanceof Поле       ) загрузить( (Поле)узел );
-        else if( узел instanceof Параметр   ) загрузить( (Параметр)узел );
-        else if( узел instanceof Проект     ) загрузить( (Проект)узел );
-        else if( узел instanceof Процессор  ) загрузить( (Процессор)узел );
-        else if( узел instanceof Расчет     ) загрузить( (Расчет)узел );
-        else if( узел instanceof Сигнал     ) загрузить( (Сигнал)узел );
-        else if( узел instanceof Соединение ) загрузить( (Соединение)узел );
-        else if( узел instanceof Точка      ) загрузить( (Точка)узел );
-        else if( узел instanceof Фрагмент   ) загрузить( (Фрагмент)узел );
+        if(      узел instanceof DbБиблиотека ) загрузить( (DbБиблиотека)узел );
+        else if( узел instanceof DbКонтакт    ) загрузить( (DbКонтакт)узел );
+        else if( узел instanceof DbЛента      ) загрузить( (DbЛента)узел );
+        else if( узел instanceof DbМодуль     ) загрузить( (DbМодуль)узел );
+        else if( узел instanceof DbПоле       ) загрузить( (DbПоле)узел );
+        else if( узел instanceof DbПараметр   ) загрузить( (DbПараметр)узел );
+        else if( узел instanceof DbПроект     ) загрузить( (DbПроект)узел );
+        else if( узел instanceof DbПроцессор  ) загрузить( (DbПроцессор)узел );
+        else if( узел instanceof DbРасчет     ) загрузить( (DbРасчет)узел );
+        else if( узел instanceof DbСигнал     ) загрузить( (DbСигнал)узел );
+        else if( узел instanceof DbСоединение ) загрузить( (DbСоединение)узел );
+        else if( узел instanceof DbТочка      ) загрузить( (DbТочка)узел );
+        else if( узел instanceof DbФрагмент   ) загрузить( (DbФрагмент)узел );
         else
         {
             картинка = null;//картинка( узел );
@@ -505,7 +505,7 @@ final class CellUpdateTask extends Task<Void>
     
     private void загрузить( Атрибутный узел )
     {
-        if(      узел instanceof Элемент       ) загрузить( (Элемент)узел );
+        if(      узел instanceof DbЭлемент       ) загрузить( (DbЭлемент)узел );
         else if( узел instanceof Архив         ) загрузить( (Архив)узел );
         else if( узел instanceof КлассJava     ) загрузить( (КлассJava)узел );
         else if( узел instanceof Пакет         ) загрузить( (Пакет)узел );
@@ -514,8 +514,8 @@ final class CellUpdateTask extends Task<Void>
         else if( узел instanceof Инструкция    ) загрузить( (Инструкция)узел );
         else if( узел instanceof ТекстовыйБлок ) загрузить( (ТекстовыйБлок)узел );
         else if( узел instanceof Графика       ) загрузить( (Графика)узел );
-        else if( узел instanceof Скаляр        ) загрузить( (Скаляр)узел );
-        else if( узел instanceof Массив        ) загрузить( (Массив)узел );
+        else if( узел instanceof DbСкаляр        ) загрузить( (DbСкаляр)узел );
+        else if( узел instanceof DbМассив        ) загрузить( (DbМассив)узел );
         else if( узел instanceof Конвертер     ) загрузить( (Конвертер)узел );
         else if( узел instanceof Неизвестный   ) загрузить( (Неизвестный)узел );
         else if( узел instanceof Мусор         ) загрузить( (Мусор)узел );

@@ -40,7 +40,7 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 final class ActionProcessor //TODO RT-37820
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ActionProcessor.class );
-    private static final Действие<Проект> действиеЗагрузитьПроект 
+    private static final Действие<DbПроект> действиеЗагрузитьПроект 
         = new ЗагрузитьАрхивныйПроект( JavaFX.getInstance().контекст );
     private static final Импортировать импортировать
         = new Импортировать( JavaFX.getInstance().контекст );
@@ -107,12 +107,12 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionLoad( ActionEvent event )
     {
-        List<Проект> ceлектор = selection.stream()
+        List<DbПроект> ceлектор = selection.stream()
 //TODO org.neo4j.graphdb.NotInTransactionException : i.пакеты() i.проекты()       
 //            .flatMap( ( Атрибутный i ) -> i instanceof Архив ? ((Архив)i).пакеты().stream() : Stream.of( i ) )
 //            .flatMap( ( Атрибутный i ) -> i instanceof Пакет ? ((Пакет)i).проекты().stream() : Stream.of( i ) )
-            .filter(  ( Атрибутный i ) -> i instanceof Проект )
-            .flatMap( ( Атрибутный i ) -> Stream.of( (Проект)i ) )
+            .filter(  ( Атрибутный i ) -> i instanceof DbПроект )
+            .flatMap( ( Атрибутный i ) -> Stream.of( (DbПроект)i ) )
             .collect( Collectors.toList() );
         if( ceлектор.isEmpty() )
             LOGGER.log( Level.INFO, "002005002I" );
@@ -127,9 +127,9 @@ final class ActionProcessor //TODO RT-37820
         for( TreeItem<Атрибутный> item : selectionModel.getSelectedItems() )
         {
             Атрибутный value = item.getValue();
-            if( value instanceof Элемент )
+            if( value instanceof DbЭлемент )
             {
-                Элемент элемент = (Элемент)value;
+                DbЭлемент элемент = (DbЭлемент)value;
                 JavaFX jfx = JavaFX.getInstance();
                 if( jfx.isShown( элемент, inBrowser ) )
                     LOGGER.log( Level.INFO, "002005008I", item instanceof TitledTreeItem ? 
@@ -141,7 +141,7 @@ final class ActionProcessor //TODO RT-37820
                     view.setUserData( элемент );
                     SimpleStringProperty название = new SimpleStringProperty();
                     Image icon = JavaFX.icon( "icons16x16/preview.png" ).getImage();
-                    jfx.show( элемент, inBrowser, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+                    jfx.show( элемент, inBrowser, ( DbЭлемент э ) -> new TitledSceneGraph( view, icon, название ) );
                     // загрузить элемент для просмотра
                     jfx.execute( new WebViewLoaderTask( элемент, название, view.getEngine() ) );
                 }
@@ -158,9 +158,9 @@ final class ActionProcessor //TODO RT-37820
         for( TreeItem<Атрибутный> item : selectionModel.getSelectedItems() )
         {
             Атрибутный value = item.getValue();
-            if( value instanceof Элемент )
+            if( value instanceof DbЭлемент )
             {
-                Элемент элемент = (Элемент)value;
+                DbЭлемент элемент = (DbЭлемент)value;
                 JavaFX jfx = JavaFX.getInstance();
                 if( jfx.isShown( элемент, inEditor ) )
                     LOGGER.log( Level.INFO, "002005009I", item instanceof TitledTreeItem ? 
@@ -174,7 +174,7 @@ final class ActionProcessor //TODO RT-37820
                     Parent view = controller.build();
                     SimpleStringProperty название = new SimpleStringProperty();
                     Image icon = JavaFX.icon( "icons16x16/edit.png" ).getImage();
-                    jfx.show( элемент, inEditor, ( Элемент э ) -> new TitledSceneGraph( view, icon, название ) );
+                    jfx.show( элемент, inEditor, ( DbЭлемент э ) -> new TitledSceneGraph( view, icon, название ) );
                     // загрузить элемент для редактирования
                     jfx.execute( new EditLoaderTask( элемент, название, controller ) );
                 }
@@ -221,14 +221,14 @@ final class ActionProcessor //TODO RT-37820
         else
         {
             Атрибутный элемент = selection.get( 0 );
-            if( элемент instanceof Элемент )
+            if( элемент instanceof DbЭлемент )
             {
                 if( fileProviderExport == null ) 
                     fileProviderExport = new ExportFileSelector( JavaFX.getInstance() );
                 File file = fileProviderExport.newInstance();
                 if( file != null )
                     JavaFX.getInstance().execute( new ЭкспортироватьSvg( JavaFX.getInstance().контекст ), 
-                            new ЭкспортироватьSvg.Контекст( (Элемент)элемент, file ) );
+                            new ЭкспортироватьSvg.Контекст( (DbЭлемент)элемент, file ) );
             }
             else
                 LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be exported: {0}", элемент.getClass().getName());
@@ -269,19 +269,19 @@ final class ActionProcessor //TODO RT-37820
     boolean disableActionLoad()
     {
         return selection.isEmpty() || !selection.stream()
-                .allMatch( ( Атрибутный i ) -> i instanceof Проект );
+                .allMatch( ( Атрибутный i ) -> i instanceof DbПроект );
     }
     
     boolean disableActionPreview()
     {
         return selection.isEmpty() || !selection.stream()
-                .allMatch( ( Атрибутный i ) -> i instanceof Элемент );
+                .allMatch( ( Атрибутный i ) -> i instanceof DbЭлемент );
     }
     
     boolean disableActionEdit()
     {
         return selection.isEmpty() || !selection.stream()
-                .allMatch( ( Атрибутный i ) -> i instanceof Элемент );
+                .allMatch( ( Атрибутный i ) -> i instanceof DbЭлемент );
     }
     
     boolean disableActionRemove()

@@ -3,7 +3,7 @@ package com.varankin.brains.jfx.editor;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Точка;
+import com.varankin.brains.db.DbТочка;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 import javafx.scene.*;
 
@@ -11,9 +11,9 @@ import javafx.scene.*;
  *
  * @author Николай
  */
-class EdtТочка extends EdtАтрибутныйЭлемент<Точка>
+class EdtТочка extends EdtАтрибутныйЭлемент<DbТочка>
 {
-    EdtТочка( Точка элемент )
+    EdtТочка( DbТочка элемент )
     {
         super( элемент );
     }
@@ -26,7 +26,7 @@ class EdtТочка extends EdtАтрибутныйЭлемент<Точка>
         String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
-        for( Точка соединение : ЭЛЕМЕНТ.точки() )
+        for( DbТочка соединение : ЭЛЕМЕНТ.точки() )
             group.getChildren().add( new EdtТочка( соединение ).загрузить( изменяемый ) );
         for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );

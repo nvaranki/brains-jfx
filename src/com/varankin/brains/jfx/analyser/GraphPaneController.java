@@ -350,7 +350,7 @@ public final class GraphPaneController implements Builder<Pane>
             @Override
             public void run()
             {
-                int shift = timeConvertorProperty.get().setEntry( moment );
+                int shift = timeConvertorProperty.get().setEntry( moment );//TODO java.lang.NullPointerException
                 if( shift > 0 )
                     shiftImage( shift );
             }

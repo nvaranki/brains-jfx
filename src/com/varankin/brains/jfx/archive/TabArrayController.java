@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.КлассJava;
-import com.varankin.brains.db.Массив;
+import com.varankin.brains.db.DbМассив;
 import com.varankin.util.LoggerX;
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class TabArrayController implements Builder<GridPane>
 
     private final AttributeAgent indexAgent, typeAgent, valueAgent;
 
-    private Массив массив;
+    private DbМассив массив;
     
     @FXML private TextField index;
     @FXML private Label type;
@@ -82,7 +82,7 @@ public class TabArrayController implements Builder<GridPane>
         return Arrays.asList( indexAgent, typeAgent, valueAgent );
     }
     
-    void reset( Массив массив )
+    void reset( DbМассив массив )
     {
         this.массив = массив;
     }

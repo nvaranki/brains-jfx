@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.Архив;
-import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.DbБиблиотека;
 import com.varankin.brains.db.Пакет;
-import com.varankin.brains.db.Проект;
+import com.varankin.brains.db.DbПроект;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
@@ -99,7 +99,7 @@ public final class EditorController implements Builder<Node>
         event.consume();
     }
 
-    public void setContent( Элемент элемент )
+    public void setContent( DbЭлемент элемент )
     {
         Архив архив = JavaFX.getInstance().контекст.архив;
         Транзакция транзакция = архив.транзакция();
@@ -107,10 +107,10 @@ public final class EditorController implements Builder<Node>
         try
         {
             Node content;
-            if( элемент instanceof Проект )
-                content = new EdtПроект( (Проект)элемент ).загрузить( true );
-            else if( элемент instanceof Библиотека )
-                content = new EdtБиблиотека( (Библиотека)элемент ).загрузить( true );
+            if( элемент instanceof DbПроект )
+                content = new EdtПроект( (DbПроект)элемент ).загрузить( true );
+            else if( элемент instanceof DbБиблиотека )
+                content = new EdtБиблиотека( (DbБиблиотека)элемент ).загрузить( true );
             else
                 content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
             Platform.runLater( () -> 

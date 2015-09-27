@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Элемент;
+import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import javafx.event.ActionEvent;
@@ -16,7 +16,7 @@ public final class PropertiesElementController
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( PropertiesElementController.class );
 
-    private volatile Элемент элемент;
+    private volatile DbЭлемент элемент;
     
     @FXML
     public void onActionApply( ActionEvent event )
@@ -26,7 +26,7 @@ public final class PropertiesElementController
     }
 
     @Override
-    public void reset( Элемент элемент )
+    public void reset( DbЭлемент элемент )
     {
         this.элемент = элемент;
         super.reset( элемент );

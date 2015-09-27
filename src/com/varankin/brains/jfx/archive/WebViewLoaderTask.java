@@ -26,13 +26,13 @@ class WebViewLoaderTask extends Task<String>
 {
     private static final Logger LOGGER = Logger.getLogger( WebViewLoaderTask.class.getName() );
     
-    private final Элемент элемент;
+    private final DbЭлемент элемент;
     private final StringProperty заголовок;
     private final WebEngine engine;
     
     private volatile String название;
     
-    WebViewLoaderTask( Элемент элемент, StringProperty заголовок, WebEngine engine )
+    WebViewLoaderTask( DbЭлемент элемент, StringProperty заголовок, WebEngine engine )
     {
         this.элемент = элемент;
         this.заголовок = заголовок;
@@ -45,7 +45,7 @@ class WebViewLoaderTask extends Task<String>
         try( Транзакция т = элемент.транзакция() )
         {
             название = элемент.название();
-            Фильтр<Элемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
+            Фильтр<DbЭлемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
             SvgService<Атрибутный> service = ( Атрибутный э ) -> providerOf( э, сборка );
             String code = service.генератор( элемент ).newInstance(); //TODO Отображаемый.MIME_SVG
             т.завершить( true );

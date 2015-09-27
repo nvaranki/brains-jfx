@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.КлассJava;
-import com.varankin.brains.db.Скаляр;
+import com.varankin.brains.db.DbСкаляр;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class TabScalarController implements Builder<GridPane>
 
     private final AttributeAgent indexAgent, typeAgent, valueAgent;
 
-    private Скаляр скаляр;
+    private DbСкаляр скаляр;
     
     @FXML private TextField index;
     @FXML private Label type;
@@ -81,7 +81,7 @@ public class TabScalarController implements Builder<GridPane>
         return Arrays.asList( indexAgent, typeAgent, valueAgent );
     }
     
-    void reset( Скаляр скаляр )
+    void reset( DbСкаляр скаляр )
     {
         this.скаляр = скаляр;
     }

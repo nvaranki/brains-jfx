@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Параметр;
+import com.varankin.brains.db.DbПараметр;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class PropertiesParameterJavaController implements Builder<TabPane>
 
     private final Collection<AttributeAgent> agents;
 
-    private volatile Параметр параметр;
+    private volatile DbПараметр параметр;
     
     @FXML TabScalarController codeController;
     @FXML TabElementController elementController;
@@ -79,7 +79,7 @@ public class PropertiesParameterJavaController implements Builder<TabPane>
         JavaFX.getInstance().execute( new ScreenToStorageTask( параметр, agents ) );
     }
 
-    void reset( Параметр параметр )
+    void reset( DbПараметр параметр )
     {
         this.параметр = параметр;
 //        codeController.reset( параметр );

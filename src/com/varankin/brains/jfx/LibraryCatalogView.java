@@ -11,7 +11,7 @@ import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_LIBRARY;
 import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_NAME;
 
 import com.varankin.brains.db.Архив;
-import com.varankin.brains.db.Библиотека;
+import com.varankin.brains.db.DbБиблиотека;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.Сборка;
@@ -32,7 +32,7 @@ import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_BRAINS;
  *
  * @author &copy; 2013 Николай Варанкин
  */
-class LibraryCatalogView extends AbstractCatalogView<Библиотека>
+class LibraryCatalogView extends AbstractCatalogView<DbБиблиотека>
 {
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
@@ -45,10 +45,10 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
         getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         setCellFactory( new RowBuilder() );
         
-        SvgService<Библиотека> svg = new SvgService<Библиотека>() 
+        SvgService<DbБиблиотека> svg = new SvgService<DbБиблиотека>() 
         {
             @Override
-            public Provider<String> генератор( Библиотека библиотека )
+            public Provider<String> генератор( DbБиблиотека библиотека )
             {
                 return new SvgБиблиотека( библиотека, new Сборка( библиотека ) );
             }
@@ -102,19 +102,19 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     
     //<editor-fold defaultstate="collapsed" desc="классы">
 
-    private class RowBuilder implements Callback<ListView<Библиотека>, ListCell<Библиотека>>
+    private class RowBuilder implements Callback<ListView<DbБиблиотека>, ListCell<DbБиблиотека>>
     {
         @Override
-        public ListCell<Библиотека> call( ListView<Библиотека> __ )
+        public ListCell<DbБиблиотека> call( ListView<DbБиблиотека> __ )
         {
             return new VisibleRow();
         }
     }
 
-    static private class VisibleRow extends ListCell<Библиотека>
+    static private class VisibleRow extends ListCell<DbБиблиотека>
     {
         @Override
-        public void updateItem( Библиотека item, boolean empty ) 
+        public void updateItem( DbБиблиотека item, boolean empty ) 
         {
             super.updateItem( item, empty );
             setText( empty ? null : item.название() );
@@ -123,7 +123,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
     
     private class ActionNew extends AbstractContextJfxAction<JavaFX>
     {
-        final Callback<Void,Библиотека> фабрика;
+        final Callback<Void,DbБиблиотека> фабрика;
         
         ActionNew()
         {
@@ -134,7 +134,7 @@ class LibraryCatalogView extends AbstractCatalogView<Библиотека>
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
                 XmlNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
-                Библиотека элемент = (Библиотека)архив.создатьНовыйЭлемент( XML_LIBRARY, ns, null );
+                DbБиблиотека элемент = (DbБиблиотека)архив.создатьНовыйЭлемент( XML_LIBRARY, ns, null );
                 элемент.определить( XML_NAME, null, null, "New library #" + пакет.библиотеки().size() );
                 пакет.библиотеки().add( элемент );
                 транзакция.завершить( true );

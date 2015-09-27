@@ -3,10 +3,10 @@ package com.varankin.brains.jfx.editor;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Библиотека;
-import com.varankin.brains.db.Модуль;
-import com.varankin.brains.db.Процессор;
-import com.varankin.brains.db.Расчет;
+import com.varankin.brains.db.DbБиблиотека;
+import com.varankin.brains.db.DbМодуль;
+import com.varankin.brains.db.DbПроцессор;
+import com.varankin.brains.db.DbРасчет;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 import javafx.scene.*;
 
@@ -14,9 +14,9 @@ import javafx.scene.*;
  *
  * @author Николай
  */
-class EdtБиблиотека extends EdtАтрибутныйЭлемент<Библиотека>
+class EdtБиблиотека extends EdtАтрибутныйЭлемент<DbБиблиотека>
 {
-    EdtБиблиотека( Библиотека элемент )
+    EdtБиблиотека( DbБиблиотека элемент )
     {
         super( элемент );
     }
@@ -29,11 +29,11 @@ class EdtБиблиотека extends EdtАтрибутныйЭлемент<Би
         String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
-        for( Модуль модуль : ЭЛЕМЕНТ.модули() )
+        for( DbМодуль модуль : ЭЛЕМЕНТ.модули() )
             group.getChildren().add( new EdtМодуль( модуль ).загрузить( изменяемый ) );
-        for( Расчет расчет : ЭЛЕМЕНТ.расчеты() )
+        for( DbРасчет расчет : ЭЛЕМЕНТ.расчеты() )
             group.getChildren().add( new EdtРасчет( расчет ).загрузить( изменяемый ) );
-        for( Процессор процессор : ЭЛЕМЕНТ.процессоры() )
+        for( DbПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
             group.getChildren().add( new EdtПроцессор( процессор ).загрузить( изменяемый ) );
         
         return group;

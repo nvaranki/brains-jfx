@@ -3,9 +3,9 @@ package com.varankin.brains.jfx.editor;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
 import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Расчет;
-import com.varankin.brains.db.Соединение;
-import com.varankin.brains.db.Точка;
+import com.varankin.brains.db.DbРасчет;
+import com.varankin.brains.db.DbСоединение;
+import com.varankin.brains.db.DbТочка;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 import javafx.scene.*;
 
@@ -13,9 +13,9 @@ import javafx.scene.*;
  *
  * @author Николай
  */
-class EdtРасчет extends EdtАтрибутныйЭлемент<Расчет>
+class EdtРасчет extends EdtАтрибутныйЭлемент<DbРасчет>
 {
-    EdtРасчет( Расчет элемент )
+    EdtРасчет( DbРасчет элемент )
     {
         super( элемент );
     }
@@ -28,9 +28,9 @@ class EdtРасчет extends EdtАтрибутныйЭлемент<Расчет
         String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
-        for( Соединение соединение : ЭЛЕМЕНТ.соединения() )
+        for( DbСоединение соединение : ЭЛЕМЕНТ.соединения() )
             group.getChildren().add( new EdtСоединение( соединение ).загрузить( изменяемый ) );
-        for( Точка соединение : ЭЛЕМЕНТ.точки() )
+        for( DbТочка соединение : ЭЛЕМЕНТ.точки() )
             group.getChildren().add( new EdtТочка( соединение ).загрузить( изменяемый ) );
         for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );

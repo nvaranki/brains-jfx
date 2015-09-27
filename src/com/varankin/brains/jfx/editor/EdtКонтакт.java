@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.Контакт;
+import com.varankin.brains.db.DbКонтакт;
 import javafx.scene.*;
 
 import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
@@ -12,9 +12,9 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
  *
  * @author Николай
  */
-class EdtКонтакт extends EdtАтрибутныйЭлемент<Контакт>
+class EdtКонтакт extends EdtАтрибутныйЭлемент<DbКонтакт>
 {
-    EdtКонтакт( Контакт элемент )
+    EdtКонтакт( DbКонтакт элемент )
     {
         super( элемент );
     }
