@@ -64,10 +64,11 @@ class GuiBuilder
         BuilderFX<TitledPane,ArchiveController> фабрикаНавигатораАрхива = new BuilderFX<>();
         фабрикаНавигатораАрхива.init( ArchiveController.class, 
             ArchiveController.RESOURCE_FXML, ArchiveController.RESOURCE_BUNDLE );
+        TitledPane панель1 = фабрикаНавигатораАрхива.getNode();
         // панель обозревателей
         Accordion обозреватели = new Accordion();
-        обозреватели.getPanes().addAll( панель0, /*панель1,*/ фабрикаНавигатораАрхива.getNode() );//TODO , панель2, панель3 );
-        обозреватели.setExpandedPane( панель0 );
+        обозреватели.getPanes().addAll( панель0, панель1 );//TODO , панель2, панель3 );
+        обозреватели.setExpandedPane( панель1 );
         обозреватели.setPrefWidth( 250d );
         return обозреватели;
     }
