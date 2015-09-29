@@ -3,7 +3,6 @@ package com.varankin.brains.jfx.browser;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.artificial.Элемент;
-import com.varankin.brains.factory.runtime.RtЭлемент;
 import com.varankin.property.MonitoredCollection;
 
 import java.beans.PropertyChangeEvent;
@@ -42,11 +41,7 @@ class BrowserMonitor<T> implements PropertyChangeListener
 
             case Процесс.СОСТОЯНИЕ:
                 T value = УЗЕЛ.getValue();
-                Процесс процесс;
-                if( value instanceof RtЭлемент )
-                    процесс = RtЭлемент.извлечь( Процесс.class, (RtЭлемент)value );
-                else
-                    процесс = Вложенный.извлечь( Процесс.class, (Элемент)value );
+                Процесс процесс = Вложенный.извлечь( Процесс.class, (Элемент)value );
                 if( процесс != null )
                     Platform.runLater( () -> УЗЕЛ.раскрасить( (Процесс.Состояние)evt.getNewValue() ) );
                 break;

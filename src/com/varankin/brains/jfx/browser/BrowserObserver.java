@@ -1,12 +1,7 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.artificial.Элемент;
-import com.varankin.brains.factory.runtime.RtЭлемент;
-import com.varankin.brains.factory.Вложенный;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
-import com.varankin.property.MonitoredCollection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;

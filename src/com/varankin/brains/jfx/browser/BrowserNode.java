@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.Вложенный;
-import com.varankin.brains.factory.runtime.RtЭлемент;
 import com.varankin.brains.factory.Составной;
 import com.varankin.characteristic.Наблюдатель;
 import com.varankin.property.PropertyMonitor;
@@ -81,16 +80,9 @@ class BrowserNode<T> extends TreeItem<T>
     void expand()
     {
         T value = getValue();
-        if( value instanceof RtЭлемент )
-        {
-            ((RtЭлемент)value).части().значение().stream().forEach( РАСКРЫВАТЕЛЬ );
-        }
-        else
-        {
-            Составной узел = Вложенный.извлечь( Составной.class, value );
-            if( узел != null )
-                узел.состав().stream().forEach( РАСКРЫВАТЕЛЬ );
-        }
+        Составной узел = Вложенный.извлечь( Составной.class, value );
+        if( узел != null )
+            узел.состав().stream().forEach( РАСКРЫВАТЕЛЬ );
     }
     
     void addMonitor()
@@ -101,9 +93,6 @@ class BrowserNode<T> extends TreeItem<T>
         if( pm != null )
             pm.listeners().add( монитор = new BrowserMonitor<>( this ) );
         
-        if( value instanceof RtЭлемент )
-            ((RtЭлемент)value).части().наблюдатели()
-                    .add( наблюдатель = new BrowserObserver<>( this ) );
         //TODO Процесс.СОСТОЯНИЕ
     }
 
@@ -116,8 +105,6 @@ class BrowserNode<T> extends TreeItem<T>
             pm.listeners().remove( монитор );
         монитор = null;
         
-        if( value instanceof RtЭлемент )
-            ((RtЭлемент)value).части().наблюдатели().remove( наблюдатель );
         наблюдатель = null;
         //TODO Процесс.СОСТОЯНИЕ
     }
