@@ -46,7 +46,6 @@ abstract class AbstractBrowserView<E> extends TreeView<E>
         setCellFactory( строитель.фабрика() );
         BrowserNode<E> узел = строитель.узел( root );
         setRoot( узел );
-        узел.expand();
         setShowRoot( true );
         setEditable( false );
         int w = Integer.valueOf( контекст.параметр( Контекст.Параметры.BROWSER_WIDTH ) );

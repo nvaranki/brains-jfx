@@ -5,6 +5,7 @@ import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 
 import java.util.*;
+import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
@@ -47,11 +48,19 @@ final class BrowserNodeBuilder<T>
      */
     BrowserNode<T> узел( T элемент )
     {
-        BrowserNode<T> узел = new BrowserNode<>( элемент, 
-                     фабрикаНазваний.метка( (Object)элемент ), 
-                     фабрикаКартинок.getIcon( элемент ), this );
-        узел.addMonitor();
+        BrowserNode<T> узел = new BrowserNode<>( элемент, this );
+        узел.раскрыть();
         return узел;
+    }
+
+    Node марка( T элемент ) 
+    {
+        return фабрикаКартинок.getIcon( элемент );
+    }
+
+    String метка( T элемент ) 
+    {
+        return фабрикаНазваний.метка( (Object)элемент );
     }
     
     /**

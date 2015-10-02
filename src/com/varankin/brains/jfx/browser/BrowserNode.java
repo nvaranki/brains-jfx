@@ -1,15 +1,13 @@
 package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.artificial.async.Процесс;
-import com.varankin.brains.factory.Вложенный;
+import com.varankin.brains.artificial.async.Процесс.Состояние;
 import com.varankin.brains.factory.Составной;
-import com.varankin.characteristic.Наблюдатель;
-import com.varankin.property.PropertyMonitor;
+import com.varankin.characteristic.*;
 
-import java.beans.PropertyChangeListener;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
-import javafx.scene.Node;
+import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 
 /**
@@ -19,94 +17,42 @@ import javafx.scene.control.TreeItem;
  */
 class BrowserNode<T> extends TreeItem<T>
 {
+    private static final Collection НН = new NullCollection<>();
+    
     private final String МЕТКА;
-    private final Consumer<? super T> РАСКРЫВАТЕЛЬ;
-    private final Consumer<? super Процесс.Состояние> МАЛЯР;
-    private PropertyChangeListener монитор;
-    private Наблюдатель<T> наблюдатель;
+    private final Составитель СОСТАВИТЕЛЬ;
+    private final Маляр МАЛЯР;
 
     /**
-     * @param элемент
-     * @param метка
-     * @param image
+     * @param элемент   объект узла.
      * @param строитель построитель узлов.
      */
-    BrowserNode( T элемент, String метка, Node image, BrowserNodeBuilder<T> строитель )
+    BrowserNode( T элемент, BrowserNodeBuilder<T> строитель )
     {
-        super( элемент, image );
-        МЕТКА = метка;
-        РАСКРЫВАТЕЛЬ = ( T t ) ->
+        super( элемент, строитель.марка( элемент ) );
+        МЕТКА = строитель.метка( элемент );
+        Collection<Наблюдатель<T>> нс = наблюдателиСостава( элемент );
+        СОСТАВИТЕЛЬ = нс == НН ? null : new Составитель( ( T t ) ->
         {
             BrowserNode<T> вставка = строитель.узел( t );
             List<TreeItem<T>> children = getChildren();
             children.add( строитель.позиция( вставка, children ), вставка );
-            вставка.expand();
-        };
-        МАЛЯР = ( Процесс.Состояние с ) ->
-        {
-            строитель.фабрикаКартинок().setBgColor( getGraphic(), с );
-        };
-    }
-    
-    void раскрасить( Процесс.Состояние состояние )
-    {
-        МАЛЯР.accept( состояние );
-    }
-    
-    void вставить( T элемент )
-    {
-        РАСКРЫВАТЕЛЬ.accept( элемент );
-    }
-    
-    void удалить( T элемент )
-    {
-        TreeItem<T> удаляемый = null;
-        for( TreeItem<T> узел : getChildren() )
-            if( элемент.equals( узел.getValue() ) )
-            {
-                удаляемый = узел;
-                break;
-            }
-        if( удаляемый != null )
-        {
-            removeTreeItemChildren( удаляемый );
-            getChildren().remove( удаляемый );
-        }
+        } );
+        нс.add( СОСТАВИТЕЛЬ );
+        Collection<Наблюдатель<Состояние>> нп = наблюдателиПроцесса( элемент );
+        МАЛЯР = нп == НН ? null : new Маляр( ( Процесс.Состояние с ) ->
+            строитель.фабрикаКартинок().setBgColor( getGraphic(), с ) );
+        нп.add( МАЛЯР );
     }
     
     /**
      * Строит поддерево от данного узла.
      */
-    void expand()
+    void раскрыть()
     {
         T value = getValue();
-        Составной узел = Вложенный.извлечь( Составной.class, value );
-        if( узел != null )
-            узел.состав().stream().forEach( РАСКРЫВАТЕЛЬ );
-    }
-    
-    void addMonitor()
-    {
-        T value = getValue();
-        
-        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, value );
-        if( pm != null )
-            pm.listeners().add( монитор = new BrowserMonitor<>( this ) );
-        
-        //TODO Процесс.СОСТОЯНИЕ
-    }
-
-    void removeMonitor()
-    {
-        T value = getValue();
-        
-        PropertyMonitor pm = Вложенный.извлечь( PropertyMonitor.class, value );
-        if( pm != null )
-            pm.listeners().remove( монитор );
-        монитор = null;
-        
-        наблюдатель = null;
-        //TODO Процесс.СОСТОЯНИЕ
+        if( СОСТАВИТЕЛЬ != null && value instanceof Составной )
+            ((Составной)value).состав().stream().forEach( СОСТАВИТЕЛЬ.РАСКРЫВАТЕЛЬ );
     }
     
     @Override
@@ -137,7 +83,119 @@ class BrowserNode<T> extends TreeItem<T>
             узел.getChildren().clear();
         }
         if( узел instanceof BrowserNode )
-            ((BrowserNode)узел).removeMonitor();
+        {
+            BrowserNode bn = (BrowserNode)узел;
+            наблюдателиСостава( bn.getValue() ).remove( bn.СОСТАВИТЕЛЬ );
+            наблюдателиПроцесса( bn.getValue() ).remove( bn.МАЛЯР );
+        }
+    }
+    
+    private class Составитель implements Наблюдатель<T>
+    {
+        final Consumer<? super T> РАСКРЫВАТЕЛЬ;
+
+        Составитель( Consumer<? super T> раскрыватель ) 
+        {
+            РАСКРЫВАТЕЛЬ = раскрыватель;
+        }
+        
+        @Override
+        public void отклик( Изменение<T> изменение ) 
+        {
+            if( изменение.ПРЕЖНЕЕ != null )
+                Platform.runLater( () -> удалить( изменение.ПРЕЖНЕЕ ) );
+            if( изменение.АКТУАЛЬНОЕ != null )
+                Platform.runLater( () -> вставить( изменение.АКТУАЛЬНОЕ ) );
+        }
+
+        void вставить( T t )
+        {
+            РАСКРЫВАТЕЛЬ.accept( t );
+        }
+
+        void удалить( T t )
+        {
+            TreeItem<T> удаляемый = null;
+            for( TreeItem<T> узел : BrowserNode.this.getChildren() )
+                if( t.equals( узел.getValue() ) )
+                {
+                    удаляемый = узел;
+                    break;
+                }
+            if( удаляемый != null )
+            {
+                removeTreeItemChildren( удаляемый );
+                BrowserNode.this.getChildren().remove( удаляемый );
+            }
+        }
+
+    }
+    
+    private class Маляр implements Наблюдатель<Состояние>
+    {
+        final Consumer<? super Состояние> МАЛЯР;
+
+        Маляр( Consumer<? super Состояние> маляр ) 
+        {
+            МАЛЯР = маляр;
+        }
+        
+        @Override
+        public void отклик( Изменение<Состояние> изменение ) 
+        {
+            Platform.runLater( () -> МАЛЯР.accept( изменение.АКТУАЛЬНОЕ ) );
+        }
+    }
+
+    private static Collection<Наблюдатель<Состояние>> наблюдателиПроцесса( Object t ) 
+    {
+        if( t instanceof Процесс && t instanceof Наблюдаемый )
+        {
+            return ((Наблюдаемый)t).наблюдатели();
+        }
+        return НН;
+    }
+
+    private static <T> Collection<Наблюдатель<T>> наблюдателиСостава( T t ) 
+    {
+        if( t instanceof Составной )
+        {
+            Collection состав = ((Составной)t).состав();
+            if( состав instanceof Наблюдаемый )
+            {
+                return ((Наблюдаемый)состав).наблюдатели();
+            }
+        }
+        return НН;
+    }
+    
+    private static class NullCollection<E> extends AbstractCollection<E>
+    {
+
+        @Override
+        public Iterator<E> iterator() 
+        {
+            return Collections.<E>emptyIterator();
+        }
+
+        @Override
+        public int size() 
+        {
+            return 0;
+        }
+        
+        @Override
+        public boolean add( E e )
+        {
+            return false;
+        }
+        
+        @Override
+        public boolean remove( Object o )
+        {
+            return false;
+        }
+        
     }
 
 }
