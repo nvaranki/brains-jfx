@@ -81,7 +81,7 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setRoot( new TreeItem<>() );
         tree.getRoot().getChildren().add( item );
         
-        ActionProcessor processor = new ActionProcessor( tree.getSelectionModel() );
+        ActionProcessor processor = new ActionProcessor( new SelectionListBinding<>( tree.getSelectionModel() ) );
         toolbarController.setProcessor( processor );
         popupController.setProcessor( processor );
 

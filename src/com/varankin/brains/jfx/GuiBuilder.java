@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.jfx.archive.ArchiveController;
+import com.varankin.brains.jfx.browser.BrowserController;
 import com.varankin.brains.jfx.browser.BrowserView;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
@@ -54,7 +55,11 @@ class GuiBuilder
     private Node createLeftBlock()
     {
         int spacing = 3;
-        TitledPane панель0 = навигаторПоРабочемуПроекту( spacing );
+//        TitledPane панель0t = навигаторПоРабочемуПроекту( spacing );
+        BuilderFX<TitledPane,BrowserController> фабрикаНавигатораПроектов = new BuilderFX<>();
+        фабрикаНавигатораПроектов.init( BrowserController.class, 
+            BrowserController.RESOURCE_FXML, BrowserController.RESOURCE_BUNDLE );
+        TitledPane панель0 = фабрикаНавигатораПроектов.getNode();
 //        TitledPane панель1 = навигаторПоРабочемуПроектуRt( spacing );
 //        TitledPane панель2 = навигаторПоАрхивуПроектов( spacing );
 //        TitledPane панель3 = навигаторПоАрхивуБиблиотек( spacing );
@@ -67,7 +72,7 @@ class GuiBuilder
         TitledPane панель1 = фабрикаНавигатораАрхива.getNode();
         // панель обозревателей
         Accordion обозреватели = new Accordion();
-        обозреватели.getPanes().addAll( панель0, панель1 );//TODO , панель2, панель3 );
+        обозреватели.getPanes().addAll( панель0, /*панель0t,*/ панель1 );//TODO , панель2, панель3 );
         обозреватели.setExpandedPane( панель1 );
         обозреватели.setPrefWidth( 250d );
         return обозреватели;

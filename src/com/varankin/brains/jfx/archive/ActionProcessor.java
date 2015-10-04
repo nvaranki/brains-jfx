@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.jfx.SelectionListBinding;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
@@ -19,13 +20,9 @@ import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.ListBinding;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.*;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.web.WebView;
@@ -45,8 +42,7 @@ final class ActionProcessor //TODO RT-37820
     private static final Импортировать импортировать
         = new Импортировать( JavaFX.getInstance().контекст );
     
-    private final MultipleSelectionModel<TreeItem<Атрибутный>> selectionModel;
-    private final SelectionListBinding selection;
+    private final SelectionListBinding<Атрибутный> selection;
 
     private Stage properties;
     private Provider<File> fileProviderExport;
@@ -57,11 +53,9 @@ final class ActionProcessor //TODO RT-37820
         disableProperties, 
         disableImportFile, disableImportNet, disableExportXml, disableExportPic;
     
-    ActionProcessor( MultipleSelectionModel<TreeItem<Атрибутный>> selectionModel )
+    ActionProcessor( SelectionListBinding<Атрибутный> selectionBinding )
     {
-        this.selectionModel = selectionModel;
-        selection = new SelectionListBinding();
-        selection.bind( selectionModel.getSelectedItems() );
+        selection = selectionBinding;
         
         disableNew = createBooleanBinding( () -> disableActionNew(), selection );
         disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
@@ -124,7 +118,7 @@ final class ActionProcessor //TODO RT-37820
     void onActionPreview( ActionEvent event )
     {
         Predicate<TitledSceneGraph> inBrowser = ( TitledSceneGraph tsg ) -> tsg.node instanceof WebView;
-        for( TreeItem<Атрибутный> item : selectionModel.getSelectedItems() )
+        for( TreeItem<Атрибутный> item : selection.getSelectedItems() )
         {
             Атрибутный value = item.getValue();
             if( value instanceof DbЭлемент )
@@ -155,7 +149,7 @@ final class ActionProcessor //TODO RT-37820
     void onActionEdit( ActionEvent event )
     {
         Predicate<TitledSceneGraph> inEditor = ( TitledSceneGraph tsg ) -> tsg!=null;//tsg.node instanceof Pane; //TODO identification;
-        for( TreeItem<Атрибутный> item : selectionModel.getSelectedItems() )
+        for( TreeItem<Атрибутный> item : selection.getSelectedItems() )
         {
             Атрибутный value = item.getValue();
             if( value instanceof DbЭлемент )
@@ -375,36 +369,6 @@ final class ActionProcessor //TODO RT-37820
 //            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         controller.reset();
         return stage;
-    }
-    
-    /**
-     * Список выбранных {@linkplain Атрибутный элементов} архива.
-     */
-    private class SelectionListBinding extends ListBinding<Атрибутный>
-    {
-        final ObservableList<Атрибутный> LIST = FXCollections.<Атрибутный>observableArrayList();
-        
-        /**
-         * Связывает данный список со списком выбора в {@link TreeView}.
-         * 
-         * @param list список выбора в {@link TreeView}.
-         */
-        void bind( ObservableList<TreeItem<Атрибутный>> list )
-        {
-            super.bind( list );
-        }
-        
-        @Override
-        protected ObservableList<Атрибутный> computeValue()
-        {
-            List<Атрибутный> value = //tree == null ? Collections.emptyList() :
-                    selectionModel.getSelectedItems().stream()
-                    .flatMap( ( TreeItem<Атрибутный> i ) -> Stream.of( i.getValue() ) )
-                    .collect( Collectors.toList() );
-            LIST.setAll( value );
-            return LIST;
-        }
-        
     }
     
 }

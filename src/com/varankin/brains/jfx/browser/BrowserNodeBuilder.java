@@ -90,45 +90,4 @@ final class BrowserNodeBuilder<T>
         return ФАБРИКА;
     }
     
-    /**
-     * Элемент отображения произвольного узла дерева.
-     */
-    private static class BrowserTreeCell<T> extends TreeCell<T>
-    {
-        BrowserTreeCell( TreeView<T> treeView ) 
-        {
-            setOnDragDetected( (MouseEvent e)-> 
-            {
-                LOGGER.getLogger().fine( "C: OnDragDetected" ); 
-                SnapshotParameters snapParams = new SnapshotParameters();
-                snapParams.setFill( Color.TRANSPARENT );
-                Dragboard dndb = startDragAndDrop( TransferMode.LINK );
-                dndb.setDragView( snapshot( snapParams, null ) );
-                dndb.setContent( Collections.singletonMap( DataFormat.PLAIN_TEXT, "data" ) );
-                //dragImageView.startFullDrag();
-                e.consume(); 
-            } );
-        }
-        
-        @Override
-        public void updateItem( T элемент, boolean empty ) 
-        {
-            super.updateItem( элемент, empty );
-            if( empty )
-            {
-                setText( null );
-                setGraphic( null );
-                setUserData( null );
-            }
-            else
-            {
-                TreeItem<T> item = getTreeItem();
-                setText( item.toString() );
-                setGraphic( item.getGraphic() );
-                setUserData( элемент );
-            }
-        }
-        
-    }
-    
 }
