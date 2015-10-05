@@ -2,13 +2,18 @@ package com.varankin.brains.jfx.browser;
 
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.*;
+import com.varankin.brains.artificial.async.Процесс;
+import com.varankin.brains.factory.observable.НаблюдаемыеСвойства;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.SelectionListBinding;
 import com.varankin.characteristic.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -127,7 +132,7 @@ public class BrowserController implements Builder<TitledPane>
                     TreeItem<Элемент> дерево = построитьДерево( (Элемент)o );
                     список.add( позиция( дерево, список, TREE_ITEM_COMPARATOR ), дерево );
                 });
-        установитьНаблюдение( элемент, список );
+        установитьНаблюдение( treeItem );
         return treeItem;
     }
     
@@ -144,31 +149,73 @@ public class BrowserController implements Builder<TitledPane>
                 } )
                 .collect( Collectors.toList() ) );
     }
-
-    private static void установитьНаблюдение( Элемент элемент, Collection<TreeItem<Элемент>> список )
+    
+    private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостава( Элемент элемент )
     {
-        Collections.singleton( элемент ).stream()
+        return Collections.singleton( элемент ).stream()
                 .filter( (Элемент э) -> э instanceof Составной )
                 .map( (Элемент э) -> ((Составной)э).состав() )
                 .filter( ( Collection c) -> c instanceof Наблюдаемый )
-                .map( (Collection c) -> ((Наблюдаемый)c).наблюдатели() )
+                .map( (Collection c) -> ((Наблюдаемый)c).наблюдатели() );
+    }
+    
+    private static Stream<Collection<Наблюдатель<Процесс.Состояние>>> наблюдателиСостояния( Элемент элемент )
+    {
+        return
+        Collections.singleton( элемент ).stream()
+                .filter( (Элемент э) -> э instanceof Процесс )
+                .filter( (Элемент э) -> э instanceof Свойственный )
+                .map( (Элемент э) -> (Свойство)((Свойственный)э).свойства().get( НаблюдаемыеСвойства.СОСТОЯНИЕ ))
+                .filter( (Свойство x) -> x != null )
+                .filter( (Свойство x) -> x instanceof Наблюдаемый )
+                .map( (Свойство x) -> ((Наблюдаемый)x).наблюдатели() );
+    }
+
+    private static void установитьНаблюдение( TreeItem<Элемент> treeItem )
+    {
+        Collection<TreeItem<Элемент>> список = treeItem.getChildren();
+        Элемент элемент = treeItem.getValue();
+        наблюдателиСостава( элемент )
                 .forEach( (Collection c) -> c.add( new Составитель( список ) ) );
+        наблюдателиСостояния( элемент )
+                .forEach( (Collection c) -> c.add( new Маляр( ( Процесс.Состояние с ) ->
+                    фабрикаКартинок.setBgColor( treeItem.getGraphic(), с ) ) ) );
     }
 
     private static void снятьНаблюдение( Элемент элемент )
     {
-        Collections.singleton( элемент ).stream()
-                .filter( (Элемент э) -> э instanceof Составной )
-                .map( (Элемент э) -> ((Составной)э).состав() )
-                .filter( ( Collection c) -> c instanceof Наблюдаемый )
-                .map( (Collection c) -> ((Наблюдаемый)c).наблюдатели() )
+        наблюдателиСостава( элемент )
                 .forEach( (Collection c) -> 
                 { 
-                    Collection<Наблюдатель<?>> cx = c;
+                    Collection<Наблюдатель<Элемент>> cx = c;
                     cx.removeAll( cx.stream()
                         .filter( (Наблюдатель<?> e) -> e instanceof Составитель )
                         .collect( Collectors.toList() ) );
                 } );
+        наблюдателиСостояния( элемент )
+                .forEach( (Collection c) -> 
+                { 
+                    Collection<Наблюдатель<Процесс.Состояние>> cx = c;
+                    cx.removeAll( cx.stream()
+                        .filter( (Наблюдатель<Процесс.Состояние> e) -> e instanceof Маляр )
+                        .collect( Collectors.toList() ) );
+                } );
+    }
+
+    private static class Маляр implements Наблюдатель<Процесс.Состояние> 
+    {
+        final Consumer<? super Процесс.Состояние> МАЛЯР;
+
+        Маляр( Consumer<? super Процесс.Состояние> маляр ) 
+        {
+            МАЛЯР = маляр;
+        }
+
+        @Override
+        public void отклик( Изменение<Процесс.Состояние> изменение ) 
+        {
+            Platform.runLater( () -> МАЛЯР.accept( изменение.АКТУАЛЬНОЕ ) );
+        }
     }
 
     private static class Составитель implements Наблюдатель<Элемент> 
