@@ -44,7 +44,9 @@ public class BrowserController implements Builder<TitledPane>
 
     @FXML private BrowserToolBarController toolbarController;
     @FXML private BrowserPopupController popupController;
+    @FXML private ToolBar toolbar;
     @FXML private TreeView<Элемент> tree;
+    @FXML private ContextMenu popup;
 
     public BrowserController()
     {
@@ -62,14 +64,17 @@ public class BrowserController implements Builder<TitledPane>
         popupController = new BrowserPopupController();
         toolbarController = new BrowserToolBarController();
         
+        toolbar = toolbarController.build();
+        popup = popupController.build();
+        
         tree = new TreeView<>();
         tree.setShowRoot( true );
         tree.setEditable( false );
-        tree.setContextMenu( popupController.build() );
+        tree.setContextMenu( popup );
         HBox.setHgrow( tree, Priority.ALWAYS );
 
         Pane box = new HBox();
-        box.getChildren().addAll( toolbarController.build(), tree );
+        box.getChildren().addAll( toolbar, tree );
         
         TitledPane pane = new TitledPane( RESOURCE_BUNDLE.getString( "browser.title" ), box );
         

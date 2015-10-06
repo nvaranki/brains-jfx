@@ -40,10 +40,10 @@ public class BrowserToolBarController implements Builder<ToolBar>
 
     public BrowserToolBarController() 
     {
-        disableStart = new SimpleBooleanProperty( this, "disableStart" );
-        disablePause = new SimpleBooleanProperty( this, "disablePause" );
-        disableStop = new SimpleBooleanProperty( this, "disableStop" );
-        disableRemove = new SimpleBooleanProperty( this, "disableRemove" );
+        disableStart      = new SimpleBooleanProperty( this, "disableStart" );
+        disablePause      = new SimpleBooleanProperty( this, "disablePause" );
+        disableStop       = new SimpleBooleanProperty( this, "disableStop" );
+        disableRemove     = new SimpleBooleanProperty( this, "disableRemove" );
         disableProperties = new SimpleBooleanProperty( this, "disableProperties" );
     }
     
@@ -147,23 +147,29 @@ public class BrowserToolBarController implements Builder<ToolBar>
         event.consume();
     }
     
+    public BooleanProperty disableStartProperty()      { return disableStart; }
+    public BooleanProperty disablePauseProperty()      { return disablePause; }
+    public BooleanProperty disableStopProperty()       { return disableStop; }
+    public BooleanProperty disableRemoveProperty()     { return disableRemove; }
+    public BooleanProperty disablePropertiesProperty() { return disableProperties; }
+
+    public boolean getDisableStart()      { return disableStart.get(); }
+    public boolean getDisablePause()      { return disablePause.get(); }
+    public boolean getDisableStop()       { return disableStop.get(); }
+    public boolean getDisableRemove()     { return disableRemove.get(); }
+    public boolean getDisableProperties() { return disableProperties.get(); }
+
     void setProcessor( ActionProcessor processor ) 
     {
         this.processor = processor; // helps for onActionXxx()
         
-        disableStart.bind( processor.disableStartProperty() );
-        disablePause.bind( processor.disablePauseProperty() );
-        disableStop.bind( processor.disableStopProperty() );
-        disableRemove.bind( processor.disableRemoveProperty() );
+        disableStart     .bind( processor.disableStartProperty() );
+        disablePause     .bind( processor.disablePauseProperty() );
+        disableStop      .bind( processor.disableStopProperty() );
+        disableRemove    .bind( processor.disableRemoveProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
     }
     
-    public BooleanProperty disableStartProperty() { return disableStart; }
-    public BooleanProperty disablePauseProperty() { return disablePause; }
-    public BooleanProperty disableStopProperty() { return disableStop; }
-    public BooleanProperty disableRemoveProperty() { return disableRemove; }
-    public BooleanProperty disablePropertiesProperty() { return disableProperties; }
-
     private static String text( String ключ )
     {
         return RESOURCE_BUNDLE.getString( ключ );

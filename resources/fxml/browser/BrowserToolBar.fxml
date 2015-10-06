@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Набор инструментов навигатора по проектам.
+    Author     : (c) 2015 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<ToolBar 
+        fx:controller="com.varankin.brains.jfx.browser.BrowserToolBarController" 
+        styleClass="browser-toolbar"
+        orientation="VERTICAL" 
+        xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@BrowserToolBar.css"/>
+    </stylesheets>
+
+    <items>
+        <Button onAction="#onActionStart" disable="${controller.disableStart}" >
+            <tooltip>
+                <Tooltip text="%browser.action.start" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/start.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionPause" disable="${controller.disablePause}" >
+            <tooltip>
+                <Tooltip text="%browser.action.pause" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/pause.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionStop" disable="${controller.disableStop}" >
+            <tooltip>
+                <Tooltip text="%browser.action.stop" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/stop.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Separator orientation="HORIZONTAL" /> 
+        <Button onAction="#onActionRemove" disable="${controller.disableRemove}" >
+            <tooltip>
+                <Tooltip text="%browser.action.remove" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/remove.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Separator orientation="HORIZONTAL" /> 
+        <Button onAction="#onActionProperties" disable="${controller.disableProperties}" >
+            <tooltip>
+                <Tooltip text="%browser.action.properties" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/properties.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </items>
+    
+</ToolBar>
