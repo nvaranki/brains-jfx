@@ -30,7 +30,7 @@ public class BrowserController implements Builder<TitledPane>
             BrowserController.class.getName(),
             BrowserController.class.getPackage().getName() + ".text" );
     private static final String RESOURCE_CSS  = "/fxml/browser/Browser.css";
-    private static final String CSS_CLASS = "archive";
+    private static final String CSS_CLASS = "browser";
 
     public static final String RESOURCE_FXML  = "/fxml/browser/Browser.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getResourceBundle();
