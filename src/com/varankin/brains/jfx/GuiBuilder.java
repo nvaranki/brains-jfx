@@ -2,7 +2,6 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.jfx.archive.ArchiveController;
 import com.varankin.brains.jfx.browser.BrowserController;
-import com.varankin.brains.jfx.browser.BrowserView;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
 import com.varankin.util.Текст;
@@ -55,12 +54,10 @@ class GuiBuilder
     private Node createLeftBlock()
     {
         int spacing = 3;
-//        TitledPane панель0t = навигаторПоРабочемуПроекту( spacing );
         BuilderFX<TitledPane,BrowserController> фабрикаНавигатораПроектов = new BuilderFX<>();
         фабрикаНавигатораПроектов.init( BrowserController.class, 
             BrowserController.RESOURCE_FXML, BrowserController.RESOURCE_BUNDLE );
         TitledPane панель0 = фабрикаНавигатораПроектов.getNode();
-//        TitledPane панель1 = навигаторПоРабочемуПроектуRt( spacing );
 //        TitledPane панель2 = навигаторПоАрхивуПроектов( spacing );
 //        TitledPane панель3 = навигаторПоАрхивуБиблиотек( spacing );
         панель0.setPrefWidth( 250d );
@@ -128,18 +125,6 @@ class GuiBuilder
         spoc.setFitToHeight( true );
         spoc.setFitToWidth( true );
         return spoc;
-    }
-
-//    private TitledPane навигаторПоРабочемуПроектуRt( int spacing )
-//    {
-//        BrowserViewRt view = new BrowserViewRt();
-//        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
-//    }
-
-    private TitledPane навигаторПоРабочемуПроекту( int spacing )
-    {
-        BrowserView view = new BrowserView();
-        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
     }
 
     private TitledPane навигаторПоАрхивуПроектов( int spacing )
