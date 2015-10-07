@@ -92,10 +92,9 @@ public class BrowserController implements Builder<TitledPane>
         tree.setRoot( построитьДерево( JavaFX.getInstance().контекст.мыслитель ) );
         tree.setCellFactory( ( TreeView<Элемент> treeView ) -> new BrowserTreeCell<>( treeView ) );
         
-        ActionProcessor processor = new ActionProcessor( 
-                new SelectionListBinding<>( tree.getSelectionModel() ) );
-        toolbarController.setProcessor( processor );
-        popupController.setProcessor( processor );
+        SelectionListBinding<Элемент> selectionListBinding = new SelectionListBinding<>( tree.getSelectionModel() );
+        toolbarController.selectionProperty().bind( selectionListBinding );
+        popupController.selectionProperty().bind( selectionListBinding );
 
     }
     

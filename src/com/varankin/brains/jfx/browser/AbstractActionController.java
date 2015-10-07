@@ -9,44 +9,67 @@ import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.ApplicationActionWorker;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.SelectionListBinding;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.SimpleListProperty;
 import javafx.event.ActionEvent;
-
+import javafx.fxml.FXML;
 import static javafx.beans.binding.Bindings.createBooleanBinding;
 
 /**
- *
- * @author Varankine
+ * Основа FXML-контроллера для набора инструментов навигатора по проектам.
+ * 
+ * @author &copy; 2015 Николай Варанкин
  */
-class ActionProcessor //TODO split
+abstract class AbstractActionController 
 {
     private static final Logger LOGGER = Logger.getLogger(
-            ActionProcessor.class.getName(),
-            ActionProcessor.class.getPackage().getName() + ".text" );
+            AbstractActionController.class.getName(),
+            AbstractActionController.class.getPackage().getName() + ".text" );
 
-    private final SelectionListBinding<Элемент> selection;
+    private final ListProperty<Элемент>  selection;
+    private final ReadOnlyBooleanWrapper disableStart;
+    private final ReadOnlyBooleanWrapper disablePause;
+    private final ReadOnlyBooleanWrapper disableStop;
+    private final ReadOnlyBooleanWrapper disableRemove;
+    private final ReadOnlyBooleanWrapper disableProperties;
 
-    private final BooleanBinding
-        disableStart, disablePause, 
-        disableStop, disableRemove, 
-        disableProperties; 
-
-    ActionProcessor( SelectionListBinding<Элемент> selectionBinding )
+    AbstractActionController() 
     {
-        selection = selectionBinding;
+        selection = new SimpleListProperty<>( this, "selection" );
         
-        disableStart = createBooleanBinding( () -> !enableActionStart(), selection );
-        disablePause = createBooleanBinding( () -> !enableActionPause(), selection );
-        disableStop = createBooleanBinding( () -> !enableActionStop(), selection );
-        disableRemove = createBooleanBinding( () -> !enableActionRemove(), selection );
-        disableProperties = createBooleanBinding( () -> !enableActionProperties(), selection );
+        disableStart      = new ReadOnlyBooleanWrapper( this, "disableStart" );
+        disablePause      = new ReadOnlyBooleanWrapper( this, "disablePause" );
+        disableStop       = new ReadOnlyBooleanWrapper( this, "disableStop" );
+        disableRemove     = new ReadOnlyBooleanWrapper( this, "disableRemove" );
+        disableProperties = new ReadOnlyBooleanWrapper( this, "disableProperties" );
+        
+        disableStart     .bind( createBooleanBinding( () -> !enableActionStart(), selection ) );
+        disablePause     .bind( createBooleanBinding( () -> !enableActionPause(), selection ) );
+        disableStop      .bind( createBooleanBinding( () -> !enableActionStop(), selection ) );
+        disableRemove    .bind( createBooleanBinding( () -> !enableActionRemove(), selection ) );
+        disableProperties.bind( createBooleanBinding( () -> !enableActionProperties(), selection ) );
     }
+
+    ListProperty<Элемент> selectionProperty() { return selection; }
     
+    public ReadOnlyBooleanProperty disableStartProperty()      { return disableStart.getReadOnlyProperty(); }
+    public ReadOnlyBooleanProperty disablePauseProperty()      { return disablePause.getReadOnlyProperty(); }
+    public ReadOnlyBooleanProperty disableStopProperty()       { return disableStop.getReadOnlyProperty(); }
+    public ReadOnlyBooleanProperty disableRemoveProperty()     { return disableRemove.getReadOnlyProperty(); }
+    public ReadOnlyBooleanProperty disablePropertiesProperty() { return disableProperties.getReadOnlyProperty(); }
+
+    public boolean getDisableStart()      { return disableStart.get(); }
+    public boolean getDisablePause()      { return disablePause.get(); }
+    public boolean getDisableStop()       { return disableStop.get(); }
+    public boolean getDisableRemove()     { return disableRemove.get(); }
+    public boolean getDisableProperties() { return disableProperties.get(); }
+
     private void onChangeProcesses( УправлениеПроцессом.Команда команда )
     {
         Действие<List<Процесс>> действие = new ДействияПоПорядку( ДействияПоПорядку.Приоритет.КОНТЕКСТ, 
@@ -58,22 +81,29 @@ class ActionProcessor //TODO split
         new ApplicationActionWorker<>( действие, ceлектор ).execute( JavaFX.getInstance() );
     }
 
-    void onActionStart( ActionEvent event ) 
+    @FXML
+    void onActionStart( ActionEvent event )
     {
         onChangeProcesses( УправлениеПроцессом.Команда.СТАРТ );
+        event.consume();
     }
-
-    void onActionPause( ActionEvent event ) 
+    
+    @FXML
+    void onActionPause( ActionEvent event )
     {
         onChangeProcesses( УправлениеПроцессом.Команда.ПАУЗА );
+        event.consume();
     }
-
-    void onActionStop( ActionEvent event ) 
-    {      
+    
+    @FXML
+    void onActionStop( ActionEvent event )
+    {
         onChangeProcesses( УправлениеПроцессом.Команда.СТОП );
+        event.consume();
     }
-
-    void onActionRemove( ActionEvent event ) 
+    
+    @FXML
+    void onActionRemove( ActionEvent event )
     {
         Действие<List<Проект>> действие = new ДействияПоПорядку( ДействияПоПорядку.Приоритет.КОНТЕКСТ, 
                 new УправлениеПроцессом( JavaFX.getInstance().контекст, УправлениеПроцессом.Команда.СТОП ),
@@ -83,9 +113,11 @@ class ActionProcessor //TODO split
             .flatMap( ( Элемент i ) -> Stream.of( (Проект)i ) )
             .collect( Collectors.toList() );
         new ApplicationActionWorker<>( действие, ceлектор ).execute( JavaFX.getInstance() );
+        event.consume();
     }
-
-    void onActionProperties( ActionEvent event ) 
+    
+    @FXML
+    void onActionProperties( ActionEvent event )
     {
         Действие<List<Элемент>> действие = null; //TODO NOT IMPL.
         List<Элемент> ceлектор = selection;/*.stream()
@@ -93,14 +125,9 @@ class ActionProcessor //TODO split
             .flatMap( ( Элемент i ) -> Stream.of( (Проект)i ) )
             .collect( Collectors.toList() );*/
         LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+        event.consume();
     }
     
-    BooleanBinding disableStartProperty() { return disableStart; }
-    BooleanBinding disablePauseProperty() { return disablePause; }
-    BooleanBinding disableStopProperty() { return disableStop; }
-    BooleanBinding disableRemoveProperty() { return disableRemove; }
-    BooleanBinding disablePropertiesProperty() { return disableProperties; }
-
     private boolean enableActionStart() 
     {
         return !selection.isEmpty() && selection.stream()
@@ -128,6 +155,11 @@ class ActionProcessor //TODO split
     private boolean enableActionProperties() 
     {
         return selection.size() == 1;
+    }
+
+    static String text( String ключ )
+    {
+        return LOGGER.getResourceBundle().getString( ключ );
     }
 
 }
