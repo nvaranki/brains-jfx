@@ -141,8 +141,8 @@ public final class BrowserPropertiesController implements Builder<Parent>
     {
         Label величина = new Label( ключ + ':' );
         TextField значение = new TextField( свойство.значение().toString() );
-        if( !(свойство instanceof ИзменяемоеСвойство) )
-            значение.disableProperty().setValue( true );
+        значение.editableProperty().setValue( свойство instanceof ИзменяемоеСвойство );
+        значение.focusTraversableProperty().setValue( свойство instanceof ИзменяемоеСвойство );
         HBox панель = new HBox();
         панель.getChildren().addAll( величина, значение );
         panel.getChildren().add( панель );
