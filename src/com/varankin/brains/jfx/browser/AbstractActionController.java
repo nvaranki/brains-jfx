@@ -8,17 +8,20 @@ import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.ApplicationActionWorker;
+import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleListProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.*;
 import static javafx.beans.binding.Bindings.createBooleanBinding;
 
 /**
@@ -80,6 +83,33 @@ abstract class AbstractActionController
             .collect( Collectors.toList() );
         new ApplicationActionWorker<>( действие, ceлектор ).execute( JavaFX.getInstance() );
     }
+    
+    private Stage buildProperties()
+    {
+        BuilderFX<Parent,BrowserPropertiesController> builder = new BuilderFX<>();
+        builder.init( BrowserPropertiesController.class,
+                BrowserPropertiesController.RESOURCE_FXML, 
+                BrowserPropertiesController.RESOURCE_BUNDLE );
+        BrowserPropertiesController controller = builder.getController();
+
+        Stage stage = new Stage();
+        stage.initStyle( StageStyle.DECORATED );
+        stage.initModality( Modality.NONE );
+        stage.initOwner( JavaFX.getInstance().платформа );
+        stage.getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+
+        stage.setResizable( true );
+        stage.setMinHeight( 350d );
+        stage.setMinWidth( 400d );
+        stage.setHeight( 350d ); //TODO save/restore size&pos
+        stage.setWidth( 400d );
+        stage.setScene( new Scene( builder.getNode() ) );
+        stage.setOnShowing( controller::populate );
+
+        stage.titleProperty().bind( controller.titleProperty() );
+
+        return stage;
+    }
 
     @FXML
     void onActionStart( ActionEvent event )
@@ -120,12 +150,24 @@ abstract class AbstractActionController
     @FXML
     void onActionProperties( ActionEvent event )
     {
-        Действие<List<Элемент>> действие = null; //TODO NOT IMPL.
-        List<Элемент> ceлектор = selection;/*.stream()
-            .filter(  ( Элемент i ) -> i instanceof Проект )
-            .flatMap( ( Элемент i ) -> Stream.of( (Проект)i ) )
-            .collect( Collectors.toList() );*/
-        LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+//        Действие<List<Элемент>> действие = null; //TODO NOT IMPL.
+//        List<Элемент> ceлектор = selection;/*.stream()
+//            .filter(  ( Элемент i ) -> i instanceof Проект )
+//            .flatMap( ( Элемент i ) -> Stream.of( (Проект)i ) )
+//            .collect( Collectors.toList() );*/
+//        LOGGER.info( "Sorry, the command is not implemented." );//TODO not impl.
+//        if( selection.isEmpty() )
+//            LOGGER.log( "002005005I" );
+//        else if( selection.size() > 1 )
+//            LOGGER.log( "002005006I", selection.size() );
+//        else
+        {
+            Stage properties;
+            /*if( properties == null )*/ properties = buildProperties();
+            properties.getScene().getRoot().setUserData( selection.get( 0 ) );
+            properties.show();
+            properties.toFront();
+        }
         event.consume();
     }
     
