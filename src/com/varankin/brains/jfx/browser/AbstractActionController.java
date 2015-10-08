@@ -76,7 +76,7 @@ abstract class AbstractActionController
                 new УправлениеПроцессом( JavaFX.getInstance().контекст, команда ) );
         List<Процесс> ceлектор = selection.stream()
             .filter(  ( Элемент i ) -> i instanceof Процесс )
-            .flatMap( ( Элемент i ) -> Stream.of( (Процесс)i ) )
+            .map( ( Элемент i ) -> (Процесс)i )
             .collect( Collectors.toList() );
         new ApplicationActionWorker<>( действие, ceлектор ).execute( JavaFX.getInstance() );
     }
@@ -110,9 +110,10 @@ abstract class AbstractActionController
                 new ВыгрузитьПроект( JavaFX.getInstance().контекст ) );
         List<Проект> ceлектор = selection.stream()
             .filter(  ( Элемент i ) -> i instanceof Проект )
-            .flatMap( ( Элемент i ) -> Stream.of( (Проект)i ) )
+            .map( ( Элемент i ) -> (Проект)i )
             .collect( Collectors.toList() );
         new ApplicationActionWorker<>( действие, ceлектор ).execute( JavaFX.getInstance() );
+        selection.clear();
         event.consume();
     }
     

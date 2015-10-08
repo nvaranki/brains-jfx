@@ -6,15 +6,19 @@ import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.factory.observable.НаблюдаемыеСвойства;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.SelectionListBinding;
+import com.varankin.brains.jfx.OneToOneListBinding;
 import com.varankin.characteristic.*;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
+import javafx.beans.binding.ListBinding;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Builder;
@@ -47,10 +51,6 @@ public class BrowserController implements Builder<TitledPane>
     @FXML private ToolBar toolbar;
     @FXML private TreeView<Элемент> tree;
     @FXML private ContextMenu popup;
-
-    public BrowserController()
-    {
-    }
 
     /**
      * Создает панель навигатора. 
@@ -89,13 +89,114 @@ public class BrowserController implements Builder<TitledPane>
     @FXML
     protected void initialize()
     {
-        tree.setRoot( построитьДерево( JavaFX.getInstance().контекст.мыслитель ) );
         tree.setCellFactory( ( TreeView<Элемент> treeView ) -> new BrowserTreeCell<>( treeView ) );
+        tree.setRoot( построитьДерево( JavaFX.getInstance().контекст.мыслитель ) );
+        tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         
-        SelectionListBinding<Элемент> selectionListBinding = new SelectionListBinding<>( tree.getSelectionModel() );
+        ListBinding<Элемент> selectionListBinding = new OneToOneListBinding<>( 
+                tree.getSelectionModel().getSelectedItems(), (TreeItem<Элемент> i) -> i.getValue() );
         toolbarController.selectionProperty().bind( selectionListBinding );
         popupController.selectionProperty().bind( selectionListBinding );
 
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="методы">
+    
+    private final static Predicate<Object> ФИЛЬТР_ЭЛЕМЕНТ = (Object o) -> o instanceof Элемент;
+    private final static Predicate<Object> ФИЛЬТР_СОСТАВНОЙ = (Object o) -> o instanceof Составной;
+    private final static Predicate<Object> ФИЛЬТР_НАБЛЮДАЕМЫЙ = (Object o) -> o instanceof Наблюдаемый;
+    private final static Predicate<Object> ФИЛЬТР_ПРОЦЕСС = (Object o) -> o instanceof Процесс;
+    private final static Predicate<Object> ФИЛЬТР_СВОЙСТВЕННЫЙ = (Object o) -> o instanceof Свойственный;
+    private final static Predicate<Object> ФИЛЬТР_СОСТАВИТЕЛЬ = (Object o) -> o instanceof Составитель;
+    private final static Predicate<Object> ФИЛЬТР_МАЛЯР = (Object o) -> o instanceof Маляр;
+    
+    private final static Function<Object,Элемент>      ТИП_ЭЛЕМЕНТ = (Object o) -> (Элемент)o;
+    private final static Function<Object,Составной>    ТИП_СОСТАВНОЙ = (Object o) -> (Составной)o;
+    private final static Function<Object,Наблюдаемый>  ТИП_НАБЛЮДАЕМЫЙ = (Object o) -> (Наблюдаемый)o;
+    private final static Function<Object,Свойственный> ТИП_СВОЙСТВЕННЫЙ = (Object o) -> (Свойственный)o;
+    
+    private final static Function<Составной,Stream<Collection<?>>> ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ
+            = (Составной э) -> э.состав().stream();
+    private final static Function<Составной,Collection<?>> ЭКСТРАКТОР_СОСТАВ
+            = (Составной э) -> э.состав();
+    private final static Function<Наблюдаемый,Collection<Наблюдатель<?>>> ЭКСТРАКТОР_НАБЛЮДАТЕЛИ
+            = (Наблюдаемый э) -> э.наблюдатели();
+    private final static Function<Свойственный,Map<String,Свойство<?>>> ЭКСТРАКТОР_КАРТЫ_СВОЙСТВ
+            = (Свойственный э) -> э.свойства();
+    private final static Function<Map<String,Свойство<?>>,Свойство<?>> ЭКСТРАКТОР_СВОЙСТВА_С
+            = (Map<String,Свойство<?>> э) -> э.get( НаблюдаемыеСвойства.СОСТОЯНИЕ );
+    
+    private final static Consumer<TreeItem<Элемент>> ОПЕРАТОР_РАЗОБРАТЬ_УЗЕЛ
+            = (TreeItem<Элемент> ti) -> разобратьДерево( ti );
+    private final static Consumer<Collection<Наблюдатель<?>>> ОПЕРАТОР_УБРАТЬ_СОСТАВИТЕЛЯ
+            = (Collection<Наблюдатель<?>> c) -> c.removeAll(
+                    c.stream().filter( ФИЛЬТР_СОСТАВИТЕЛЬ ).collect( Collectors.toList() ) );
+    private final static Consumer<Collection<Наблюдатель<?>>> ОПЕРАТОР_УБРАТЬ_МАЛЯРА
+            = (Collection<Наблюдатель<?>> c) -> c.removeAll(
+                    c.stream().filter( ФИЛЬТР_МАЛЯР ).collect( Collectors.toList() ) );
+    
+    private static TreeItem<Элемент> построитьДерево( Элемент элемент )
+    {
+        Node марка = фабрикаКартинок.getIcon( элемент );
+        TreeItem<Элемент> treeItem = new NamedTreeItem( элемент, марка );
+        
+        List<TreeItem<Элемент>> список = treeItem.getChildren();
+        Consumer<Элемент> составитель = (Элемент э) ->
+        {
+            TreeItem<Элемент> дерево = построитьДерево( э );
+            список.add( позиция( дерево, список, TREE_ITEM_COMPARATOR ), дерево );
+        };
+        Collections.singleton( элемент ).stream()
+                .filter( ФИЛЬТР_СОСТАВНОЙ )
+                .flatMap( ТИП_СОСТАВНОЙ.andThen( ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ ) )
+                .filter( ФИЛЬТР_ЭЛЕМЕНТ )
+                .map( ТИП_ЭЛЕМЕНТ )
+                .forEach( составитель );
+        наблюдателиСостава( элемент ).forEach(
+                ( Collection<Наблюдатель<?>> c ) -> c.add( new Составитель( список ) ) );
+        
+        Consumer<Процесс.Состояние> маляр = ( Процесс.Состояние с ) -> фабрикаКартинок.setBgColor( марка, с );
+        наблюдателиСостояния( элемент ).forEach(
+                ( Collection<Наблюдатель<?>> c ) -> c.add( new Маляр( маляр ) ) );
+        
+        return treeItem;
+    }
+    
+    private static void разобратьДерево( TreeItem<Элемент> ti )
+    {
+        Элемент элемент = ti.getValue();
+        наблюдателиСостава( элемент ).forEach( ОПЕРАТОР_УБРАТЬ_СОСТАВИТЕЛЯ );
+        наблюдателиСостояния( элемент ).forEach( ОПЕРАТОР_УБРАТЬ_МАЛЯРА );
+        Collection<TreeItem<Элемент>> список = ti.getChildren();
+        список.stream().forEach( ОПЕРАТОР_РАЗОБРАТЬ_УЗЕЛ );
+        список.clear();
+    }
+    
+    private static Collection<TreeItem<Элемент>> разобратьДерево( Элемент элемент, 
+            Collection<TreeItem<Элемент>> список )
+    {
+        return список.stream()
+                .filter( ( TreeItem<Элемент> ti ) -> ti.getValue().equals( элемент ) )
+                .peek( ОПЕРАТОР_РАЗОБРАТЬ_УЗЕЛ )
+                .collect( Collectors.toList() );
+    }
+    
+    private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостава( Элемент элемент )
+    {
+        return Collections.singleton( элемент ).stream()
+                .filter( ФИЛЬТР_СОСТАВНОЙ )
+                .map( ТИП_СОСТАВНОЙ.andThen( ЭКСТРАКТОР_СОСТАВ ) )
+                .filter( ФИЛЬТР_НАБЛЮДАЕМЫЙ )
+                .map( ТИП_НАБЛЮДАЕМЫЙ.andThen( ЭКСТРАКТОР_НАБЛЮДАТЕЛИ ) );
+    }
+    
+    private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостояния( Элемент элемент )
+    {
+        return Collections.singleton( элемент ).stream()
+                .filter( ФИЛЬТР_ПРОЦЕСС.and( ФИЛЬТР_СВОЙСТВЕННЫЙ ) )
+                .map( ТИП_СВОЙСТВЕННЫЙ.andThen( ЭКСТРАКТОР_КАРТЫ_СВОЙСТВ ).andThen( ЭКСТРАКТОР_СВОЙСТВА_С ) )
+                .filter( ФИЛЬТР_НАБЛЮДАЕМЫЙ )
+                .map( ТИП_НАБЛЮДАЕМЫЙ.andThen( ЭКСТРАКТОР_НАБЛЮДАТЕЛИ ) );
     }
     
     /**
@@ -114,129 +215,41 @@ public class BrowserController implements Builder<TitledPane>
         return позиция;
     }
     
-    private static TreeItem<Элемент> построитьДерево( Элемент элемент )
-    {
-        TreeItem<Элемент> treeItem = new TreeItem<Элемент>( элемент, фабрикаКартинок.getIcon( элемент ) )
-        {
-            private String метка;
-            
-            @Override
-            public String toString()
-            {
-                return метка != null ? метка : ( метка = фабрикаНазваний.метка( (Object)getValue() ) );
-            }
-        };
-        List<TreeItem<Элемент>> список = treeItem.getChildren();
-        Collections.singleton( элемент ).stream()
-                .filter( (Элемент э) -> э instanceof Составной )
-                .flatMap( (Элемент э) -> ((Составной)э).состав().stream() )
-                .filter( (Object o) -> o instanceof Элемент )
-                .forEach((Object o) -> 
-                {
-                    TreeItem<Элемент> дерево = построитьДерево( (Элемент)o );
-                    список.add( позиция( дерево, список, TREE_ITEM_COMPARATOR ), дерево );
-                });
-        установитьНаблюдение( treeItem );
-        return treeItem;
-    }
+    //</editor-fold>
     
-    private static void разобратьДерево( Элемент элемент, Collection<TreeItem<Элемент>> список )            
-    {
-        снятьНаблюдение( элемент );
-        список.removeAll( список.stream()
-                .filter( (TreeItem<Элемент> ti) -> ti.getValue().equals( элемент ) )
-                .peek( (TreeItem<Элемент> ti) -> 
-                {
-                    new ArrayList<>( ti.getChildren() ).stream().forEach( (TreeItem<Элемент> cti) -> 
-                            разобратьДерево( cti.getValue(), ti.getChildren() ) );
-                     
-                } )
-                .collect( Collectors.toList() ) );
-    }
+    //<editor-fold defaultstate="collapsed" desc="классы">
     
-    private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостава( Элемент элемент )
-    {
-        return Collections.singleton( элемент ).stream()
-                .filter( (Элемент э) -> э instanceof Составной )
-                .map( (Элемент э) -> ((Составной)э).состав() )
-                .filter( ( Collection c) -> c instanceof Наблюдаемый )
-                .map( (Collection c) -> ((Наблюдаемый)c).наблюдатели() );
-    }
-    
-    private static Stream<Collection<Наблюдатель<Процесс.Состояние>>> наблюдателиСостояния( Элемент элемент )
-    {
-        return
-        Collections.singleton( элемент ).stream()
-                .filter( (Элемент э) -> э instanceof Процесс )
-                .filter( (Элемент э) -> э instanceof Свойственный )
-                .map( (Элемент э) -> (Свойство)((Свойственный)э).свойства().get( НаблюдаемыеСвойства.СОСТОЯНИЕ ))
-                .filter( (Свойство x) -> x != null )
-                .filter( (Свойство x) -> x instanceof Наблюдаемый )
-                .map( (Свойство x) -> ((Наблюдаемый)x).наблюдатели() );
-    }
-
-    private static void установитьНаблюдение( TreeItem<Элемент> treeItem )
-    {
-        Collection<TreeItem<Элемент>> список = treeItem.getChildren();
-        Элемент элемент = treeItem.getValue();
-        наблюдателиСостава( элемент )
-                .forEach( (Collection c) -> c.add( new Составитель( список ) ) );
-        наблюдателиСостояния( элемент )
-                .forEach( (Collection c) -> c.add( new Маляр( ( Процесс.Состояние с ) ->
-                    фабрикаКартинок.setBgColor( treeItem.getGraphic(), с ) ) ) );
-    }
-
-    private static void снятьНаблюдение( Элемент элемент )
-    {
-        наблюдателиСостава( элемент )
-                .forEach( (Collection c) -> 
-                { 
-                    Collection<Наблюдатель<Элемент>> cx = c;
-                    cx.removeAll( cx.stream()
-                        .filter( (Наблюдатель<?> e) -> e instanceof Составитель )
-                        .collect( Collectors.toList() ) );
-                } );
-        наблюдателиСостояния( элемент )
-                .forEach( (Collection c) -> 
-                { 
-                    Collection<Наблюдатель<Процесс.Состояние>> cx = c;
-                    cx.removeAll( cx.stream()
-                        .filter( (Наблюдатель<Процесс.Состояние> e) -> e instanceof Маляр )
-                        .collect( Collectors.toList() ) );
-                } );
-    }
-
-    private static class Маляр implements Наблюдатель<Процесс.Состояние> 
+    private static final class Маляр implements Наблюдатель<Процесс.Состояние>
     {
         final Consumer<? super Процесс.Состояние> МАЛЯР;
-
-        Маляр( Consumer<? super Процесс.Состояние> маляр ) 
+        
+        Маляр( Consumer<? super Процесс.Состояние> маляр )
         {
             МАЛЯР = маляр;
         }
-
+        
         @Override
-        public void отклик( Изменение<Процесс.Состояние> изменение ) 
+        public void отклик( Изменение<Процесс.Состояние> изменение )
         {
             Platform.runLater( () -> МАЛЯР.accept( изменение.АКТУАЛЬНОЕ ) );
         }
     }
-
-    private static class Составитель implements Наблюдатель<Элемент> 
+    
+    private static final class Составитель implements Наблюдатель<Элемент>
     {
         final Collection<TreeItem<Элемент>> СПИСОК;
-
-        Составитель( Collection<TreeItem<Элемент>> список ) 
+        
+        Составитель( Collection<TreeItem<Элемент>> список )
         {
             СПИСОК = список;
         }
-
+        
         @Override
-        public void отклик( Изменение<Элемент> изменение ) 
+        public void отклик( Изменение<Элемент> изменение )
         {
             if( изменение.ПРЕЖНЕЕ != null )
             {
-                BrowserController.разобратьДерево( изменение.ПРЕЖНЕЕ, СПИСОК );
+                СПИСОК.removeAll( BrowserController.разобратьДерево( изменение.ПРЕЖНЕЕ, СПИСОК ) );
             }
             if( изменение.АКТУАЛЬНОЕ != null )
             {
@@ -245,5 +258,24 @@ public class BrowserController implements Builder<TitledPane>
         }
         
     }
-
+    
+    private static final class NamedTreeItem extends TreeItem<Элемент>
+    {
+        final String метка;
+        
+        NamedTreeItem( Элемент элемент, Node node )
+        {
+            super( элемент, node );
+            метка = фабрикаНазваний.метка( (Object)getValue() );
+        }
+        
+        @Override
+        public String toString()
+        {
+            return метка;
+        }
+    }
+    
+    //</editor-fold>
+    
 }
