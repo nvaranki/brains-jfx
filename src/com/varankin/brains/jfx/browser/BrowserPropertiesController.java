@@ -3,28 +3,42 @@ package com.varankin.brains.jfx.browser;
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.*;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.ИзменяемоеСвойство;
 import com.varankin.characteristic.Именованный;
+import com.varankin.characteristic.Наблюдаемый;
+import com.varankin.characteristic.Наблюдатель;
 import com.varankin.characteristic.Свойственный;
 import com.varankin.characteristic.Свойство;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 import javafx.util.Builder;
+import javafx.util.StringConverter;
 
 /**
  * FXML-контроллер свойств элемента. 
@@ -137,17 +151,6 @@ public final class BrowserPropertiesController implements Builder<Parent>
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    void populate( String ключ, Свойство свойство )
-    {
-        Label величина = new Label( ключ + ':' );
-        TextField значение = new TextField( свойство.значение().toString() );
-        значение.editableProperty().setValue( свойство instanceof ИзменяемоеСвойство );
-        значение.focusTraversableProperty().setValue( свойство instanceof ИзменяемоеСвойство );
-        HBox панель = new HBox();
-        панель.getChildren().addAll( величина, значение );
-        panel.getChildren().add( панель );
-    }
-
     void populate( WindowEvent event )
     {
         Object userData = pane.getScene().getRoot().getUserData();
@@ -161,15 +164,148 @@ public final class BrowserPropertiesController implements Builder<Parent>
                     ФН.метка( элемент ), название ) );
             if( элемент instanceof Свойственный )
             {
-                Map<String,Свойство<?>> свойства = ((Свойственный)элемент).свойства();
-                for( Map.Entry<String,Свойство<?>> e : свойства.entrySet() )
-                    populate( e.getKey(), e.getValue() );
+                Свойственный.Каталог каталог = ((Свойственный)элемент).свойства();
+                for( Свойство<?> e : каталог.перечень() )
+                    populate( каталог.ключ( e ), e, каталог.класс( e ) );
             }
             //TODO
         }
         else
             LOGGER.log( Level.WARNING, "Queried object is not an Элемент: {0}", 
                     userData != null ? userData.getClass().getName() : null );
+    }
+
+    void populate( String ключ, Свойство свойство, Class класс )
+    {
+        Label название = new Label( ключ + ':' );
+        Object величина = свойство.значение();
+        boolean изменяемое = свойство instanceof ИзменяемоеСвойство;
+        boolean наблюдаемое = свойство instanceof Наблюдаемый;
+        Node node;
+        CheckBox dyn = new CheckBox();
+        dyn.setDisable( !наблюдаемое );
+        dyn.setUserData( свойство );
+        //TODO ключ as type selector
+        if( величина instanceof Enum && изменяемое )
+        {
+            ComboBox<Enum> cb = new ComboBox<>();
+            cb.setEditable( false );
+            Class cls = величина.getClass();
+            cb.setConverter( new EnumStringConverter( cls ) );
+            for( Object constant : cls.getEnumConstants() )
+                cb.getItems().add( (Enum)constant );
+            cb.setValue( (Enum)величина );
+            node = cb;
+        }
+        else if( величина instanceof Boolean )
+        {
+            CheckBox cb = new CheckBox();
+            cb.setSelected( (Boolean)величина );
+            cb.setDisable( !изменяемое );
+            node = cb;
+        }
+        else
+        {
+            TextField tf = new TextField();
+            TextFormatter textFormatter = new TextFormatter<Object>( new ObjectStringConverter() );
+            tf.setTextFormatter( textFormatter );
+            if( величина != null )
+                textFormatter.setValue( величина );
+            tf.editableProperty().setValue( изменяемое );
+            if( наблюдаемое )
+            {
+                dyn.selectedProperty().addListener( new ChangeListener<Boolean>() 
+                {
+
+                    @Override
+                    public void changed( ObservableValue<? extends Boolean> ov, Boolean before, Boolean after ) 
+                    {
+                        Наблюдаемый наблюдаемый = (Наблюдаемый)dyn.getUserData();
+                        Collection<Наблюдатель<?>> наблюдатели = ((Наблюдаемый)dyn.getUserData()).наблюдатели();
+                        if( after )
+                        {
+                            наблюдатели.add( new НаблюдательObject( tf ) );
+                        }
+                        else
+                        {
+                            наблюдатели.removeAll( наблюдатели.stream().filter( o -> o instanceof НаблюдательObject )
+                                    .collect( Collectors.toList() ) );
+                        }
+                    }
+                });
+            }
+            node = tf;
+        }
+        node.focusTraversableProperty().setValue( изменяемое );
+        dyn.setSelected( наблюдаемое );
+        
+        HBox панель = new HBox();
+        панель.getChildren().addAll( название, node, dyn );
+        
+        panel.getChildren().add( панель );
+    }
+    
+    private static class НаблюдательObject implements Наблюдатель 
+    {
+        final TextField TF;
+
+        НаблюдательObject( TextField tf ) 
+        {
+            TF = tf;
+        }
+
+        @Override
+        public void отклик( Изменение изменение ) 
+        {
+            if( изменение.АКТУАЛЬНОЕ != null )
+                Platform.runLater( () -> 
+                {
+                    TextFormatter textFormatter = TF.getTextFormatter();
+                    textFormatter.setValue( изменение.АКТУАЛЬНОЕ );
+                } );
+            else
+                TF.setText( null );
+        }
+    }
+    
+    private static class EnumStringConverter extends StringConverter<Enum> 
+    {
+        final Class cls;
+
+        public EnumStringConverter( Class cls ) 
+        {
+            this.cls = cls;
+        }
+
+        @Override
+        public String toString( Enum e )
+        {
+            return e.name();
+        }
+
+        @Override
+        public Enum fromString( String s )
+        {
+            return Arrays.stream( cls.getEnumConstants() ).map( o -> (Enum)o )
+                    .filter( e -> e.name().equals( s ) ).findFirst().orElse( null );
+        }
+    }
+    
+    private static class ObjectStringConverter extends StringConverter<Object> 
+    {
+        @Override
+        public String toString( Object e )
+        {
+            return e != null ? e.toString() : "";//e instanceof Number ? ((Number)e).;
+        }
+
+        @Override
+        public Object fromString( String s )
+        {
+            return s;//TODO
+//                    Arrays.stream( cls.getEnumConstants() ).map( o -> (Enum)o )
+//                    .filter( e -> e.name().equals( s ) ).findFirst().orElse( null );
+        }
     }
     
 }

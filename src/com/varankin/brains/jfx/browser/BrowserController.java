@@ -43,8 +43,8 @@ public class BrowserController implements Builder<TitledPane>
     private static final BrowserRenderer фабрикаКартинок = new BrowserRenderer();
     private static final Comparator<TreeItem<Элемент>> TREE_ITEM_COMPARATOR = 
             Comparator.comparing( (TreeItem<Элемент> ti) -> ti.getValue() instanceof Составной ? -1 : +1 )
-            .thenComparing( (TreeItem<Элемент> ti) -> фабрикаНазваний.индекс( ti.getValue() ) )
-            .thenComparing( (TreeItem<Элемент> ti) -> ti.toString() );
+            .thenComparing( ti -> фабрикаНазваний.индекс( ti.getValue() ) )
+            .thenComparing( TreeItem::toString );
 
     @FXML private BrowserToolBarController toolbarController;
     @FXML private BrowserPopupController popupController;
@@ -89,12 +89,12 @@ public class BrowserController implements Builder<TitledPane>
     @FXML
     protected void initialize()
     {
-        tree.setCellFactory( ( TreeView<Элемент> treeView ) -> new BrowserTreeCell<>( treeView ) );
+        tree.setCellFactory( treeView -> new BrowserTreeCell<>( treeView ) );
         tree.setRoot( построитьДерево( JavaFX.getInstance().контекст.мыслитель ) );
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         
         ListBinding<Элемент> selectionListBinding = new OneToOneListBinding<>( 
-                tree.getSelectionModel().getSelectedItems(), (TreeItem<Элемент> i) -> i.getValue() );
+                tree.getSelectionModel().getSelectedItems(), TreeItem::getValue );
         toolbarController.selectionProperty().bind( selectionListBinding );
         popupController.selectionProperty().bind( selectionListBinding );
 
@@ -102,38 +102,36 @@ public class BrowserController implements Builder<TitledPane>
     
     //<editor-fold defaultstate="collapsed" desc="методы">
     
-    private final static Predicate<Object> ФИЛЬТР_ЭЛЕМЕНТ = (Object o) -> o instanceof Элемент;
-    private final static Predicate<Object> ФИЛЬТР_СОСТАВНОЙ = (Object o) -> o instanceof Составной;
-    private final static Predicate<Object> ФИЛЬТР_НАБЛЮДАЕМЫЙ = (Object o) -> o instanceof Наблюдаемый;
-    private final static Predicate<Object> ФИЛЬТР_ПРОЦЕСС = (Object o) -> o instanceof Процесс;
-    private final static Predicate<Object> ФИЛЬТР_СВОЙСТВЕННЫЙ = (Object o) -> o instanceof Свойственный;
-    private final static Predicate<Object> ФИЛЬТР_СОСТАВИТЕЛЬ = (Object o) -> o instanceof Составитель;
-    private final static Predicate<Object> ФИЛЬТР_МАЛЯР = (Object o) -> o instanceof Маляр;
+    private final static Predicate<Object> ФИЛЬТР_ЭЛЕМЕНТ = o -> o instanceof Элемент;
+    private final static Predicate<Object> ФИЛЬТР_СОСТАВНОЙ = o -> o instanceof Составной;
+    private final static Predicate<Object> ФИЛЬТР_НАБЛЮДАЕМЫЙ = o -> o instanceof Наблюдаемый;
+    private final static Predicate<Object> ФИЛЬТР_ПРОЦЕСС = o -> o instanceof Процесс;
+    private final static Predicate<Object> ФИЛЬТР_СВОЙСТВЕННЫЙ = o -> o instanceof Свойственный;
+    private final static Predicate<Object> ФИЛЬТР_СОСТАВИТЕЛЬ = o -> o instanceof Составитель;
+    private final static Predicate<Object> ФИЛЬТР_МАЛЯР = o -> o instanceof Маляр;
     
-    private final static Function<Object,Элемент>      ТИП_ЭЛЕМЕНТ = (Object o) -> (Элемент)o;
-    private final static Function<Object,Составной>    ТИП_СОСТАВНОЙ = (Object o) -> (Составной)o;
-    private final static Function<Object,Наблюдаемый>  ТИП_НАБЛЮДАЕМЫЙ = (Object o) -> (Наблюдаемый)o;
-    private final static Function<Object,Свойственный> ТИП_СВОЙСТВЕННЫЙ = (Object o) -> (Свойственный)o;
+    private final static Function<Object,Элемент>      ТИП_ЭЛЕМЕНТ = o -> (Элемент)o;
+    private final static Function<Object,Составной>    ТИП_СОСТАВНОЙ = o -> (Составной)o;
+    private final static Function<Object,Наблюдаемый>  ТИП_НАБЛЮДАЕМЫЙ = o -> (Наблюдаемый)o;
+    private final static Function<Object,Свойственный> ТИП_СВОЙСТВЕННЫЙ = o -> (Свойственный)o;
     
     private final static Function<Составной,Stream<Collection<?>>> ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ
-            = (Составной э) -> э.состав().stream();
+            = э -> э.состав().stream();
     private final static Function<Составной,Collection<?>> ЭКСТРАКТОР_СОСТАВ
-            = (Составной э) -> э.состав();
+            = Составной::состав;
     private final static Function<Наблюдаемый,Collection<Наблюдатель<?>>> ЭКСТРАКТОР_НАБЛЮДАТЕЛИ
-            = (Наблюдаемый э) -> э.наблюдатели();
-    private final static Function<Свойственный,Map<String,Свойство<?>>> ЭКСТРАКТОР_КАРТЫ_СВОЙСТВ
-            = (Свойственный э) -> э.свойства();
-    private final static Function<Map<String,Свойство<?>>,Свойство<?>> ЭКСТРАКТОР_СВОЙСТВА_С
-            = (Map<String,Свойство<?>> э) -> э.get( НаблюдаемыеСвойства.СОСТОЯНИЕ );
+            = Наблюдаемый::наблюдатели;
+    private final static Function<Свойственный,Свойственный.Каталог> ЭКСТРАКТОР_КАРТЫ_СВОЙСТВ
+            = Свойственный::свойства;
+    private final static Function<Свойственный.Каталог,Свойство<?>> ЭКСТРАКТОР_СВОЙСТВА_С
+            = э -> э.свойство( НаблюдаемыеСвойства.СОСТОЯНИЕ );
     
     private final static Consumer<TreeItem<Элемент>> ОПЕРАТОР_РАЗОБРАТЬ_УЗЕЛ
-            = (TreeItem<Элемент> ti) -> разобратьДерево( ti );
+            = BrowserController::разобратьДерево;
     private final static Consumer<Collection<Наблюдатель<?>>> ОПЕРАТОР_УБРАТЬ_СОСТАВИТЕЛЯ
-            = (Collection<Наблюдатель<?>> c) -> c.removeAll(
-                    c.stream().filter( ФИЛЬТР_СОСТАВИТЕЛЬ ).collect( Collectors.toList() ) );
+            = c -> c.removeAll( c.stream().filter( ФИЛЬТР_СОСТАВИТЕЛЬ ).collect( Collectors.toList() ) );
     private final static Consumer<Collection<Наблюдатель<?>>> ОПЕРАТОР_УБРАТЬ_МАЛЯРА
-            = (Collection<Наблюдатель<?>> c) -> c.removeAll(
-                    c.stream().filter( ФИЛЬТР_МАЛЯР ).collect( Collectors.toList() ) );
+            = c -> c.removeAll( c.stream().filter( ФИЛЬТР_МАЛЯР ).collect( Collectors.toList() ) );
     
     private static TreeItem<Элемент> построитьДерево( Элемент элемент )
     {
@@ -141,7 +139,7 @@ public class BrowserController implements Builder<TitledPane>
         TreeItem<Элемент> treeItem = new NamedTreeItem( элемент, марка );
         
         List<TreeItem<Элемент>> список = treeItem.getChildren();
-        Consumer<Элемент> составитель = (Элемент э) ->
+        Consumer<Элемент> составитель = э ->
         {
             TreeItem<Элемент> дерево = построитьДерево( э );
             список.add( позиция( дерево, список, TREE_ITEM_COMPARATOR ), дерево );
@@ -152,12 +150,10 @@ public class BrowserController implements Builder<TitledPane>
                 .filter( ФИЛЬТР_ЭЛЕМЕНТ )
                 .map( ТИП_ЭЛЕМЕНТ )
                 .forEach( составитель );
-        наблюдателиСостава( элемент ).forEach(
-                ( Collection<Наблюдатель<?>> c ) -> c.add( new Составитель( список ) ) );
+        наблюдателиСостава( элемент ).forEach( c -> c.add( new Составитель( список ) ) );
         
-        Consumer<Процесс.Состояние> маляр = ( Процесс.Состояние с ) -> фабрикаКартинок.setBgColor( марка, с );
-        наблюдателиСостояния( элемент ).forEach(
-                ( Collection<Наблюдатель<?>> c ) -> c.add( new Маляр( маляр ) ) );
+        Consumer<Процесс.Состояние> маляр = с -> фабрикаКартинок.setBgColor( марка, с );
+        наблюдателиСостояния( элемент ).forEach( c -> c.add( new Маляр( маляр ) ) );
         
         return treeItem;
     }
@@ -176,7 +172,7 @@ public class BrowserController implements Builder<TitledPane>
             Collection<TreeItem<Элемент>> список )
     {
         return список.stream()
-                .filter( ( TreeItem<Элемент> ti ) -> ti.getValue().equals( элемент ) )
+                .filter( ti -> ti.getValue().equals( элемент ) )
                 .peek( ОПЕРАТОР_РАЗОБРАТЬ_УЗЕЛ )
                 .collect( Collectors.toList() );
     }

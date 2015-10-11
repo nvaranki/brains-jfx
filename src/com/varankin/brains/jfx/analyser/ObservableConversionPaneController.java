@@ -9,7 +9,6 @@ import com.varankin.characteristic.*;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
@@ -221,10 +220,11 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     {
         Collection<RatedObservable> items = new ArrayList<>();
         if( object instanceof Свойственный )
-            for( Map.Entry<String,Свойство> e : ((Свойственный<String>)object).свойства().entrySet() )
+        {
+            Свойственный.Каталог каталог = ((Свойственный)object).свойства();
+            for( Свойство свойство : каталог.перечень() )
             {
-                Свойство свойство = e.getValue();
-                String index = e.getKey();
+                String index = каталог.ключ( свойство );
                 if( свойство instanceof НаблюдаемоеСвойство )
                     items.add( new RatedObservable( (НаблюдаемоеСвойство)свойство, 
                             КаталогРанжировщиков.getInstance().get( index ), RESOURCE_BUNDLE.getString( index ) ) );
@@ -310,6 +310,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
             LOGGER.log( Level.FINE, "observable.unknown", object );
         }
 */
+        }
         return items;
     }
     
