@@ -4,6 +4,7 @@ import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.*;
@@ -73,13 +74,18 @@ public final class ArchiveController implements Builder<TitledPane>
     protected void initialize()
     {
         Архив архив = JavaFX.getInstance().контекст.архив;
-        TreeItem<Атрибутный> item = new TitledTreeItem<>( архив );
 //        архив.пакеты().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
 //        архив.namespaces().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         tree.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
         tree.setRoot( new TreeItem<>() );
-        tree.getRoot().getChildren().add( item );
+        if( архив != null )
+        {
+            TreeItem<Атрибутный> item = new TitledTreeItem<>( архив );
+            tree.getRoot().getChildren().add( item );
+        }
+        else
+            LOGGER.getLogger().log( Level.CONFIG, "No local database available.");
         
         ActionProcessor processor = new ActionProcessor( new SelectionListBinding<>( tree.getSelectionModel() ) );
         toolbarController.setProcessor( processor );
