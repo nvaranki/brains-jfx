@@ -3,19 +3,14 @@ package com.varankin.brains.jfx.browser;
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.*;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.characteristic.Изменение;
-import com.varankin.characteristic.ИзменяемоеСвойство;
-import com.varankin.characteristic.Именованный;
-import com.varankin.characteristic.Наблюдаемый;
-import com.varankin.characteristic.Наблюдатель;
-import com.varankin.characteristic.Свойственный;
-import com.varankin.characteristic.Свойство;
+import com.varankin.characteristic.*;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.logging.*;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,15 +22,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
@@ -56,6 +44,21 @@ public final class BrowserPropertiesController implements Builder<Parent>
     public static final String RESOURCE_FXML  = "/fxml/browser/BrowserProperties.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getResourceBundle();
     
+    private static final StringConverter<Byte> STRING_CONVERTER_BYTE 
+            = new NumericStringConverter<>( Byte::valueOf, "byte" );
+    private static final StringConverter<Short> STRING_CONVERTER_SHORT 
+            = new NumericStringConverter<>( Short::valueOf, "short integer" );
+    private static final StringConverter<Integer> STRING_CONVERTER_INTEGER 
+            = new NumericStringConverter<>( Integer::valueOf, "integer" );
+    private static final StringConverter<Long> STRING_CONVERTER_LONG 
+            = new NumericStringConverter<>( Long::valueOf, "long integer" );
+    private static final StringConverter<Float> STRING_CONVERTER_FLOAT 
+            = new NumericStringConverter<>( Float::valueOf, "floating point" );
+    private static final StringConverter<Double> STRING_CONVERTER_DOUBLE 
+            = new NumericStringConverter<>( Double::valueOf, "floating point" );
+    private static final StringConverter<Object> STRING_CONVERTER_OBJECT 
+            = new ObjectStringConverter();
+
     private final StringProperty title;
     private final ФабрикаНазваний ФН;
 
@@ -166,7 +169,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
             {
                 Свойственный.Каталог каталог = ((Свойственный)элемент).свойства();
                 for( Свойство<?> e : каталог.перечень() )
-                    populate( каталог.ключ( e ), e, каталог.класс( e ) );
+                    populate( e, каталог.класс( e ), каталог.ключ( e ) );
             }
             //TODO
         }
@@ -175,68 +178,39 @@ public final class BrowserPropertiesController implements Builder<Parent>
                     userData != null ? userData.getClass().getName() : null );
     }
 
-    void populate( String ключ, Свойство свойство, Class класс )
+    void populate( Свойство свойство, Class класс, String ключ )
     {
         Label название = new Label( ключ + ':' );
-        Object величина = свойство.значение();
+        
         boolean изменяемое = свойство instanceof ИзменяемоеСвойство;
         boolean наблюдаемое = свойство instanceof Наблюдаемый;
-        Node node;
+        
         CheckBox dyn = new CheckBox();
         dyn.setDisable( !наблюдаемое );
         dyn.setUserData( свойство );
-        //TODO ключ as type selector
-        if( величина instanceof Enum && изменяемое )
-        {
-            ComboBox<Enum> cb = new ComboBox<>();
-            cb.setEditable( false );
-            Class cls = величина.getClass();
-            cb.setConverter( new EnumStringConverter( cls ) );
-            for( Object constant : cls.getEnumConstants() )
-                cb.getItems().add( (Enum)constant );
-            cb.setValue( (Enum)величина );
-            node = cb;
-        }
-        else if( величина instanceof Boolean )
-        {
-            CheckBox cb = new CheckBox();
-            cb.setSelected( (Boolean)величина );
-            cb.setDisable( !изменяемое );
-            node = cb;
-        }
-        else
-        {
-            TextField tf = new TextField();
-            TextFormatter textFormatter = new TextFormatter<Object>( new ObjectStringConverter() );
-            tf.setTextFormatter( textFormatter );
-            if( величина != null )
-                textFormatter.setValue( величина );
-            tf.editableProperty().setValue( изменяемое );
-            if( наблюдаемое )
-            {
-                dyn.selectedProperty().addListener( new ChangeListener<Boolean>() 
-                {
 
-                    @Override
-                    public void changed( ObservableValue<? extends Boolean> ov, Boolean before, Boolean after ) 
-                    {
-                        Наблюдаемый наблюдаемый = (Наблюдаемый)dyn.getUserData();
-                        Collection<Наблюдатель<?>> наблюдатели = ((Наблюдаемый)dyn.getUserData()).наблюдатели();
-                        if( after )
-                        {
-                            наблюдатели.add( new НаблюдательObject( tf ) );
-                        }
-                        else
-                        {
-                            наблюдатели.removeAll( наблюдатели.stream().filter( o -> o instanceof НаблюдательObject )
-                                    .collect( Collectors.toList() ) );
-                        }
-                    }
-                });
-            }
-            node = tf;
-        }
+        Object величина = свойство.значение();
+        Node node;
+        if( Enum.class.isAssignableFrom( класс ) && изменяемое )
+            node = makeEnumView( (Enum)величина, dyn, класс, наблюдаемое );
+        else if( Boolean.class.isAssignableFrom( класс ) )
+            node = makeBooleanView( (Boolean)величина, dyn, изменяемое, наблюдаемое );
+        else if( Byte.class.isAssignableFrom( класс ) )
+            node = makeNumericView( (Byte)величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_BYTE );
+        else if( Short.class.isAssignableFrom( класс ) )
+            node = makeNumericView( (Short)величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_SHORT );
+        else if( Integer.class.isAssignableFrom( класс ) )
+            node = makeNumericView( (Integer)величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_INTEGER );
+        else if( Long.class.isAssignableFrom( класс ) )
+            node = makeNumericView( (Long)величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_LONG );
+        else if( Float.class.isAssignableFrom( класс ) )
+            node = makeNumericView( (Float)величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_FLOAT );
+        else if( Double.class.isAssignableFrom( класс ) )
+            node = makeNumericView( (Double)величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_DOUBLE );
+        else
+            node = makeObjectView( величина, dyn, изменяемое, наблюдаемое, STRING_CONVERTER_OBJECT );
         node.focusTraversableProperty().setValue( изменяемое );
+        
         dyn.setSelected( наблюдаемое );
         
         HBox панель = new HBox();
@@ -245,44 +219,167 @@ public final class BrowserPropertiesController implements Builder<Parent>
         panel.getChildren().add( панель );
     }
     
-    private static class НаблюдательObject implements Наблюдатель 
+    //<editor-fold defaultstate="collapsed" desc="поля">
+    
+    private TextField makeObjectView( Object величина, CheckBox dyn,
+            boolean изменяемое, boolean наблюдаемое, StringConverter<Object> sc )
+    {
+        TextField tf = new TextField();
+        TextFormatter textFormatter = new TextFormatter<>( sc );
+        tf.setTextFormatter( textFormatter );
+        textFormatter.setValue( величина );
+        tf.setEditable( изменяемое );
+        if( наблюдаемое )
+            dyn.selectedProperty().addListener( new DynChangeListener(
+                    ((Наблюдаемый)dyn.getUserData()).наблюдатели(),
+                    () -> new НаблюдательObject( tf ),
+                    o -> o instanceof НаблюдательObject ) );
+        return tf;
+    }
+    
+    private <T extends Number> TextField makeNumericView( T величина, CheckBox dyn,
+            boolean изменяемое, boolean наблюдаемое, StringConverter<T> sc )
+    {
+        TextField tf = new TextField();
+        TextFormatter<T> textFormatter = new TextFormatter<>( sc );
+        tf.setTextFormatter( textFormatter );
+        textFormatter.setValue( величина );
+        tf.setEditable( изменяемое );
+        if( наблюдаемое )
+            dyn.selectedProperty().addListener( new DynChangeListener(
+                    ((Наблюдаемый)dyn.getUserData()).наблюдатели(),
+                    () -> new НаблюдательNumber<>( tf ),
+                    o -> o instanceof НаблюдательNumber ) );
+        return tf;
+    }
+    
+    private CheckBox makeBooleanView( Boolean величина, CheckBox dyn, boolean изменяемое, boolean наблюдаемое )
+    {
+        CheckBox cb = new CheckBox();
+        cb.setSelected( величина );
+        cb.setDisable( !изменяемое );
+        if( наблюдаемое )
+            dyn.selectedProperty().addListener( new DynChangeListener(
+                    ((Наблюдаемый)dyn.getUserData()).наблюдатели(),
+                    () -> new НаблюдательBoolean( cb ),
+                    o -> o instanceof НаблюдательBoolean ) );
+        return cb;
+    }
+    
+    private ComboBox<Enum> makeEnumView( Enum величина, CheckBox dyn, Class класс, boolean наблюдаемое )
+    {
+        ComboBox<Enum> cb = new ComboBox<>();
+        cb.setEditable( false );
+        cb.setConverter( new EnumStringConverter( класс ) );
+        for( Object constant : класс.getEnumConstants() )
+            cb.getItems().add( (Enum)constant );
+        cb.setValue( величина );
+        if( наблюдаемое )
+            dyn.selectedProperty().addListener( new DynChangeListener(
+                    ((Наблюдаемый)dyn.getUserData()).наблюдатели(),
+                    () -> new НаблюдательEnum( cb ),
+                    o -> o instanceof НаблюдательEnum ) );
+        return cb;
+    }
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="наблюдатели">
+    
+    private static class НаблюдательObject implements Наблюдатель
     {
         final TextField TF;
-
-        НаблюдательObject( TextField tf ) 
+        
+        НаблюдательObject( TextField tf )
         {
             TF = tf;
         }
-
+        
         @Override
-        public void отклик( Изменение изменение ) 
+        public void отклик( Изменение изменение )
         {
-            if( изменение.АКТУАЛЬНОЕ != null )
-                Platform.runLater( () -> 
-                {
-                    TextFormatter textFormatter = TF.getTextFormatter();
-                    textFormatter.setValue( изменение.АКТУАЛЬНОЕ );
-                } );
-            else
-                TF.setText( null );
+            Platform.runLater( () ->
+            {
+                TextFormatter textFormatter = TF.getTextFormatter();
+                textFormatter.setValue( изменение.АКТУАЛЬНОЕ );
+            } );
         }
     }
     
-    private static class EnumStringConverter extends StringConverter<Enum> 
+    private static class НаблюдательBoolean implements Наблюдатель<Boolean>
+    {
+        final CheckBox CB;
+        
+        НаблюдательBoolean( CheckBox cb )
+        {
+            CB = cb;
+        }
+        
+        @Override
+        public void отклик( Изменение<Boolean> изменение )
+        {
+            if( изменение.АКТУАЛЬНОЕ != null )
+                Platform.runLater( () -> CB.setSelected( изменение.АКТУАЛЬНОЕ ) );
+            else
+                Platform.runLater( () -> CB.setIndeterminate( true ) );
+        }
+    }
+    
+    private static class НаблюдательEnum implements Наблюдатель<Enum>
+    {
+        final ComboBox<Enum> CB;
+        
+        НаблюдательEnum( ComboBox<Enum> cb )
+        {
+            CB = cb;
+        }
+        
+        @Override
+        public void отклик( Изменение<Enum> изменение )
+        {
+            Platform.runLater( () -> CB.setValue( изменение.АКТУАЛЬНОЕ ) );
+        }
+    }
+    
+    private static class НаблюдательNumber<T extends Number> implements Наблюдатель<T>
+    {
+        final TextField TF;
+        
+        НаблюдательNumber( TextField tf )
+        {
+            TF = tf;
+        }
+        
+        @Override
+        public void отклик( Изменение<T> изменение )
+        {
+            Platform.runLater( () ->
+            {
+                TextFormatter textFormatter = TF.getTextFormatter();
+                textFormatter.setValue( изменение.АКТУАЛЬНОЕ );
+            } );
+        }
+    }
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="конвертеры">
+    
+    private static class EnumStringConverter extends StringConverter<Enum>
     {
         final Class cls;
-
-        public EnumStringConverter( Class cls ) 
+        
+        public EnumStringConverter( Class cls )
         {
             this.cls = cls;
         }
-
+        
         @Override
         public String toString( Enum e )
         {
             return e.name();
         }
-
+        
         @Override
         public Enum fromString( String s )
         {
@@ -291,20 +388,77 @@ public final class BrowserPropertiesController implements Builder<Parent>
         }
     }
     
-    private static class ObjectStringConverter extends StringConverter<Object> 
+    private static class NumericStringConverter<T extends Number> extends StringConverter<T>
+    {
+        final Function<String,T> P;
+        final String MSG;
+        
+        NumericStringConverter( Function<String, T> p, String msg )
+        {
+            P = p;
+            MSG = msg;
+        }
+        
+        @Override
+        public String toString( T e )
+        {
+            return e != null ? e.toString() : "";
+        }
+        
+        @Override
+        public T fromString( String s )
+        {
+            try
+            {
+                return P.apply( s );
+            }
+            catch( NumberFormatException e )
+            {
+                LOGGER.log( Level.SEVERE, "Failure to convert string \"{0}\" to {1} value.", new Object[]{ s, MSG } );
+                return null;
+            }
+        }
+    }
+    
+    private static class ObjectStringConverter extends StringConverter<Object>
     {
         @Override
         public String toString( Object e )
         {
             return e != null ? e.toString() : "";//e instanceof Number ? ((Number)e).;
         }
-
+        
         @Override
         public Object fromString( String s )
         {
             return s;//TODO
 //                    Arrays.stream( cls.getEnumConstants() ).map( o -> (Enum)o )
 //                    .filter( e -> e.name().equals( s ) ).findFirst().orElse( null );
+        }
+    }
+    
+    //</editor-fold>
+    
+    private static class DynChangeListener implements ChangeListener<Boolean>
+    {
+        final Collection<Наблюдатель<?>> C;
+        final Supplier<Наблюдатель<?>> S;
+        final Predicate<Наблюдатель<?>> F;
+
+        DynChangeListener( Collection<Наблюдатель<?>> c, Supplier<Наблюдатель<?>> s, Predicate<Наблюдатель<?>> f )
+        {
+            C = c;
+            S = s;
+            F = f;
+        }
+
+        @Override
+        public void changed( ObservableValue<? extends Boolean> ov, Boolean before, Boolean after )
+        {
+            if( after )
+                C.add( S.get() );
+            else
+                C.removeAll( C.stream().filter( F ).collect( Collectors.toList() ) );
         }
     }
     
