@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.DbМассив;
 import com.varankin.brains.jfx.JavaFX;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,20 +11,20 @@ import javafx.fxml.FXML;
  */
 public class PropertiesArrayController extends TabArrayController
 {
-    private volatile DbМассив массив;
+    private volatile Object массив;
     
     @FXML
     void onActionApply( ActionEvent event )
     {
-        //applied.setValue( false );
-        JavaFX.getInstance().execute( new ScreenToStorageTask( массив, getAgents() ) );
+//        //applied.setValue( false );
+//        JavaFX.getInstance().execute( new ScreenToStorageTask( массив, getAgents() ) );
     }
 
     @Override
-    void reset( DbМассив массив )
+    void reset( Object массив )
     {
-        super.reset( this.массив = массив );
-        JavaFX.getInstance().execute( new StorageToScreenTask( массив, getAgents() ) );
+//        super.reset( this.массив = массив );
+//        JavaFX.getInstance().execute( new StorageToScreenTask( массив, getAgents() ) );
     }
     
 }

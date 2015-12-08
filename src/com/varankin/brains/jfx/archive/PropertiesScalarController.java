@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.DbСкаляр;
 import com.varankin.brains.jfx.JavaFX;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,20 +11,20 @@ import javafx.fxml.FXML;
  */
 public class PropertiesScalarController extends TabScalarController
 {
-    private volatile DbСкаляр скаляр;
+    private volatile Object скаляр;
     
     @FXML
     void onActionApply( ActionEvent event )
     {
-        //applied.setValue( false );
-        JavaFX.getInstance().execute( new ScreenToStorageTask( скаляр, getAgents() ) );
+//        //applied.setValue( false );
+//        JavaFX.getInstance().execute( new ScreenToStorageTask( скаляр, getAgents() ) );
     }
 
     @Override
-    void reset( DbСкаляр скаляр )
+    void reset( Object скаляр )
     {
-        super.reset( this.скаляр = скаляр );
-        JavaFX.getInstance().execute( new StorageToScreenTask( скаляр, getAgents() ) );
+//        super.reset( this.скаляр = скаляр );
+//        JavaFX.getInstance().execute( new StorageToScreenTask( скаляр, getAgents() ) );
     }
     
 }

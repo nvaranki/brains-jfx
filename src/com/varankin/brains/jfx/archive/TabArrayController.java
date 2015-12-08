@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.КлассJava;
-import com.varankin.brains.db.DbМассив;
 import com.varankin.util.LoggerX;
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -24,7 +23,7 @@ public class TabArrayController implements Builder<GridPane>
 
     private final AttributeAgent indexAgent, typeAgent, valueAgent;
 
-    private DbМассив массив;
+    private Object массив;
     
     @FXML private TextField index;
     @FXML private Label type;
@@ -82,7 +81,7 @@ public class TabArrayController implements Builder<GridPane>
         return Arrays.asList( indexAgent, typeAgent, valueAgent );
     }
     
-    void reset( DbМассив массив )
+    void reset( Object массив )
     {
         this.массив = массив;
     }
@@ -107,13 +106,13 @@ public class TabArrayController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            индекс = массив.индекс();
+            //индекс = массив.индекс();
         }
         
         @Override
         public void toStorage()
         {
-            массив.индекс( индекс );
+            //массив.индекс( индекс );
         }
 
     }
@@ -137,8 +136,8 @@ public class TabArrayController implements Builder<GridPane>
         public void fromStorage()
         {
             StringBuilder текст = new StringBuilder();
-            for( КлассJava к : массив.классы() )
-                текст.append( текст.length() > 0 ? ";" : "" ).append( к.название() );
+//            for( КлассJava к : массив.классы() )
+//                текст.append( текст.length() > 0 ? ";" : "" ).append( к.название() );
             класс = текст.toString();
         }
         

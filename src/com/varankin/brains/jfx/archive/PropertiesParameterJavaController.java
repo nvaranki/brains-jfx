@@ -83,7 +83,7 @@ public class PropertiesParameterJavaController implements Builder<TabPane>
     {
         this.параметр = параметр;
 //        codeController.reset( параметр );
-        elementController.reset( параметр );
+//        elementController.reset( параметр );
         JavaFX.getInstance().execute( new StorageToScreenTask( параметр, agents ) );
     }
     

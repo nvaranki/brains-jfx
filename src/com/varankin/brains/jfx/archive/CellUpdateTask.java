@@ -19,7 +19,7 @@ import javafx.scene.image.ImageView;
 /**
  * Задача обновления ячейки (строки) навигатора по данным архива.
  *
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
 final class CellUpdateTask extends Task<Void>
 {
@@ -205,35 +205,13 @@ final class CellUpdateTask extends Task<Void>
         картинка = null;//картинка( узел );
         название = замена( узел.название(), "cell.parameter.java" );
         подсказка = LOGGER.text( "cell.parameter.java" );
-        потомки.addAll( узел.заметки() );
-        потомки.addAll( узел.прочее() );
-        Индексированный значение = узел.значение();
-        if( значение != null ) потомки.add( значение );
-        мониторы.add( узел.заметки() );
-        мониторы.add( узел.прочее() );
-    }
-    
-    private void загрузить( DbСкаляр узел )
-    {
-        картинка = null;//картинка( узел );
-        название = LOGGER.text( "cell.scalar" );
-        подсказка = LOGGER.text( "cell.scalar" );
         потомки.addAll( узел.классы() );
+        потомки.addAll( узел.коды() );
+        потомки.addAll( узел.параметры() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.классы() );
-        мониторы.add( узел.прочее() );
-    }
-    
-    private void загрузить( DbМассив узел )
-    {
-        картинка = null;//картинка( узел );
-        название = LOGGER.text( "cell.array" );
-        подсказка = LOGGER.text( "cell.array" );
-        потомки.addAll( узел.классы() );
-        потомки.addAll( узел.элементы() );
-        потомки.addAll( узел.прочее() );
-        мониторы.add( узел.классы() );
-        мониторы.add( узел.элементы() );
+        мониторы.add( узел.коды() );
+        мониторы.add( узел.параметры() );
         мониторы.add( узел.прочее() );
     }
     
@@ -362,9 +340,11 @@ final class CellUpdateTask extends Task<Void>
         название = замена( узел.название(), "cell.processor" );
         подсказка = LOGGER.text( "cell.processor" );
         потомки.addAll( узел.классы() );
+        потомки.addAll( узел.параметры() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.классы() );
+        мониторы.add( узел.параметры() );
         мониторы.add( узел.заметки() );
         мониторы.add( узел.прочее() );
     }
@@ -442,9 +422,11 @@ final class CellUpdateTask extends Task<Void>
         название = замена( узел.название(), "cell.fragment" );
         подсказка = LOGGER.text( "cell.fragment" );
         потомки.addAll( узел.соединения() );
+        потомки.addAll( узел.параметры() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.соединения() );
+        мониторы.add( узел.параметры() );
         мониторы.add( узел.заметки() );
         мониторы.add( узел.прочее() );
     }
@@ -505,7 +487,8 @@ final class CellUpdateTask extends Task<Void>
     
     private void загрузить( Атрибутный узел )
     {
-        if(      узел instanceof DbЭлемент       ) загрузить( (DbЭлемент)узел );
+        if(      узел instanceof DbЭлемент     ) загрузить( (DbЭлемент)узел );
+        else if( узел instanceof DbПараметр    ) загрузить( (DbПараметр)узел );
         else if( узел instanceof Архив         ) загрузить( (Архив)узел );
         else if( узел instanceof КлассJava     ) загрузить( (КлассJava)узел );
         else if( узел instanceof Пакет         ) загрузить( (Пакет)узел );
@@ -514,8 +497,6 @@ final class CellUpdateTask extends Task<Void>
         else if( узел instanceof Инструкция    ) загрузить( (Инструкция)узел );
         else if( узел instanceof ТекстовыйБлок ) загрузить( (ТекстовыйБлок)узел );
         else if( узел instanceof Графика       ) загрузить( (Графика)узел );
-        else if( узел instanceof DbСкаляр        ) загрузить( (DbСкаляр)узел );
-        else if( узел instanceof DbМассив        ) загрузить( (DbМассив)узел );
         else if( узел instanceof Конвертер     ) загрузить( (Конвертер)узел );
         else if( узел instanceof Неизвестный   ) загрузить( (Неизвестный)узел );
         else if( узел instanceof Мусор         ) загрузить( (Мусор)узел );

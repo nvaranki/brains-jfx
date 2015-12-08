@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.КлассJava;
-import com.varankin.brains.db.DbСкаляр;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +22,7 @@ public class TabScalarController implements Builder<GridPane>
 
     private final AttributeAgent indexAgent, typeAgent, valueAgent;
 
-    private DbСкаляр скаляр;
+    private Object скаляр;
     
     @FXML private TextField index;
     @FXML private Label type;
@@ -81,7 +80,7 @@ public class TabScalarController implements Builder<GridPane>
         return Arrays.asList( indexAgent, typeAgent, valueAgent );
     }
     
-    void reset( DbСкаляр скаляр )
+    void reset( Object скаляр )
     {
         this.скаляр = скаляр;
     }
@@ -106,13 +105,13 @@ public class TabScalarController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            индекс = скаляр.индекс();
+//            индекс = скаляр.индекс();
         }
         
         @Override
         public void toStorage()
         {
-            скаляр.индекс( индекс );
+//            скаляр.индекс( индекс );
         }
 
     }
@@ -136,8 +135,8 @@ public class TabScalarController implements Builder<GridPane>
         public void fromStorage()
         {
             StringBuilder текст = new StringBuilder();
-            for( КлассJava к : скаляр.классы() )
-                текст.append( текст.length() > 0 ? ";" : "" ).append( к.название() );
+//            for( КлассJava к : скаляр.классы() )
+//                текст.append( текст.length() > 0 ? ";" : "" ).append( к.название() );
             класс = текст.toString();
         }
         
@@ -167,14 +166,14 @@ public class TabScalarController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            Object v = скаляр.значение();
-            текст = v != null ? v.toString() : null;
+//            Object v = скаляр.значение();
+//            текст = v != null ? v.toString() : null;
         }
         
         @Override
         public void toStorage()
         {
-            скаляр.значение( текст );
+//            скаляр.значение( текст );
         }
 
     }
