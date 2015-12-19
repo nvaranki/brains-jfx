@@ -1,20 +1,25 @@
 /* 
     Description: Панель графиков.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2015 Николай Варанкин
 */
 
 .analyser 
 { 
-    -fx-spacing: 10px;
-    -fx-padding: 5px;
-    -fx-background-color: transparent;
 }
 
-.analyser #box #buttonPanel
+.analyser #buttonPanel
+{
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5px;
+    -fx-spacing: 5px;
+}
+
+.analyser #box
 {
     -fx-alignment: CENTER_RIGHT;
     -fx-padding: 10px;
     -fx-spacing: 10px;
+    -fx-background-color: white;
 }
 
 .analyser #box #buttonPanel Button

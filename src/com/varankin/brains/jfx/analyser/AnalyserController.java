@@ -23,7 +23,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели графиков. 
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2015 Николай Варанкин
  */
 public final class AnalyserController implements Builder<Node>
 {
@@ -39,7 +39,7 @@ public final class AnalyserController implements Builder<Node>
     
     private TimeLineSetupStage setup;
 
-    @FXML private ScrollPane pane;
+    @FXML private BorderPane pane;
     @FXML private Pane buttonPanel;
     @FXML private Button buttonRemoveAll;
     @FXML private VBox box;
@@ -59,7 +59,7 @@ public final class AnalyserController implements Builder<Node>
      * @return панель графиков. 
      */
     @Override
-    public ScrollPane build()
+    public Pane build()
     {
         Button buttonAdd = new Button( LOGGER.text( "analyser.popup.add" ) );
         buttonAdd.setOnAction( this::onActionAddTimeLine );
@@ -81,16 +81,19 @@ public final class AnalyserController implements Builder<Node>
 
         box = new VBox();
         box.setId( "box" );
-        box.getChildren().add( buttonPanel );
         box.setFillWidth( true );
         box.setFocusTraversable( true );
+        
+        ScrollPane roll = new ScrollPane();
+        roll.setContent( box );
+        roll.setContextMenu( popup );
+        roll.setFitToWidth( true );
+        roll.setHbarPolicy( ScrollPane.ScrollBarPolicy.NEVER );
+        roll.setVbarPolicy( ScrollPane.ScrollBarPolicy.ALWAYS );
 
-        pane = new ScrollPane();
-        pane.setContent( box );
-        pane.setContextMenu( popup );
-        pane.setFitToWidth( true );
-        pane.setHbarPolicy( ScrollPane.ScrollBarPolicy.NEVER );
-        pane.setVbarPolicy( ScrollPane.ScrollBarPolicy.ALWAYS );
+        pane = new BorderPane();
+        pane.setTop( buttonPanel );
+        pane.setCenter( roll );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
