@@ -3,6 +3,7 @@
     Author     : (c) 2015 Николай Варанкин
 */
 
-.browser 
+.browser HBox
 { 
+    -fx-padding: 0px;
 }
