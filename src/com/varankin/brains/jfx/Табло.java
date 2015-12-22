@@ -8,7 +8,7 @@ import javafx.scene.control.TextArea;
  *
  * @author &copy; 2015 Николай Варанкин
  */
-class Табло extends  TextArea //TODO TextArea recreates buffer on every edit - waste of memory!!!
+class Табло extends  TextArea //TODO TextArea recreates buffer on every edit - waste of memory!!! try javafx.scene.text.TextFlow
 {
     private final int limit;
 
