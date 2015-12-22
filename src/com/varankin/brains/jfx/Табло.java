@@ -4,18 +4,22 @@ import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 /**
+ * Окно для вывода информационных сообщений.
  *
- *
- * @author &copy; 2011 Николай
+ * @author &copy; 2015 Николай Варанкин
  */
-class Табло extends  TextArea 
+class Табло extends  TextArea //TODO TextArea recreates buffer on every edit - waste of memory!!!
 {
     private final int limit;
 
+    private int lineCounter;
+    
     Табло( int limit )
     {
         this.limit = limit;
+        this.lineCounter = 1;
         setEditable( false );
+        end();
     }
 
     @Override
@@ -23,36 +27,29 @@ class Табло extends  TextArea
     {
         assert Platform.isFxApplicationThread();
         super.appendText( text );
-        int excess = text != null ? getExcessCharCount( text.split( "\\n" ).length ) : 0;
+        lineCounter += lc( text ) - 1;
+        int excess = getExcessCharCount();
         if( excess > 0 )
             deleteText( 0, excess );
     }
     
-    protected int getExcessCharCount( int numLinesAppended )
+    protected int getExcessCharCount()
     {
-        int cnt = 0;
-        String[] lines = getText().split( "\\n" ); // TODO needs performance improvement!
-        for( int i = 0, max = Math.max( 0, lines.length - limit ); i < max; i++ )
-            cnt += lines[i].length() + 1; // + '\n'
+        String chars = getText();
+        int cnt = 0, length = chars.length(), excess = lineCounter - limit;
+        lineCounter -= Math.max( 0, excess );
+        while( cnt < length && excess > 0 )
+            if( chars.charAt( cnt++ ) == '\n' ) excess--;
         return cnt;
-//        char[] chars = getText().toCharArray();
-//        int cnt = chars.length > 0 ? 1 : 0;
-//        System.out.print( "getExcessCharCount: " );
-//        System.out.print( chars.length );
-//        System.out.print( " " );
-//        for( int i = chars.length - 1; i >= 0; i-- )
-//        {
-//            if( chars[i] == '\n' )
-//            {
-//                cnt++;
-//                if( cnt > limit )
-//                {
-//                    System.out.println( i + 1 );
-//                    return i + 1;
-//                }
-//            }
-//        }
-//        System.out.println( 0 );
-//        return 0;
     }
+    
+    private static int lc( CharSequence chars )
+    {
+        int cnt = 1;
+        for( int i = 0, m = chars.length(); i < m; i++ )
+            if( chars.charAt( i ) == '\n' )
+                cnt++;
+        return cnt;
+    }
+            
 }

@@ -112,8 +112,7 @@ class GuiBuilder
     {
         // консоль сообщений
         Контекст контекст = JFX.контекст;
-        int limit = Integer.valueOf( контекст.параметр( "frame.console.rows.buffer", "5" ) ); //"50"
-        //"50"
+        int limit = Integer.valueOf( контекст.параметр( "frame.console.rows.buffer", "500" ) ); //"50"//"5"
         TextArea табло = new Табло( limit );
         LoggingHandler информатор = new LoggingHandler( new LoggingAgent( табло ) ); //, RED, BLUE, null, null, null, null, null ) );
         //, RED, BLUE, null, null, null, null, null ) );
