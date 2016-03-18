@@ -220,8 +220,10 @@ final class CellUpdateTask extends Task<Void>
         картинка = icon( "icons16x16/pin.png" );
         название = замена( узел.название(), "cell.pin" );
         подсказка = LOGGER.text( "cell.pin" );
+        потомки.addAll( узел.классы() );
         потомки.addAll( узел.заметки() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.классы() );
         мониторы.add( узел.заметки() );
         мониторы.add( узел.прочее() );
     }
