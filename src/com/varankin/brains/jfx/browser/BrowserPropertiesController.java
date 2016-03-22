@@ -4,8 +4,11 @@ import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.*;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.characteristic.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -20,18 +23,23 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
 
+import static com.varankin.brains.factory.observable.НаблюдаемыеСвойства.*;
+
 /**
  * FXML-контроллер свойств элемента. 
  * 
- * @author &copy; 2015 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class BrowserPropertiesController implements Builder<Parent>
 {
@@ -99,6 +107,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
 
         panel = new VBox();
+        panel.setSpacing( 0d );
         
         pane = new BorderPane();
         pane.setId( "pane" );
@@ -118,6 +127,17 @@ public final class BrowserPropertiesController implements Builder<Parent>
     {
         //pane.
     }
+    
+    @FXML
+    void onHidden( WindowEvent event )
+    {
+        // отключить наблюдателей за значением
+        for( Node pn : panel.getChildren() )
+            if( pn instanceof HBox )
+                for( Node bn : ((HBox)pn).getChildren() )
+                    if( bn instanceof CheckBox )
+                        ((CheckBox)bn).setSelected( false );
+    }
         
     @FXML
     void onActionOK( ActionEvent event )
@@ -130,6 +150,14 @@ public final class BrowserPropertiesController implements Builder<Parent>
     @FXML
     void onActionApply( ActionEvent event )
     {
+        // обновить все изменяемые значения
+        for( Node node : panel.getChildren() )
+            if( node instanceof HBox )
+            {
+                Runnable обновление = агент( (HBox)node );
+                if( обновление != null )
+                    JavaFX.getInstance().getExecutorService().execute( обновление );
+            } 
         event.consume();
     }
     
@@ -168,8 +196,15 @@ public final class BrowserPropertiesController implements Builder<Parent>
             if( элемент instanceof Свойственный )
             {
                 Свойственный.Каталог каталог = ((Свойственный)элемент).свойства();
-                for( Свойство<?> e : каталог.перечень() )
-                    populate( e, каталог.класс( e ), каталог.ключ( e ) );
+                List<Свойство<?>> перечень = new ArrayList<>( каталог.перечень() );
+                List<String> pks = Arrays.asList( НАЗВАНИЕ, ТИП, ЗНАЧЕНИЕ, ВХОД, ПРИНЯТО, ВЫХОД, ПЕРЕДАНО );
+                Function<Integer,Integer> nm = (i) -> i < 0 ? 100000 : i;
+                Comparator<Свойство<?>> sorter1 = ( s1, s2 ) -> nm.apply( pks.indexOf( каталог.ключ( s1 ) )) 
+                        - nm.apply( pks.indexOf( каталог.ключ( s2 ) ) );
+                Comparator<Свойство<?>> sorter2 = ( s1, s2 ) -> каталог.ключ( s1 ).compareTo( каталог.ключ( s2 ) );
+                перечень.sort( sorter1.thenComparing( sorter2 ) );
+                for( Свойство<?> e : перечень )
+                    panel.getChildren().add( строка( e, каталог.класс( e ), каталог.ключ( e ) ) );
             }
             //TODO
         }
@@ -178,9 +213,11 @@ public final class BrowserPropertiesController implements Builder<Parent>
                     userData != null ? userData.getClass().getName() : null );
     }
 
-    void populate( Свойство свойство, Class класс, String ключ )
+    private Node строка( Свойство свойство, Class класс, String ключ )
     {
-        Label название = new Label( ключ + ':' );
+        ResourceBundle rb = LOGGER.getResourceBundle();
+        String метка = rb.containsKey( ключ ) ? rb.getString( ключ ) : ключ + ':';
+        Label название = new Label( метка );
         
         boolean изменяемое = свойство instanceof ИзменяемоеСвойство;
         boolean наблюдаемое = свойство instanceof Наблюдаемый;
@@ -190,7 +227,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
         dyn.setUserData( свойство );
 
         Object величина = свойство.значение();
-        Node node;
+        Region node;
         if( Enum.class.isAssignableFrom( класс ) && изменяемое )
             node = makeEnumView( (Enum)величина, dyn, класс, наблюдаемое );
         else if( Boolean.class.isAssignableFrom( класс ) )
@@ -215,10 +252,55 @@ public final class BrowserPropertiesController implements Builder<Parent>
         
         HBox панель = new HBox();
         панель.getChildren().addAll( название, node, dyn );
-        
-        panel.getChildren().add( панель );
+//        название.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
+//        node.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
+//        dyn.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
+//        панель.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
+////        Insets insets = панель.paddingProperty().getValue();
+//        панель.setPadding( new Insets( 0,0,0,0 ));//insets.getTop(), insets.getRight(), 0d, insets.getLeft() ) );
+//        панель.setAlignment( Pos.TOP_RIGHT );//spacingProperty().setValue( new Insets( 0,0,0,0 ));//insets.getTop(), insets.getRight(), 0d, insets.getLeft() ) );
+//        панель.setPrefHeight( 35 );
+        return панель;
     }
     
+    /**
+     * Создает агент по обновлению изменяемого значения, при необходимости.
+     * 
+     * @param bn контейнер значения.
+     * @return агент по обновлению или {@code null}.
+     */
+    private Runnable агент( HBox hb )
+    {
+        // ранее: new HBox().getChildren().addAll( название, node, dyn );
+        Node bn = hb.getChildren().get( 1 );
+        Object d = hb.getChildren().get( 2 ).getUserData();
+        
+        ИзменяемоеСвойство свойство = d instanceof ИзменяемоеСвойство ? (ИзменяемоеСвойство)d : null;
+        Object значение = null;
+
+        if( bn instanceof TextField )
+        {
+            TextField tf = (TextField)bn;
+            TextFormatter fmtr = tf.getTextFormatter();
+            значение = fmtr != null ? fmtr.getValue() : tf.getText();
+        }
+        else if( bn instanceof CheckBox )
+        {
+            CheckBox cb = (CheckBox)bn;
+            значение = cb.isSelected();
+        }
+        else if( bn instanceof ComboBox )
+        {
+            ComboBox<Enum> cb = (ComboBox)bn;
+            значение = cb.getValue();
+        }
+        
+        if( свойство != null )
+            if( значение != null )
+                return new ОбновительСвойства( свойство, значение );
+        return null;
+    }
+
     //<editor-fold defaultstate="collapsed" desc="поля">
     
     private TextField makeObjectView( Object величина, CheckBox dyn,
@@ -431,7 +513,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
         @Override
         public Object fromString( String s )
         {
-            return s;//TODO
+            return "".equals( s ) ? null : s;//TODO
 //                    Arrays.stream( cls.getEnumConstants() ).map( o -> (Enum)o )
 //                    .filter( e -> e.name().equals( s ) ).findFirst().orElse( null );
         }
@@ -439,19 +521,21 @@ public final class BrowserPropertiesController implements Builder<Parent>
     
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="классы">
+    
     private static class DynChangeListener implements ChangeListener<Boolean>
     {
         final Collection<Наблюдатель<?>> C;
         final Supplier<Наблюдатель<?>> S;
         final Predicate<Наблюдатель<?>> F;
-
+        
         DynChangeListener( Collection<Наблюдатель<?>> c, Supplier<Наблюдатель<?>> s, Predicate<Наблюдатель<?>> f )
         {
             C = c;
             S = s;
             F = f;
         }
-
+        
         @Override
         public void changed( ObservableValue<? extends Boolean> ov, Boolean before, Boolean after )
         {
@@ -461,5 +545,33 @@ public final class BrowserPropertiesController implements Builder<Parent>
                 C.removeAll( C.stream().filter( F ).collect( Collectors.toList() ) );
         }
     }
+    
+    private static class ОбновительСвойства implements Runnable
+    {
+        final ИзменяемоеСвойство свойство;
+        final Object значение;
+        
+        ОбновительСвойства( ИзменяемоеСвойство свойство, Object значение )
+        {
+            this.свойство = свойство;
+            this.значение = значение;
+        }
+        
+        @Override
+        public void run()
+        {
+            try
+            {
+                свойство.значение( значение );
+            }
+            catch( Exception ex )
+            {
+                LOGGER.log( Level.WARNING, ex.getMessage() );
+                LOGGER.log( Level.WARNING, "Unable to apply value of the {0}", значение );
+            }
+        }
+    }
+    
+    //</editor-fold>
     
 }

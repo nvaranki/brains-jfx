@@ -105,6 +105,7 @@ abstract class AbstractActionController
         stage.setWidth( 400d );
         stage.setScene( new Scene( builder.getNode() ) );
         stage.setOnShowing( controller::populate );
+        stage.setOnHidden( controller::onHidden );
 
         stage.titleProperty().bind( controller.titleProperty() );
 
