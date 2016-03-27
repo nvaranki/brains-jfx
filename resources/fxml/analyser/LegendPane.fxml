@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     Description: Панель управления прорисовкой отметок.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -20,13 +20,18 @@
     </stylesheets>
     
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER" minWidth="110" ></ColumnConstraints>
-        <ColumnConstraints hgrow="NEVER"  halignment="RIGHT"  minWidth="100" ></ColumnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" halignment="LEFT"  minWidth="110" ></ColumnConstraints>
+        <ColumnConstraints hgrow="NEVER"  halignment="RIGHT" minWidth="100" ></ColumnConstraints>
     </columnConstraints>
+    
+    <rowConstraints>
+        <RowConstraints fillHeight="true" valignment="TOP" vgrow="NEVER" ></RowConstraints>   
+    </rowConstraints>
     
     <FlowPane fx:id="values" >
         <GridPane.columnIndex>0</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
+        <Label fx:id="title" />   
     </FlowPane>
 
     <CheckBox fx:id="time" selected="false" >

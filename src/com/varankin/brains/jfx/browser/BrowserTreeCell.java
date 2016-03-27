@@ -14,8 +14,10 @@ import javafx.scene.paint.Color;
 
 /**
  * Элемент отображения произвольного узла дерева.
+ * 
+ * @author &copy; 2016 Николай Варанкин
  */
-class BrowserTreeCell<T> extends TreeCell<T> 
+public class BrowserTreeCell<T> extends TreeCell<T> 
 {
     private static final Logger LOGGER = Logger.getLogger(
             BrowserTreeCell.class.getName(),

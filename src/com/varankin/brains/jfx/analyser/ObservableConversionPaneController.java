@@ -9,6 +9,8 @@ import com.varankin.characteristic.*;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
@@ -25,7 +27,7 @@ import javafx.util.Callback;
 /**
  * FXML-контроллер выбора параметров конверсии наблюдаемого значения.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ObservableConversionPaneController implements Builder<Pane>
 {
@@ -33,6 +35,8 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ObservableConversionPane.css";
     private static final String CSS_CLASS = "observable-conversion-pane";
 
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
+    
     private final SingleSelectionProperty<RatedObservable> parameterProperty;
     private final SingleSelectionProperty<Ранжируемый> convertorProperty;
     private final ReadOnlyBooleanWrapper validProperty;
@@ -209,109 +213,31 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         }
     }
 
-    private static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
    /**
      * Создает список доступных наблюдаемых свойств объекта.
      * 
      * @param object объект.
      * @return список доступных параметров. 
      */
-    private static Collection<RatedObservable> observables( Object object )
+    private static List<RatedObservable> observables( Object object )
     {
-        Collection<RatedObservable> items = new ArrayList<>();
         if( object instanceof Свойственный )
         {
+            List<RatedObservable> items = new ArrayList<>();
             Свойственный.Каталог каталог = ((Свойственный)object).свойства();
             for( Свойство свойство : каталог.перечень() )
-            {
-                String index = каталог.ключ( свойство );
                 if( свойство instanceof НаблюдаемоеСвойство )
-                    items.add( new RatedObservable( (НаблюдаемоеСвойство)свойство, 
-                            КаталогРанжировщиков.getInstance().get( index ), RESOURCE_BUNDLE.getString( index ) ) );
-            }
-/*        
-        object = Вложенный.извлечь( НаблюдаемыйЭлемент.class, object );
-        
-        if( object instanceof НаблюдаемыйПроцесс )
-        {
-            НаблюдаемыйПроцесс наблюдаемый = (НаблюдаемыйПроцесс)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоСостояние(), ПроцессСостояние ) );
+                {
+                    String index = каталог.ключ( свойство );
+                    String метка = RESOURCE_BUNDLE.containsKey( index ) ? RESOURCE_BUNDLE.getString( index ) : index;
+                    Collection<Ранжируемый> ранжировщики = КаталогРанжировщиков.getInstance().get( index );
+                    items.add( new RatedObservable( (НаблюдаемоеСвойство)свойство, ранжировщики, метка ) );
+                }
+            items.sort( (o1,o2) -> o1.название().compareTo( o2.название() ) );
+            return items;
         }
-        if( object instanceof НаблюдаемыйПроцессор )
-        {
-            НаблюдаемыйПроцессор наблюдаемый = (НаблюдаемыйПроцессор)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоСостояние(), ПроцессСостояние ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоПауза(), ПроцессорПауза ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоРестарт(), ПроцессорРестарт ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоСтратегия(), ПроцессорСтратегия ) );
-        }
-        if( object instanceof НаблюдаемыйПроект )
-        {
-            НаблюдаемыйПроект наблюдаемый = (НаблюдаемыйПроект)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоСостояние(), ПроцессСостояние ) );
-        }
-        else if( object instanceof НаблюдаемоеЗначение )
-        {
-            НаблюдаемоеЗначение наблюдаемый = (НаблюдаемоеЗначение)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоВыход(), ЗначениеВыход ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоЗначение(), ЗначимыйЗначение ) );
-        }
-        else if( object instanceof НаблюдаемаяВетвь )
-        {
-            НаблюдаемаяВетвь наблюдаемый = (НаблюдаемаяВетвь)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоЗначение(), ЗначимыйЗначение ) );
-        }
-        else if( object instanceof НаблюдаемыйАргумент )
-        {
-            НаблюдаемыйАргумент наблюдаемый = (НаблюдаемыйАргумент)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоВход(), АргументВход ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоРанг(), АргументРанг ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоЗначение(), ЗначимыйЗначение ) );
-        }
-        else if( object instanceof НаблюдаемыйЗначимый )
-        {
-            НаблюдаемыйЗначимый наблюдаемый = (НаблюдаемыйЗначимый)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоЗначение(), ЗначимыйЗначение ) );
-        }
-        else if( object instanceof НаблюдаемыйРазветвитель )
-        {
-            НаблюдаемыйРазветвитель наблюдаемый = (НаблюдаемыйРазветвитель)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоВход(), ПриемникВход ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоВыход(), ИсточникВыход ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоПринято(), ПриемникПринято ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоПередано(), ИсточникПередано ) );
-        }
-        else if( object instanceof НаблюдаемыйПриемник )
-        {
-            НаблюдаемыйПриемник наблюдаемый = (НаблюдаемыйПриемник)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоВход(), ПриемникВход ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоПринято(), ПриемникПринято ) );
-        }
-        else if( object instanceof НаблюдаемыйИсточник )
-        {
-            НаблюдаемыйИсточник наблюдаемый = (НаблюдаемыйИсточник)object;
-            items.add( new RatedObservable( наблюдаемый.свойствоВыход(), ИсточникВыход ) );
-            items.add( new RatedObservable( наблюдаемый.свойствоПередано(), ИсточникПередано ) );
-        }
-        else if( object instanceof НаблюдаемоеПоле )
-        {
-            //НаблюдаемоеПоле наблюдаемый = (НаблюдаемоеПоле)object;
-        }
-        else if( object instanceof НаблюдаемыйСенсор )
-        {
-            //НаблюдаемыйСенсор наблюдаемый = (НаблюдаемыйСенсор)object;
-        }
-        else if( object instanceof НаблюдаемыйЭлемент )
-        {
-            //НаблюдаемыйЭлемент наблюдаемый = (НаблюдаемыйЭлемент)object;
-        }
-        else if( object != null )
-        {
-            LOGGER.log( Level.FINE, "observable.unknown", object );
-        }
-*/
-        }
-        return items;
+        else
+            return Collections.emptyList();
     }
     
 }

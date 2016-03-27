@@ -129,9 +129,9 @@ public final class ObservableSetupController implements Builder<Parent>
      * 
      * @param value монитор.
      */
-    void setMonitor( Свойственный value )
+    void setMonitor( Свойственный value, String метка )
     {
-        observableMiscPaneController.setMonitor( value );
+        observableMiscPaneController.setMonitor( value, метка );
         observableConversionPaneController.setMonitor( value );
         valuePropertiesPaneController.colorProperty().setValue( colors.next() );
         valuePropertiesPaneController.patternProperty().setValue( patterns.next() );
@@ -143,8 +143,6 @@ public final class ObservableSetupController implements Builder<Parent>
      */ 
     Value createValueInstance()
     {
-        if( !approved ) return null;
-
         RatedObservable property = observableConversionPaneController.parameterProperty().getValue();
         Ранжируемый convertor = observableConversionPaneController.convertorProperty().getValue();
         int[][] pattern = valuePropertiesPaneController.patternProperty().getValue();

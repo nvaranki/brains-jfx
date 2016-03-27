@@ -26,7 +26,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер выбора параметров отображения наблюдаемого значения.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ObservableMiscPaneController implements Builder<Pane>
 {
@@ -106,7 +106,7 @@ public final class ObservableMiscPaneController implements Builder<Pane>
     
     ReadOnlyProperty<String> titleProperty()
     {
-        return titleProperty;
+        return title.getEditor().textProperty();
     }
 
     ReadOnlyProperty<Integer> bufferProperty()
@@ -124,10 +124,12 @@ public final class ObservableMiscPaneController implements Builder<Pane>
      * 
      * @param monitor монитор.
      */
-    void setMonitor( Свойственный monitor )
+    void setMonitor( Свойственный monitor, String метка )
     {
         title.getItems().clear();
-        title.getItems().addAll( suggestTitles( monitor ) );
+        List<String> метки = new ArrayList<>( suggestTitles( monitor ) ); 
+        метки.add( 0, метка );
+        title.getItems().addAll( метки );
         title.selectionModelProperty().getValue().select( 0 );
     }
 

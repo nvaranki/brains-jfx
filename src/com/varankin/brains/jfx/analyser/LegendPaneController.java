@@ -24,7 +24,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели управления прорисовкой отметок.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class LegendPaneController implements Builder<Pane>
 {
@@ -42,6 +42,7 @@ public final class LegendPaneController implements Builder<Pane>
     
     @FXML private CheckBox time;
     @FXML private FlowPane values;
+    @FXML private Label title;
     @FXML private MenuItem menuItemResume;
     @FXML private MenuItem menuItemStop;
     @FXML private ContextMenu timePopup;
@@ -80,12 +81,16 @@ public final class LegendPaneController implements Builder<Pane>
         time.setSelected( false );
         time.setContextMenu( timePopup );
         
+        title = new Label();
+        title.setId( "title" );
+
         values = new FlowPane();
         values.setId( "values" );
+        values.getChildren().add( title );
         
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setHgrow( Priority.ALWAYS );
-        cc0.setHalignment( HPos.CENTER );
+        cc0.setHalignment( HPos.LEFT );
         cc0.setMinWidth( 110d );
         
         ColumnConstraints cc1 = new ColumnConstraints();
@@ -93,8 +98,14 @@ public final class LegendPaneController implements Builder<Pane>
         cc1.setHalignment( HPos.RIGHT );
         cc1.setMinWidth( 100d );
         
+        RowConstraints rc0 = new RowConstraints();
+        rc0.setFillHeight( true );
+        rc0.setValignment( VPos.TOP );
+        rc0.setVgrow( Priority.NEVER );
+        
         GridPane pane = new GridPane();
         pane.getColumnConstraints().addAll( cc0, cc1 );
+        pane.getRowConstraints().add( rc0 );
         pane.add( values, 0, 0 );
         pane.add( time, 1, 0 );
 
@@ -119,6 +130,7 @@ public final class LegendPaneController implements Builder<Pane>
 
         values.setMinHeight( time.getMinHeight() );
         values.setPrefHeight( time.getPrefHeight() );
+        //title.setText( "The title" );//TODO DEBUG
 
         dynamicProperty.addListener( new WeakChangeListener<>( dynamicPropertyChangeListener ) );
     }

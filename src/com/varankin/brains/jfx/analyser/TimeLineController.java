@@ -1,11 +1,13 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.browser.BrowserTreeCell;
 import com.varankin.characteristic.Свойственный;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.LinkedBlockingQueue;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,7 +28,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер графика динамического изменения значений по времени.
  * 
- * @author &copy; 2015 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class TimeLineController implements Builder<Pane>
 {
@@ -150,43 +152,23 @@ public final class TimeLineController implements Builder<Pane>
             event.acceptTransferModes( TransferMode.NONE );
         event.consume();
     }
-
+    
     @FXML
     protected void onDragDropped( DragEvent event )
     {
         Object gs = event.getGestureSource();
-        if( gs instanceof Node )
+        if( gs instanceof BrowserTreeCell )
         {
-            Object userData = ((Node)gs).getUserData();
+            BrowserTreeCell node = (BrowserTreeCell)gs;
+            Object userData = node.getUserData();
+            String метка = node.getText();
             if( userData instanceof Свойственный )
-            {
-                if( properties == null )
-                {
-                    properties = new ObservableSetupStage();
-                    properties.initOwner( JavaFX.getInstance().платформа );
-                    properties.setTitle( LOGGER.text( "properties.observable.title" ) );
-                }
-                properties.getController().setMonitor( (Свойственный)userData );
-            }
+                Platform.runLater( () -> setupProperties( (Свойственный)userData, метка ) );
+            event.setDropCompleted( true );
         }            
         else
         {
-//            event.setDropCompleted( false );
-//            event.consume();
-            return;
-        }
-        
-        properties.showAndWait();
-        //properties.toFront();
-        Value value = properties.getController().createValueInstance();
-        List<Value> observables = legendController.valuesProperty().getValue();
-        boolean completed = value != null && observables.add( value );
-        event.setDropCompleted( completed );
-        if( value != null && value.painter != null && completed )
-        {
-            value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-            value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-            value.painter.writableImageProperty().bind( graphController.writableImageProperty() );
+            event.setDropCompleted( false );
         }
         event.consume();
     }
@@ -255,6 +237,29 @@ public final class TimeLineController implements Builder<Pane>
         legendController.extendPopupMenu( popupItems );
     }
     
+    private void setupProperties( Свойственный свойственный, String метка )
+    {
+        if( properties == null )
+        {
+            properties = new ObservableSetupStage();
+            properties.initOwner( JavaFX.getInstance().платформа );
+            properties.setTitle( LOGGER.text( "properties.observable.title" ) );
+        }
+        properties.getController().setMonitor( свойственный, метка );
+        properties.showAndWait();
+        if( properties.getController().isApproved() )
+        {
+            Value value = properties.getController().createValueInstance();
+            List<Value> observables = legendController.valuesProperty().getValue();
+            if( value != null && value.painter != null && observables.add( value ) )
+            {
+                value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
+                value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+                value.painter.writableImageProperty().bind( graphController.writableImageProperty() );
+            }
+        }
+    }
+
     private class LifeCycleListener<T> implements ChangeListener<T>
     {
         @Override
