@@ -1,16 +1,13 @@
 package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.appl.RatedObservable;
-import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
 import com.varankin.brains.artificial.rating.Ранжируемый;
+import com.varankin.brains.jfx.ChangedTrigger;
+import com.varankin.brains.jfx.IntegerConverter;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.brains.jfx.shared.AutoComboBoxSelector;
 import com.varankin.characteristic.*;
 import com.varankin.util.LoggerX;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
@@ -39,18 +36,27 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     
     private final SingleSelectionProperty<RatedObservable> parameterProperty;
     private final SingleSelectionProperty<Ранжируемый> convertorProperty;
+    private final ObjectProperty<Integer> bufferProperty;
     private final ReadOnlyBooleanWrapper validProperty;
+    private final BooleanProperty changedProperty;
+    private final ChangedTrigger changedFunction;
+
+    private BooleanBinding changedBinding;
     
     private AutoComboBoxSelector<Ранжируемый> convertorAutoSelector;
 
     @FXML private ComboBox<RatedObservable> parameter;
     @FXML private ComboBox<Ранжируемый> convertor;
+    @FXML private TextField buffer;
 
     public ObservableConversionPaneController()
     {
         parameterProperty = new SingleSelectionProperty<>();
         convertorProperty = new SingleSelectionProperty<>();
+        bufferProperty = new SimpleObjectProperty<>();
         validProperty = new ReadOnlyBooleanWrapper();
+        changedProperty = new SimpleBooleanProperty();
+        changedFunction = new ChangedTrigger();
     }
 
     /**
@@ -74,11 +80,18 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         convertor.setFocusTraversable( true );
         convertor.setVisibleRowCount( 5 );
         
+        buffer = new TextField();
+        buffer.setId( "buffer" );
+        buffer.setFocusTraversable( true );
+        buffer.setPrefColumnCount( 6 );
+        
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "observable.setup.conversion.parameter" ) ), 0, 0 );
         pane.add( parameter, 1, 0 );
         pane.add( new Label( LOGGER.text( "observable.setup.conversion.convertor" ) ), 0, 1 );
         pane.add( convertor, 1, 1 );
+        pane.add( new Label( LOGGER.text( "observable.setup.buffer.name" ) ), 0, 2 );
+        pane.add( buffer, 1, 2 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -101,51 +114,72 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         convertor.setButtonCell( ccf.call( null ) );
         convertorAutoSelector = new AutoComboBoxSelector<>( convertor, 0 );
         convertor.itemsProperty().addListener( new WeakChangeListener<>( convertorAutoSelector ) );
-        convertor.itemsProperty().bind( new ConvertorBinding() );
+        convertor.itemsProperty().bind( new ConvertorBinding() ); // <-- parameterProperty
+        Bindings.bindBidirectional( buffer.textProperty(), bufferProperty, new IntegerConverter( buffer ) );
+        IntegerBinding bpb = Bindings.createIntegerBinding( () ->
+            {
+                Integer value = bufferProperty.getValue();
+                return value != null ? value : Integer.MIN_VALUE;
+            }, 
+            bufferProperty );
         BooleanBinding validBinding = 
             Bindings.and( 
-                Bindings.isNotNull( parameterProperty ), 
-                Bindings.isNotNull( convertorProperty ) );
+                Bindings.and( 
+                    Bindings.isNotNull( parameterProperty ), 
+                    Bindings.isNotNull( convertorProperty ) ),
+                Bindings.greaterThanOrEqual( bpb, 0 ) );
         validProperty.bind( validBinding );
+
+        changedProperty.bind( changedBinding = Bindings.createBooleanBinding( changedFunction, 
+                parameterProperty,
+                convertorProperty,
+                bufferProperty ) );
     }
     
-    ReadOnlyProperty<RatedObservable> parameterProperty()
-    {
-        return parameterProperty;
-    }
-
-    ReadOnlyProperty<Ранжируемый> convertorProperty()
-    {
-        return convertorProperty;
-    }
-
     ReadOnlyBooleanProperty validProperty()
     {
         return validProperty.getReadOnlyProperty();
     }
-
-    /**
-     * Устанавливает монитор наблюдаемого значения.
-     * 
-     * @param monitor монитор.
-     */
-    void setMonitor( Свойственный monitor )
+    
+    BooleanProperty changedProperty()
     {
-        parameter.getItems().clear();
-        convertor.getItems().clear();
-        parameter.selectionModelProperty().getValue().clearSelection();
-        convertor.selectionModelProperty().getValue().clearSelection();
-        parameter.getItems().addAll( observables( monitor ) );
-        if( !parameter.getItems().isEmpty() )
-            parameter.selectionModelProperty().getValue().select( 0 );
+        return changedProperty;
     }
 
+    void copyOptions( Value value )
+    {
+        parameter.getItems().clear();
+        parameter.getItems().addAll( value.observables );
+        if( value.observable != null )
+            parameter.getSelectionModel().select( value.observable );
+        else
+            parameter.getSelectionModel().selectFirst();
+        if( value.convertor != null )
+            convertor.getSelectionModel().select( value.convertor );
+        else
+            convertor.getSelectionModel().selectFirst();
+        bufferProperty.setValue( value.bufferProperty().getValue() );
+        changedFunction.setValue( false );
+        changedBinding.invalidate();
+    }
+
+    void applyOptions( Value value )
+    {
+        value.observable = parameterProperty.getValue();
+        value.convertor = convertorProperty.getValue();
+        value.bufferProperty().setValue( bufferProperty.getValue() );
+        changedFunction.setValue( false );
+        changedBinding.invalidate();
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="классы">
+    
     /**
      * Генератор списка доступных вариантов конвертеров.
      */
     private class ConvertorBinding extends ListBinding<Ранжируемый>
     {
-
+        
         ConvertorBinding()
         {
             bind( parameterProperty );
@@ -156,15 +190,15 @@ public final class ObservableConversionPaneController implements Builder<Pane>
         {
             ObservableList<Ранжируемый> list = FXCollections.observableArrayList();
             RatedObservable observable = parameterProperty.getValue();
-            if( observable != null ) 
+            if( observable != null )
                 list.addAll( observable.ранжировщики() );
             return list;
         }
         
     }
     
-    private static class ObservableCellFactory 
-        implements Callback<ListView<RatedObservable>,ListCell<RatedObservable>>
+    private static class ObservableCellFactory
+            implements Callback<ListView<RatedObservable>,ListCell<RatedObservable>>
     {
         @Override
         public ListCell<RatedObservable> call( final ListView<RatedObservable> param )
@@ -179,11 +213,11 @@ public final class ObservableConversionPaneController implements Builder<Pane>
                     setText( empty || item == null ? null : item.название() );
                 }
             };
-        }       
+        }
     }
     
-    private static class ConvertorCellFactory 
-        implements Callback<ListView<Ранжируемый>,ListCell<Ранжируемый>>
+    private static class ConvertorCellFactory
+            implements Callback<ListView<Ранжируемый>,ListCell<Ранжируемый>>
     {
         @Override
         public ListCell<Ранжируемый> call( final ListView<Ранжируемый> param )
@@ -212,32 +246,7 @@ public final class ObservableConversionPaneController implements Builder<Pane>
             };
         }
     }
-
-   /**
-     * Создает список доступных наблюдаемых свойств объекта.
-     * 
-     * @param object объект.
-     * @return список доступных параметров. 
-     */
-    private static List<RatedObservable> observables( Object object )
-    {
-        if( object instanceof Свойственный )
-        {
-            List<RatedObservable> items = new ArrayList<>();
-            Свойственный.Каталог каталог = ((Свойственный)object).свойства();
-            for( Свойство свойство : каталог.перечень() )
-                if( свойство instanceof НаблюдаемоеСвойство )
-                {
-                    String index = каталог.ключ( свойство );
-                    String метка = RESOURCE_BUNDLE.containsKey( index ) ? RESOURCE_BUNDLE.getString( index ) : index;
-                    Collection<Ранжируемый> ранжировщики = КаталогРанжировщиков.getInstance().get( index );
-                    items.add( new RatedObservable( (НаблюдаемоеСвойство)свойство, ранжировщики, метка ) );
-                }
-            items.sort( (o1,o2) -> o1.название().compareTo( o2.название() ) );
-            return items;
-        }
-        else
-            return Collections.emptyList();
-    }
+    
+    //</editor-fold>
     
 }

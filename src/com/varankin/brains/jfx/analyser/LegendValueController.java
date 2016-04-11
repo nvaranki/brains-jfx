@@ -2,25 +2,27 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер элемента управления прорисовкой отметок.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class LegendValueController implements Builder<CheckBox>
 {
@@ -29,13 +31,8 @@ public final class LegendValueController implements Builder<CheckBox>
     private static final String CSS_CLASS = "legend-value";
 
     static final String RESOURCE_FXML = "/fxml/analyser/LegendValue.fxml";
-    static ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private final ObjectProperty<Color> colorProperty;
-    private final ObjectProperty<int[][]> patternProperty;
-    private final ColorPropertyChangeListener colorPropertyChangeListener;
-    private final PatternPropertyChangeListener patternPropertyChangeListener;
-
     private ValuePropertiesStage properties;
     
     @FXML private CheckBox legend;
@@ -44,16 +41,6 @@ public final class LegendValueController implements Builder<CheckBox>
     @FXML private MenuItem menuItemHide;
     @FXML private MenuItem menuItemRemove;
     @FXML private MenuItem menuItemProperties;
-
-    public LegendValueController()
-    {
-        colorProperty = new SimpleObjectProperty<>();
-        patternProperty = new SimpleObjectProperty<>();
-        colorPropertyChangeListener = new ColorPropertyChangeListener();
-        patternPropertyChangeListener = new PatternPropertyChangeListener();
-        colorProperty.addListener( new WeakChangeListener<>( colorPropertyChangeListener ) );
-        patternProperty.addListener( new WeakChangeListener<>( patternPropertyChangeListener ) );
-    }
 
     /**
      * Создает элемент управления прорисовкой отметок.
@@ -75,6 +62,7 @@ public final class LegendValueController implements Builder<CheckBox>
         
         menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
         menuItemProperties.setOnAction( this::onActionProperties );
+        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
         
         popup = new ContextMenu();
         popup.setId( "popup" );
@@ -103,27 +91,8 @@ public final class LegendValueController implements Builder<CheckBox>
         menuItemHide.disableProperty().bind( Bindings.not( legend.selectedProperty() ) );
         
         menuItemRemove.textProperty().bind( new TextWithName( "control.popup.remove" ) );
-        
-        menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
-    }
-    
-    private void resample( Color color, int[][] pattern )
-    {
-        if( color != null && pattern != null )
-        {
-            Color outlineColor = Color.LIGHTGRAY;
-            WritableImage sample = new WritableImage( 16, 16 );
-            PixelWriter pixelWriter = sample.getPixelWriter();
-            for( int i = 1; i < 15; i ++ )
-            {
-                pixelWriter.setColor( i,  0, outlineColor );
-                pixelWriter.setColor( i, 15, outlineColor );
-                pixelWriter.setColor(  0, i, outlineColor );
-                pixelWriter.setColor( 15, i, outlineColor );
-            }
-            DotPainter.paint( 7, 7, color, pattern, pixelWriter, 16, 16 );
-            legend.setGraphic( new ImageView( sample ) );
-        }
+                
+        legend.getProperties().addListener( this::onValueAddRemove ); // set/getUserData(Value)
     }
 
     ContextMenu getContextMenu() 
@@ -156,6 +125,8 @@ public final class LegendValueController implements Builder<CheckBox>
             ((Pane)parent).getChildren().remove( legend );
         else
             LOGGER.log( "001002002W", legend.getText() );
+        // освободить GUI
+        legend.setUserData( null );
         // TODO what to do with open queue?
         event.consume();
     }
@@ -165,61 +136,70 @@ public final class LegendValueController implements Builder<CheckBox>
     {
         if( properties == null )
         {
-            properties = new ValuePropertiesStage();
+            properties = new ValuePropertiesStage( this::applyProperties );
+            properties.initStyle( StageStyle.DECORATED );
             properties.initModality( Modality.NONE );
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.setTitle( LOGGER.text( "properties.value.title", legend.getText() ) );
-            ValuePropertiesController controller = properties.getController();
-            controller.bindColorProperty( colorProperty );
-            controller.bindPatternProperty( patternProperty );
-            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
         }
+        properties.getController().setValue( (Value)legend.getUserData() );
         properties.show();
-        properties.toFront();
         event.consume();
     }
         
-    /**
-     * @return свойство "цвет рисования шаблона".
-     */
-    final Property<Color> colorProperty()
-    {
-        return colorProperty;
-    }
-
-    /**
-     * @return свойство "шаблон для рисования как массив точек (x,y)".
-     */
-    final Property<int[][]> patternProperty()
-    {
-        return patternProperty;
-    }
-
     BooleanProperty selectedProperty()
     {
         return legend.selectedProperty();
     }
     
-    private class ColorPropertyChangeListener implements ChangeListener<Color>
+    void managePainterOnOff( ObservableValue<? extends DotPainter> o, DotPainter oldPainter, DotPainter newPainter )
     {
-        @Override
-        public void changed( ObservableValue<? extends Color> observable, 
-                            Color oldValue, Color newValue )
+        if( oldPainter != null )
+            oldPainter.enabledProperty().unbind();
+        if( newPainter != null )
+            newPainter.enabledProperty().bind( legend.selectedProperty() );
+    }
+    
+    private void applyProperties( Value value )
+    {
+        Parent parent = legend.getParent();
+        if( parent instanceof Pane )
         {
-            resample( newValue, patternProperty.getValue() );
+            List<Node> children = ((Pane)parent).getChildren();
+            children.set( children.indexOf( legend ), legend ); // unbind-bind @TimeLineController
+        }
+        else
+        {
+            LOGGER.getLogger().warning( "Some properties cannot be applied." );
         }
     }
-
-    private class PatternPropertyChangeListener implements ChangeListener<int[][]>
+    
+    private  void onValueAddRemove( MapChangeListener.Change<? extends Object, ? extends Object> c )
     {
-        @Override
-        public void changed( ObservableValue<? extends int[][]> observable, 
-                            int[][] oldValue, int[][] newValue )
+        if( c.wasRemoved() )
         {
-            resample( colorProperty.getValue(), newValue );
+            Object o = c.getValueRemoved();
+            if( o instanceof Value )
+            {
+                Value value = (Value)o;
+                legend.textProperty().unbind();
+                legend.graphicProperty().unbind();
+                legend.selectedProperty().unbindBidirectional( value.enabledProperty() );
+            }
+        }
+        if( c.wasAdded())
+        {
+            Object o = c.getValueAdded();
+            if( o instanceof Value )
+            {
+                Value value = (Value)o;
+                legend.textProperty().bind( value.titleProperty() );
+                legend.graphicProperty().bind( value.graphicProperty() );
+                legend.selectedProperty().bindBidirectional( value.enabledProperty() );
+            }
         }
     }
-        
+    
     private class TextWithName extends StringBinding
     {
         final String msg;

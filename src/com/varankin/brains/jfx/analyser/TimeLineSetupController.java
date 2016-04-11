@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -14,7 +15,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер выбора параметров рисования графика.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public class TimeLineSetupController implements Builder<Parent>
 {
@@ -25,7 +26,7 @@ public class TimeLineSetupController implements Builder<Parent>
     static final String RESOURCE_FXML  = "/fxml/analyser/TimeLineSetup.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private boolean approved;
+    private Consumer<TimeLineSetupController> action;
     
     @FXML private Button buttonOK, buttonCancel;
     @FXML private ValueRulerPropertiesPaneController valueRulerPropertiesPaneController;
@@ -65,7 +66,7 @@ public class TimeLineSetupController implements Builder<Parent>
         tabGraph.setClosable( false );
         
         TabPane tabs = new TabPane();
-        tabs.getTabs().addAll( tabValueRuler, tabTimeRuler, tabGraph );
+        tabs.getTabs().addAll( tabGraph, tabValueRuler, tabTimeRuler );
 
         BorderPane pane = new BorderPane();
         pane.setCenter( tabs );
@@ -82,9 +83,6 @@ public class TimeLineSetupController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        timeRulerPropertiesPaneController.reset();
-        valueRulerPropertiesPaneController.reset();
-        graphPropertiesPaneController.reset();
         BooleanBinding valid = 
             Bindings.and( 
                 Bindings.and( 
@@ -97,39 +95,36 @@ public class TimeLineSetupController implements Builder<Parent>
     @FXML
     void onActionOK( ActionEvent event )
     {
-        approved = true;
+        event.consume();
+        action.accept( this );
         buttonOK.getScene().getWindow().hide();
     }
     
     @FXML
     void onActionCancel( ActionEvent event )
     {
+        event.consume();
         buttonCancel.getScene().getWindow().hide();
     }
 
-    boolean isApproved()
-    {
-        return approved;
-    }
-    
-    void setApproved( boolean value )
-    {
-        approved = value;
-    }
-
-    ValueRulerPropertiesPaneController getValueRulerPropertiesPaneController()
+    ValueRulerPropertiesPaneController valueRulerController()
     {
         return valueRulerPropertiesPaneController;
     }
 
-    TimeRulerPropertiesPaneController getTimeRulerPropertiesPaneController()
+    TimeRulerPropertiesPaneController timeRulerController()
     {
         return timeRulerPropertiesPaneController;
     }
     
-    GraphPropertiesPaneController getGraphPropertiesPaneController()
+    GraphPropertiesPaneController graphAreaController()
     {
         return graphPropertiesPaneController;
+    }
+
+    void setAction( Consumer<TimeLineSetupController> consumer )
+    {
+        action = consumer;
     }
     
 }

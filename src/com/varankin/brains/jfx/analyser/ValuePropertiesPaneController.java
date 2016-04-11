@@ -1,9 +1,11 @@
 package com.varankin.brains.jfx.analyser;
 
+import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.brains.jfx.SingleSelectionProperty;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
@@ -20,7 +22,7 @@ import javafx.util.*;
 /**
  * FXML-контроллер панели выбора параметров прорисовки отметок.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ValuePropertiesPaneController implements Builder<Node>
 {
@@ -28,6 +30,9 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/ValuePropertiesPane.css";
     private static final String CSS_CLASS = "value-properties-pane";
 
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
+    
+    private final SingleSelectionProperty<String> titleProperty;
     private final SimpleObjectProperty<int[][]> patternProperty; // <--> selectionModel.selectedItemProperty
     private final SingleSelectionProperty<Integer> scaleProperty;
     private final ReadOnlyBooleanWrapper validProperty;
@@ -36,7 +41,12 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     private final ChangeListener<int[][]> markerPickerSetter;
     private final ChangeListener<Marker> patternPropertySetter;
     private final ChangeListener<Integer> scalePickerChangeListener;
+    private final BooleanProperty changedProperty;
+    private final ChangedTrigger changedFunction;
+
+    private BooleanBinding changedBinding;
     
+    @FXML private ComboBox<String> title;
     @FXML private ImageView preview;
     @FXML private ColorPicker colorPicker;
     @FXML private ComboBox<Marker> markerPicker;
@@ -47,11 +57,14 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         colorPickerListener = new ColorPickerChangeListener();
         markerPickerChangeListener = new MarkerPickerChangeListener();
         scalePickerChangeListener = new ScalePickerChangeListener();
+        titleProperty = new SingleSelectionProperty<>();
         patternProperty = new SimpleObjectProperty<>();
         scaleProperty = new SingleSelectionProperty<>();
         validProperty = new ReadOnlyBooleanWrapper();
         markerPickerSetter = new PatternResolver();
         patternPropertySetter = new MarkerResolver();
+        changedProperty = new SimpleBooleanProperty();
+        changedFunction = new ChangedTrigger();
     }
     
     /**
@@ -63,6 +76,12 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     @Override
     public GridPane build()
     {
+        title = new ComboBox<>();
+        title.setEditable( true );
+        title.setId( "title" );
+        title.setFocusTraversable( true );
+        title.setVisibleRowCount( 5 );
+        
         preview = new ImageView();
         preview.setId( "preview" );
         preview.setPreserveRatio( true );
@@ -79,13 +98,15 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         scalePicker.setId( "scalePicker" );
         
         GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 0 );
-        pane.add( colorPicker, 1, 0 );
-        pane.add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 1 );
-        pane.add( markerPicker, 1, 1 );
-        pane.add( new Label( LOGGER.text( "properties.value.pattern" ) ), 2, 0 );
-        pane.add( scalePicker, 2, 1 );
-        pane.add( preview, 3, 0, 1, 2 );
+        pane.add( new Label( LOGGER.text( "observable.setup.value.name" ) ), 0, 0 );
+        pane.add( title, 1, 0, 3, 1 );
+        pane.add( new Label( LOGGER.text( "properties.value.color" ) ), 0, 1 );
+        pane.add( colorPicker, 1, 1 );
+        pane.add( new Label( LOGGER.text( "properties.value.marker" ) ), 0, 2 );
+        pane.add( markerPicker, 1, 2 );
+        pane.add( new Label( LOGGER.text( "properties.value.pattern" ) ), 2, 1 );
+        pane.add( scalePicker, 2, 2 );
+        pane.add( preview, 3, 1, 1, 2 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -109,6 +130,8 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         markerPicker.setButtonCell( cellFactory.call( null ) );
         markerPicker.getItems().addAll( Arrays.asList( Marker.values() ) );
         
+        titleProperty.setModel( title.getSelectionModel() );
+
         patternProperty.addListener( new WeakChangeListener<>( markerPickerSetter ) );
 
         scalePicker.setConverter( new ScalePickerConverter() );
@@ -119,29 +142,50 @@ public final class ValuePropertiesPaneController implements Builder<Node>
 
         BooleanBinding validBinding = 
             Bindings.and( 
-                Bindings.isNotNull( colorPicker.valueProperty() ), 
-                Bindings.isNotNull( patternProperty ) );
+                Bindings.isNotNull( title.getEditor().textProperty() ),
+                Bindings.and( 
+                    Bindings.isNotNull( colorPicker.valueProperty() ), 
+                    Bindings.isNotNull( patternProperty ) ) );
         validProperty.bind( validBinding );
+
+        changedProperty.bind( changedBinding = Bindings.createBooleanBinding( changedFunction, 
+                titleProperty,
+                title.getEditor().textProperty(),
+                colorPicker.valueProperty(),
+                patternProperty /*,
+                scaleProperty is not relevant */ ) );
     }
     
-    Property<Color> colorProperty()
-    {
-        return colorPicker.valueProperty();
-    }
-
-    Property<int[][]> patternProperty()
-    {
-        return patternProperty;
-    }
-    
-    Property<Integer> scaleProperty()
-    {
-        return scaleProperty;
-    }
-
     ReadOnlyBooleanProperty validProperty()
     {
         return validProperty.getReadOnlyProperty();
+    }
+
+    BooleanProperty changedProperty()
+    {
+        return changedProperty;
+    }
+
+    void copyOptions( Value value )
+    {
+        title.getItems().clear();
+        if( title.getItems().addAll( value.метки ) )
+            title.getSelectionModel().selectFirst();
+        colorPicker.setValue( value.colorProperty().getValue() );
+        patternProperty.setValue( value.patternProperty().getValue() );
+        scalePicker.getSelectionModel().select( 3 ); //TODO
+        resetColorPicker();
+        changedFunction.setValue( false );
+        changedBinding.invalidate();
+    }
+
+    void applyOptions( Value value )
+    {
+        value.patternProperty().setValue( patternProperty.getValue() );
+        value.colorProperty().setValue( colorPicker.valueProperty().getValue() );
+        value.titleProperty().setValue( title.getEditor().textProperty().getValue() );
+        changedFunction.setValue( false );
+        changedBinding.invalidate();
     }
 
     /**
@@ -183,7 +227,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
         
         return sample;
     }
-    
+
     //<editor-fold defaultstate="collapsed" desc="классы">
     
     private static class CellFactory 

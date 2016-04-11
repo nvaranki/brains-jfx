@@ -1,10 +1,13 @@
 /* 
     Description: Панель графика динамического изменения значений по времени.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
 */
 
 .time-line 
 {
     -fx-padding: 5px 5px 5px 0px;
+    -fx-border-width: 0px 0px 1px 0px;
+    -fx-border-color: lightgray;
+    -fx-border-style: solid;
 }
 

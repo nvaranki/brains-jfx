@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    Author     : Николай Варанкин
     Description: Панель диалога для выбора и установки параметров прорисовки отметок.
+    Author     : (с) 2016 Николай Варанкин
 -->
 <?import java.lang.* ?>
 <?import java.net.URL ?>
@@ -21,7 +21,26 @@
   </stylesheets>
   
   <center>
-      <fx:include source="ValuePropertiesPane.fxml" fx:id="properties"/>
+        <TabPane>
+            <tabs>
+                <Tab text="%observable.setup.presentation.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ValuePropertiesPane.fxml" 
+                            fx:id="properties"
+                            />
+                    </content>
+                </Tab>  
+                <Tab text="%observable.setup.conversion.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ObservableConversionPane.fxml" 
+                            fx:id="observableConversionPane"
+                            />
+                    </content>
+                </Tab>  
+            </tabs>
+        </TabPane>
   </center>  
   
   <bottom>
@@ -31,6 +50,7 @@
             text="%button.ok" 
             onAction="#onActionOK" 
             defaultButton="true" 
+            fx:id="buttonOK"  
         />
         <Button 
             text="%button.cancel" 

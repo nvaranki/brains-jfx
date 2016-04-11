@@ -3,9 +3,9 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,14 +14,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели диалога для выбора и установки параметров оси значений.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ValueRulerPropertiesController implements Builder<Parent>
 {
@@ -32,14 +30,10 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
     static final String RESOURCE_FXML = "/fxml/analyser/ValueRulerProperties.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private final PropertyGate<Float> valueMinGate;
-    private final PropertyGate<Float> valueMaxGate;
-    private final PropertyGate<Color> textColorGate;
-    private final PropertyGate<Font> textFontGate;
-    private final PropertyGate<Color> tickColorGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
+    private Consumer<ValueRulerPropertiesController> action;
     
     @FXML private Pane properties;
     @FXML private Button buttonOK, buttonApply;
@@ -47,11 +41,6 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
 
     public ValueRulerPropertiesController()
     {
-        valueMinGate = new PropertyGate<>();
-        valueMaxGate = new PropertyGate<>();
-        textColorGate = new PropertyGate<>();
-        textFontGate = new PropertyGate<>();
-        tickColorGate = new PropertyGate<>();
         changedFunction = new ChangedTrigger();
     }
     
@@ -114,75 +103,39 @@ public final class ValueRulerPropertiesController implements Builder<Parent>
     @FXML
     void onActionOK( ActionEvent event )
     {
-        applyChanges();
-        buttonApply.getScene().getWindow().hide();
         event.consume();
+        action.accept( this );
+        buttonApply.getScene().getWindow().hide();
     }
     
     @FXML
     void onActionApply( ActionEvent event )
     {
-        applyChanges();
         event.consume();
+        action.accept( this );
     }
     
     @FXML
     void onActionCancel( ActionEvent event )
     {
-        buttonApply.getScene().getWindow().hide();
         event.consume();
+        buttonApply.getScene().getWindow().hide();
     }
 
-    void bindValueMinProperty( Property<Float> property )
+    ValueRulerPropertiesPaneController propertiesController()
     {
-        valueMinGate.bind( property, propertiesController.valueMinProperty() );
-    }
-
-    void bindValueMaxProperty( Property<Float> property )
-    {
-        valueMaxGate.bind( property, propertiesController.valueMaxProperty() );
-    }
-
-    void bindTextColorProperty( Property<Color> property )
-    {
-        textColorGate.bind( property, propertiesController.textColorProperty() );
-    }
-
-    void bindTextFontProperty( Property<Font> property )
-    {
-        textFontGate.bind( property, propertiesController.textFontProperty() );
-    }
-
-    void bindTickColorProperty( Property<Color> property )
-    {
-        tickColorGate.bind( property, propertiesController.tickColorProperty() );
-    }
-
-    private void applyChanges()
-    {
-        // установить текущие значения, если они отличаются
-        valueMinGate.pullDistinctValue();
-        valueMaxGate.pullDistinctValue();
-        textColorGate.pullDistinctValue();
-        textFontGate.pullDistinctValue();
-        tickColorGate.pullDistinctValue();
-        // установить статус
-        changedFunction.setValue( false );
-        changedBinding.invalidate();
-    }
-
-    void reset()
-    {
-        // сбросить прежние значения и установить текущие значения
-        valueMinGate.forceReset();
-        valueMaxGate.forceReset();
-        textColorGate.forceReset();
-        textFontGate.forceReset();
-        tickColorGate.forceReset();
-        propertiesController.resetColorPicker();
-        // установить статус
-        changedFunction.setValue( false );
-        changedBinding.invalidate();
+        return propertiesController;
     }
     
+    void setAction( Consumer<ValueRulerPropertiesController> consumer )
+    {
+        action = consumer;
+    }
+
+    void setModified( boolean status )
+    {
+        changedFunction.setValue( status );
+        changedBinding.invalidate();
+    }
+
 }

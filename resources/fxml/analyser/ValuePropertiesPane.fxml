@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    Document   : ValuePropertiesPane.fxml
-    Created on : Nov 7, 2013
-    Author     : 2013 Николай Варанкин
     Description: Панель выбора параметров прорисовки отметок.
+    Author     : (c) 2016 Николай Варанкин
 -->
 <?import java.lang.* ?>
 <?import java.net.URL ?>
@@ -26,42 +24,56 @@
     
   <children>
     <Label 
-        text="%properties.value.color" 
+        text="%observable.setup.value.name" 
         GridPane.columnIndex="0" 
         GridPane.rowIndex="0" 
+    />
+    <ComboBox
+        fx:id="title"
+        focusTraversable="true"
+        editable="true" 
+        visibleRowCount="5" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0"  
+        GridPane.columnSpan="3" 
+    />
+    <Label 
+        text="%properties.value.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
     />
     <ColorPicker 
         fx:id="colorPicker"
         focusTraversable="false"  
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="0" 
+        GridPane.rowIndex="1" 
     />
     <Label 
         text="%properties.value.marker" 
         GridPane.columnIndex="0" 
-        GridPane.rowIndex="1" 
+        GridPane.rowIndex="2" 
     />
     <ComboBox 
         fx:id="markerPicker" 
         visibleRowCount="7" 
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="1"
+        GridPane.rowIndex="2"
     />
     <Label 
         text="%properties.value.pattern" 
         GridPane.columnIndex="2" 
-        GridPane.rowIndex="0" 
+        GridPane.rowIndex="1" 
     />
     <ComboBox 
         fx:id="scalePicker" 
         GridPane.columnIndex="2" 
-        GridPane.rowIndex="1"
+        GridPane.rowIndex="2"
     />
     <ImageView 
         fx:id="preview"
         preserveRatio="true" 
         GridPane.columnIndex="3" 
-        GridPane.rowIndex="0" 
+        GridPane.rowIndex="1" 
         GridPane.rowSpan="2" 
     />
   </children>

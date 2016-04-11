@@ -6,7 +6,6 @@ import java.util.List;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
@@ -17,11 +16,14 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
+
+import static com.varankin.brains.jfx.Utilities.*;
 
 /**
  * FXML-контроллер панели шкалы по оси значений.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ValueRulerController extends AbstractRulerController
 {
@@ -56,33 +58,21 @@ public final class ValueRulerController extends AbstractRulerController
     /**
      * Создает панель шкалы по оси времени.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель.
      */
     @Override
     public Pane build()
     {
         MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
-        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionProperties( event );
-            }
-        } );
+        menuItemProperties.setOnAction( this::onActionProperties );
         
         popup = new ContextMenu();
         popup.getItems().addAll( menuItemProperties );
         
         pane = new Pane();
-        pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
-        {
-            @Override
-            public void handle( ContextMenuEvent event )
-            {
-                onContextMenuRequested( event );
-            }
-        } );
+        pane.setOnContextMenuRequested( this::onContextMenuRequested );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -106,20 +96,15 @@ public final class ValueRulerController extends AbstractRulerController
     }
     
     @FXML
-    private void onActionProperties( ActionEvent __ )
+    private void onActionProperties( ActionEvent e )
     {
         if( properties == null )
         {
-            properties = new ValueRulerPropertiesStage();
+            properties = new ValueRulerPropertiesStage( this::displayProperties, this::applyProperties );
             properties.initOwner( JavaFX.getInstance().платформа );
+            properties.initStyle( StageStyle.DECORATED );
             properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.ruler.value.title", 0 ) );
-            ValueRulerPropertiesController controller = properties.getController();
-            controller.bindValueMinProperty( valueMinProperty );
-            controller.bindValueMaxProperty( valueMaxProperty );
-            controller.bindTickColorProperty( tickColorProperty() );
-            controller.bindTextColorProperty( textColorProperty() );
-            controller.bindTextFontProperty( fontProperty() );
         }
         properties.show();
         properties.toFront();
@@ -129,14 +114,40 @@ public final class ValueRulerController extends AbstractRulerController
     {
         return convertorProperty;
     }
-    
-    void reset( ValueRulerPropertiesPaneController pattern )
+
+    void extendPopupMenu( List<? extends MenuItem> menu )
     {
-        tickColorProperty().setValue( pattern.tickColorProperty().getValue() );
-        textColorProperty().setValue( pattern.textColorProperty().getValue() );
-        fontProperty().setValue( pattern.textFontProperty().getValue() );
-        valueMinProperty.setValue( pattern.valueMinProperty().getValue() );
-        valueMaxProperty.setValue( pattern.valueMaxProperty().getValue() );
+        JavaFX.copyMenuItems( menu, popup.getItems(), true );
+    }
+        
+    private void displayProperties( ValueRulerPropertiesController controller )
+    {
+        ValueRulerPropertiesPaneController pc = controller.propertiesController();
+        // скопировать в форму текущие значения
+        copy( valueMaxProperty, pc.valueMaxProperty() );
+        copy( valueMinProperty, pc.valueMinProperty() );
+        copy( tickColorProperty(), pc.tickColorProperty() );
+        copy( textColorProperty(), pc.textColorProperty() );
+        copy( fontProperty(), pc.textFontProperty() );
+        pc.resetColorPicker();
+        controller.setModified( false );
+    }
+
+    private void applyProperties( ValueRulerPropertiesController controller )
+    {
+        ValueRulerPropertiesPaneController pc = controller.propertiesController();
+        // установить текущие значения, если они отличаются
+        applyProperties( pc );
+        controller.setModified( false );
+    }
+    
+    void applyProperties( ValueRulerPropertiesPaneController pc )
+    {
+        applyDistinct( pc.valueMaxProperty(), valueMaxProperty );
+        applyDistinct( pc.valueMinProperty(), valueMinProperty );
+        applyDistinct( pc.tickColorProperty(), tickColorProperty() );
+        applyDistinct( pc.textColorProperty(), textColorProperty() );
+        applyDistinct( pc.textFontProperty(), fontProperty() );
     }
     
     @Override
@@ -206,9 +217,4 @@ public final class ValueRulerController extends AbstractRulerController
         return shift;
     }
     
-    void extendPopupMenu( List<? extends MenuItem> menu )
-    {
-        JavaFX.copyMenuItems( menu, popup.getItems(), true );
-    }
-        
 }

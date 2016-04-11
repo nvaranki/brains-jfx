@@ -14,7 +14,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -23,11 +22,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
+
+import static com.varankin.brains.jfx.Utilities.*;
 
 /**
  * FXML-контроллер панели шкалы по оси времени.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class TimeRulerController extends AbstractRulerController
 {
@@ -89,33 +91,21 @@ public final class TimeRulerController extends AbstractRulerController
     /**
      * Создает панель шкалы по оси времени.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель.
      */
     @Override
     public Pane build()
     {
         MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
-        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionProperties( event );
-            }
-        } );
+        menuItemProperties.setOnAction( this::onActionProperties );
         
         popup = new ContextMenu();
         popup.getItems().addAll( menuItemProperties );
         
         pane = new Pane();
-        pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
-        {
-            @Override
-            public void handle( ContextMenuEvent event )
-            {
-                onContextMenuRequested( event );
-            }
-        } );
+        pane.setOnContextMenuRequested( this::onContextMenuRequested );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -140,21 +130,15 @@ public final class TimeRulerController extends AbstractRulerController
     }
     
     @FXML
-    private void onActionProperties( ActionEvent __ )
+    private void onActionProperties( ActionEvent e )
     {
         if( properties == null )
         {
-            properties = new TimeRulerPropertiesStage();
+            properties = new TimeRulerPropertiesStage( this::displayProperties, this::applyProperties );
             properties.initOwner( JavaFX.getInstance().платформа );
+            properties.initStyle( StageStyle.DECORATED );
             properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.ruler.time.title", 0 ) );
-            TimeRulerPropertiesController controller = properties.getController();
-            controller.bindDurationProperty( durationProperty );
-            controller.bindExcessProperty( excessProperty );
-            controller.bindUnitProperty( unitProperty );
-            controller.bindTickColorProperty( tickColorProperty() );
-            controller.bindTextColorProperty( textColorProperty() );
-            controller.bindTextFontProperty( fontProperty() );
         }
         properties.show();
         properties.toFront();
@@ -174,15 +158,37 @@ public final class TimeRulerController extends AbstractRulerController
     {
         return unitProperty;
     }
-    
-    void reset( TimeRulerPropertiesPaneController pattern )
+
+    private void displayProperties( TimeRulerPropertiesController controller )
     {
-        tickColorProperty().setValue( pattern.tickColorProperty().getValue() );
-        textColorProperty().setValue( pattern.textColorProperty().getValue() );
-        fontProperty().setValue( pattern.textFontProperty().getValue() );
-        durationProperty.setValue( pattern.durationProperty().getValue() );
-        excessProperty.setValue( pattern.excessProperty().getValue() );
-        unitProperty.setValue( pattern.unitProperty().getValue() );
+        TimeRulerPropertiesPaneController pc = controller.propertiesController();
+        // скопировать в форму текущие значения
+        copy( durationProperty, pc.durationProperty() );
+        copy( excessProperty, pc.excessProperty() );
+        copy( unitProperty, pc.unitProperty() );
+        copy( tickColorProperty(), pc.tickColorProperty() );
+        copy( textColorProperty(), pc.textColorProperty() );
+        copy( fontProperty(), pc.textFontProperty() );
+        pc.resetColorPicker();
+        controller.setModified( false );
+    }
+
+    private void applyProperties( TimeRulerPropertiesController controller )
+    {
+        TimeRulerPropertiesPaneController pc = controller.propertiesController();
+        // установить текущие значения, если они отличаются
+        applyProperties( pc );
+        controller.setModified( false );
+    }
+    
+    void applyProperties( TimeRulerPropertiesPaneController pc )
+    {
+        applyDistinct( pc.durationProperty(), durationProperty );
+        applyDistinct( pc.excessProperty(), excessProperty );
+        applyDistinct( pc.unitProperty(), unitProperty );
+        applyDistinct( pc.tickColorProperty(), tickColorProperty() );
+        applyDistinct( pc.textColorProperty(), textColorProperty() );
+        applyDistinct( pc.textFontProperty(), fontProperty() );
     }
     
     @Override

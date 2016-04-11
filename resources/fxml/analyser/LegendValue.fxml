@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 
-    Document   : LegendValue.fxml
-    Created on : Nov 10, 2013
-    Author     : 2013 Николай Варанкин
     Description: Элемент управления прорисовкой отметок.
+    Author     : (c) 2016 Николай Варанкин
 -->
 
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
+<?import javafx.scene.image.* ?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -31,7 +30,15 @@
                 <MenuItem fx:id="menuItemShow" onAction="#onActionShow" />  
                 <MenuItem fx:id="menuItemHide" onAction="#onActionHide" />  
                 <MenuItem fx:id="menuItemRemove" onAction="#onActionRemove" />  
-                <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" /> 
+                <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" >
+                    <graphic>
+                        <ImageView>
+                            <image>
+                                <Image url="@/icons16x16/remove.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </MenuItem> 
             </items>
         </ContextMenu> 
     </contextMenu>

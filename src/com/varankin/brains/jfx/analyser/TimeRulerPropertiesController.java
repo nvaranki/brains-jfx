@@ -3,27 +3,23 @@ package com.varankin.brains.jfx.analyser;
 import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели диалога для выбора и установки параметров оси времени.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class TimeRulerPropertiesController implements Builder<Parent>
 {
@@ -34,15 +30,10 @@ public final class TimeRulerPropertiesController implements Builder<Parent>
     static final String RESOURCE_FXML = "/fxml/analyser/TimeRulerProperties.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private final PropertyGate<Long> durationGate;
-    private final PropertyGate<Long> excessGate;
-    private final PropertyGate<TimeUnit> unitGate;
-    private final PropertyGate<Color> textColorGate;
-    private final PropertyGate<Font> textFontGate;
-    private final PropertyGate<Color> tickColorGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
+    private Consumer<TimeRulerPropertiesController> action;
     
     @FXML private Pane properties;
     @FXML private Button buttonOK, buttonApply;
@@ -50,18 +41,14 @@ public final class TimeRulerPropertiesController implements Builder<Parent>
 
     public TimeRulerPropertiesController()
     {
-        durationGate = new PropertyGate<>();
-        excessGate = new PropertyGate<>();
-        unitGate = new PropertyGate<>();
-        textColorGate = new PropertyGate<>();
-        textFontGate = new PropertyGate<>();
-        tickColorGate = new PropertyGate<>();
         changedFunction = new ChangedTrigger();
     }
     
     /**
      * Создает панель диалога для выбора и установки параметров оси значений.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель диалога.
      */
     @Override
     public BorderPane build()
@@ -74,36 +61,15 @@ public final class TimeRulerPropertiesController implements Builder<Parent>
         buttonOK = new Button( LOGGER.text( "button.ok" ) );
         buttonOK.setId( "buttonOK" );
         buttonOK.setDefaultButton( true );
-        buttonOK.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionOK( event );
-            }
-        } );
+        buttonOK.setOnAction( this::onActionOK );
 
         buttonApply = new Button( LOGGER.text( "button.apply" ) );
         buttonApply.setId( "buttonApply" );
-        buttonApply.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionApply( event );
-            }
-        } );
+        buttonApply.setOnAction( this::onActionApply );
 
         Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
         buttonCancel.setCancelButton( true );
-        buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionCancel( event );
-            }
-        } );
+        buttonCancel.setOnAction( this::onActionCancel );
 
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
@@ -138,78 +104,38 @@ public final class TimeRulerPropertiesController implements Builder<Parent>
     @FXML
     void onActionOK( ActionEvent event )
     {
-        applyChanges();
+        event.consume();
+        action.accept( this );
         buttonApply.getScene().getWindow().hide();
     }
     
     @FXML
     void onActionApply( ActionEvent event )
     {
-        applyChanges();
+        event.consume();
+        action.accept( this );
     }
     
     @FXML
     void onActionCancel( ActionEvent event )
     {
+        event.consume();
         buttonApply.getScene().getWindow().hide();
     }
-
-    void bindDurationProperty( Property<Long> property )
+    
+    TimeRulerPropertiesPaneController propertiesController()
     {
-        durationGate.bind( property, propertiesController.durationProperty() );
+        return propertiesController;
     }
 
-    void bindExcessProperty( Property<Long> property )
+    void setAction( Consumer<TimeRulerPropertiesController> consumer )
     {
-        excessGate.bind( property, propertiesController.excessProperty() );
+        action = consumer;
     }
 
-    void bindUnitProperty( Property<TimeUnit> property )
+    void setModified( boolean status )
     {
-        unitGate.bind( property, propertiesController.unitProperty() );
-    }
-
-    void bindTextColorProperty( Property<Color> property )
-    {
-        textColorGate.bind( property, propertiesController.textColorProperty() );
-    }
-
-    void bindTextFontProperty( Property<Font> property )
-    {
-        textFontGate.bind( property, propertiesController.textFontProperty() );
-    }
-
-    void bindTickColorProperty( Property<Color> property )
-    {
-        tickColorGate.bind( property, propertiesController.tickColorProperty() );
-    }
-
-    private void applyChanges()
-    {
-        // установить текущие значения, если они отличаются
-        durationGate.pullDistinctValue();
-        excessGate.pullDistinctValue();
-        unitGate.pullDistinctValue();
-        textColorGate.pullDistinctValue();
-        textFontGate.pullDistinctValue();
-        tickColorGate.pullDistinctValue();
-        // установить статус
-        changedFunction.setValue( false );
-        changedBinding.invalidate();
-    }
-
-    void reset()
-    {
-        // сбросить прежние значения и установить текущие значения
-        durationGate.forceReset();
-        excessGate.forceReset();
-        unitGate.forceReset();
-        textColorGate.forceReset();
-        textFontGate.forceReset();
-        tickColorGate.forceReset();
-        propertiesController.resetColorPicker();
-        // установить статус
-        changedFunction.setValue( false );
+        changedFunction.setValue( status );
         changedBinding.invalidate();
     }
     

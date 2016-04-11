@@ -6,17 +6,17 @@ import com.varankin.util.LoggerX;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.WeakListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.TransformationList;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Builder;
@@ -33,7 +33,6 @@ public final class LegendPaneController implements Builder<Pane>
     private static final String CSS_CLASS = "legend-pane";
     
     private final ReadOnlyListWrapper<Value> valuesProperty;
-    private final ListChangeListener<Value> valueListListener;
     private final BooleanProperty dynamicProperty;
     private final ObjectProperty<TimeUnit> unitProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
@@ -42,16 +41,14 @@ public final class LegendPaneController implements Builder<Pane>
     
     @FXML private CheckBox time;
     @FXML private FlowPane values;
-    @FXML private Label title;
+    @FXML private Label label;
     @FXML private MenuItem menuItemResume;
     @FXML private MenuItem menuItemStop;
     @FXML private ContextMenu timePopup;
 
     public LegendPaneController()
     {
-        valuesProperty = new ReadOnlyListWrapper<>( FXCollections.<Value>observableArrayList() );
-        valueListListener = new ValueListListener();
-        valuesProperty.addListener( new WeakListChangeListener<>( valueListListener ) );
+        valuesProperty = new ReadOnlyListWrapper<>();
         dynamicProperty = new SimpleBooleanProperty();
         dynamicPropertyChangeListener = new DynamicPropertyChangeListener();
         unitProperty = new SimpleObjectProperty<>();
@@ -81,12 +78,12 @@ public final class LegendPaneController implements Builder<Pane>
         time.setSelected( false );
         time.setContextMenu( timePopup );
         
-        title = new Label();
-        title.setId( "title" );
+        label = new Label();
+        label.setId( "label" );
 
         values = new FlowPane();
         values.setId( "values" );
-        values.getChildren().add( title );
+        values.getChildren().add( label );
         
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setHgrow( Priority.ALWAYS );
@@ -118,7 +115,7 @@ public final class LegendPaneController implements Builder<Pane>
         
         return pane;
     }
-        
+
     @FXML
     protected void initialize()
     {   
@@ -130,21 +127,38 @@ public final class LegendPaneController implements Builder<Pane>
 
         values.setMinHeight( time.getMinHeight() );
         values.setPrefHeight( time.getPrefHeight() );
-        //title.setText( "The title" );//TODO DEBUG
+        
+        valuesProperty.setValue( new ValueList( values.getChildrenUnmodifiable() ) );
 
         dynamicProperty.addListener( new WeakChangeListener<>( dynamicPropertyChangeListener ) );
     }
     
     @FXML
-    private void onActionResume( ActionEvent __ )
+    private void onActionResume( ActionEvent e )
     {
         time.selectedProperty().setValue( Boolean.TRUE );
+        e.consume();
     }
 
     @FXML
-    private void onActionStop( ActionEvent __ )
+    private void onActionStop( ActionEvent e )
     {
         time.selectedProperty().setValue( Boolean.FALSE );
+        e.consume();
+    }
+
+    @FXML
+    private void onActionRemoveAll( ActionEvent e )
+    {
+        List<Node> cbl = values.getChildren().stream().filter( n -> n instanceof CheckBox )
+                .collect( Collectors.toList() );
+        values.getChildren().removeAll( cbl );
+        e.consume();
+    }
+
+    StringProperty labelProperty()
+    {
+        return label.textProperty();
     }
 
     ReadOnlyListProperty<Value> valuesProperty()
@@ -167,42 +181,46 @@ public final class LegendPaneController implements Builder<Pane>
         this.parentPopupMenu = parentPopupMenu;
         JavaFX.copyMenuItems( parentPopupMenu, timePopup.getItems(), true );
     }
+    
+    void applyProperties( GraphPropertiesPaneController pattern )
+    {
+        label.textProperty().setValue( pattern.labelProperty().getValue() );
+    }
 
-    //    EventHandler<ActionEvent> createActionStartAllFlows()
-//    {
-//        return new ActionStartAllFlows();
-//    }
-//
-//    EventHandler<ActionEvent> createActionStopAllFlows()
-//    {
-//        return new ActionStopAllFlows();
-//    }
-//
-//    private class ActionStartAllFlows implements EventHandler<ActionEvent>
-//    {
-//        @Override
-//        public void handle( ActionEvent event )
-//        {
-//            timeLineController.dynamicProperty().setValue( true );
-//        }
-//    }
-//    
-//    private class ActionStopAllFlows implements EventHandler<ActionEvent>
-//    {
-//        @Override
-//        public void handle( ActionEvent event )
-//        {
-//            timeLineController.dynamicProperty().setValue( false );
-//        }
-//    }
+    /**
+     * Создает новый элемент управления отображаемым значением в ленте элементов управления.
+     * 
+     * @param value дескриптор значения.
+     */
+    void addLegendItem( Value value )
+    {
+        BuilderFX<CheckBox,LegendValueController> builder = new BuilderFX<>();
+        builder.init( LegendValueController.class, 
+                LegendValueController.RESOURCE_FXML, LegendValueController.RESOURCE_BUNDLE );
+        LegendValueController legendValueController = builder.getController();
+        
+        JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
+        
+        CheckBox node = builder.getNode();
+        node.setUserData( value ); // --> valuesProperty
+        
+        values.getChildren().add( node );
+    }
+    
+    void clear()
+    {
+        onActionRemoveAll( new ActionEvent() );
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="классы">
     
     private class DynamicPropertyChangeListener implements ChangeListener<Boolean>
     {
         private final Map<Object,Boolean> flowState = new IdentityHashMap<>(); //TODO DEBUG Identity
         
         @Override
-        public void changed( ObservableValue<? extends Boolean> observable, 
-                            Boolean oldValue, Boolean newValue )
+        public void changed( ObservableValue<? extends Boolean> observable,
+                Boolean oldValue, Boolean newValue )
         {
             boolean resume = newValue != null && newValue;
             for( Node node : values.getChildren() )
@@ -228,105 +246,24 @@ public final class LegendPaneController implements Builder<Pane>
                 }
             
         }
-
+        
         boolean getFlowState( Object o )
         {
             Boolean flows = flowState.get( o );
             return flows != null ? flows : true;
         }
-
+        
         void setFlowState( Object o, boolean flows )
         {
             flowState.put( o, flows );
         }
-
-    }
-    
-    private class ValueListListener implements ListChangeListener<Value>
-    {
-        @Override
-        public void onChanged( ListChangeListener.Change<? extends Value> c )
-        {
-            while( c.next() ) 
-             if( c.wasPermutated() ) 
-                 for( int i = c.getFrom(); i < c.getTo(); ++i ) 
-                 {
-                      //permutate
-                 }
-             else if( c.wasUpdated() ) 
-             {
-                      //update item
-             } 
-             else 
-             {
-                 for( Value value : c.getRemoved() ) 
-                 {
-                     value.stopMonitoring();
-                 }
-                 for( Value value : c.getAddedSubList() ) 
-                 {
-                    values.getChildren().add( createValueControl( value ) );
-                    //TODO values.getParent().requestLayout();
-                    value.startMonitoring();
-                 }
-             }
-        }
-
-        /**
-         * Создает элемент управления отображаемым значением.
-         * 
-         * @param value дескриптор значения.
-         */
-        Node createValueControl( Value value )
-        {
-            BuilderFX<CheckBox,LegendValueController> builder = new BuilderFX<>();
-            builder.init( LegendValueController.class, 
-                    LegendValueController.RESOURCE_FXML, LegendValueController.RESOURCE_BUNDLE );
-            LegendValueController legendValueController = builder.getController();
-            legendValueController.colorProperty().setValue( value.color );
-            legendValueController.patternProperty().setValue( value.pattern );
-            legendValueController.selectedProperty().setValue( true ); // запуск прорисовки
-
-            value.painter.colorProperty().bind( legendValueController.colorProperty() );
-            value.painter.patternProperty().bind( legendValueController.patternProperty() );
-            value.painter.enabledProperty().bind( legendValueController.selectedProperty() );
-
-            CheckBox label = builder.getNode();
-            label.setText( value.title );
-            JavaFX.copyMenuItems( parentPopupMenu, legendValueController.getContextMenu().getItems(), true );
-            label.parentProperty().addListener( new LifeCycleListener( value ) );
-            return label;
-        }
         
-        class LifeCycleListener implements ChangeListener<Parent>
-        {
-            final Value value;
-
-            LifeCycleListener( Value value )
-            {
-                this.value = value;
-            }
-            
-            @Override
-            public void changed( ObservableValue<? extends Parent> __, Parent ov, Parent nv )
-            {
-                if( nv != null )
-                {
-                    
-                }
-                else if( ov != null )
-                {
-                    valuesProperty.getValue().remove( value );
-                }
-            }
-        }
-
     }
     
     private class TimeAxisText implements Callable<String>
     {
         @Override
-        public String call() throws Exception 
+        public String call() throws Exception
         {
             TimeUnit unitValue = unitProperty.getValue();
             String key = "legend.TimeUnit." + ( unitValue != null ? unitValue.name() : "" );
@@ -337,5 +274,88 @@ public final class LegendPaneController implements Builder<Pane>
             return LOGGER.text( "axis.time.name", text );
         }
     }
+    
+    /**
+     * {@linkplain ObservableList Список} отображаемых {@linkplain Value значений} графика.
+     */
+    private static class ValueList extends TransformationList<Value,Node>
+    {
+        final List<Value> lv;
+        
+        ValueList( ObservableList<? extends Node> source )
+        {
+            super( source );
+            lv = new ArrayList<>();
+        }
+        
+        @Override
+        protected void sourceChanged( ListChangeListener.Change<? extends Node> c )
+        {
+            while( c.next() )
+                if( c.wasPermutated() )
+                {
+                    LOGGER.getLogger().fine( "Permutated list" );
+                }
+                else if( c.wasUpdated() )
+                {
+                    LOGGER.getLogger().fine( "Updated list" );
+                }
+                else
+                {
+                    for( Node node : c.getRemoved() )
+                    {
+                        Object userData = node.getUserData();
+                        if( userData instanceof Value )
+                        {
+                            Value value = (Value)userData;
+                            beginChange();
+                            int i = lv.indexOf( value );
+                            nextRemove( i, value );
+                            endChange();
+                            lv.remove( value );
+                        }
+                    }
+                    for( Node node : c.getAddedSubList() )
+                    {
+                        Object userData = node.getUserData();
+                        if( userData instanceof Value )
+                        {
+                            Value value = (Value)userData;
+                            lv.add( value );
+                            beginChange();
+                            int i = lv.indexOf( value );
+                            nextAdd( i, i+1 );
+                            endChange();
+                        }
+                    }
+                }
+        }
+        
+        @Override
+        public int getSourceIndex( int index )
+        {
+            Value test = lv.get( index );
+            List<? extends Node> source = getSource();
+            for( int i = 0, max = source.size(); i < max; i++ )
+                if( source.get( i ).getUserData() == test )
+                    return i;
+            return -1;
+        }
+        
+        @Override
+        public Value get( int index )
+        {
+            return lv.get( index );
+        }
+        
+        @Override
+        public int size()
+        {
+            return lv.size();
+        }
+        
+    }
+    
+    //</editor-fold>
     
 }

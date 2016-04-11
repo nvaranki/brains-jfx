@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Description: Панель выбора и установки параметров конверсии наблюдаемого значения.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -21,7 +21,7 @@
     
   <children>
     <Label 
-        text="%observable.setup.conversion.property" 
+        text="%observable.setup.conversion.parameter" 
         GridPane.columnIndex="0" 
         GridPane.rowIndex="0" 
     />
@@ -45,6 +45,18 @@
         visibleRowCount="5" 
         GridPane.columnIndex="1" 
         GridPane.rowIndex="1"  
+    />
+    <Label 
+        text="%observable.setup.buffer.name" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <TextField
+        fx:id="buffer"
+        focusTraversable="true"      
+        prefColumnCount="6"       
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2"  
     />
   </children>
   

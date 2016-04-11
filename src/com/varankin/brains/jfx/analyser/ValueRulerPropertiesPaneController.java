@@ -14,13 +14,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели выбора и установки параметров оси значений.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ValueRulerPropertiesPaneController implements Builder<Node>
 {
@@ -46,6 +45,8 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     /**
      * Создает панель выбора и установки параметров оси значений.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель.
      */
     @Override
     public GridPane build()
@@ -155,15 +156,6 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     {
         textColor.fireEvent( new ActionEvent() );
         tickColor.fireEvent( new ActionEvent() );
-    }
-
-    void reset()
-    {
-        valueMinProperty.setValue( -1f );
-        valueMaxProperty.setValue( +1f );
-        textColor.setValue( Color.BLACK );
-        tickColor.setValue( Color.BLACK );
-        fontPickerController.fontProperty().setValue( new Text().getFont() );
     }
 
     private static class RelativeFloatConverter extends FloatConverter

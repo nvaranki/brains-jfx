@@ -20,7 +20,7 @@ import javafx.util.Builder;
 /**
  * Панель выбора и установки параметров рисования графика.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class GraphPropertiesPaneController implements Builder<Node>
 {
@@ -28,10 +28,12 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     private static final String RESOURCE_CSS  = "/fxml/analyser/GraphPropertiesPane.css";
     private static final String CSS_CLASS = "graph-properties-pane";
 
+    private final StringProperty labelProperty;
     private final ObjectProperty<Long> rateValueProperty;
     private final SingleSelectionProperty<TimeUnit> rateUnitProperty;
     private final ReadOnlyBooleanWrapper validProperty;
 
+    @FXML private TextField label;
     @FXML private TextField rateValue;
     @FXML private ComboBox<TimeUnit> rateUnit;
     @FXML private CheckBox borderDisplay;
@@ -42,6 +44,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     
     public GraphPropertiesPaneController()
     {
+        labelProperty = new SimpleStringProperty();
         rateValueProperty = new SimpleObjectProperty<>();
         rateUnitProperty = new SingleSelectionProperty<>();
         validProperty = new ReadOnlyBooleanWrapper();
@@ -56,6 +59,11 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     @Override
     public Node build()
     {
+        label = new TextField();
+        label.setId( "label" );
+        label.setPrefColumnCount( 32 );
+        label.setFocusTraversable( true );
+
         rateValue = new TextField();
         rateValue.setId( "rateValue" );
         rateValue.setPrefColumnCount( 6 );
@@ -89,17 +97,19 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         zeroDisplay.setIndeterminate( false );
         
         GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "properties.graph.rate" ) ), 0, 0 );
-        pane.add( rateValue, 1, 0 );
-        pane.add( rateUnit, 2, 0 );
-        pane.add( new Label( LOGGER.text( "properties.graph.border" ) ), 0, 1 );
-        pane.add( borderDisplay, 1, 1 );
-        pane.add( borderColor, 2, 1 );
-        pane.add( new Label( LOGGER.text( "properties.graph.zero" ) ), 0, 2 );
-        pane.add( zeroDisplay, 1, 2 );
-        pane.add( zeroColor, 2, 2 );
-        pane.add( new Label( LOGGER.text( "properties.graph.flow" ) ), 0, 3 );
-        pane.add( timeFlow, 1, 3 );
+        pane.add( new Label( LOGGER.text( "properties.graph.label" ) ), 0, 0 );
+        pane.add( label, 1, 0, 2, 1 );
+        pane.add( new Label( LOGGER.text( "properties.graph.rate" ) ), 0, 1 );
+        pane.add( rateValue, 1, 1 );
+        pane.add( rateUnit, 2, 1 );
+        pane.add( new Label( LOGGER.text( "properties.graph.border" ) ), 0, 2 );
+        pane.add( borderDisplay, 1, 2 );
+        pane.add( borderColor, 2, 2 );
+        pane.add( new Label( LOGGER.text( "properties.graph.zero" ) ), 0, 3 );
+        pane.add( zeroDisplay, 1, 3 );
+        pane.add( zeroColor, 2, 3 );
+        pane.add( new Label( LOGGER.text( "properties.graph.flow" ) ), 0, 4 );
+        pane.add( timeFlow, 1, 4 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -112,6 +122,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     @FXML
     protected void initialize()
     {
+        labelProperty.bindBidirectional( label.textProperty() );
         Bindings.bindBidirectional( rateValue.textProperty(), rateValueProperty, 
                 new PositiveLongConverter( rateValue ) );
         rateUnit.setCellFactory( new EnumCallBack<>( TimeUnit.class ) );
@@ -122,6 +133,11 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         zeroColor.disableProperty().bind( Bindings.not( zeroDisplay.selectedProperty() ) );
         BooleanBinding validBinding = ObjectBindings.isNotNull( rateValueProperty() );
         validProperty.bind( validBinding );
+    }
+    
+    StringProperty labelProperty()
+    {
+        return labelProperty;
     }
     
     Property<Long> rateValueProperty()
@@ -173,15 +189,4 @@ public final class GraphPropertiesPaneController implements Builder<Node>
         zeroColor.fireEvent( new ActionEvent() );
     }
     
-    void reset()
-    {
-        rateUnitProperty.setValue( TimeUnit.MILLISECONDS );
-        rateValueProperty.setValue( 20L );
-        borderColor.setValue( Color.BLACK );
-        borderDisplay.selectedProperty().setValue( false );
-        zeroColor.setValue( Color.GRAY );
-        zeroDisplay.selectedProperty().setValue( true );
-        timeFlow.selectedProperty().setValue( true );
-    }
-
 }

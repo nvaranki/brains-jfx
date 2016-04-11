@@ -16,12 +16,16 @@ import javafx.scene.image.*;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import javafx.util.Builder;
+
+import static com.varankin.brains.jfx.Utilities.*;
 
 /**
  * FXML-контроллер графической зоны для рисования отметок. 
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class GraphPaneController implements Builder<Pane>
 {
@@ -35,6 +39,7 @@ public final class GraphPaneController implements Builder<Pane>
     private final DoubleProperty widthProperty, heightProperty;
     private final ReadOnlyObjectWrapper<WritableImage> writableImageProperty;
     private final SimpleBooleanProperty dynamicProperty;
+    private final StringProperty labelProperty;
     private final ObjectProperty<Long> rateValueProperty;
     private final ObjectProperty<TimeUnit> rateUnitProperty;
     private final BooleanProperty borderDisplayProperty, zeroDisplayProperty;
@@ -64,6 +69,7 @@ public final class GraphPaneController implements Builder<Pane>
         valueConvertorProperty = new SimpleObjectProperty<>();
         timeConvertorProperty = new SimpleObjectProperty<>();
         
+        labelProperty = new SimpleStringProperty();
         rateValueProperty = new SimpleObjectProperty<>( 100L );
         rateUnitProperty = new SimpleObjectProperty<>( TimeUnit.MILLISECONDS );
         borderDisplayProperty = new SimpleBooleanProperty( false );
@@ -93,41 +99,21 @@ public final class GraphPaneController implements Builder<Pane>
     /**
      * Создает графическую зону для рисования отметок. 
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель.
      */
     @Override
     public Pane build()
     {
-        
         menuItemResume = new MenuItem( LOGGER.text( "control.popup.start" ) );
-        menuItemResume.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionResume( event );
-            }
-        } );
+        menuItemResume.setOnAction( this::onActionResume );
         
         menuItemStop = new MenuItem( LOGGER.text( "control.popup.stop" ) );
-        menuItemStop.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionStop( event );
-            }
-        } );
+        menuItemStop.setOnAction( this::onActionStop );
         
         MenuItem menuItemProperties = new MenuItem( LOGGER.text( "control.popup.properties" ) );
         menuItemProperties.setGraphic( JavaFX.icon( "icons16x16/properties.png" ) );
-        menuItemProperties.setOnAction( new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionProperties( event );
-            }
-        } );
+        menuItemProperties.setOnAction( this::onActionProperties );
         
         popup = new ContextMenu();
         popup.getItems().addAll( menuItemResume, menuItemStop, menuItemProperties );
@@ -137,14 +123,7 @@ public final class GraphPaneController implements Builder<Pane>
         imageView.setMouseTransparent( true );
 
         pane = new Pane();
-        pane.setOnContextMenuRequested( new EventHandler<ContextMenuEvent>() 
-        {
-            @Override
-            public void handle( ContextMenuEvent event )
-            {
-                onContextMenuRequested( event );
-            }
-        } );
+        pane.setOnContextMenuRequested( ( event ) -> onContextMenuRequested( event ) );
         
         pane.getChildren().add( imageView );
         
@@ -189,18 +168,21 @@ public final class GraphPaneController implements Builder<Pane>
     {
         if( properties == null )
         {
-            properties = new GraphPropertiesStage( 
-                    rateValueProperty, rateUnitProperty,
-                    borderDisplayProperty, borderColorProperty, 
-                    zeroDisplayProperty, zeroColorProperty, 
-                    dynamicProperty );
+            properties = new GraphPropertiesStage( this::displayProperties, this::applyProperties );
             properties.initOwner( JavaFX.getInstance().платформа );
+            properties.initStyle( StageStyle.DECORATED );
+            properties.initModality( Modality.NONE );
             properties.setTitle( LOGGER.text( "properties.graph.title", Long.toString( id ) ) );
         }
         properties.show();
         properties.toFront();
     }
-
+    
+    StringProperty labelProperty()
+    {
+        return labelProperty;
+    }
+    
     ReadOnlyObjectProperty<WritableImage> writableImageProperty()
     {
         return writableImageProperty.getReadOnlyProperty();
@@ -229,6 +211,42 @@ public final class GraphPaneController implements Builder<Pane>
     BooleanProperty dynamicProperty()
     {
         return dynamicProperty;
+    }
+
+    private void displayProperties( GraphPropertiesController controller )
+    {
+        GraphPropertiesPaneController pc = controller.propertiesController();
+        // скопировать в форму текущие значения
+        copy( labelProperty, pc.labelProperty() );
+        copy( rateValueProperty, pc.rateValueProperty() );
+        copy( rateUnitProperty, pc.rateUnitProperty() );
+        copy( borderDisplayProperty, pc.borderDisplayProperty() );
+        copy( borderColorProperty, pc.borderColorProperty() );
+        copy( zeroDisplayProperty, pc.zeroDisplayProperty() );
+        copy( zeroColorProperty, pc.zeroColorProperty() );
+        copy( dynamicProperty, pc.timeFlowProperty() );
+        pc.resetColorPicker();
+        controller.setModified( false );
+    }
+    
+    private void applyProperties( GraphPropertiesController controller )
+    {
+        GraphPropertiesPaneController pc = controller.propertiesController();
+        // установить текущие значения, если они отличаются
+        applyProperties( pc );
+        controller.setModified( false );
+    }
+    
+    void applyProperties( GraphPropertiesPaneController pc )
+    {
+        applyDistinct( pc.labelProperty(), labelProperty );
+        applyDistinct( pc.rateValueProperty(), rateValueProperty );
+        applyDistinct( pc.rateUnitProperty(), rateUnitProperty );
+        applyDistinct( pc.borderDisplayProperty(), borderDisplayProperty );
+        applyDistinct( pc.borderColorProperty(), borderColorProperty );
+        applyDistinct( pc.zeroDisplayProperty(), zeroDisplayProperty );
+        applyDistinct( pc.zeroColorProperty(), zeroColorProperty );
+        applyDistinct( pc.timeFlowProperty(), dynamicProperty );
     }
 
     void extendPopupMenu( List<MenuItem> parentPopupMenu )
@@ -280,17 +298,6 @@ public final class GraphPaneController implements Builder<Pane>
         }
     }
 
-    void reset( GraphPropertiesPaneController pattern )
-    {
-        rateValueProperty.setValue( pattern.rateValueProperty().getValue() );
-        rateUnitProperty.setValue( pattern.rateUnitProperty().getValue() );
-        borderDisplayProperty.setValue( pattern.borderDisplayProperty().getValue() );
-        borderColorProperty.setValue( pattern.borderColorProperty().getValue() );
-        zeroDisplayProperty.setValue( pattern.zeroDisplayProperty().getValue() );
-        zeroColorProperty.setValue( pattern.zeroColorProperty().getValue() );
-        dynamicProperty.setValue( pattern.timeFlowProperty().getValue() );
-    }
-    
     //<editor-fold defaultstate="collapsed" desc="классы">
     
     /**

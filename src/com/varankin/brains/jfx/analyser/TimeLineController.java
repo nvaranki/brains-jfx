@@ -6,12 +6,13 @@ import com.varankin.characteristic.Свойственный;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.LinkedBlockingQueue;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
+import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -23,6 +24,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.stage.StageStyle;
 import javafx.util.Builder;
 
 /**
@@ -40,6 +42,7 @@ public final class TimeLineController implements Builder<Pane>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
     private final ChangeListener<Parent> lifeCycleListener;
+    private final ListChangeListener<Value> legendValuesListener;
 
     private ObservableSetupStage properties;
     
@@ -57,6 +60,7 @@ public final class TimeLineController implements Builder<Pane>
     public TimeLineController(  )
     {
         lifeCycleListener = new LifeCycleListener<>();
+        legendValuesListener = this::onValueAddRemove;
     }
 
     /**
@@ -140,6 +144,8 @@ public final class TimeLineController implements Builder<Pane>
             e.consume();
         });
         pane.parentProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) );
+        graphController.labelProperty().bindBidirectional( legendController.labelProperty() );
+        legendController.valuesProperty().addListener( new WeakListChangeListener<>( legendValuesListener ) );
     }
     
     @FXML
@@ -159,11 +165,10 @@ public final class TimeLineController implements Builder<Pane>
         Object gs = event.getGestureSource();
         if( gs instanceof BrowserTreeCell )
         {
-            BrowserTreeCell node = (BrowserTreeCell)gs;
-            Object userData = node.getUserData();
-            String метка = node.getText();
+            BrowserTreeCell btc = (BrowserTreeCell)gs;
+            Object userData = btc.getUserData();
             if( userData instanceof Свойственный )
-                Platform.runLater( () -> setupProperties( (Свойственный)userData, метка ) );
+                Platform.runLater( () -> showValueOptions( new Value( (Свойственный)userData, btc.getText() ) ) );
             event.setDropCompleted( true );
         }            
         else
@@ -200,36 +205,56 @@ public final class TimeLineController implements Builder<Pane>
         }
     }
     
-    void reset( ValueRulerPropertiesPaneController controller )
+    /**
+     * Управляет связью отображаемого элемента с графиком и шкалами. 
+     * 
+     * @param c изменения списка элементов.
+     */
+    void onValueAddRemove( ListChangeListener.Change<? extends Value> c )
     {
-        valueRulerController.reset( controller );
-    }
-
-    void reset( TimeRulerPropertiesPaneController controller )
-    {
-        timeRulerController.reset( controller );
-    }
-
-    void reset( GraphPropertiesPaneController controller )
-    {
-        graphController.reset( controller );
-    }
-    
-    void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
-    {
-        List<MenuItem> popupItems = popup.getItems();
-        //TODO DEBUG START
-        popup.getItems().add( new MenuItemSimulatePropertyMonitor( 
-                legendController.valuesProperty().getValue(), 
-                (Void спецификация) ->
+        while( c.next() )
+        {
+            if( c.wasPermutated() )
+            {
+                LOGGER.getLogger().fine( "Permutated list is unsupported." );
+            }
+            else if( c.wasUpdated() )
+            {
+                LOGGER.getLogger().fine( "Updated list is unsupported." );
+            }
+            else
+            {
+                for( Value value : c.getRemoved() )
                 {
-                    DotPainter painter = new BufferedDotPainter( new LinkedBlockingQueue<>(), 1000 );
+                    value.enabledProperty().setValue( false );
+                    DotPainter painter = value.painterProperty().getValue();
+                    painter.valueConvertorProperty().unbind();
+                    painter.timeConvertorProperty().unbind();
+                    painter.writableImageProperty().unbind();
+                }
+                for( Value value : c.getAddedSubList() )
+                {
+                    DotPainter painter = value.painterProperty().getValue();
                     painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
                     painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
                     painter.writableImageProperty().bind( graphController.writableImageProperty() );
-                    return painter;
-                }) );
-        //TODO DEBUG END
+                    value.enabledProperty().setValue( true );
+                }
+            }
+        }
+    }
+    
+    void reset( TimeLineSetupController controller )
+    {
+        valueRulerController.applyProperties( controller.valueRulerController() );
+        timeRulerController.applyProperties( controller.timeRulerController() );
+        graphController.applyProperties( controller.graphAreaController() );
+        legendController.applyProperties( controller.graphAreaController() );
+    }
+
+    void extendPopupMenu( List<? extends MenuItem> parentPopupMenu )
+    {
+        List<MenuItem> popupItems = popup.getItems();
         JavaFX.copyMenuItems( parentPopupMenu, popupItems, true );
         graphController.extendPopupMenu( popupItems );
         valueRulerController.extendPopupMenu( popupItems );
@@ -237,29 +262,19 @@ public final class TimeLineController implements Builder<Pane>
         legendController.extendPopupMenu( popupItems );
     }
     
-    private void setupProperties( Свойственный свойственный, String метка )
+    private void showValueOptions( Value value )
     {
         if( properties == null )
         {
-            properties = new ObservableSetupStage();
+            properties = new ObservableSetupStage( legendController::addLegendItem );
+            properties.initStyle( StageStyle.DECORATED );
             properties.initOwner( JavaFX.getInstance().платформа );
             properties.setTitle( LOGGER.text( "properties.observable.title" ) );
         }
-        properties.getController().setMonitor( свойственный, метка );
-        properties.showAndWait();
-        if( properties.getController().isApproved() )
-        {
-            Value value = properties.getController().createValueInstance();
-            List<Value> observables = legendController.valuesProperty().getValue();
-            if( value != null && value.painter != null && observables.add( value ) )
-            {
-                value.painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-                value.painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-                value.painter.writableImageProperty().bind( graphController.writableImageProperty() );
-            }
-        }
+        properties.getController().setValue( value );
+        properties.show();
     }
-
+    
     private class LifeCycleListener<T> implements ChangeListener<T>
     {
         @Override
@@ -287,9 +302,9 @@ public final class TimeLineController implements Builder<Pane>
                 graphController.timeConvertorProperty().unbind();
                 graphController.valueConvertorProperty().unbind();
 
-                legendController.valuesProperty().clear();
+                legendController.clear();
             }
         }
     }
-    
+
 }

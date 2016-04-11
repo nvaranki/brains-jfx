@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Description: Панель выбора и установки параметров рисования графика.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -21,66 +21,79 @@
   
   <children>
     <Label 
-        text="%properties.graph.rate" 
+        text="%properties.graph.label" 
         GridPane.columnIndex="0" 
         GridPane.rowIndex="0" 
     />
     <TextField
-        fx:id="rateValue"
+        fx:id="label"
         GridPane.columnIndex="1" 
         GridPane.rowIndex="0"  
+        GridPane.columnSpan="2" 
+        prefColumnCount="32" 
+        focusTraversable="true"      
+    />
+    <Label 
+        text="%properties.graph.rate" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <TextField
+        fx:id="rateValue"
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
         prefColumnCount="6" 
         focusTraversable="true"      
     />
     <ComboBox
         fx:id="rateUnit"
         GridPane.columnIndex="2" 
-        GridPane.rowIndex="0"  
+        GridPane.rowIndex="1"  
         focusTraversable="true"      
     />
     <Label 
         text="%properties.graph.border" 
         GridPane.columnIndex="0" 
-        GridPane.rowIndex="1" 
+        GridPane.rowIndex="2" 
     />
     <CheckBox
         fx:id="borderDisplay"
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="1"  
+        GridPane.rowIndex="2"  
         focusTraversable="true"      
     />
     <ColorPicker
         fx:id="borderColor"
         GridPane.columnIndex="2" 
-        GridPane.rowIndex="1"  
+        GridPane.rowIndex="2"  
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
     <Label 
         text="%properties.graph.zero" 
         GridPane.columnIndex="0" 
-        GridPane.rowIndex="2" 
+        GridPane.rowIndex="3" 
     />
     <CheckBox
         fx:id="zeroDisplay"
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="2"  
+        GridPane.rowIndex="3"  
         focusTraversable="true"      
     />
     <ColorPicker
         fx:id="zeroColor"
         GridPane.columnIndex="2" 
-        GridPane.rowIndex="2"  
+        GridPane.rowIndex="3"  
         focusTraversable="false"      
     /><!-- focusTraversable="true" RT-21549 -->
     <Label 
         text="%properties.graph.flow" 
         GridPane.columnIndex="0" 
-        GridPane.rowIndex="3" 
+        GridPane.rowIndex="4" 
     />
     <CheckBox
         fx:id="timeFlow"
         GridPane.columnIndex="1" 
-        GridPane.rowIndex="3"  
+        GridPane.rowIndex="4"  
         focusTraversable="true"      
     />
   </children>

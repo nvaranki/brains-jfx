@@ -31,7 +31,7 @@
     <FlowPane fx:id="values" >
         <GridPane.columnIndex>0</GridPane.columnIndex>
         <GridPane.rowIndex>0</GridPane.rowIndex>
-        <Label fx:id="title" />   
+        <Label fx:id="label" />   
     </FlowPane>
 
     <CheckBox fx:id="time" selected="false" >

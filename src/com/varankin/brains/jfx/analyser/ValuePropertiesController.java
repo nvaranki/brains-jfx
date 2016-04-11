@@ -1,27 +1,24 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.PropertyGate;
-import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели диалога для выбора и установки параметров прорисовки отметок.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ValuePropertiesController implements Builder<Parent>
 {
@@ -32,75 +29,55 @@ public final class ValuePropertiesController implements Builder<Parent>
     static final String RESOURCE_FXML = "/fxml/analyser/ValueProperties.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private final PropertyGate<Color> colorGate;
-    private final PropertyGate<int[][]> patternGate;
-    private final PropertyGate<Integer> scaleGate;
-    private final ChangedTrigger changedFunction;
-
-    private BooleanBinding changedBinding;
+    private Value value;
+    private Consumer<Value> action;
     
-    @FXML private Pane properties;
+    @FXML private Button buttonOK;
     @FXML private Button buttonApply;
     @FXML private ValuePropertiesPaneController propertiesController;
+    @FXML private ObservableConversionPaneController observableConversionPaneController;
 
-    public ValuePropertiesController()
-    {
-        changedFunction = new ChangedTrigger();
-        colorGate = new PropertyGate<>();
-        patternGate = new PropertyGate<>();
-        scaleGate = new PropertyGate<>();
-    }
-    
     /**
      * Создает панель диалога для выбора и установки параметров прорисовки отметок.
      * Применяется в конфигурации без FXML.
+     * 
+     * @return панель диалога.
      */
     @Override
     public BorderPane build()
     {
-        propertiesController = new ValuePropertiesPaneController();
-        
-        properties = propertiesController.build();
-        properties.setId( "properties" );
-
-        Button buttonOK = new Button( LOGGER.text( "button.ok" ) );
-        buttonOK.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionOK( event );
-            }
-        } );
+        buttonOK = new Button( LOGGER.text( "button.ok" ) );
+        buttonOK.setOnAction( this::onActionOK );
         buttonOK.setDefaultButton( true );
 
         buttonApply = new Button( LOGGER.text( "button.apply" ) );
-        buttonApply.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionApply( event );
-            }
-        } );
+        buttonApply.setOnAction( this::onActionApply );
         buttonApply.setId( "buttonApply" );
 
         Button buttonCancel = new Button( LOGGER.text( "button.cancel" ) );
-        buttonCancel.setOnAction( new EventHandler<ActionEvent>() 
-        {
-            @Override
-            public void handle( ActionEvent event )
-            {
-                onActionCancel( event );
-            }
-        } );
+        buttonCancel.setOnAction( this::onActionCancel );
         buttonCancel.setCancelButton( true );
 
         HBox buttonBar = new HBox();
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
 
+        Tab tabConversion = new Tab();
+        observableConversionPaneController = new ObservableConversionPaneController();
+        tabConversion.setContent( observableConversionPaneController.build() );
+        tabConversion.setText( LOGGER.text( "observable.setup.conversion.title" ) );
+        tabConversion.setClosable( false );
+        
+        propertiesController = new ValuePropertiesPaneController();
+        Tab tabPainting = new Tab();
+        tabPainting.setContent( propertiesController.build() );
+        tabPainting.setText( LOGGER.text( "observable.setup.presentation.title" ) );
+        tabPainting.setClosable( false );
+        
+        TabPane tabs = new TabPane();
+        tabs.getTabs().addAll( tabPainting, tabConversion );
+
         BorderPane pane = new BorderPane();
-        pane.setCenter( properties );
+        pane.setCenter( tabs );
         pane.setBottom( buttonBar );
 
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -114,68 +91,55 @@ public final class ValuePropertiesController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        changedBinding = Bindings.createBooleanBinding( changedFunction, 
-                propertiesController.colorProperty(),
-                propertiesController.patternProperty() /*,
-                propertiesController.scaleProperty() is not relevant */ );
-        buttonApply.disableProperty().bind( Bindings.not( changedBinding ) );
+        BooleanBinding changed = Bindings.or( 
+                propertiesController.changedProperty(),
+                observableConversionPaneController.changedProperty() );
+        BooleanBinding valid = Bindings.and( 
+                propertiesController.validProperty(),
+                observableConversionPaneController.validProperty() );
+        buttonOK.disableProperty().bind( Bindings.not( valid ) );
+        buttonApply.disableProperty().bind( Bindings.not( Bindings.and( valid, changed ) ) );
     }
     
     @FXML
     void onActionOK( ActionEvent event )
     {
-        applyChanges();
+        event.consume();
+        action.accept( value );
         buttonApply.getScene().getWindow().hide();
     }
     
     @FXML
     void onActionApply( ActionEvent event )
     {
-        applyChanges();
+        event.consume();
+        action.accept( value );
     }
     
     @FXML
     void onActionCancel( ActionEvent event )
     {
+        event.consume();
         buttonApply.getScene().getWindow().hide();
     }
     
-    void bindColorProperty( Property<Color> property )
+    void setAction( Consumer<Value> consumer )
     {
-        colorGate.bind( property, propertiesController.colorProperty() );
+        action = this::applyOptionsToValue;
+        action = action.andThen( consumer );
     }
 
-    void bindPatternProperty( Property<int[][]> property )
+    void setValue( Value value )
     {
-        patternGate.bind( property, propertiesController.patternProperty() );
+        this.value = value;
+        observableConversionPaneController.copyOptions( value );
+        propertiesController.copyOptions( value );
     }
-
-    void bindScaleProperty( Property<Integer> property )
+    
+    private void applyOptionsToValue( Value value )
     {
-        scaleGate.bind( property, propertiesController.scaleProperty() );
-    }
-
-    private void applyChanges()
-    {
-        // установить текущие значения, если они отличаются
-        colorGate.pullDistinctValue();
-        patternGate.pullDistinctValue();
-        scaleGate.pullDistinctValue();
-        // установить статус
-        changedFunction.setValue( false );
-        changedBinding.invalidate();
-    }
-
-    void reset()
-    {
-        // сбросить прежние значения и установить текущие значения
-        colorGate.forceReset();
-        patternGate.forceReset();
-        scaleGate.forceReset();
-        propertiesController.resetColorPicker();
-        // установить статус
-        changedFunction.setValue( false );
-        changedBinding.invalidate();
+        propertiesController.applyOptions( value );
+        observableConversionPaneController.applyOptions( value );
     }
 
 }

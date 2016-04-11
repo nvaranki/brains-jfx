@@ -4,26 +4,27 @@ import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
-import javafx.collections.ListChangeListener;
-import javafx.collections.WeakListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели графиков. 
  * 
- * @author &copy; 2015 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class AnalyserController implements Builder<Node>
 {
@@ -34,7 +35,6 @@ public final class AnalyserController implements Builder<Node>
     static final String RESOURCE_FXML  = "/fxml/analyser/Analyser.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
-    private final ListChangeListener<Node> doubleSeparatorRemover;
     private final ChangeListener<Scene> lifeCycleListener;
     
     private TimeLineSetupStage setup;
@@ -49,7 +49,6 @@ public final class AnalyserController implements Builder<Node>
     public AnalyserController()
     {
         lifeCycleListener = new LifeCycleListener();
-        doubleSeparatorRemover = new DoubleSeparatorRemover();
     }
     
     /**
@@ -106,65 +105,74 @@ public final class AnalyserController implements Builder<Node>
     @FXML
     protected void initialize()
     {
-        box.getChildren().addListener( new WeakListChangeListener<>( doubleSeparatorRemover ) );
         buttonRemoveAll.disableProperty().bind( Bindings.lessThan( 
-                Bindings.size( box.getChildren() ), 2 ) );
+                Bindings.size( box.getChildren() ), 1 ) );
         pane.sceneProperty().addListener( new WeakChangeListener<>( lifeCycleListener ) ); 
     }
     
     @FXML
-    private void onActionAddTimeLine( ActionEvent __ )
+    private void onActionAddTimeLine( ActionEvent e )
     {
         if( setup == null )
         {
-            setup = new TimeLineSetupStage();
+            setup = new TimeLineSetupStage( this::resetToDefaults, this::createNewTimeline );
             setup.initModality( Modality.APPLICATION_MODAL );
             setup.initOwner( JavaFX.getInstance().платформа );
             setup.setTitle( LOGGER.text( "analyser.popup.add" ) );
         }
         setup.showAndWait();
-        TimeLineSetupController setupController = setup.getController();
-        if( setupController.isApproved() )
-        {
-            BuilderFX<Pane,TimeLineController> builder = new BuilderFX<>();
-            builder.init( TimeLineController.class, 
-                    TimeLineController.RESOURCE_FXML, TimeLineController.RESOURCE_BUNDLE );
-            TimeLineController controller = builder.getController();
-            controller.reset( setupController.getValueRulerPropertiesPaneController() );
-            controller.reset( setupController.getTimeRulerPropertiesPaneController() );
-            controller.reset( setupController.getGraphPropertiesPaneController() );
-            controller.extendPopupMenu( popup.getItems() );
-            List<Node> children = box.getChildren();
-            int pos = Math.max( 0, children.indexOf( buttonPanel ) );
-            children.addAll( pos, Arrays.<Node>asList( builder.getNode(), new Separator( Orientation.HORIZONTAL ) ) );
-        }
     }
     
     @FXML
-    private void onActionRemoveAllTimeLines( ActionEvent __ )
+    private void onActionRemoveAllTimeLines( ActionEvent e )
     {
         boolean confirmed = true;//TODO popup and ask again
         if( confirmed ) 
-        {
-            List<Node> graphs = new ArrayList<>( box.getChildren() );
-            graphs.remove( buttonPanel ); // еще пригодится
-            box.getChildren().removeAll( graphs );
-        }
+            box.getChildren().clear();
     }
 
-    private class DoubleSeparatorRemover implements ListChangeListener<Node>
+    void resetToDefaults( TimeLineSetupController controller )
     {
-        @Override
-        public void onChanged( ListChangeListener.Change<? extends Node> change )
-        {
-            boolean removed = false;
-            while( change.next() )
-                removed = removed || !change.getRemoved().isEmpty();
-            if( removed )
-                for( int i = 0; i < box.getChildren().size(); i++ )
-                    if( i % 2 == 0 && box.getChildren().get( i ) instanceof Separator )
-                        box.getChildren().remove( i-- );//TODO java.lang.UnsupportedOperationException
-        }
+        Font font = new Text().getFont();
+        
+        TimeRulerPropertiesPaneController tpc = controller.timeRulerController();
+        tpc.unitProperty().setValue( TimeUnit.MILLISECONDS );
+        tpc.durationProperty().setValue( 10000L );
+        tpc.excessProperty().setValue( 200L );
+        tpc.textColorProperty().setValue( Color.BLACK );
+        tpc.tickColorProperty().setValue( Color.BLACK );
+        tpc.textFontProperty().setValue( font );
+        tpc.resetColorPicker();
+        
+        ValueRulerPropertiesPaneController vpc = controller.valueRulerController();
+        vpc.valueMinProperty().setValue( -1f );
+        vpc.valueMaxProperty().setValue( +1f );
+        vpc.textColorProperty().setValue( Color.BLACK );
+        vpc.tickColorProperty().setValue( Color.BLACK );
+        vpc.textFontProperty().setValue( font );
+        vpc.resetColorPicker();
+
+        GraphPropertiesPaneController gpc = controller.graphAreaController();
+        gpc.labelProperty().setValue( "" );
+        gpc.rateUnitProperty().setValue( TimeUnit.MILLISECONDS );
+        gpc.rateValueProperty().setValue( 20L );
+        gpc.borderColorProperty().setValue( Color.BLACK );
+        gpc.borderDisplayProperty().setValue( false );
+        gpc.zeroColorProperty().setValue( Color.GRAY );
+        gpc.zeroDisplayProperty().setValue( true );
+        gpc.timeFlowProperty().setValue( true );
+        gpc.resetColorPicker();
+    }
+
+    void createNewTimeline( TimeLineSetupController setupController )
+    {
+        BuilderFX<Pane,TimeLineController> builder = new BuilderFX<>();
+        builder.init( TimeLineController.class, 
+                TimeLineController.RESOURCE_FXML, TimeLineController.RESOURCE_BUNDLE );
+        TimeLineController controller = builder.getController();
+        controller.reset( setupController );
+        controller.extendPopupMenu( popup.getItems() );
+        box.getChildren().addAll( builder.getNode() );
     }
     
     private class LifeCycleListener implements ChangeListener<Scene>

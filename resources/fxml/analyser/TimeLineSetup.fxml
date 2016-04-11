@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Description: Диалог выбора параметров рисования графика.
-    Author     : (с) 2014 Николай Варанкин
+    Author     : (с) 2016 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -23,6 +23,14 @@
     <center>
         <TabPane>
             <tabs>
+                <Tab text="%timeline.setup.graph.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="GraphPropertiesPane.fxml" 
+                            fx:id="graphPropertiesPane"
+                            />
+                    </content>
+                </Tab>  
                 <Tab text="%timeline.setup.value.title" closable="false" >
                     <content>
                         <fx:include 
@@ -36,14 +44,6 @@
                         <fx:include 
                             source="TimeRulerPropertiesPane.fxml" 
                             fx:id="timeRulerPropertiesPane"
-                            />
-                    </content>
-                </Tab>  
-                <Tab text="%timeline.setup.graph.title" closable="false" >
-                    <content>
-                        <fx:include 
-                            source="GraphPropertiesPane.fxml" 
-                            fx:id="graphPropertiesPane"
                             />
                     </content>
                 </Tab>  

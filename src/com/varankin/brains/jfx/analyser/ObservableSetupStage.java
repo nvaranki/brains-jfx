@@ -2,31 +2,30 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
+import java.util.function.Consumer;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
 import static com.varankin.brains.jfx.analyser.ObservableSetupController.*;
 
 /**
  * Диалог выбора параметров рисования наблюдаемого значения.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 final class ObservableSetupStage extends Stage
 {
     private final ObservableSetupController controller;
 
-    ObservableSetupStage()
+    ObservableSetupStage( Consumer<Value> action )
     {
         BuilderFX<Parent,ObservableSetupController> builder = new BuilderFX<>();
         builder.init( ObservableSetupController.class, RESOURCE_FXML, RESOURCE_BUNDLE );
         controller = builder.getController();
+        controller.setAction( action );
         
-        initStyle( StageStyle.DECORATED );
         getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
 
         setResizable( true );
@@ -35,7 +34,6 @@ final class ObservableSetupStage extends Stage
         setHeight( 220d ); //TODO save/restore size&pos
         setWidth( 400d );
         setScene( new Scene( builder.getNode() ) );
-        setOnShowing( (WindowEvent e) -> { controller.setApproved( false ); } );
     }
 
     ObservableSetupController getController()

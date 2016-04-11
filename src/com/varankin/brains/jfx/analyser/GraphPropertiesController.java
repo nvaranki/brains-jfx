@@ -1,10 +1,9 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.jfx.PropertyGate;
 import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
@@ -15,13 +14,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели диалога для выбора и установки параметров рисования графика.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class GraphPropertiesController implements Builder<Parent>
 {
@@ -32,16 +30,10 @@ public final class GraphPropertiesController implements Builder<Parent>
     static final String RESOURCE_FXML = "/fxml/analyser/GraphProperties.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private final PropertyGate<Long> rateValueGate;
-    private final PropertyGate<TimeUnit> rateUnitGate;
-    private final PropertyGate<Boolean> borderDisplayGate;
-    private final PropertyGate<Color> borderColorGate;
-    private final PropertyGate<Boolean> zeroDisplayGate;
-    private final PropertyGate<Color> zeroColorGate;
-    private final PropertyGate<Boolean> timeFlowGate;
     private final ChangedTrigger changedFunction;
 
     private BooleanBinding changedBinding;
+    private Consumer<GraphPropertiesController> action;
     
     @FXML private Node properties;
     @FXML private Button buttonOK, buttonApply;
@@ -50,13 +42,6 @@ public final class GraphPropertiesController implements Builder<Parent>
     public GraphPropertiesController()
     {
         changedFunction = new ChangedTrigger();
-        rateValueGate = new PropertyGate<>();
-        rateUnitGate = new PropertyGate<>();
-        borderDisplayGate = new PropertyGate<>();
-        borderColorGate = new PropertyGate<>();
-        zeroDisplayGate = new PropertyGate<>();
-        zeroColorGate = new PropertyGate<>();
-        timeFlowGate = new PropertyGate<>();
     }
     
     /**
@@ -105,6 +90,7 @@ public final class GraphPropertiesController implements Builder<Parent>
     protected void initialize()
     {
         changedBinding = Bindings.createBooleanBinding( changedFunction, 
+                propertiesController.labelProperty(),
                 propertiesController.rateValueProperty(),
                 propertiesController.rateUnitProperty(),
                 propertiesController.borderDisplayProperty(),
@@ -120,85 +106,38 @@ public final class GraphPropertiesController implements Builder<Parent>
     @FXML
     void onActionOK( ActionEvent event )
     {
-        applyChanges();
+        event.consume();
+        action.accept( this );
         buttonApply.getScene().getWindow().hide();
     }
     
     @FXML
     void onActionApply( ActionEvent event )
     {
-        applyChanges();
+        event.consume();
+        action.accept( this );
     }
     
     @FXML
     void onActionCancel( ActionEvent event )
     {
+        event.consume();
         buttonApply.getScene().getWindow().hide();
     }
-        
-    void bindRateValueProperty( Property<Long> property )
-    {
-        rateValueGate.bind( property, propertiesController.rateValueProperty() );
-    }
-
-    void bindRateUnitProperty( Property<TimeUnit> property )
-    {
-        rateUnitGate.bind( property, propertiesController.rateUnitProperty() );
-    }
-
-    void bindBorderDisplayProperty( Property<Boolean> property )
-    {
-        borderDisplayGate.bind( property, propertiesController.borderDisplayProperty() );
-    }
-
-    void bindBorderColorProperty( Property<Color> property )
-    {
-        borderColorGate.bind( property, propertiesController.borderColorProperty() );
-    }
-
-    void bindZeroDisplayProperty( Property<Boolean> property )
-    {
-        zeroDisplayGate.bind( property, propertiesController.zeroDisplayProperty() );
-    }
-
-    void bindZeroColorProperty( Property<Color> property )
-    {
-        zeroColorGate.bind( property, propertiesController.zeroColorProperty() );
-    }
-
-    void bindFlowModeProperty( Property<Boolean> property )
-    {
-        timeFlowGate.bind( property, propertiesController.timeFlowProperty() );
-    }
-
-    private void applyChanges()
-    {
-        // установить текущие значения, если они отличаются
-        rateValueGate.pullDistinctValue();
-        rateUnitGate.pullDistinctValue();
-        borderDisplayGate.pullDistinctValue();
-        borderColorGate.pullDistinctValue();
-        zeroDisplayGate.pullDistinctValue();
-        zeroColorGate.pullDistinctValue();
-        timeFlowGate.pullDistinctValue();
-        // установить статус
-        changedFunction.setValue( false );
-        changedBinding.invalidate();
-    }
     
-    void reset()
+    GraphPropertiesPaneController propertiesController()
     {
-        // сбросить прежние значения и установить текущие значения
-        rateValueGate.forceReset();
-        rateUnitGate.forceReset();
-        borderDisplayGate.forceReset();
-        borderColorGate.forceReset();
-        zeroDisplayGate.forceReset();
-        zeroColorGate.forceReset();
-        timeFlowGate.forceReset();
-        propertiesController.resetColorPicker();
-        // установить статус
-        changedFunction.setValue( false );
+        return propertiesController;
+    }
+        
+    void setAction( Consumer<GraphPropertiesController> consumer )
+    {
+        action = consumer;
+    }
+
+    void setModified( boolean status )
+    {
+        changedFunction.setValue( status );
         changedBinding.invalidate();
     }
 
