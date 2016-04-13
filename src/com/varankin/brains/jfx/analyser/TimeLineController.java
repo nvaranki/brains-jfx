@@ -226,7 +226,6 @@ public final class TimeLineController implements Builder<Pane>
             {
                 for( Value value : c.getRemoved() )
                 {
-                    value.enabledProperty().setValue( false );
                     DotPainter painter = value.painterProperty().getValue();
                     painter.valueConvertorProperty().unbind();
                     painter.timeConvertorProperty().unbind();
@@ -238,7 +237,6 @@ public final class TimeLineController implements Builder<Pane>
                     painter.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
                     painter.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
                     painter.writableImageProperty().bind( graphController.writableImageProperty() );
-                    value.enabledProperty().setValue( true );
                 }
             }
         }

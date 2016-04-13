@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
  * Менеджер рисования отметок в графической зоне. 
  * Отметки рисуются блоками, по мере поступления в очередь.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 class DotPainter
 {
@@ -112,12 +112,13 @@ class DotPainter
     }
     
     /**
-     * @param dot отметка для прорисовки.
+     * @param значение отметка для прорисовки.
+     * @param момент   момент времени возникновения отметки.
      * @return {@code true} если отметка поставлена в очередь, иначе {@code false}.
      */
-    boolean offer( Dot dot )
+    boolean offer( float значение, long момент )
     {
-        return очередь.offer( dot );
+        return enabledProperty.get() && очередь.offer( new Dot( значение, момент ) );
     }
     
     /**

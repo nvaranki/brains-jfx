@@ -38,9 +38,8 @@ final class Value
     final List<String> метки;
     final List<RatedObservable> observables;
     
-    RatedObservable observable;
-    Ранжируемый convertor;
-    
+    private final Property<RatedObservable> observableProperty;
+    private final Property<Ранжируемый> convertorProperty;
     private final IntegerProperty bufferProperty;
     private final Property<int[][]> patternProperty;
     private final Property<Color> colorProperty;
@@ -59,6 +58,10 @@ final class Value
         метки = Collections.unmodifiableList( new ArrayList<>( м ) );
         observables = Collections.unmodifiableList( collect( свойственный ) );
         
+        observableProperty = new SimpleObjectProperty<>();
+        observableProperty.addListener( this::onObservableChanged );
+        convertorProperty = new SimpleObjectProperty<>();
+        
         bufferProperty = new SimpleIntegerProperty( Integer.valueOf( JavaFX.getInstance().контекст.параметр( Контекст.Параметры.BUFFER ) ) );
         colorProperty = new SimpleObjectProperty<>( colors.next() );
         patternProperty = new SimpleObjectProperty<>( patterns.next() );
@@ -67,12 +70,21 @@ final class Value
         enabledProperty = new SimpleBooleanProperty();
         graphicProperty = new ReadOnlyObjectWrapper<>();
         
+        painterProperty.addListener( this::onPainterChanged );
         graphicProperty.bind( Bindings.createObjectBinding( this::createIcon, colorProperty, patternProperty ) );
         painterProperty.bind( Bindings.createObjectBinding( this::createPainter, colorProperty, patternProperty, bufferProperty ) );
-        
-        enabledProperty.addListener( this::onStartStop );
     }
 
+    Property<RatedObservable> observableProperty()
+    {
+        return observableProperty;
+    }
+
+    Property<Ранжируемый> convertorProperty()
+    {
+        return convertorProperty;
+    }
+    
     IntegerProperty bufferProperty()
     {
         return bufferProperty;
@@ -131,41 +143,33 @@ final class Value
         }
     }
 
-    private void onStartStop( ObservableValue<? extends Boolean> o, Boolean oldValue, Boolean newValue )
+    private void onObservableChanged( ObservableValue<? extends RatedObservable> o, RatedObservable oldValue, RatedObservable newValue )
     {
-        DotPainter painter = painterProperty.getValue();
-        if( painter != null )
-        {
-            if( newValue != null )
-            {
-                Collection наблюдатели = observable != null ? observable.свойство().наблюдатели() : null;
-                if( newValue )
-                {
-                    painter.enabledProperty().setValue( newValue );
-                    if( наблюдатели != null )
-                        наблюдатели.add( наблюдатель = this::onObservation );
-                }
-                else
-                {
-                    painter.enabledProperty().setValue( newValue );
-                    if( наблюдатели != null )
-                        наблюдатели.remove( наблюдатель );
-                }
-            }
-        }
+        if( oldValue != null )
+            oldValue.свойство().наблюдатели().remove( наблюдатель );
+        if( newValue != null )
+            newValue.свойство().наблюдатели().add( наблюдатель = this::onObservation );
+    }
+
+    private void onPainterChanged( ObservableValue<? extends DotPainter> o, DotPainter oldValue, DotPainter newValue )
+    {
+        if( oldValue != null )
+            oldValue.enabledProperty().unbind();
+        if( newValue != null )
+            newValue.enabledProperty().bind( enabledProperty );
     }
 
     private void onObservation( Изменение изменение )
     {
+        Ранжируемый convertor = convertorProperty.getValue();
         if( convertor instanceof СтандартныйРанжировщик )
             ((СтандартныйРанжировщик)convertor).setOldValue( изменение.ПРЕЖНЕЕ );
-
-        Dot dot = new Dot( convertor.значение( изменение.АКТУАЛЬНОЕ ), System.currentTimeMillis() );
-
         DotPainter painter = painterProperty.getValue();
         if( painter == null )
             LOGGER.log( Level.FINEST, "Painter of \"{0}\" is missing.", titleProperty.getValue() );
-        else if( !painter.offer( dot ) )
+        else if( convertor == null )
+            LOGGER.log( Level.FINEST, "Convertor of \"{0}\" is missing.", titleProperty.getValue() );
+        else if( !painter.offer( convertor.значение( изменение.АКТУАЛЬНОЕ ), System.currentTimeMillis() ) )
             LOGGER.log( Level.FINEST, "Painter of \"{0}\" rejected a dot.", titleProperty.getValue() );
     }
 
@@ -191,7 +195,7 @@ final class Value
 
     private DotPainter createPainter()
     {
-        BlockingQueue<Dot> queue = new LinkedBlockingQueue<>();
+        BlockingQueue queue = new LinkedBlockingQueue();
         int buffer = bufferProperty.get();
         DotPainter painter = buffer > 0 ? new BufferedDotPainter( queue, buffer ) : new DotPainter( queue );
         painter.colorProperty().setValue( colorProperty.getValue() );

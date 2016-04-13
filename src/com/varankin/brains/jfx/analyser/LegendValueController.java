@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.*;
-import javafx.beans.value.*;
 import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -147,19 +145,6 @@ public final class LegendValueController implements Builder<CheckBox>
         event.consume();
     }
         
-    BooleanProperty selectedProperty()
-    {
-        return legend.selectedProperty();
-    }
-    
-    void managePainterOnOff( ObservableValue<? extends DotPainter> o, DotPainter oldPainter, DotPainter newPainter )
-    {
-        if( oldPainter != null )
-            oldPainter.enabledProperty().unbind();
-        if( newPainter != null )
-            newPainter.enabledProperty().bind( legend.selectedProperty() );
-    }
-    
     private void applyProperties( Value value )
     {
         Parent parent = legend.getParent();
@@ -184,7 +169,10 @@ public final class LegendValueController implements Builder<CheckBox>
                 Value value = (Value)o;
                 legend.textProperty().unbind();
                 legend.graphicProperty().unbind();
-                legend.selectedProperty().unbindBidirectional( value.enabledProperty() );
+                legend.selectedProperty().setValue( Boolean.FALSE );
+                value.enabledProperty().unbind();
+                value.observableProperty().setValue( null );
+                value.convertorProperty().setValue( null );
             }
         }
         if( c.wasAdded())
@@ -195,7 +183,8 @@ public final class LegendValueController implements Builder<CheckBox>
                 Value value = (Value)o;
                 legend.textProperty().bind( value.titleProperty() );
                 legend.graphicProperty().bind( value.graphicProperty() );
-                legend.selectedProperty().bindBidirectional( value.enabledProperty() );
+                value.enabledProperty().bind( legend.selectedProperty() );
+                legend.selectedProperty().setValue( Boolean.TRUE );
             }
         }
     }

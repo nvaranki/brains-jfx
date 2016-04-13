@@ -150,14 +150,14 @@ public final class ObservableConversionPaneController implements Builder<Pane>
     {
         parameter.getItems().clear();
         parameter.getItems().addAll( value.observables );
-        if( value.observable != null )
-            parameter.getSelectionModel().select( value.observable );
-        else
-            parameter.getSelectionModel().selectFirst();
-        if( value.convertor != null )
-            convertor.getSelectionModel().select( value.convertor );
-        else
-            convertor.getSelectionModel().selectFirst();
+        SingleSelectionModel<RatedObservable> psm = parameter.getSelectionModel();
+        psm.select( value.observableProperty().getValue() );
+        if( psm.getSelectedItem() == null )
+            psm.selectFirst();
+        SingleSelectionModel<Ранжируемый> csm = convertor.getSelectionModel();
+        csm.select( value.convertorProperty().getValue() );
+        if( csm.getSelectedItem() == null )
+            csm.selectFirst();
         bufferProperty.setValue( value.bufferProperty().getValue() );
         changedFunction.setValue( false );
         changedBinding.invalidate();
@@ -165,8 +165,8 @@ public final class ObservableConversionPaneController implements Builder<Pane>
 
     void applyOptions( Value value )
     {
-        value.observable = parameterProperty.getValue();
-        value.convertor = convertorProperty.getValue();
+        value.observableProperty().setValue( parameterProperty.getValue() );
+        value.convertorProperty().setValue( convertorProperty.getValue() );
         value.bufferProperty().setValue( bufferProperty.getValue() );
         changedFunction.setValue( false );
         changedBinding.invalidate();
