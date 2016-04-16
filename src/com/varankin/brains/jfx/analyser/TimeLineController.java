@@ -41,6 +41,7 @@ public final class TimeLineController implements Builder<Pane>
     static final String RESOURCE_FXML  = "/fxml/analyser/TimeLine.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
     
+    private final FlowController flowController;
     private final ChangeListener<Parent> lifeCycleListener;
     private final ListChangeListener<Value> legendValuesListener;
 
@@ -59,6 +60,7 @@ public final class TimeLineController implements Builder<Pane>
 
     public TimeLineController(  )
     {
+        flowController = new FlowController();
         lifeCycleListener = new LifeCycleListener<>();
         legendValuesListener = this::onValueAddRemove;
     }
@@ -260,6 +262,12 @@ public final class TimeLineController implements Builder<Pane>
         legendController.extendPopupMenu( popupItems );
     }
     
+    void addFlowListenerTo( BooleanProperty dynamicProperty, boolean logic )
+    {
+        flowController.logic = logic;
+        dynamicProperty.addListener( new WeakChangeListener<>( flowController ) );
+    }
+    
     private void showValueOptions( Value value )
     {
         if( properties == null )
@@ -272,6 +280,39 @@ public final class TimeLineController implements Builder<Pane>
         properties.getController().setValue( value );
         properties.show();
     }
+
+    /**
+     * Устанавливает зависимость {@link GraphPaneController#dynamicProperty() } 
+     * от внешнего мажорного выключателя.
+     */
+    private class FlowController implements ChangeListener<Boolean>
+    {
+        boolean logic = true;
+        boolean dynamic = true;
+
+        @Override
+        public void changed( ObservableValue<? extends Boolean> o, Boolean oldValue, Boolean newValue )
+        {
+            BooleanProperty dp = graphController.dynamicProperty();
+            if( newValue != null )
+            {
+                boolean run = logic ? newValue : !newValue;
+                if( run )
+                {
+                    // восстановить текущее или прежнее значение
+                    dynamic |= dp.get();
+                    dp.setValue( dynamic );
+                }
+                else
+                {
+                    // сохранить текущее значение и выключить
+                    dynamic = dp.get();
+                    dp.setValue( Boolean.FALSE );
+                }
+            }
+        }
+
+    }
     
     private class LifeCycleListener<T> implements ChangeListener<T>
     {
@@ -279,18 +320,7 @@ public final class TimeLineController implements Builder<Pane>
         public void changed( ObservableValue<? extends T> __, T oldValue, T newValue )
         {
             BooleanProperty dynamicProperty = graphController.dynamicProperty();
-            
-            if( newValue != null )
-            {
-                legendController.unitProperty().bind( timeRulerController.unitProperty() );
-                legendController.dynamicProperty().bindBidirectional( dynamicProperty );
-                timeRulerController.relativeProperty().bindBidirectional( dynamicProperty );
-                graphController.widthProperty().bind( timeRuler.widthProperty() );
-                graphController.heightProperty().bind( valueRuler.heightProperty() );
-                graphController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
-                graphController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
-            }
-            else if( oldValue != null )
+            if( oldValue != null )
             {
                 legendController.unitProperty().unbind();
                 legendController.dynamicProperty().unbindBidirectional( dynamicProperty );
@@ -301,6 +331,16 @@ public final class TimeLineController implements Builder<Pane>
                 graphController.valueConvertorProperty().unbind();
 
                 legendController.clear();
+            }
+            if( newValue != null )
+            {
+                legendController.unitProperty().bind( timeRulerController.unitProperty() );
+                legendController.dynamicProperty().bindBidirectional( dynamicProperty );
+                timeRulerController.relativeProperty().bindBidirectional( dynamicProperty );
+                graphController.widthProperty().bind( timeRuler.widthProperty() );
+                graphController.heightProperty().bind( valueRuler.heightProperty() );
+                graphController.timeConvertorProperty().bind( timeRulerController.convertorProperty() );
+                graphController.valueConvertorProperty().bind( valueRulerController.convertorProperty() );
             }
         }
     }

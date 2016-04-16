@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Description: Панель графиков.
-    Author     : (c) 2015 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -22,7 +22,7 @@
 
     <top>
         <HBox 
-            fx:id="buttonPanel" 
+            fx:id="toolbar" 
             alignment="CENTER_LEFT" 
             >  
             <Button 
@@ -33,6 +33,11 @@
                 fx:id="buttonRemoveAll" 
                 text="@analyzer.popup.clean" 
                 onAction="#onActionRemoveAllTimeLines" 
+                />      
+            <ToggleButton 
+                fx:id="buttonDynamic" 
+                text="@analyzer.popup.pause" 
+                selected="false" 
                 />      
         </HBox>
     </top>

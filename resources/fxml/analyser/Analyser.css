@@ -1,13 +1,13 @@
 /* 
     Description: Панель графиков.
-    Author     : (c) 2015 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
 */
 
 .analyser 
 { 
 }
 
-.analyser #buttonPanel
+.analyser #toolbar
 {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 5px;
@@ -22,7 +22,7 @@
     -fx-background-color: white;
 }
 
-.analyser #box #buttonPanel Button
+.analyser #box #toolbar Button
 {
     -fx-cursor: hand;
 }

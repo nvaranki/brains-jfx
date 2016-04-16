@@ -33,7 +33,6 @@ public final class LegendPaneController implements Builder<Pane>
     private static final String CSS_CLASS = "legend-pane";
     
     private final ReadOnlyListWrapper<Value> valuesProperty;
-    private final BooleanProperty dynamicProperty;
     private final ObjectProperty<TimeUnit> unitProperty;
     private final DynamicPropertyChangeListener dynamicPropertyChangeListener;
 
@@ -49,7 +48,6 @@ public final class LegendPaneController implements Builder<Pane>
     public LegendPaneController()
     {
         valuesProperty = new ReadOnlyListWrapper<>();
-        dynamicProperty = new SimpleBooleanProperty();
         dynamicPropertyChangeListener = new DynamicPropertyChangeListener();
         unitProperty = new SimpleObjectProperty<>();
         parentPopupMenu = Collections.emptyList();
@@ -119,8 +117,8 @@ public final class LegendPaneController implements Builder<Pane>
     @FXML
     protected void initialize()
     {   
-        time.selectedProperty().bindBidirectional( dynamicProperty );
         time.textProperty().bind( Bindings.createStringBinding( new TimeAxisText(), unitProperty ) );
+        time.selectedProperty().addListener( new WeakChangeListener<>( dynamicPropertyChangeListener ) );
         
         menuItemResume.disableProperty().bind( time.selectedProperty() );
         menuItemStop.disableProperty().bind( Bindings.not( time.selectedProperty() ) );
@@ -129,8 +127,6 @@ public final class LegendPaneController implements Builder<Pane>
         values.setPrefHeight( time.getPrefHeight() );
         
         valuesProperty.setValue( new ValueList( values.getChildrenUnmodifiable() ) );
-
-        dynamicProperty.addListener( new WeakChangeListener<>( dynamicPropertyChangeListener ) );
     }
     
     @FXML
@@ -168,7 +164,7 @@ public final class LegendPaneController implements Builder<Pane>
 
     BooleanProperty dynamicProperty()
     {
-        return dynamicProperty;
+        return time.selectedProperty();
     }
     
     Property<TimeUnit> unitProperty()

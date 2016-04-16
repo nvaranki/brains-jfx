@@ -40,8 +40,9 @@ public final class AnalyserController implements Builder<Node>
     private TimeLineSetupStage setup;
 
     @FXML private BorderPane pane;
-    @FXML private Pane buttonPanel;
+    @FXML private Pane toolbar;
     @FXML private Button buttonRemoveAll;
+    @FXML private ToggleButton buttonDynamic;
     @FXML private VBox box;
     @FXML private ContextMenu popup;
     @FXML private MenuItem menuItemAdd;
@@ -67,9 +68,13 @@ public final class AnalyserController implements Builder<Node>
         buttonRemoveAll.setId( "buttonRemoveAll" );
         buttonRemoveAll.setOnAction( this::onActionRemoveAllTimeLines );
         
-        buttonPanel = new HBox();
-        buttonPanel.setId( "buttonPanel" );
-        buttonPanel.getChildren().addAll( buttonAdd, buttonRemoveAll );
+        buttonDynamic = new ToggleButton( LOGGER.text( "analyser.popup.pause" ) );
+        buttonDynamic.setId( "buttonDynamic" );
+        buttonDynamic.setSelected( false );
+        
+        toolbar = new HBox();
+        toolbar.setId( "toolbar" );
+        toolbar.getChildren().addAll( buttonAdd, buttonRemoveAll, buttonDynamic );
         
         menuItemAdd = new MenuItem( LOGGER.text( "analyser.popup.add" ) );
         menuItemAdd.setId( "menuItemAdd" );
@@ -91,7 +96,7 @@ public final class AnalyserController implements Builder<Node>
         roll.setVbarPolicy( ScrollPane.ScrollBarPolicy.ALWAYS );
 
         pane = new BorderPane();
-        pane.setTop( buttonPanel );
+        pane.setTop( toolbar );
         pane.setCenter( roll );
         
         pane.getStyleClass().add( CSS_CLASS );
@@ -172,6 +177,7 @@ public final class AnalyserController implements Builder<Node>
         TimeLineController controller = builder.getController();
         controller.reset( setupController );
         controller.extendPopupMenu( popup.getItems() );
+        controller.addFlowListenerTo( buttonDynamic.selectedProperty(), false );
         box.getChildren().addAll( builder.getNode() );
     }
     
@@ -193,5 +199,5 @@ public final class AnalyserController implements Builder<Node>
             }
         }
     }
-    
+
 }
