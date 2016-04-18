@@ -21,6 +21,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Builder;
 
+import static com.varankin.brains.jfx.JavaFX.icon;
+
 /**
  * FXML-контроллер панели графиков. 
  * 
@@ -66,10 +68,12 @@ public final class AnalyserController implements Builder<Node>
         
         buttonRemoveAll = new Button( LOGGER.text( "analyser.popup.clean" ) );
         buttonRemoveAll.setId( "buttonRemoveAll" );
+        buttonRemoveAll.setGraphic( icon( "icons16x16/remove.png" ) );
         buttonRemoveAll.setOnAction( this::onActionRemoveAllTimeLines );
         
         buttonDynamic = new ToggleButton( LOGGER.text( "analyser.popup.pause" ) );
         buttonDynamic.setId( "buttonDynamic" );
+        buttonDynamic.setGraphic( icon( "icons16x16/pause.png" ) );
         buttonDynamic.setSelected( false );
         
         toolbar = new HBox();
