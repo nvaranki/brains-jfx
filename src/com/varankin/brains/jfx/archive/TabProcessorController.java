@@ -121,8 +121,8 @@ public final class TabProcessorController implements Builder<GridPane>
         strategy.setCellFactory( ( ListView<Стратегия> lv ) -> new ListCellСтратегия() );
         strategy.setButtonCell( new ListCellСтратегия() );
         pauseProperty.bind( Bindings.createLongBinding( () -> convertLong( pause ), pause.textProperty() ) );
-        pauseProperty.bind( Bindings.createLongBinding( () -> convertLong( delay ), pause.textProperty() ) );
-        pauseProperty.bind( Bindings.createIntegerBinding( () -> convertInteger( inline ), pause.textProperty() ) );
+        delayProperty.bind( Bindings.createLongBinding( () -> convertLong( delay ), delay.textProperty() ) );
+        inlineProperty.bind( Bindings.createIntegerBinding( () -> convertInteger( inline ), inline.textProperty() ) );
     }
     
     Collection<AttributeAgent> getAgents()
