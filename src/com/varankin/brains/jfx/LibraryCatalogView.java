@@ -2,8 +2,8 @@ package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.УдалитьАрхивныеБиблиотеки;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
-import com.varankin.brains.artificial.io.svg.SvgService;
-import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
+import com.varankin.brains.io.svg.SvgService;
+import com.varankin.brains.io.svg.SvgБиблиотека;
 import com.varankin.brains.db.XmlNameSpace;
 
 import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;

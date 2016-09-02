@@ -2,7 +2,7 @@ package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
-import com.varankin.brains.artificial.io.svg.SvgService;
+import com.varankin.brains.io.svg.SvgService;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Сборка;

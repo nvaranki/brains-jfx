@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.io.svg.SvgService;
 import com.varankin.brains.appl.Отображаемый;
-import com.varankin.brains.artificial.io.svg.*;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.HtmlGenerator;
 import com.varankin.brains.jfx.JavaFX;
