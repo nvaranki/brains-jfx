@@ -45,7 +45,7 @@ public class BrowserTreeCell<T> extends TreeCell<T>
             setUserData(null);
         } else {
             TreeItem<T> item = getTreeItem();
-            setText(item.toString());
+            setText(item.toString()); //TODO null after project deleted
             setGraphic(item.getGraphic());
             setUserData(элемент);
         }

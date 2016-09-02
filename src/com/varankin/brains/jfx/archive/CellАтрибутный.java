@@ -32,7 +32,7 @@ class CellАтрибутный extends TreeCell<Атрибутный>
             Object pcl = getProperties().remove( PCL );
             Object ccpcl = getProperties().remove( CCPCL );
             if( ccpcl instanceof Collection )
-                for( Object pm : (Collection)ccpcl )
+                for( Object pm : (Collection)ccpcl ) //TODO java.util.ConcurrentModificationException
                     if( pm instanceof PropertyMonitor )
                         ((PropertyMonitor)pm).listeners().remove( pcl );
         }

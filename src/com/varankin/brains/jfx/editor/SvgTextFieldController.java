@@ -1,12 +1,14 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.xml.Xml;
+import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Инструкция;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
+
 import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.childrenOf;
+
 import com.varankin.util.LoggerX;
 import java.util.Collection;
 import java.util.logging.*;

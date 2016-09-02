@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.xml.XmlSvg;
-import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
+import com.varankin.brains.io.xml.XmlSvg;
+
+import static com.varankin.brains.io.xml.XmlSvg.*;
+
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Неизвестный;
 import javafx.scene.*;

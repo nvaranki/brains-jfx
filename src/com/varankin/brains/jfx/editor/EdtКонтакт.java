@@ -3,8 +3,8 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.DbКонтакт;
 import javafx.scene.*;
 
-import static com.varankin.brains.artificial.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.artificial.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
+import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 import com.varankin.brains.db.Атрибутный;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 

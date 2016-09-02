@@ -6,7 +6,7 @@ import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 
-import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
+import static com.varankin.brains.io.xml.XmlSvg.*;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**

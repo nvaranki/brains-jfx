@@ -1,8 +1,10 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.xml.XmlBrains;
-import static com.varankin.brains.artificial.io.xml.XmlBrains.BRAINS_ATTR_NAME;
-import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
+import com.varankin.brains.io.xml.XmlBrains;
+
+import static com.varankin.brains.io.xml.XmlBrains.BRAINS_ATTR_NAME;
+import static com.varankin.brains.io.xml.XmlSvg.*;
+
 import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Коммутируемый;
 import com.varankin.brains.db.DbСоединение;

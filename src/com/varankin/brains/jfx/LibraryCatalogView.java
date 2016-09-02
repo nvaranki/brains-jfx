@@ -6,9 +6,9 @@ import com.varankin.brains.artificial.io.svg.SvgService;
 import com.varankin.brains.artificial.io.svg.SvgБиблиотека;
 import com.varankin.brains.db.XmlNameSpace;
 
-import static com.varankin.brains.artificial.io.xml.XmlBrains.XMLNS_BRAINS;
-import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_LIBRARY;
-import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_NAME;
+import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
+import static com.varankin.brains.io.xml.XmlBrains.XML_LIBRARY;
+import static com.varankin.brains.io.xml.XmlBrains.XML_NAME;
 
 import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.DbБиблиотека;
@@ -25,7 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
 
-import static com.varankin.brains.artificial.io.xml.XmlBrains.XML_BRAINS;
+import static com.varankin.brains.io.xml.XmlBrains.XML_BRAINS;
 
 /**
  * Каталог библиотек архива.

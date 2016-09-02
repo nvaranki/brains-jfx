@@ -1,9 +1,13 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.xml.Xml;
-import static com.varankin.brains.artificial.io.xml.XmlSvg.*;
+import com.varankin.brains.io.xml.Xml;
+
+import static com.varankin.brains.io.xml.XmlSvg.*;
+
 import com.varankin.brains.db.*;
+
 import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.*;
+
 import com.varankin.util.LoggerX;
 import java.util.Collection;
 import java.util.Collections;
