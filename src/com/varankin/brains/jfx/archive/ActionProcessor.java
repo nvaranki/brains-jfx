@@ -7,6 +7,7 @@ import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.УдалитьИзАрхива;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
+import com.varankin.brains.appl.ЭкспортироватьXml;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.editor.EditorController;
@@ -45,7 +46,7 @@ final class ActionProcessor //TODO RT-37820
     private final SelectionListBinding<Атрибутный> selection;
 
     private Stage properties;
-    private Provider<File> fileProviderExport;
+    private Provider<File> fileProviderExportXml, fileProviderExportSvg;
     
     private final BooleanBinding
         disableNew, disableLoad, 
@@ -200,11 +201,22 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionExportXml( ActionEvent event )
     {
-        JavaFX jfx = JavaFX.getInstance();
-//        Provider<InputStream> provider = jfx.getExportXmlFilelProvider().newInstance();
-//        if( provider != null )
-//            jfx.execute( new Экспортировать( jfx.контекст ), new Экспортировать.Контекст( 
-//                    provider, jfx.контекст.архив ) );
+        if( selection.size() != 1 )
+            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", selection.size() );
+        else
+        {
+            Атрибутный элемент = selection.get( 0 );
+            JavaFX jfx = JavaFX.getInstance();
+            if( fileProviderExportXml == null ) 
+            {
+                FileChooser.ExtensionFilter фильтр = new FileChooser.ExtensionFilter( LOGGER.text( "ext.xml" ), "*.xml" );
+                fileProviderExportXml = new ExportFileSelector( фильтр );
+            }
+            File file = fileProviderExportXml.newInstance();
+            if( file != null )
+                jfx.execute( new ЭкспортироватьXml(), new ЭкспортироватьXml.Контекст( 
+                        jfx.контекст, элемент, file ) );
+        }
         event.consume();
     }
     
@@ -217,12 +229,16 @@ final class ActionProcessor //TODO RT-37820
             Атрибутный элемент = selection.get( 0 );
             if( элемент instanceof DbЭлемент )
             {
-                if( fileProviderExport == null ) 
-                    fileProviderExport = new ExportFileSelector( JavaFX.getInstance() );
-                File file = fileProviderExport.newInstance();
+                JavaFX jfx = JavaFX.getInstance();
+                if( fileProviderExportSvg == null ) 
+                {
+                    FileChooser.ExtensionFilter фильтр = new FileChooser.ExtensionFilter( LOGGER.text( "ext.svg" ), "*.svg" );
+                    fileProviderExportSvg = new ExportFileSelector( фильтр );
+                }
+                File file = fileProviderExportSvg.newInstance();
                 if( file != null )
-                    JavaFX.getInstance().execute( new ЭкспортироватьSvg( JavaFX.getInstance().контекст ), 
-                            new ЭкспортироватьSvg.Контекст( (DbЭлемент)элемент, file ) );
+                    jfx.execute( new ЭкспортироватьSvg(), new ЭкспортироватьSvg.Контекст( 
+                            jfx.контекст, (DbЭлемент)элемент, file ) );
             }
             else
                 LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be exported: {0}", элемент.getClass().getName());
@@ -303,7 +319,8 @@ final class ActionProcessor //TODO RT-37820
     
     boolean disableActionExportXml()
     {
-        return true;
+        return selection.size() != 1 || !selection.stream()
+                .allMatch( ( Атрибутный i ) -> !( i instanceof Архив || i instanceof Мусор ) );
     }
     
     boolean disableActionExportPic()

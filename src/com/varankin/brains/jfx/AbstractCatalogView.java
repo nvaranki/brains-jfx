@@ -5,7 +5,6 @@ import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.io.svg.SvgService;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.Коллекция;
-import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
@@ -173,7 +172,7 @@ abstract class AbstractCatalogView<E extends DbЭлемент> extends ListView<
         {
             super( jfx, jfx.словарь( ActionExport.class ) );
             this.действие = действие;
-            this.fileToExportToProvider = new ExportFileSelector( jfx );
+            this.fileToExportToProvider = new ExportFileSelector();
         }
         
         @Override
@@ -187,7 +186,7 @@ abstract class AbstractCatalogView<E extends DbЭлемент> extends ListView<
                 {
                     E элемент = сeлектор.get( 0 );
                     ЭкспортироватьSvg.Контекст к = new ЭкспортироватьSvg.Контекст(
-                            элемент, file );
+                            jfx.контекст, элемент, file );
                     new ApplicationActionWorker<>( действие, к ) // новый, т.к. одноразовый
                             .execute( jfx );
                 }

@@ -54,7 +54,7 @@ class LibraryCatalogView extends AbstractCatalogView<DbБиблиотека>
             }
         };
         УдалитьАрхивныеБиблиотеки действиеУдалить = null;//new УдалитьАрхивныеБиблиотеки( jfx.контекст.архив );
-        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg( jfx.контекст );
+        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
         ActionNew actionNew = new ActionNew();
         ActionPreview actionPreview = new ActionPreview( svg );

@@ -63,7 +63,7 @@ class ProjectCatalogView extends AbstractCatalogView<DbПроект>
         };
         Действие<DbПроект> действиеЗагрузить = new ЗагрузитьАрхивныйПроект( jfx.контекст );
         Действие действиеУдалить = new УдалитьАрхивныеПроекты( null );//jfx.контекст.архив );
-        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg( jfx.контекст );
+        ЭкспортироватьSvg действиеЭкспортироватьSvg = new ЭкспортироватьSvg();
         
         ActionLoad actionLoad = new ActionLoad( действиеЗагрузить );
         ActionNew actionNew = new ActionNew();

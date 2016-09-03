@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 /**
  * Форма выбора файла для экспорта данных.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public class ExportFileSelector implements Provider<File>
 {
@@ -21,16 +21,14 @@ public class ExportFileSelector implements Provider<File>
     private final Stage платформа;
     private final FileChooser селектор;
 
-    public ExportFileSelector( JavaFX jfx )
+    public ExportFileSelector( ExtensionFilter... фильтры )
     {
+        JavaFX jfx = JavaFX.getInstance();
         словарь = Текст.ПАКЕТЫ.словарь( ExportFileSelector.class, jfx.контекст.специфика );
         платформа = jfx.платформа;
         селектор = new FileChooser();
         селектор.setInitialDirectory( jfx.getCurrentLocalDirectory() );
-        ExtensionFilter фильтрSvg = new FileChooser.ExtensionFilter( словарь.текст( "ext.svg" ), "*.svg" );
-        //ExtensionFilter фильтрXml = new FileChooser.ExtensionFilter( словарь.текст( "ext.xml" ), "*.xml" );
-        селектор.getExtensionFilters().add( фильтрSvg );
-        //селектор.getExtensionFilters().add( фильтрXml );
+        селектор.getExtensionFilters().addAll( фильтры );
     }
     
     @Override
