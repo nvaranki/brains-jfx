@@ -2,13 +2,16 @@ package com.varankin.brains.jfx.editor;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import com.varankin.brains.db.Атрибутный;
+
 import com.varankin.brains.db.DbБиблиотека;
 import com.varankin.brains.db.DbМодуль;
 import com.varankin.brains.db.DbПроцессор;
 import com.varankin.brains.db.DbРасчет;
+
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
+
 import javafx.scene.*;
+import com.varankin.brains.db.DbАтрибутный;
 
 /**
  *
@@ -26,7 +29,7 @@ class EdtБиблиотека extends EdtАтрибутныйЭлемент<DbБ
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
         
-        String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
+        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbМодуль модуль : ЭЛЕМЕНТ.модули() )

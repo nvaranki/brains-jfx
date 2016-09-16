@@ -19,18 +19,18 @@ import javafx.scene.image.ImageView;
 /**
  * Задача обновления ячейки (строки) навигатора по данным архива.
  *
- * @author &copy; 2015 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 final class CellUpdateTask extends Task<Void>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( CellUpdateTask.class );
-    private static final Comparator<Атрибутный> CMP = ( Атрибутный a1, Атрибутный a2 ) -> 
+    private static final Comparator<DbАтрибутный> CMP = ( DbАтрибутный a1, DbАтрибутный a2 ) -> 
         Integer.valueOf( ФабрикаНазваний.индекс( a2.getClass() ) ).compareTo( 
         Integer.valueOf( ФабрикаНазваний.индекс( a1.getClass() ) ) ); // инверсно
 
-    private final TreeCell<Атрибутный> treeCell;
-    private final TreeItem<Атрибутный> treeItem;
-    private final Collection<Атрибутный> потомки;
+    private final TreeCell<DbАтрибутный> treeCell;
+    private final TreeItem<DbАтрибутный> treeItem;
+    private final Collection<DbАтрибутный> потомки;
     private final boolean loadGraphic;
     private final PropertyChangeListener наблюдатель;
     private final Collection<PropertyMonitor> мониторы;
@@ -38,7 +38,7 @@ final class CellUpdateTask extends Task<Void>
     private volatile String название, подсказка;
     private volatile Node картинка;
 
-    CellUpdateTask( TreeCell<Атрибутный> cell )
+    CellUpdateTask( TreeCell<DbАтрибутный> cell )
     {
         treeCell = cell;
         treeItem = cell.getTreeItem();
@@ -57,7 +57,7 @@ final class CellUpdateTask extends Task<Void>
     @Override
     protected Void call() throws Exception
     {
-        Атрибутный item = treeItem.getValue();
+        DbАтрибутный item = treeItem.getValue();
         try( Транзакция т = item.транзакция() )
         {
             загрузить( item );
@@ -90,14 +90,14 @@ final class CellUpdateTask extends Task<Void>
                 ((TitledTreeItem)treeItem).titleProperty().set( название );
             
             // обновить потомки ячейки по indb, иначе ячейку не раскрыть!
-            List<Атрибутный> показать = new LinkedList<>( потомки );
-            List<TreeItem<Атрибутный>> показано = treeItem.getChildren();
-            List<TreeItem<Атрибутный>> исчезло = new ArrayList<>();
-            for( TreeItem<Атрибутный> i : показано )
+            List<DbАтрибутный> показать = new LinkedList<>( потомки );
+            List<TreeItem<DbАтрибутный>> показано = treeItem.getChildren();
+            List<TreeItem<DbАтрибутный>> исчезло = new ArrayList<>();
+            for( TreeItem<DbАтрибутный> i : показано )
                 if( !показать.remove( i.getValue() ) ) // вычеркнуть, если уже показан
                     исчезло.add( i ); // показан, но уже не существует
             показано.removeAll( исчезло );
-            for( Атрибутный v : показать )
+            for( DbАтрибутный v : показать )
                 вставить( new TitledTreeItem<>( v ), показано ); // в правильную позицию
         }
     }
@@ -113,9 +113,9 @@ final class CellUpdateTask extends Task<Void>
         }
     }
     
-    static void вставить( TreeItem<Атрибутный> item, List<TreeItem<Атрибутный>> items )
+    static void вставить( TreeItem<DbАтрибутный> item, List<TreeItem<DbАтрибутный>> items )
     {
-        Атрибутный value = item.getValue();
+        DbАтрибутный value = item.getValue();
         int b = 0, e = items.size(), pos = ( b + e )/2;
         while( b != e )
         {
@@ -133,7 +133,7 @@ final class CellUpdateTask extends Task<Void>
                     new Object[]{ pos, value.getClass().getSimpleName() } );
     }
 
-    private void загрузить( Архив узел )
+    private void загрузить( DbАрхив узел )
     {
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.archive.local" ); //TODO distinguish local and remote архив
@@ -158,6 +158,8 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.ленты() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.модули() );
         мониторы.add( узел.поля() );
@@ -166,21 +168,27 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.классы() );
         мониторы.add( узел.ленты() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Заметка узел )
+    private void загрузить( DbЗаметка узел )
     {
         картинка = icon( "icons16x16/properties.png" );
         название = LOGGER.text( "cell.note" );
         подсказка = LOGGER.text( "cell.note" );
         потомки.addAll( узел.тексты() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.тексты() );
+        мониторы.add( узел.инструкции() );
         мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Инструкция узел )
+    private void загрузить( DbИнструкция узел )
     {
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.instruction" );
@@ -189,14 +197,18 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( КлассJava узел )
+    private void загрузить( DbКлассJava узел )
     {
         картинка = icon( "icons16x16/JavaIcon.gif" );
         название = замена( узел.название(), "cell.class.java" );
         подсказка = LOGGER.text( "cell.class.java" );
         потомки.addAll( узел.конвертеры() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.конвертеры() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -206,12 +218,14 @@ final class CellUpdateTask extends Task<Void>
         название = замена( узел.название(), "cell.parameter.java" );
         подсказка = LOGGER.text( "cell.parameter.java" );
         потомки.addAll( узел.классы() );
-        потомки.addAll( узел.коды() );
         потомки.addAll( узел.параметры() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.классы() );
-        мониторы.add( узел.коды() );
         мониторы.add( узел.параметры() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -223,10 +237,14 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.параметры());
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.классы() );
         мониторы.add( узел.параметры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -241,6 +259,8 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.сигналы() );
         потомки.addAll( узел.процессоры() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.библиотеки() );
         мониторы.add( узел.фрагменты() );
@@ -248,46 +268,64 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.сигналы() );
         мониторы.add( узел.процессоры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Графика узел )
+    private void загрузить( DbГрафика узел )
     {
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.graphic" );
         подсказка = LOGGER.text( "cell.graphic" );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Конвертер узел )
+    private void загрузить( DbКонвертер узел )
     {
         картинка = icon( "icons16x16/JavaIcon.gif" );
         название = LOGGER.text( "cell.converter" );
         подсказка = LOGGER.text( "cell.converter" );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Неизвестный узел )
+    private void загрузить( DbНеизвестный узел )
     {
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.unknown" );
         подсказка = LOGGER.text( "cell.unknown" );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Пакет узел )
+    private void загрузить( DbПакет узел )
     {
         картинка = icon( "icons16x16/file-xml.png" );
         название = LOGGER.text( "cell.package" );
         подсказка = LOGGER.text( "cell.package" );
         потомки.addAll( узел.библиотеки() );
         потомки.addAll( узел.проекты() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.библиотеки() );
         мониторы.add( узел.проекты() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -297,12 +335,16 @@ final class CellUpdateTask extends Task<Void>
         название = замена( узел.название(), "cell.field" );
         подсказка = LOGGER.text( "cell.field" );
         потомки.addAll( узел.соединения() );
-        потомки.addAll( узел.сигналы() );
+        потомки.addAll( узел.сенсоры() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.соединения() );
-        мониторы.add( узел.сигналы() );
+        мониторы.add( узел.сенсоры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -313,9 +355,13 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.timeline" );
         потомки.addAll( узел.соединения() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.соединения() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -329,12 +375,16 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.сигналы() );
         потомки.addAll( узел.процессоры() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.библиотеки() );
         мониторы.add( узел.фрагменты() );
         мониторы.add( узел.сигналы() );
         мониторы.add( узел.процессоры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -346,10 +396,14 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.параметры() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.классы() );
         мониторы.add( узел.параметры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -361,10 +415,14 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.соединения() );
         потомки.addAll( узел.точки() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.соединения() );
         мониторы.add( узел.точки() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -375,9 +433,13 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.signal" );
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.классы() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -388,13 +450,17 @@ final class CellUpdateTask extends Task<Void>
         подсказка = LOGGER.text( "cell.connector" );
         потомки.addAll( узел.контакты() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.контакты() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( ТекстовыйБлок узел )
+    private void загрузить( DbТекстовыйБлок узел )
     {
         картинка = icon( "icons16x16/file.png" );
         название = LOGGER.text( "cell.text" );
@@ -412,11 +478,15 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.классы() );
         потомки.addAll( узел.параметры() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.точки() );
         мониторы.add( узел.классы() );
         мониторы.add( узел.параметры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
@@ -428,14 +498,18 @@ final class CellUpdateTask extends Task<Void>
         потомки.addAll( узел.соединения() );
         потомки.addAll( узел.параметры() );
         потомки.addAll( узел.заметки() );
+        потомки.addAll( узел.инструкции() );
+        потомки.addAll( узел.тексты() );
         потомки.addAll( узел.прочее() );
         мониторы.add( узел.соединения() );
         мониторы.add( узел.параметры() );
         мониторы.add( узел.заметки() );
+        мониторы.add( узел.инструкции() );
+        мониторы.add( узел.тексты() );
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( Мусор узел )
+    private void загрузить( DbМусор узел )
     {
         картинка = icon( "icons16x16/remove.png" );
         название = LOGGER.text( "cell.basket" );
@@ -446,7 +520,7 @@ final class CellUpdateTask extends Task<Void>
         мониторы.add( узел.прочее() );
     }
     
-    private void загрузить( XmlNameSpace узел )
+    private void загрузить( DbNameSpace узел )
     {
         картинка = null;//icon( "icons16x16/load.png" );
         название = узел.название();
@@ -483,32 +557,40 @@ final class CellUpdateTask extends Task<Void>
             картинка = null;//картинка( узел );
             название = замена( узел.название(), "cell.element" );
             потомки.addAll( узел.заметки() );
+            потомки.addAll( узел.инструкции() );
+            потомки.addAll( узел.тексты() );
             потомки.addAll( узел.прочее() );
             мониторы.add( узел.заметки() );
+            мониторы.add( узел.инструкции() );
+            мониторы.add( узел.тексты() );
             мониторы.add( узел.прочее() );
         }
     }
     
-    private void загрузить( Атрибутный узел )
+    private void загрузить( DbАтрибутный узел )
     {
         if(      узел instanceof DbЭлемент     ) загрузить( (DbЭлемент)узел );
         else if( узел instanceof DbПараметр    ) загрузить( (DbПараметр)узел );
-        else if( узел instanceof Архив         ) загрузить( (Архив)узел );
-        else if( узел instanceof КлассJava     ) загрузить( (КлассJava)узел );
-        else if( узел instanceof Пакет         ) загрузить( (Пакет)узел );
-        else if( узел instanceof XmlNameSpace  ) загрузить( (XmlNameSpace)узел );
-        else if( узел instanceof Заметка       ) загрузить( (Заметка)узел );
-        else if( узел instanceof Инструкция    ) загрузить( (Инструкция)узел );
-        else if( узел instanceof ТекстовыйБлок ) загрузить( (ТекстовыйБлок)узел );
-        else if( узел instanceof Графика       ) загрузить( (Графика)узел );
-        else if( узел instanceof Конвертер     ) загрузить( (Конвертер)узел );
-        else if( узел instanceof Неизвестный   ) загрузить( (Неизвестный)узел );
-        else if( узел instanceof Мусор         ) загрузить( (Мусор)узел );
+        else if( узел instanceof DbАрхив         ) загрузить( (DbАрхив)узел );
+        else if( узел instanceof DbКлассJava     ) загрузить( (DbКлассJava)узел );
+        else if( узел instanceof DbПакет         ) загрузить( (DbПакет)узел );
+        else if( узел instanceof DbNameSpace  ) загрузить( (DbNameSpace)узел );
+        else if( узел instanceof DbЗаметка       ) загрузить( (DbЗаметка)узел );
+        else if( узел instanceof DbИнструкция    ) загрузить( (DbИнструкция)узел );
+        else if( узел instanceof DbТекстовыйБлок ) загрузить( (DbТекстовыйБлок)узел );
+        else if( узел instanceof DbГрафика       ) загрузить( (DbГрафика)узел );
+        else if( узел instanceof DbКонвертер     ) загрузить( (DbКонвертер)узел );
+        else if( узел instanceof DbНеизвестный   ) загрузить( (DbНеизвестный)узел );
+        else if( узел instanceof DbМусор         ) загрузить( (DbМусор)узел );
         else
         {
             картинка = null;//картинка( узел );
             название = LOGGER.text( "cell.attributive" );
+            потомки.addAll( узел.инструкции() );
+            потомки.addAll( узел.тексты() );
             потомки.addAll( узел.прочее() );
+            мониторы.add( узел.инструкции() );
+            мониторы.add( узел.тексты() );
             мониторы.add( узел.прочее() );
         }
     }

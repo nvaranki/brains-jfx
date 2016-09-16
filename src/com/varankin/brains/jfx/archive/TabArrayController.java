@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.КлассJava;
 import com.varankin.util.LoggerX;
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -9,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbКлассJava;
 
 /**
  * FXML-контроллер закладки для установки значения массива.

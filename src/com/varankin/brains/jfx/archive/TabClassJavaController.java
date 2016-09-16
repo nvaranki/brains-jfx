@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.NativeJavaClasses;
-import com.varankin.brains.db.КлассJava;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbКлассJava;
 
 /**
  * FXML-контроллер панели установки параметров класса Java.
@@ -27,7 +27,7 @@ public class TabClassJavaController implements Builder<GridPane>
 
     private final AttributeAgent nameAgent, mainAgent, codeAgent;
 
-    private КлассJava класс;
+    private DbКлассJava класс;
     
     @FXML private TextField name;
     @FXML private CheckBox main;
@@ -94,7 +94,7 @@ public class TabClassJavaController implements Builder<GridPane>
         return name.textProperty();
     }
 
-    void reset( КлассJava класс )
+    void reset( DbКлассJava класс )
     {
         this.класс = класс;
     }

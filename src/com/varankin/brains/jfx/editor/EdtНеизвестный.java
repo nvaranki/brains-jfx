@@ -4,21 +4,23 @@ import com.varankin.brains.io.xml.XmlSvg;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
 
-import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Неизвестный;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
+import com.varankin.brains.db.DbНеизвестный;
+import com.varankin.brains.db.DbТекстовыйБлок;
+import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbАтрибутный;
 
 
 /**
  *
  * @author Николай
  */
-class EdtНеизвестный extends EdtАтрибутныйЭлемент<Атрибутный>
+class EdtНеизвестный extends EdtАтрибутныйЭлемент<DbАтрибутный>
 {
 
-    EdtНеизвестный( Атрибутный элемент )
+    EdtНеизвестный( DbАтрибутный элемент )
     {
         super( элемент );
     }
@@ -81,14 +83,22 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<А
                     
                 default:
                     Group group = new Group();
-                    for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+                    for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+                        group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+                    for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+                        group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+                    for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
                         group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
                     node = group;
             }
         else
         {
             Group group = new Group();
-            for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+            for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+                group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+            for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+                group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+            for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
                 group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
             node = group;
         }

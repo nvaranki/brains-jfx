@@ -1,7 +1,5 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.XmlNameSpace;
-import com.varankin.brains.db.Атрибутный;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.Group;
@@ -9,12 +7,14 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbNameSpace;
 
 /**
  *
  * @author Николай
  */
-abstract class EdtАтрибутныйЭлемент<T extends Атрибутный>
+abstract class EdtАтрибутныйЭлемент<T extends DbАтрибутный>
 {
     protected final T ЭЛЕМЕНТ;
 
@@ -37,13 +37,13 @@ abstract class EdtАтрибутныйЭлемент<T extends Атрибутн�
 
     Double[] toSvgPoints( String атрибут, Double[] нет )
     {
-        Object a = ЭЛЕМЕНТ.атрибут( атрибут, (XmlNameSpace)null, null );
+        Object a = ЭЛЕМЕНТ.атрибут(атрибут, (DbNameSpace)null, null );
         if( a == null )
         {
             return нет;
         }
         List<Double> v = new ArrayList<>();
-        for( String p : Атрибутный.toStringValue( a ).split( "\\s" ) )
+        for( String p : DbАтрибутный.toStringValue( a ).split( "\\s" ) )
         {
             String[] xy = p.split( "," );
             v.add( Double.valueOf( xy[0].trim() ) );

@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.XmlNameSpace;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
@@ -12,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbNameSpace;
 
 /**
  * FXML-контроллер панели выбора и установки параметров объекта пространства имен XML.
@@ -24,7 +24,7 @@ public final class PropertiesXmlNameSpaceController implements Builder<Pane>
     private static final String RESOURCE_CSS  = "/fxml/archive/PropertiesXmlNameSpace.css";
     private static final String CSS_CLASS = "properties-xml-ns";
 
-    private XmlNameSpace xmlNameSpace;
+    private DbNameSpace xmlNameSpace;
     //private final BooleanProperty applied;
     
     @FXML private TextField prefix;
@@ -73,7 +73,7 @@ public final class PropertiesXmlNameSpaceController implements Builder<Pane>
         JavaFX.getInstance().execute( new SaveTask( prefix.getText(), uri.getText() )  );
     }
 
-    void reset( XmlNameSpace xmlNameSpace )
+    void reset( DbNameSpace xmlNameSpace )
     {
         this.xmlNameSpace = xmlNameSpace;
         JavaFX.getInstance().execute( new ReadTask()  );

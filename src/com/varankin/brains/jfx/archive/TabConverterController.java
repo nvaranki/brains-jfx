@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Конвертер;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbКонвертер;
 
 /**
  * FXML-контроллер закладки для установки способа конвертирования значения.
@@ -23,7 +23,7 @@ public class TabConverterController implements Builder<GridPane>
 
     private final AttributeAgent methodAgent, fromAgent, toAgent;
 
-    private Конвертер конвертер;
+    private DbКонвертер конвертер;
     
     @FXML private TextField method, from, to;
 
@@ -81,7 +81,7 @@ public class TabConverterController implements Builder<GridPane>
         return Arrays.asList( methodAgent, fromAgent, toAgent );
     }
     
-    void reset( Конвертер конвертер )
+    void reset( DbКонвертер конвертер )
     {
         this.конвертер = конвертер;
     }

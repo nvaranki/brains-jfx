@@ -25,7 +25,7 @@ class EdtПроект extends EdtАтрибутныйЭлемент<DbПроек
         Group group = new Group();
         group.setUserData( ЭЛЕМЕНТ );
         
-        String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
+        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
         if( изменяемый )
@@ -38,7 +38,11 @@ class EdtПроект extends EdtАтрибутныйЭлемент<DbПроек
             group.getChildren().add( new EdtПроцессор( процессор ).загрузить( изменяемый ) );
         for( DbСигнал сигнал : ЭЛЕМЕНТ.сигналы() )
             group.getChildren().add( new EdtСигнал( сигнал ).загрузить( изменяемый ) );
-        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+        for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
         for( DbБиблиотека библиотека : ЭЛЕМЕНТ.библиотеки() )
             group.getChildren().add( new EdtБиблиотека( библиотека ).загрузить( изменяемый ) );
@@ -49,8 +53,8 @@ class EdtПроект extends EdtАтрибутныйЭлемент<DbПроек
     private Node createBounds()
     {
         double w, h;
-        Double атрибутWidth  = Атрибутный.toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_WIDTH,  XMLNS_SVG, 200d ) );
-        Double атрибутHeight = Атрибутный.toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_HEIGHT, XMLNS_SVG, 100d ) );
+        Double атрибутWidth  = DbАтрибутный.toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_WIDTH,  XMLNS_SVG, 200d ) );
+        Double атрибутHeight = DbАтрибутный.toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_HEIGHT, XMLNS_SVG, 100d ) );
         w = атрибутWidth  != null ? атрибутWidth  : 200d; 
         h = атрибутHeight != null ? атрибутHeight : 100d;
         Polygon countor = new Polygon( 0d, 0d, w, 0d, w, h, 0d, h );

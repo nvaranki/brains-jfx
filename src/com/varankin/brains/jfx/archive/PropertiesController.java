@@ -137,13 +137,13 @@ public class PropertiesController implements Builder<Parent>
             if( change.wasAdded() )
             {
                 Object value = change.getValueAdded();
-                if( value instanceof XmlNameSpace )
+                if( value instanceof DbNameSpace )
                 {
                     PropertiesXmlNameSpaceController controller = new PropertiesXmlNameSpaceController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.namespace" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (XmlNameSpace)value );
+                    controller.reset( (DbNameSpace)value );
                 }
                 else if( value instanceof DbПроцессор )
                 {
@@ -153,21 +153,21 @@ public class PropertiesController implements Builder<Parent>
                     buttonApply.setOnAction( controller::onActionApply );
                     controller.reset( (DbПроцессор)value );
                 }
-                else if( value instanceof КлассJava )
+                else if( value instanceof DbКлассJava )
                 {
                     PropertiesClassJavaController controller = new PropertiesClassJavaController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.class.java" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (КлассJava)value );
+                    controller.reset( (DbКлассJava)value );
                 }
-                else if( value instanceof Конвертер )
+                else if( value instanceof DbКонвертер )
                 {
                     PropertiesConverterController controller = new PropertiesConverterController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.converter" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (Конвертер)value );
+                    controller.reset( (DbКонвертер)value );
                 }
 //                else if( value instanceof DbСкаляр )
 //                {
@@ -185,13 +185,13 @@ public class PropertiesController implements Builder<Parent>
 //                    buttonApply.setOnAction( controller::onActionApply );
 //                    controller.reset( (DbМассив)value );
 //                }
-                else if( value instanceof ТекстовыйБлок )
+                else if( value instanceof DbТекстовыйБлок )
                 {
                     TextController controller = new TextController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.text" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (ТекстовыйБлок)value );
+                    controller.reset( (DbТекстовыйБлок)value );
                 }
                 else if( value instanceof DbЭлемент )
                 {

@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.ТекстовыйБлок;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
 import java.util.Arrays;
@@ -9,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbТекстовыйБлок;
 
 /**
  * FXML-контроллер панели ввода и редактирования текста.
@@ -23,7 +23,7 @@ public final class TextController implements Builder<GridPane>
 
     private final AttributeAgent codeAgent;
 
-    private ТекстовыйБлок блок;
+    private DbТекстовыйБлок блок;
     
     @FXML private TextArea text;
 
@@ -70,7 +70,7 @@ public final class TextController implements Builder<GridPane>
         JavaFX.getInstance().execute( new ScreenToStorageTask( блок, Arrays.asList( codeAgent ) ) );
     }
 
-    void reset( ТекстовыйБлок блок )
+    void reset( DbТекстовыйБлок блок )
     {
         this.блок = блок;
         JavaFX.getInstance().execute( new StorageToScreenTask( блок, Arrays.asList( codeAgent ) ) );

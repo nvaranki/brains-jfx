@@ -5,7 +5,6 @@ import com.varankin.brains.io.xml.XmlBrains;
 import static com.varankin.brains.io.xml.XmlBrains.BRAINS_ATTR_NAME;
 import static com.varankin.brains.io.xml.XmlSvg.*;
 
-import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Коммутируемый;
 import com.varankin.brains.db.DbСоединение;
 import com.varankin.brains.db.DbФрагмент;
@@ -18,6 +17,9 @@ import java.util.logging.Logger;
 import javafx.scene.*;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import com.varankin.brains.db.DbТекстовыйБлок;
+import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbАтрибутный;
 
 /**
  *
@@ -38,7 +40,7 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<DbФра
         if( изменяемый )
             group.setUserData( ЭЛЕМЕНТ );
 
-        String ts = Атрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
+        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
         if( изменяемый )
@@ -72,7 +74,11 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<DbФра
                 }
             }
         }
-        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+        for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
 
         return group;

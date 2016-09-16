@@ -1,12 +1,12 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.*;
 import javafx.concurrent.Task;
+import com.varankin.brains.db.DbАтрибутный;
 
 /**
  *
@@ -16,10 +16,10 @@ class StorageToScreenTask extends Task<Void>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( StorageToScreenTask.class );
     
-    private final Атрибутный lock;
+    private final DbАтрибутный lock;
     private final Collection<AttributeAgent> agents;
 
-    StorageToScreenTask( Атрибутный lock, Collection<? extends AttributeAgent> agents )
+    StorageToScreenTask( DbАтрибутный lock, Collection<? extends AttributeAgent> agents )
     {
         this.lock = lock;
         this.agents = new ArrayList<>( agents );

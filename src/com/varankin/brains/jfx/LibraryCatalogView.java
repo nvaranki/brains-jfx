@@ -4,16 +4,13 @@ import com.varankin.brains.appl.УдалитьАрхивныеБиблиотек
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.io.svg.SvgService;
 import com.varankin.brains.io.svg.SvgБиблиотека;
-import com.varankin.brains.db.XmlNameSpace;
 
 import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
 import static com.varankin.brains.io.xml.XmlBrains.XML_LIBRARY;
 import static com.varankin.brains.io.xml.XmlBrains.XML_NAME;
 
-import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.DbБиблиотека;
 import com.varankin.brains.db.Коллекция;
-import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
@@ -27,6 +24,10 @@ import javafx.util.Callback;
 
 import static com.varankin.brains.io.xml.XmlBrains.XML_BRAINS;
 
+import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbПакет;
+import com.varankin.brains.db.DbNameSpace;
+
 /**
  * Каталог библиотек архива.
  *
@@ -37,7 +38,7 @@ class LibraryCatalogView extends AbstractCatalogView<DbБиблиотека>
     private final static Logger LOGGER = Logger.getLogger( LibraryCatalogView.class.getName() );
     
     private final Image iconEditor;
-    @Deprecated private final Пакет пакет = null;
+    @Deprecated private final DbПакет пакет = null;
     
     LibraryCatalogView( JavaFX jfx )
     {
@@ -130,10 +131,10 @@ class LibraryCatalogView extends AbstractCatalogView<DbБиблиотека>
             super( jfx, jfx.словарь( ActionNew.class ) );
             фабрика = ( Void v ) ->
             {
-                Архив архив = jfx.контекст.архив;
+                DbАрхив архив = jfx.контекст.архив;
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
-                XmlNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
+                DbNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
                 DbБиблиотека элемент = (DbБиблиотека)архив.создатьНовыйЭлемент( XML_LIBRARY, ns, null );
                 элемент.определить( XML_NAME, null, null, "New library #" + пакет.библиотеки().size() );
                 пакет.библиотеки().add( элемент );

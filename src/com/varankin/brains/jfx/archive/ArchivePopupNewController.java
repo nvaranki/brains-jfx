@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Атрибутный;
 import com.varankin.util.LoggerX;
 //import java.util.ResourceBundle;
 import java.util.logging.*;
@@ -18,6 +17,8 @@ import javafx.util.Builder;
 import static com.varankin.brains.jfx.JavaFX.icon;
 import static javafx.beans.binding.Bindings.createBooleanBinding;
 
+import com.varankin.brains.db.DbАтрибутный;
+
 /**
  * FXML-контроллер контекстного меню новых элементов навигатора по архиву.
  * 
@@ -32,7 +33,7 @@ public final class ArchivePopupNewController implements Builder<Menu>
     //public static final String RESOURCE_FXML  = "/fxml/archive/ArchivePopupNew.fxml";
     //public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private final ListProperty<Атрибутный> selection;
+    private final ListProperty<DbАтрибутный> selection;
     
     @FXML private final BooleanProperty
         disableNewАрхив, disableNewПакет, 
@@ -330,7 +331,7 @@ public final class ArchivePopupNewController implements Builder<Menu>
         event.consume();
     }
 
-    ListProperty<Атрибутный> selectionProperty() { return selection; }
+    ListProperty<DbАтрибутный> selectionProperty() { return selection; }
     
     public BooleanProperty disableNewАрхивProperty() { return disableNewАрхив; }
     public BooleanProperty disableNewПакетProperty() { return disableNewПакет; }

@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.КлассJava;
 import com.varankin.brains.jfx.JavaFX;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import com.varankin.brains.db.DbКлассJava;
 
 /**
  * FXML-контроллер панели закладок для установки параметров класса Java.
@@ -12,7 +12,7 @@ import javafx.fxml.FXML;
  */
 public final class PropertiesClassJavaController extends TabClassJavaController
 {
-    private volatile КлассJava класс;
+    private volatile DbКлассJava класс;
     
     @FXML
     void onActionApply( ActionEvent event )
@@ -21,7 +21,7 @@ public final class PropertiesClassJavaController extends TabClassJavaController
         JavaFX.getInstance().execute( new ScreenToStorageTask( класс, getAgents() ) );
     }
 
-    void reset( КлассJava класс )
+    void reset( DbКлассJava класс )
     {
         this.класс = класс;
         super.reset( класс );

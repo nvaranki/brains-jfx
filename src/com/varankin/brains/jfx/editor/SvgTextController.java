@@ -33,12 +33,12 @@ public final class SvgTextController implements Builder<Text>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgText.css";
     private static final String CSS_CLASS = "svg-text";
     
-    private final Атрибутный ЭЛЕМЕНТ;
+    private final DbАтрибутный ЭЛЕМЕНТ;
     private final EventHandler<? super MouseEvent> handlerMouseClick, handlerMouseDrag;
     
     @FXML private Text text;
     
-    public SvgTextController( Атрибутный элемент, boolean изменяемый ) 
+    public SvgTextController( DbАтрибутный элемент, boolean изменяемый ) 
     {
         ЭЛЕМЕНТ = элемент;
         handlerMouseClick = изменяемый ? this::handleMouseClick : null;
@@ -110,11 +110,11 @@ public final class SvgTextController implements Builder<Text>
     private String getContent()
     {
         String update = "";
-        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
                 update = н.атрибут( Xml.XML_TEXT, "?" );
-            else if( н instanceof Инструкция )
-                update = ((Инструкция)н).выполнить();
+            else if( н instanceof DbИнструкция )
+                update = ((DbИнструкция)н).выполнить();
         if( update.trim().isEmpty() ) update = "?";
         return update;
     }

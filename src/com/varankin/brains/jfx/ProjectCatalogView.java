@@ -8,15 +8,12 @@ import com.varankin.brains.appl.УдалитьАрхивныеПроекты;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.io.svg.SvgService;
 import com.varankin.brains.io.svg.SvgПроект;
-import com.varankin.brains.db.XmlNameSpace;
 
 import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
 import static com.varankin.brains.io.xml.XmlBrains.XML_NAME;
 import static com.varankin.brains.io.xml.XmlBrains.XML_PROJECT;
 
-import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.Коллекция;
-import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.DbПроект;
 import com.varankin.brains.db.Сборка;
 import com.varankin.brains.db.Транзакция;
@@ -35,6 +32,10 @@ import javafx.util.Callback;
 import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
 import static com.varankin.brains.io.xml.XmlBrains.XML_BRAINS;
 
+import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbПакет;
+import com.varankin.brains.db.DbNameSpace;
+
 /**
  * Каталог проектов архива.
  *
@@ -45,7 +46,7 @@ class ProjectCatalogView extends AbstractCatalogView<DbПроект>
     private final static Logger LOGGER = Logger.getLogger( ProjectCatalogView.class.getName() );
     
     private final Image iconEditor;
-    @Deprecated private final Пакет пакет = null;
+    @Deprecated private final DbПакет пакет = null;
     
     ProjectCatalogView( JavaFX jfx )
     {
@@ -143,10 +144,10 @@ class ProjectCatalogView extends AbstractCatalogView<DbПроект>
             super( jfx, jfx.словарь( ActionNew.class ) );
             фабрика = ( Void v ) ->
             {
-                Архив архив = jfx.контекст.архив;
+                DbАрхив архив = jfx.контекст.архив;
                 Транзакция транзакция = архив.транзакция();
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
-                XmlNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
+                DbNameSpace ns = архив.определитьПространствоИмен( XMLNS_BRAINS, XML_BRAINS );
                 DbПроект элемент = (DbПроект)архив.создатьНовыйЭлемент( XML_PROJECT, ns, null );
                 элемент.определить( XML_NAME, null, null, "New project #" + пакет.проекты().size() );
                 пакет.проекты().add( элемент );

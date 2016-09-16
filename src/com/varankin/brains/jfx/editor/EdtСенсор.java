@@ -1,11 +1,12 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbКонтакт;
-import javafx.scene.*;
+import com.varankin.brains.io.xml.XmlBrains;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 
+import com.varankin.brains.db.DbСенсор;
+import javafx.scene.*;
 
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
@@ -17,9 +18,9 @@ import com.varankin.brains.db.DbАтрибутный;
  *
  * @author Николай
  */
-class EdtКонтакт extends EdtАтрибутныйЭлемент<DbКонтакт>
+class EdtСенсор extends EdtАтрибутныйЭлемент<DbСенсор>
 {
-    EdtКонтакт( DbКонтакт элемент )
+    EdtСенсор( DbСенсор элемент )
     {
         super( элемент );
     }
@@ -27,11 +28,13 @@ class EdtКонтакт extends EdtАтрибутныйЭлемент<DbКонт
     Node загрузить( boolean изменяемый )
     {
         Group group = new Group();
-        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
-        
+        group.setUserData( ЭЛЕМЕНТ );
+
         String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
         group.getTransforms().addAll( toTransforms( ts ) );
 
+        String атрибутName  = ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, "" );
+        
         for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
             group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
         for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )

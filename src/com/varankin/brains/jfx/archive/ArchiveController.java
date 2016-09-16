@@ -32,7 +32,7 @@ public final class ArchiveController implements Builder<TitledPane>
 
     @FXML private ArchiveToolBarController toolbarController;
     @FXML private ArchivePopupController popupController;
-    @FXML private TreeView<Атрибутный> tree;
+    @FXML private TreeView<DbАтрибутный> tree;
 
     public ArchiveController()
     {
@@ -73,15 +73,15 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     protected void initialize()
     {
-        Архив архив = JavaFX.getInstance().контекст.архив;
+        DbАрхив архив = JavaFX.getInstance().контекст.архив;
 //        архив.пакеты().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
 //        архив.namespaces().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
-        tree.setCellFactory( ( TreeView<Атрибутный> view ) -> new CellАтрибутный() );
+        tree.setCellFactory( ( TreeView<DbАтрибутный> view ) -> new CellАтрибутный() );
         tree.setRoot( new TreeItem<>() );
         if( архив != null )
         {
-            TreeItem<Атрибутный> item = new TitledTreeItem<>( архив );
+            TreeItem<DbАтрибутный> item = new TitledTreeItem<>( архив );
             tree.getRoot().getChildren().add( item );
         }
         else

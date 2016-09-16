@@ -1,8 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.Архив;
 import com.varankin.brains.db.DbБиблиотека;
-import com.varankin.brains.db.Пакет;
 import com.varankin.brains.db.DbПроект;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.db.DbЭлемент;
@@ -22,6 +20,8 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbПакет;
 
 /**
  * FXML-контроллер панели редактора. 
@@ -101,7 +101,7 @@ public final class EditorController implements Builder<Node>
 
     public void setContent( DbЭлемент элемент )
     {
-        Архив архив = JavaFX.getInstance().контекст.архив;
+        DbАрхив архив = JavaFX.getInstance().контекст.архив;
         Транзакция транзакция = архив.транзакция();
         транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
         try

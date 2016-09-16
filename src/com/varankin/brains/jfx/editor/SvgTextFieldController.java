@@ -1,9 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.io.xml.Xml;
-import com.varankin.brains.db.Архив;
-import com.varankin.brains.db.Атрибутный;
-import com.varankin.brains.db.Инструкция;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 
@@ -21,6 +18,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
+import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbАтрибутный;
 
 /**
  * FXML-контроллер редактируемого текста SVG. 
@@ -33,14 +33,14 @@ public class SvgTextFieldController implements Builder<TextField>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgTextField.css";
     private static final String CSS_CLASS = "svg-text-field";
     
-    private final Атрибутный ЭЛЕМЕНТ;
+    private final DbАтрибутный ЭЛЕМЕНТ;
     private final Text text;
     private final Collection<Node> children;
     private final boolean instruction;
     
     @FXML private TextField editor;
     
-    public SvgTextFieldController( Атрибутный элемент, Text text_, boolean instruction ) 
+    public SvgTextFieldController( DbАтрибутный элемент, Text text_, boolean instruction ) 
     {
         ЭЛЕМЕНТ = элемент;
         text = text_;
@@ -102,26 +102,26 @@ public class SvgTextFieldController implements Builder<TextField>
     private String getContent()
     {
         String t = "?";
-        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
                 t = н.атрибут( Xml.XML_TEXT, "?" );
-            else if( н instanceof Инструкция )
+            else if( н instanceof DbИнструкция )
                 if( instruction )
-                    t = ((Инструкция)н).код();
+                    t = ((DbИнструкция)н).код();
                 else
-                    t = ((Инструкция)н).выполнить();
+                    t = ((DbИнструкция)н).выполнить();
         return t;
     }
     
     private void setContent( String input )
     {
-        Инструкция инструкция = null;
-        Атрибутный текст = null;
-        for( Атрибутный н : ЭЛЕМЕНТ.прочее() )
+        DbИнструкция инструкция = null;
+        DbАтрибутный текст = null;
+        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
             if( н.тип().название() == null )
                 текст = н;
-            else if( н instanceof Инструкция )
-                инструкция = ((Инструкция)н);
+            else if( н instanceof DbИнструкция )
+                инструкция = ((DbИнструкция)н);
 
         if( input.matches( "\\{.*\\@.*\\}" ) )
             if( инструкция != null )
@@ -161,7 +161,7 @@ public class SvgTextFieldController implements Builder<TextField>
         @Override
         public Void call() throws Exception
         {
-            Архив архив = JavaFX.getInstance().контекст.архив;
+            DbАрхив архив = JavaFX.getInstance().контекст.архив;
             Транзакция транзакция = архив.транзакция();
             транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив );
             boolean завершено = false;

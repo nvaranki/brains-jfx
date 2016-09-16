@@ -1,12 +1,12 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.Атрибутный;
 import java.util.Collection;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import com.varankin.brains.db.DbАтрибутный;
 
 /**
  *
@@ -15,19 +15,19 @@ import javafx.scene.paint.Color;
 public interface InPlaceEditorBuilder
 {
 
-    public static double asDouble( Атрибутный элемент, String атрибут, double нет )
+    public static double asDouble( DbАтрибутный элемент, String атрибут, double нет )
     {
         Double v = элемент.атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
-    public static String asString( Атрибутный элемент, String атрибут, String нет )
+    public static String asString( DbАтрибутный элемент, String атрибут, String нет )
     {
         String v = элемент.атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
-    public static Color asColor( Атрибутный элемент, String атрибут, String нет )
+    public static Color asColor( DbАтрибутный элемент, String атрибут, String нет )
     {
         String s = asString( элемент, атрибут, нет );
         return s == null || "none".equals( s ) ? null : Color.valueOf( s );

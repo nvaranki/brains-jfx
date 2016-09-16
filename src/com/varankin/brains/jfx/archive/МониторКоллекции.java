@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Атрибутный;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.jfx.TitledTreeItem;
 import com.varankin.property.MonitoredCollection;
@@ -12,6 +11,7 @@ import java.util.logging.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
+import com.varankin.brains.db.DbАтрибутный;
 
 /**
  *
@@ -21,9 +21,9 @@ class МониторКоллекции implements PropertyChangeListener
 {
     private static final Logger LOGGER = Logger.getLogger( МониторКоллекции.class.getName() );
 
-    final ObservableList<TreeItem<Атрибутный>> ITEMS;
+    final ObservableList<TreeItem<DbАтрибутный>> ITEMS;
 
-    МониторКоллекции( ObservableList<TreeItem<Атрибутный>> items )
+    МониторКоллекции( ObservableList<TreeItem<DbАтрибутный>> items )
     {
         ITEMS = items;
     }
@@ -34,11 +34,11 @@ class МониторКоллекции implements PropertyChangeListener
         switch( evt.getPropertyName() )
         {
             case Коллекция.PROPERTY_ADDED:
-                Platform.runLater( () -> onElementAdded( (Атрибутный)evt.getNewValue() ) );
+                Platform.runLater(() -> onElementAdded((DbАтрибутный)evt.getNewValue() ) );
                 break;
 
             case Коллекция.PROPERTY_REMOVED:
-                Platform.runLater( () -> onElementRemoved( (Атрибутный)evt.getOldValue() ) );
+                Platform.runLater(() -> onElementRemoved((DbАтрибутный)evt.getOldValue() ) );
                 break;
 
 //            case Процесс.СОСТОЯНИЕ:
@@ -54,15 +54,15 @@ class МониторКоллекции implements PropertyChangeListener
         }            
     }
     
-    private void onElementAdded( Атрибутный элемент )
+    private void onElementAdded( DbАтрибутный элемент )
     {
         CellUpdateTask.вставить( new TitledTreeItem<>( элемент ), ITEMS );
     }
     
-    private void onElementRemoved( Атрибутный элемент )
+    private void onElementRemoved( DbАтрибутный элемент )
     {
-        Collection<TreeItem<Атрибутный>> удалить = new ArrayList<>();
-        for( TreeItem<Атрибутный> узел : ITEMS )
+        Collection<TreeItem<DbАтрибутный>> удалить = new ArrayList<>();
+        for( TreeItem<DbАтрибутный> узел : ITEMS )
             if( элемент.equals( узел.getValue() ) )
                 удалить.add( узел );
         
