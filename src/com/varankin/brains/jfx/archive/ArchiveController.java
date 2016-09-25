@@ -5,11 +5,6 @@ import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javafx.beans.binding.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -19,7 +14,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер навигатора по архиву. 
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class ArchiveController implements Builder<TitledPane>
 {
@@ -33,10 +28,6 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML private ArchiveToolBarController toolbarController;
     @FXML private ArchivePopupController popupController;
     @FXML private TreeView<DbАтрибутный> tree;
-
-    public ArchiveController()
-    {
-    }
 
     /**
      * Создает панель навигатора. 
@@ -54,10 +45,9 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setShowRoot( false );
         tree.setEditable( false );
         tree.setContextMenu( popupController.build() );
-
-        Pane box = new HBox();// spacing );
-        //box.setPrefWidth( 250d );
         HBox.setHgrow( tree, Priority.ALWAYS );
+
+        Pane box = new HBox();
         box.getChildren().addAll( toolbarController.build(), tree );
         
         TitledPane pane = new TitledPane( LOGGER.text( "archive.title" ), box );
@@ -73,45 +63,35 @@ public final class ArchiveController implements Builder<TitledPane>
     @FXML
     protected void initialize()
     {
-        DbАрхив архив = JavaFX.getInstance().контекст.архив;
-//        архив.пакеты().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
-//        архив.namespaces().наблюдатели().add( new МониторКоллекции( item.getChildren() ) );
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
-        tree.setCellFactory( ( TreeView<DbАтрибутный> view ) -> new CellАтрибутный() );
+        tree.setCellFactory( view -> new CellАтрибутный() );
         tree.setRoot( new TreeItem<>() );
-        if( архив != null )
-        {
-            TreeItem<DbАтрибутный> item = new TitledTreeItem<>( архив );
-            tree.getRoot().getChildren().add( item );
-        }
-        else
-            LOGGER.getLogger().log( Level.CONFIG, "No local database available.");
+        tree.getRoot().getChildren().add( getLocalArchiveTreeItem() );
         
         ActionProcessor processor = new ActionProcessor( new SelectionListBinding<>( tree.getSelectionModel() ) );
         toolbarController.setProcessor( processor );
         popupController.setProcessor( processor );
-
-
-//        tree.addEventHandler( TreeItem.<Атрибутный>branchExpandedEvent(), 
-//                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
-//        {
-//
-//            @Override
-//            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
-//            {
-//                event.getTreeItem();
-//            }
-//        });
-//        tree.addEventHandler( TreeItem.<Атрибутный>branchCollapsedEvent(), 
-//                new EventHandler<TreeItem.TreeModificationEvent<Атрибутный>>()
-//        {
-//
-//            @Override
-//            public void handle( TreeItem.TreeModificationEvent<Атрибутный> event )
-//            {
-//                event.getTreeItem();
-//            }
-//        });
+    }
+    
+    private TreeItem<DbАтрибутный> getLocalArchiveTreeItem()
+    {
+        JavaFX jfx = JavaFX.getInstance();
+        DbАрхив архив = jfx.контекст.архив;
+        TreeItem<DbАтрибутный> item;
+        if( архив != null )
+        {
+            item = jfx.archiveFoldedTreeItems ?
+                    new FoldedTreeItem( архив ) : new MergedTreeItem( архив );
+        }
+        else
+        {
+            LOGGER.getLogger().log( Level.CONFIG, "No local database available.");
+            item = new TreeItem<DbАтрибутный>() 
+            {
+                @Override public String toString() { return "No database"; }
+            };
+        }
+        return item;
     }
     
 }

@@ -37,7 +37,7 @@ public class TitledTreeItem<T> extends TreeItem<T>
     public String toString() 
     {
         String text = title.get();
-        return text.isEmpty() ? super.toString() : text;
+        return text == null || text.isEmpty() ? super.toString() : text;
     }
     
 }

@@ -28,7 +28,7 @@ final class CellUpdateTask extends Task<Void>
         Integer.valueOf( ФабрикаНазваний.индекс( a2.getClass() ) ).compareTo( 
         Integer.valueOf( ФабрикаНазваний.индекс( a1.getClass() ) ) ); // инверсно
 
-    private final TreeCell<DbАтрибутный> treeCell;
+//    private final TreeCell<DbАтрибутный> treeCell;
     private final TreeItem<DbАтрибутный> treeItem;
     private final Collection<DbАтрибутный> потомки;
     private final boolean loadGraphic;
@@ -38,14 +38,14 @@ final class CellUpdateTask extends Task<Void>
     private volatile String название, подсказка;
     private volatile Node картинка;
 
-    CellUpdateTask( TreeCell<DbАтрибутный> cell )
+    CellUpdateTask( TreeItem<DbАтрибутный> item )//( TreeCell<DbАтрибутный> cell )
     {
-        treeCell = cell;
-        treeItem = cell.getTreeItem();
+//        treeCell = cell;
+        treeItem = item;//cell.getTreeItem();
         loadGraphic = treeItem.getGraphic() == null;
         потомки = new ArrayList<>();
-        наблюдатель = (МониторКоллекции)cell.getProperties().get( CellАтрибутный.PCL );
-        мониторы = (Collection<PropertyMonitor>)cell.getProperties().get( CellАтрибутный.CCPCL );
+        наблюдатель = null;//(МониторКоллекции)cell.getProperties().get( CellАтрибутный.PCL );
+        мониторы = new ArrayList<>();//(Collection<PropertyMonitor>)cell.getProperties().get( CellАтрибутный.CCPCL );
     }
 
     /**
@@ -63,10 +63,10 @@ final class CellUpdateTask extends Task<Void>
             загрузить( item );
             т.завершить( true );
         }
-        for( PropertyMonitor м : мониторы )
-        {
-            м.listeners().add( наблюдатель );
-        }
+//        for( PropertyMonitor м : мониторы )
+//        {
+//            м.listeners().add( наблюдатель );
+//        }
         return null;
     }
 
@@ -77,17 +77,17 @@ final class CellUpdateTask extends Task<Void>
     protected void succeeded()
     {
         // пока call() работала, ячейка могла выйти из употребления!
-        if( treeItem.equals( treeCell.getTreeItem() ) )
+//        if( treeItem.equals( treeCell.getTreeItem() ) )
         {
             // обновить отображение
-            treeCell.setText( название );
-            treeCell.setTooltip( new Tooltip( подсказка ) );
-            if( loadGraphic )
-                treeCell.setGraphic( картинка ); // иначе отображение разваливается!!! Java v.8u5
+//            treeCell.setText( название );
+//            treeCell.setTooltip( new Tooltip( подсказка ) );
+//            if( loadGraphic )
+//                treeCell.setGraphic( картинка ); // иначе отображение разваливается!!! Java v.8u5
             if( loadGraphic )
                 treeItem.setGraphic( картинка );
-            if( treeItem instanceof TitledTreeItem )
-                ((TitledTreeItem)treeItem).titleProperty().set( название );
+            if( treeItem instanceof FoldedTreeItem )
+                ((FoldedTreeItem)treeItem).textProperty().setValue( название );
             
             // обновить потомки ячейки по indb, иначе ячейку не раскрыть!
             List<DbАтрибутный> показать = new LinkedList<>( потомки );

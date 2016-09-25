@@ -66,6 +66,7 @@ public final class JavaFX
     private final Provider<Provider<InputStream>> xmlFileSelector, xmlUrlSelector;
     public final ListProperty<Provider<InputStream>> providersXml; 
     public final HistoryList<Provider<InputStream>> historyXml;
+    public final boolean archiveFoldedTreeItems;
             
 
     /**
@@ -88,6 +89,7 @@ public final class JavaFX
         providersXml = new SimpleListProperty<>( FXCollections.observableArrayList() );
         providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
         historyXml = new HistoryList<>( providersXml, ApplicationActionImportXml.class );
+        archiveFoldedTreeItems = false;
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
