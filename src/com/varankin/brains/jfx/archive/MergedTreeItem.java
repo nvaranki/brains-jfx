@@ -23,7 +23,7 @@ final class MergedTreeItem extends AbstractTreeItem
      */
     MergedTreeItem( DbАтрибутный элемент )
     {
-        super( э -> new MergedTreeItem( э ), элемент );
+        super( элемент, э -> new MergedTreeItem( э ) );
         textProperty().setValue( ЗАГРУЗКА ); // временно, до загрузки узла
         JavaFX.getInstance().execute( new LookupTask() ); // марка, метка и подсказка
     }

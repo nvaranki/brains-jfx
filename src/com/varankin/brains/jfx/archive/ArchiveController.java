@@ -64,7 +64,7 @@ public final class ArchiveController implements Builder<TitledPane>
     protected void initialize()
     {
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
-        tree.setCellFactory( view -> new CellАтрибутный() );
+        tree.setCellFactory( view -> new ArchiveTreeCell() );
         tree.setRoot( new TreeItem<>() );
         tree.getRoot().getChildren().add( getLocalArchiveTreeItem() );
         

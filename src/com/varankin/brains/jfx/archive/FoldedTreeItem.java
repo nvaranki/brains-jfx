@@ -28,7 +28,7 @@ final class FoldedTreeItem extends AbstractTreeItem
      */
     FoldedTreeItem( DbАтрибутный элемент )
     {
-        super( э -> new FoldedTreeItem( э ), элемент );
+        super( элемент, э -> new FoldedTreeItem( э ) );
         коллекция = null;
         textProperty().setValue( ЗАГРУЗКА ); // временно, до загрузки узла
         JavaFX.getInstance().execute( new LookupTask() ); // марка, метка и подсказка
@@ -39,13 +39,14 @@ final class FoldedTreeItem extends AbstractTreeItem
      * 
      * @param элемент владелец коллекции.
      * @param коллекция коллекция как узел дерева.
-     * @param тип тип коллекции.
+     * @param тип название метода как тип коллекции.
      */
     private FoldedTreeItem( DbАтрибутный элемент, Коллекция<? extends DbАтрибутный> коллекция, String тип )
     {
-        super( э -> new FoldedTreeItem( э ), элемент, марка( тип ) );
+        super( элемент, э -> new FoldedTreeItem( э ) );
         this.коллекция = коллекция;
-        textProperty().setValue( метка( тип ) );
+        graphicProperty().setValue( маркаКоллекции( тип ) );
+        textProperty().setValue( меткаКоллекции( тип ) );
     }
 
     @Override

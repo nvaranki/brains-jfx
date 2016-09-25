@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.ФабрикаНазваний;
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.*;
 import com.varankin.brains.factory.Составной;
 import com.varankin.characteristic.Изменение;
@@ -33,6 +32,7 @@ import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
+import javafx.util.Callback;
 
 import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
 
@@ -52,19 +52,12 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
 
     private final StringProperty textProperty = new SimpleStringProperty();
     private final ObjectProperty<Tooltip> tooltipProperty = new SimpleObjectProperty<>();
-    private final Фабрика<DbАтрибутный,AbstractTreeItem> фабрика;
+    private final Callback<DbАтрибутный,AbstractTreeItem> фабрика;
     protected final ChangeListener<Boolean> пд;
 
-    AbstractTreeItem( Фабрика<DbАтрибутный,AbstractTreeItem> фабрика, 
-            DbАтрибутный value )
+    AbstractTreeItem( DbАтрибутный value, Callback<DbАтрибутный,AbstractTreeItem> фабрика)
     {
-        this( фабрика, value, null );
-    }
-
-    AbstractTreeItem( Фабрика<DbАтрибутный,AbstractTreeItem> фабрика, 
-            DbАтрибутный value, Node graphic )
-    {
-        super( value, graphic );
+        super( value );
         this.фабрика = фабрика;
         this.пд = this::onExpandedChanged;
         expandedProperty().addListener( пд ); // PopulateTask удалит пд
@@ -80,14 +73,9 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
         return textProperty;
     }
     
-    @Deprecated final ObjectProperty<Tooltip> tooltipProperty()
+    final ObjectProperty<Tooltip> tooltipProperty()
     {
         return tooltipProperty;
-    }
-    
-    @Deprecated void setTooltip( String value )
-    {
-        tooltipProperty().setValue( value == null || value.trim().isEmpty() ? null : new Tooltip( value ) );
     }
     
     /**
@@ -97,7 +85,7 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
      */
     final void построитьДерево( DbАтрибутный элемент )
     {
-        AbstractTreeItem дерево = фабрика.создать( элемент );
+        AbstractTreeItem дерево = фабрика.call( элемент );
         List<TreeItem<DbАтрибутный>> список = getChildren();
         список.add( дерево.позиция( список, TREE_ITEM_COMPARATOR ), дерево );
     }
@@ -123,7 +111,7 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
         List<TreeItem<DbАтрибутный>> список = getChildren();
         for( DbАтрибутный e : состав )
         {
-            AbstractTreeItem дерево = фабрика.создать( e );
+            AbstractTreeItem дерево = фабрика.call( e );
             список.add( дерево.позиция( список, TREE_ITEM_COMPARATOR ), дерево );
         }
         удалитьВременныеПотомки();
@@ -194,7 +182,7 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
             try( Транзакция т = элемент.транзакция() )
             {
                 Descr d = new Descr();
-                d.name = название( элемент );
+                d.name = метка( элемент );
                 d.icon = марка( элемент );
                 d.tooltip = подсказка( элемент );
                 т.завершить( true );
@@ -286,7 +274,8 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
     {
         Function<? super Method,? extends String> nm = m -> m.getName();
         Function<? super Method,? extends Коллекция> xm = new XM( элемент );
-        Collector<Method, ?, Map<String, Коллекция>> toMap = Collectors.toMap( nm, xm );
+        Collector<Method, ?, Map<String, Коллекция>> toMap = 
+                Collectors.toMap( nm, xm ); // название метода -> коллекция
         return элемент == null ? Collections.emptyMap() :
             Arrays.stream( элемент.getClass().getMethods() )
                 .filter( m -> Коллекция.class.isAssignableFrom( m.getReturnType() ) )

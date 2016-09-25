@@ -21,6 +21,7 @@ import javafx.scene.image.ImageView;
  *
  * @author &copy; 2016 Николай Варанкин
  */
+@Deprecated
 final class CellUpdateTask extends Task<Void>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( CellUpdateTask.class );

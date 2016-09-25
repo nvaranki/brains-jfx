@@ -9,7 +9,7 @@ import com.varankin.brains.db.DbАтрибутный;
  *
  * @author &copy; 2016 Николай Варанкин
  */
-final class CellАтрибутный extends TreeCell<DbАтрибутный>
+final class ArchiveTreeCell extends TreeCell<DbАтрибутный>
 {
     @Override
     protected void updateItem( DbАтрибутный item, boolean empty ) 
