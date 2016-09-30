@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -181,6 +182,7 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
             DbАтрибутный элемент = AbstractTreeItem.this.getValue();
             try( Транзакция т = элемент.транзакция() )
             {
+                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
                 Descr d = new Descr();
                 d.name = метка( элемент );
                 d.icon = марка( элемент );
@@ -233,8 +235,10 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
         @Override
         protected Collection<DbАтрибутный> call() throws Exception
         {
-            try( Транзакция т = AbstractTreeItem.this.getValue().транзакция() )
+            DbАтрибутный элемент = AbstractTreeItem.this.getValue();
+            try( Транзакция т = элемент.транзакция() )
             {
+                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
                 List<DbАтрибутный> c = new LinkedList<>();
                 for( Коллекция<? extends DbАтрибутный> к : коллекции )
                     c.addAll( к );
@@ -301,7 +305,7 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
      * 
      * @author &copy; 2016 Николай Варанкин
      */
-    private final class Составитель implements Наблюдатель<DbАтрибутный>
+    private static class Составитель implements Наблюдатель<DbАтрибутный>
     {
         private final AbstractTreeItem treeItem;
 
@@ -315,11 +319,11 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
         {
             if( изменение.ПРЕЖНЕЕ != null )
             {
-                treeItem.разобратьДерево( изменение.ПРЕЖНЕЕ );
+                Platform.runLater( () -> treeItem.разобратьДерево( изменение.ПРЕЖНЕЕ ) );
             }
             if( изменение.АКТУАЛЬНОЕ != null )
             {
-                treeItem.построитьДерево( изменение.АКТУАЛЬНОЕ );
+                Platform.runLater( () -> treeItem.построитьДерево( изменение.АКТУАЛЬНОЕ ) );
             }
         }
 

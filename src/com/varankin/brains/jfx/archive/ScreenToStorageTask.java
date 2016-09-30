@@ -30,8 +30,9 @@ class ScreenToStorageTask extends Task<Void>
     @Override
     protected Void call() throws Exception
     {
-        try( final Транзакция т = lock.транзакция() )
+        try( Транзакция т = lock.транзакция() )
         {
+            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, lock );
             for( AttributeAgent agent : agents )
                 agent.toStorage();
             т.завершить( true );

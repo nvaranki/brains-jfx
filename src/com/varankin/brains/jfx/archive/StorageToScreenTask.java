@@ -28,8 +28,9 @@ class StorageToScreenTask extends Task<Void>
     @Override
     protected Void call() throws Exception
     {
-        try( final Транзакция т = lock.транзакция() )
+        try( Транзакция т = lock.транзакция() )
         {
+            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, lock );
             for( AttributeAgent agent : agents )
                 agent.fromStorage();
             т.завершить( true );

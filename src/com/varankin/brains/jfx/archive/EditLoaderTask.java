@@ -36,6 +36,7 @@ class EditLoaderTask extends Task<Void>
     {
         try( Транзакция т = элемент.транзакция() )
         {
+            //TODO блокировка?
             текст = элемент.название();
             controller.setContent( элемент );
             т.завершить( true );
