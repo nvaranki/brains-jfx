@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.Отображаемый;
 import com.varankin.brains.db.*;
-import com.varankin.brains.io.svg.SvgФабрика;
+import com.varankin.brains.db.export.svg.SvgФабрика;
 import com.varankin.brains.jfx.HtmlGenerator;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.filter.*;
