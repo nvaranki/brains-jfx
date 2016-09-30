@@ -5,9 +5,7 @@ import com.varankin.brains.jfx.browser.BrowserController;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
 import com.varankin.util.Текст;
-import java.util.List;
 import java.util.logging.*;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -20,7 +18,7 @@ import javafx.stage.Stage;
 /**
  * Построитель главной экранной формы приложения.
  *
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 class GuiBuilder 
 {
@@ -124,47 +122,6 @@ class GuiBuilder
         spoc.setFitToHeight( true );
         spoc.setFitToWidth( true );
         return spoc;
-    }
-
-    private TitledPane навигаторПоАрхивуПроектов( int spacing )
-    {
-        ProjectCatalogView view = new ProjectCatalogView( JFX );
-        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
-    }
-
-    private TitledPane навигаторПоАрхивуБиблиотек( int spacing )
-    {
-        LibraryCatalogView view = new LibraryCatalogView( JFX );
-        return навигатор( view, spacing, view.getActions(), view.titleProperty() );
-    }
-
-    private TitledPane навигатор( Control навигатор, int spacing, 
-            List<AbstractJfxAction> actions, ReadOnlyStringProperty title )
-    {
-        TitledPane панель = new TitledPane();
-        панель.textProperty().bind( title );
-        String кп = навигатор.getClass().getSimpleName() + ".toolbar";
-        if( Boolean.valueOf( JFX.контекст.параметр( кп, "true" ) ) )
-        {
-            ToolBar toolbar = new ToolBar();
-            toolbar.setOrientation( Orientation.VERTICAL );
-            for( AbstractJfxAction action : actions )
-                if( action != null )
-                    toolbar.getItems().add( action.makeButton() );
-                else
-                    toolbar.getItems().add( new Separator( Orientation.HORIZONTAL ) );
-            Pane pane = new HBox( spacing );
-            pane.setPrefWidth( 250d );
-            HBox.setHgrow( навигатор, Priority.ALWAYS );
-            pane.getChildren().addAll( toolbar, навигатор );
-            панель.setContent( pane );
-        }
-        else
-        {
-            панель.setContent( навигатор );
-        }
-        навигатор.setPrefWidth( 250d );
-        return панель;
     }
 
 }

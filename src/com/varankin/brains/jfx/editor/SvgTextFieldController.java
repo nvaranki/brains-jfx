@@ -102,14 +102,14 @@ public class SvgTextFieldController implements Builder<TextField>
     private String getContent()
     {
         String t = "?";
-        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            if( н.тип().название() == null )
-                t = н.атрибут( Xml.XML_TEXT, "?" );
-            else if( н instanceof DbИнструкция )
-                if( instruction )
-                    t = ((DbИнструкция)н).код();
-                else
-                    t = ((DbИнструкция)н).выполнить();
+//        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//            if( н.тип().название() == null )
+//                t = н.атрибут( Xml.XML_TEXT, "?" );
+//            else if( н instanceof DbИнструкция )
+//                if( instruction )
+//                    t = ((DbИнструкция)н).код();
+//                else
+//                    t = ((DbИнструкция)н).выполнить();
         return t;
     }
     
@@ -117,11 +117,11 @@ public class SvgTextFieldController implements Builder<TextField>
     {
         DbИнструкция инструкция = null;
         DbАтрибутный текст = null;
-        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            if( н.тип().название() == null )
-                текст = н;
-            else if( н instanceof DbИнструкция )
-                инструкция = ((DbИнструкция)н);
+//        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//            if( н.тип().название() == null )
+//                текст = н;
+//            else if( н instanceof DbИнструкция )
+//                инструкция = ((DbИнструкция)н);
 
         if( input.matches( "\\{.*\\@.*\\}" ) )
             if( инструкция != null )
@@ -130,7 +130,7 @@ public class SvgTextFieldController implements Builder<TextField>
             }
             else
             {
-                ЭЛЕМЕНТ.прочее().clear();
+//TODO                ЭЛЕМЕНТ.прочее().clear();
                 //TODO ЭЛЕМЕНТ.инструкция( "xpath", input );
             }
         else if( инструкция != null )
@@ -144,7 +144,7 @@ public class SvgTextFieldController implements Builder<TextField>
         }
         else
         {
-            ЭЛЕМЕНТ.прочее().clear();
+//TODO            ЭЛЕМЕНТ.прочее().clear();
             //TODO ЭЛЕМЕНТ.addTextBlock( input );
         }
     }

@@ -279,25 +279,25 @@ final class ActionProcessor //TODO RT-37820
     boolean disableActionLoad()
     {
         return selection.isEmpty() || !selection.stream()
-                .allMatch( ( DbАтрибутный i ) -> i instanceof DbПроект );
+                .allMatch( i -> i instanceof DbПроект );
     }
     
     boolean disableActionPreview()
     {
         return selection.isEmpty() || !selection.stream()
-                .allMatch( ( DbАтрибутный i ) -> i instanceof DbЭлемент );
+                .allMatch( i -> i instanceof DbЭлемент );
     }
     
     boolean disableActionEdit()
     {
         return selection.isEmpty() || !selection.stream()
-                .allMatch( ( DbАтрибутный i ) -> i instanceof DbЭлемент );
+                .allMatch( i -> i instanceof DbЭлемент );
     }
     
     boolean disableActionRemove()
     {
         return selection.isEmpty() || selection.stream()
-                .anyMatch( ( DbАтрибутный i ) -> i instanceof DbАрхив );
+                .anyMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionProperties()
@@ -308,24 +308,25 @@ final class ActionProcessor //TODO RT-37820
     boolean disableActionImportFile()
     {
         return selection.size() != 1 || !selection.stream()
-                .allMatch( ( DbАтрибутный i ) -> i instanceof DbАрхив );
+                .allMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionImportNet()
     {
         return selection.size() != 1 || !selection.stream()
-                .allMatch( ( DbАтрибутный i ) -> i instanceof DbАрхив );
+                .allMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionExportXml()
     {
         return selection.size() != 1 || !selection.stream()
-                .allMatch( ( DbАтрибутный i ) -> !( i instanceof DbАрхив || i instanceof DbМусор ) );
+                .allMatch( i -> !( i instanceof DbАрхив || i instanceof DbМусор ) );
     }
     
     boolean disableActionExportPic()
     {
-        return false;
+        return selection.size() != 1 || !selection.stream()
+                .allMatch( i -> i instanceof DbЭлемент );
     }
     
     //</editor-fold>

@@ -83,23 +83,23 @@ class EdtНеизвестный extends EdtАтрибутныйЭлемент<Db
                     
                 default:
                     Group group = new Group();
-                    for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-                        group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
-                    for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-                        group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
-                    for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-                        group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
+//                    for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+//                        group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+//                    for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+//                        group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+//                    for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//                        group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
                     node = group;
             }
         else
         {
             Group group = new Group();
-            for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-                group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
-            for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-                group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
-            for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-                group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
+//            for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+//                group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+//            for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+//                group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+//            for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//                group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
             node = group;
         }
         

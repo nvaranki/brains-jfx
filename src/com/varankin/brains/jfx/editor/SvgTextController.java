@@ -110,11 +110,11 @@ public final class SvgTextController implements Builder<Text>
     private String getContent()
     {
         String update = "";
-        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            if( н.тип().название() == null )
-                update = н.атрибут( Xml.XML_TEXT, "?" );
-            else if( н instanceof DbИнструкция )
-                update = ((DbИнструкция)н).выполнить();
+//        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//            if( н.тип().название() == null )
+//                update = н.атрибут( Xml.XML_TEXT, "?" );
+//            else if( н instanceof DbИнструкция )
+//                update = ((DbИнструкция)н).выполнить();
         if( update.trim().isEmpty() ) update = "?";
         return update;
     }

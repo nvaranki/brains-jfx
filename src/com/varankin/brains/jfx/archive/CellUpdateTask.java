@@ -11,8 +11,6 @@ import java.util.*;
 import java.util.logging.*;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
@@ -194,8 +192,6 @@ final class CellUpdateTask extends Task<Void>
         картинка = null;//картинка( узел );
         название = LOGGER.text( "cell.instruction" );
         подсказка = LOGGER.text( "cell.instruction" );
-        потомки.addAll( узел.прочее() );
-        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( DbКлассJava узел )
@@ -466,8 +462,6 @@ final class CellUpdateTask extends Task<Void>
         картинка = icon( "icons16x16/file.png" );
         название = LOGGER.text( "cell.text" );
         подсказка = LOGGER.text( "cell.text" );
-        потомки.addAll( узел.прочее() );
-        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( DbТочка узел )
@@ -516,9 +510,7 @@ final class CellUpdateTask extends Task<Void>
         название = LOGGER.text( "cell.basket" );
         подсказка = LOGGER.text( "cell.basket" );
         потомки.addAll( узел.мусор() );
-        потомки.addAll( узел.прочее() );
         мониторы.add( узел.мусор() );
-        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( DbNameSpace узел )
@@ -534,8 +526,6 @@ final class CellUpdateTask extends Task<Void>
                 название = "...".concat( название.substring( название.length() - 20 + 3 ) );
         }
         подсказка = LOGGER.text( "cell.namespace" );
-        потомки.addAll( узел.прочее() );
-        мониторы.add( узел.прочее() );
     }
     
     private void загрузить( DbЭлемент узел )
@@ -587,12 +577,6 @@ final class CellUpdateTask extends Task<Void>
         {
             картинка = null;//картинка( узел );
             название = LOGGER.text( "cell.attributive" );
-            потомки.addAll( узел.инструкции() );
-            потомки.addAll( узел.тексты() );
-            потомки.addAll( узел.прочее() );
-            мониторы.add( узел.инструкции() );
-            мониторы.add( узел.тексты() );
-            мониторы.add( узел.прочее() );
         }
     }
     

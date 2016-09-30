@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.io.svg.SvgService;
 import com.varankin.brains.appl.Отображаемый;
 import com.varankin.brains.db.*;
+import com.varankin.brains.io.svg.SvgФабрика;
 import com.varankin.brains.jfx.HtmlGenerator;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.filter.*;
@@ -20,7 +20,7 @@ import static com.varankin.filter.НЕ.не;
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
  * 
- * @author &copy; 2015 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 class WebViewLoaderTask extends Task<String>
 {
@@ -46,8 +46,7 @@ class WebViewLoaderTask extends Task<String>
         {
             название = элемент.название();
             Фильтр<DbЭлемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
-            SvgService<DbАтрибутный> service = ( DbАтрибутный э ) -> providerOf( э, сборка );
-            String code = service.генератор( элемент ).newInstance(); //TODO Отображаемый.MIME_SVG
+            String code = SvgФабрика.getInstance().providerOf( элемент, сборка ).newInstance(); //TODO Отображаемый.MIME_SVG
             т.завершить( true );
             return code;
         }
