@@ -63,6 +63,8 @@ abstract class AbstractTreeItem extends TreeItem<DbАтрибутный>
         this.пд = this::onExpandedChanged;
         expandedProperty().addListener( пд ); // PopulateTask удалит пд
         создатьВременныеПотомки(); // временно, до раскрытия узла 
+        if( !( value instanceof DbУзел ) )
+            this.setExpanded( true ); // снимет лишние отметки о раскрываемости узла
     }
     
     //<editor-fold defaultstate="collapsed" desc="методы">
