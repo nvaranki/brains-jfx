@@ -1,11 +1,10 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.jfx.SelectionListBinding;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.Импортировать;
-import com.varankin.brains.appl.УдалитьИзАрхива;
+import com.varankin.brains.appl.УдалитьИзКоллекции;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.appl.ЭкспортироватьXml;
 import com.varankin.brains.db.*;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.*;
 import javafx.scene.control.TreeItem;
@@ -43,7 +43,7 @@ final class ActionProcessor //TODO RT-37820
     private static final Импортировать импортировать
         = new Импортировать( JavaFX.getInstance().контекст );
     
-    private final SelectionListBinding<DbАтрибутный> selection;
+    private final ObservableList<TreeItem<DbАтрибутный>> SELECTION;
 
     private Stage properties;
     private Provider<File> fileProviderExportXml, fileProviderExportSvg;
@@ -54,10 +54,9 @@ final class ActionProcessor //TODO RT-37820
         disableProperties, 
         disableImportFile, disableImportNet, disableExportXml, disableExportPic;
     
-    ActionProcessor( SelectionListBinding<DbАтрибутный> selectionBinding )
+    ActionProcessor( ObservableList<TreeItem<DbАтрибутный>> selection )
     {
-        selection = selectionBinding;
-        
+        SELECTION = selection;
         disableNew = createBooleanBinding( () -> disableActionNew(), selection );
         disableLoad = createBooleanBinding( () -> disableActionLoad(), selection );
         disablePreview = createBooleanBinding( () -> disableActionPreview(), selection );
@@ -85,9 +84,9 @@ final class ActionProcessor //TODO RT-37820
 
     void onActionNew( ActionEvent event )
     {
-        if( selection.size() == 1 )
+        if( SELECTION.size() == 1 )
         {
-            DbАтрибутный value = selection.get( 0 );
+            DbАтрибутный value = SELECTION.get( 0 ).getValue();
 //            if( value instanceof Архив )
 //                onActionNewПакет( event );
 //            else if( value instanceof Пакет )
@@ -102,7 +101,8 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionLoad( ActionEvent event )
     {
-        List<DbПроект> ceлектор = selection.stream()
+        List<DbПроект> ceлектор = SELECTION.stream()
+            .map( ti -> ti.getValue() )
 //TODO org.neo4j.graphdb.NotInTransactionException : i.пакеты() i.проекты()       
 //            .flatMap( ( Атрибутный i ) -> i instanceof Архив ? ((Архив)i).пакеты().stream() : Stream.of( i ) )
 //            .flatMap( ( Атрибутный i ) -> i instanceof Пакет ? ((Пакет)i).проекты().stream() : Stream.of( i ) )
@@ -119,7 +119,7 @@ final class ActionProcessor //TODO RT-37820
     void onActionPreview( ActionEvent event )
     {
         Predicate<TitledSceneGraph> inBrowser = ( TitledSceneGraph tsg ) -> tsg.node instanceof WebView;
-        for( TreeItem<DbАтрибутный> item : selection.getSelectedItems() )
+        for( TreeItem<DbАтрибутный> item : SELECTION )
         {
             DbАтрибутный value = item.getValue();
             if( value instanceof DbЭлемент )
@@ -150,7 +150,7 @@ final class ActionProcessor //TODO RT-37820
     void onActionEdit( ActionEvent event )
     {
         Predicate<TitledSceneGraph> inEditor = ( TitledSceneGraph tsg ) -> tsg!=null;//tsg.node instanceof Pane; //TODO identification;
-        for( TreeItem<DbАтрибутный> item : selection.getSelectedItems() )
+        for( TreeItem<DbАтрибутный> item : SELECTION )
         {
             DbАтрибутный value = item.getValue();
             if( value instanceof DbЭлемент )
@@ -183,10 +183,11 @@ final class ActionProcessor //TODO RT-37820
     void onActionRemove( ActionEvent event )
     {
         //TODO confirmation dialog
-        JavaFX jfx = JavaFX.getInstance();
-        jfx.execute( new ДействияПоПорядку<DbАтрибутный>( 
-                ДействияПоПорядку.Приоритет.КОНТЕКСТ, new УдалитьИзАрхива( jfx.isRemovePermanently() ) ), 
-                new ArrayList<>( selection.getValue() ) );
+        ДействияПоПорядку<УдалитьИзКоллекции.Контекст> действие = 
+            new ДействияПоПорядку<>( ДействияПоПорядку.Приоритет.КОНТЕКСТ, new УдалитьИзКоллекции() );
+        JavaFX.getInstance().execute( действие, SELECTION.stream()
+            .map( ti -> new УдалитьИзКоллекции.Контекст( ti.getValue(), ti.getParent().getValue() ) )
+            .collect( Collectors.toList() ) );
     }
     
     void onActionImportFile( ActionEvent event )
@@ -201,11 +202,11 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionExportXml( ActionEvent event )
     {
-        if( selection.size() != 1 )
-            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", selection.size() );
+        if( SELECTION.size() != 1 )
+            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", SELECTION.size() );
         else
         {
-            DbАтрибутный элемент = selection.get( 0 );
+            DbАтрибутный элемент = SELECTION.get( 0 ).getValue();
             JavaFX jfx = JavaFX.getInstance();
             if( fileProviderExportXml == null ) 
             {
@@ -222,11 +223,11 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionExportPic( ActionEvent event )
     {
-        if( selection.size() != 1 )
-            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", selection.size() );
+        if( SELECTION.size() != 1 )
+            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", SELECTION.size() );
         else
         {
-            DbАтрибутный элемент = selection.get( 0 );
+            DbАтрибутный элемент = SELECTION.get( 0 ).getValue();
             if( элемент instanceof DbЭлемент )
             {
                 JavaFX jfx = JavaFX.getInstance();
@@ -248,14 +249,14 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionProperties( ActionEvent event )
     {
-        if( selection.isEmpty() )
+        if( SELECTION.isEmpty() )
             LOGGER.log( "002005005I" );
-        else if( selection.size() > 1 )
-            LOGGER.log( "002005006I", selection.size() );
+        else if( SELECTION.size() > 1 )
+            LOGGER.log( "002005006I", SELECTION.size() );
         else
         {
             if( properties == null ) properties = buildProperties();
-            properties.getScene().getRoot().setUserData( selection.get( 0 ) );
+            properties.getScene().getRoot().setUserData( SELECTION.get( 0 ).getValue() );
             properties.show();
             properties.toFront();
         }
@@ -278,55 +279,55 @@ final class ActionProcessor //TODO RT-37820
 
     boolean disableActionLoad()
     {
-        return selection.isEmpty() || !selection.stream()
-                .allMatch( i -> i instanceof DbПроект );
+        return SELECTION.isEmpty() || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbПроект );
     }
     
     boolean disableActionPreview()
     {
-        return selection.isEmpty() || !selection.stream()
-                .allMatch( i -> i instanceof DbЭлемент );
+        return SELECTION.isEmpty() || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbЭлемент );
     }
     
     boolean disableActionEdit()
     {
-        return selection.isEmpty() || !selection.stream()
-                .allMatch( i -> i instanceof DbЭлемент );
+        return SELECTION.isEmpty() || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbЭлемент );
     }
     
     boolean disableActionRemove()
     {
-        return selection.isEmpty() || selection.stream()
-                .anyMatch( i -> i instanceof DbАрхив );
+        return SELECTION.isEmpty() || SELECTION.stream()
+                .map( ti -> ti.getValue() ).anyMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionProperties()
     {
-        return selection.size() != 1;
+        return SELECTION.size() != 1;
     }
     
     boolean disableActionImportFile()
     {
-        return selection.size() != 1 || !selection.stream()
-                .allMatch( i -> i instanceof DbАрхив );
+        return SELECTION.size() != 1 || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionImportNet()
     {
-        return selection.size() != 1 || !selection.stream()
-                .allMatch( i -> i instanceof DbАрхив );
+        return SELECTION.size() != 1 || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionExportXml()
     {
-        return selection.size() != 1 || !selection.stream()
-                .allMatch( i -> !( i instanceof DbАрхив || i instanceof DbМусор ) );
+        return SELECTION.size() != 1 || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> !( i instanceof DbАрхив || i instanceof DbМусор ) );
     }
     
     boolean disableActionExportPic()
     {
-        return selection.size() != 1 || !selection.stream()
-                .allMatch( i -> i instanceof DbЭлемент );
+        return SELECTION.size() != 1 || !SELECTION.stream()
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbЭлемент );
     }
     
     //</editor-fold>
@@ -335,8 +336,9 @@ final class ActionProcessor //TODO RT-37820
     private void импортироватьXml( Provider<Provider<InputStream>> селектор )
     {
         JavaFX jfx = JavaFX.getInstance();
-        List<DbАрхив> архивы = selection.stream()
-            .flatMap( ( DbАтрибутный i ) -> i instanceof DbАрхив ? Stream.of( (DbАрхив)i ) : Stream.empty() )
+        List<DbАрхив> архивы = SELECTION.stream()
+            .map( ti -> ti.getValue() )
+            .flatMap( i -> i instanceof DbАрхив ? Stream.of( (DbАрхив)i ) : Stream.empty() )
             .collect( Collectors.toList() );
         if( архивы.isEmpty() )
             LOGGER.log( "002005003I" );
