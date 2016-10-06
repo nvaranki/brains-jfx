@@ -13,16 +13,17 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
  *
  * @author Николай
  */
-class EdtПроект extends EdtАтрибутныйЭлемент<DbПроект>
+class EdtПроект extends EdtЭлемент<DbПроект>
 {
     EdtПроект( DbПроект элемент )
     {
         super( элемент );
     }
     
-    Node загрузить( boolean изменяемый )
+    @Override
+    public Group загрузить( boolean изменяемый )
     {
-        Group group = new Group();
+        Group group = super.загрузить( изменяемый );
         group.setUserData( ЭЛЕМЕНТ );
         
         String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );

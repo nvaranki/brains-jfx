@@ -1,11 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbБиблиотека;
-import com.varankin.brains.db.DbПроект;
-import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.property.PropertyMonitor;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -15,18 +13,15 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Builder;
-import com.varankin.brains.db.DbАрхив;
-import com.varankin.brains.db.DbПакет;
 
 /**
  * FXML-контроллер панели редактора. 
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class EditorController implements Builder<Node>
 {
@@ -106,13 +101,7 @@ public final class EditorController implements Builder<Node>
         транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
         try
         {
-            Node content;
-            if( элемент instanceof DbПроект )
-                content = new EdtПроект( (DbПроект)элемент ).загрузить( true );
-            else if( элемент instanceof DbБиблиотека )
-                content = new EdtБиблиотека( (DbБиблиотека)элемент ).загрузить( true );
-            else
-                content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
+            Node content = EdtФабрика.getInstance().создать( элемент ).загрузить( true );
             Platform.runLater( () -> 
             { 
                 pane.setContent( content ); 

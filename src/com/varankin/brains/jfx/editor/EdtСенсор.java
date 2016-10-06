@@ -1,33 +1,31 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbСенсор;
+import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.io.xml.XmlBrains;
+import javafx.scene.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-
-import com.varankin.brains.db.DbСенсор;
-import javafx.scene.*;
-
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
-
-import com.varankin.brains.db.DbТекстовыйБлок;
-import com.varankin.brains.db.DbИнструкция;
-import com.varankin.brains.db.DbАтрибутный;
 
 /**
  *
  * @author Николай
  */
-class EdtСенсор extends EdtАтрибутныйЭлемент<DbСенсор>
+class EdtСенсор extends EdtЭлемент<DbСенсор>
 {
     EdtСенсор( DbСенсор элемент )
     {
         super( элемент );
     }
     
-    Node загрузить( boolean изменяемый )
+    @Override
+    public Group загрузить( boolean изменяемый )
     {
-        Group group = new Group();
+        Group group = super.загрузить( изменяемый );
         group.setUserData( ЭЛЕМЕНТ );
 
         String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );

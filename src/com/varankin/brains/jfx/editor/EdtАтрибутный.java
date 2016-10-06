@@ -10,17 +10,31 @@ import javafx.scene.shape.Polygon;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbNameSpace;
 
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
+import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
+
 /**
  *
  * @author Николай
  */
-abstract class EdtАтрибутныйЭлемент<T extends DbАтрибутный>
+abstract class EdtАтрибутный<T extends DbАтрибутный> implements NodeBuilder
 {
     protected final T ЭЛЕМЕНТ;
 
-    protected EdtАтрибутныйЭлемент( T элемент )
+    protected EdtАтрибутный( T элемент )
     {
         ЭЛЕМЕНТ = элемент;
+    }
+    
+    <T extends Node> T загрузить( T node, boolean изменяемый )
+    {
+        if( изменяемый ) node.setUserData( ЭЛЕМЕНТ );
+        
+        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
+        node.getTransforms().addAll( toTransforms( ts ) );
+        
+        return node;
     }
 
     double toSvgDouble( String атрибут, double нет )

@@ -1,37 +1,47 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbГрафика;
 import com.varankin.brains.io.xml.XmlSvg;
 import javafx.scene.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
-
+import static com.varankin.brains.jfx.editor.EdtНеизвестный.toSvgColor;
+import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
  * @author Николай
  */
-class EdtНеизвестный extends EdtАтрибутный<DbАтрибутный>
+class EdtГрафика extends EdtУзел<DbГрафика>
 {
-
-    EdtНеизвестный( DbАтрибутный элемент )
+    EdtГрафика( DbГрафика элемент )
     {
         super( элемент );
     }
     
     @Override
-    public Node загрузить( boolean изменяемый )
+    public Group загрузить( boolean изменяемый )
     {
-        Node node;
-        String s;
+        Group group = super.загрузить( изменяемый );
+        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
         
+        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
+        group.getTransforms().addAll( toTransforms( ts ) );
+
+        for( DbГрафика э : ЭЛЕМЕНТ.графики() )
+            group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
+        
+        String s;
         if( XmlSvg.XMLNS_SVG.equals( ЭЛЕМЕНТ.тип().uri() ) )
             switch( ЭЛЕМЕНТ.тип().название() )
             {
                 case XmlSvg.SVG_ELEMENT_TEXT:
-                    node = new SvgTextController( ЭЛЕМЕНТ, изменяемый ).build();
+                    group.getChildren().add( new SvgTextController( ЭЛЕМЕНТ, изменяемый ).build() );
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_RECT:
@@ -44,7 +54,7 @@ class EdtНеизвестный extends EdtАтрибутный<DbАтрибут
                     if( s != null ) rect.setStroke( toSvgColor( s ) );
                     s = toSvgString( SVG_ATTR_FILL, null );
                     if( s != null ) rect.setFill( toSvgColor( s ) );
-                    node = rect;
+                    group.getChildren().add( rect );
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_LINE:
@@ -55,7 +65,7 @@ class EdtНеизвестный extends EdtАтрибутный<DbАтрибут
                     line.setEndY( toSvgDouble( SVG_ATTR_Y2, 0d ) );
                     s = toSvgString( SVG_ATTR_STROKE, null );
                     if( s != null ) line.setStroke( toSvgColor( s ) );
-                    node = line;
+                    group.getChildren().add( line );
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_POLYLINE:
@@ -63,7 +73,7 @@ class EdtНеизвестный extends EdtАтрибутный<DbАтрибут
                     path.getPoints().setAll( toSvgPoints( SVG_ATTR_POINTS, new Double[]{0d,0d} ) );
                     s = toSvgString( SVG_ATTR_STROKE, null );
                     if( s != null ) path.setStroke( toSvgColor( s ) );
-                    node = path;
+                    group.getChildren().add( path );
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_CIRCLE:
@@ -75,39 +85,31 @@ class EdtНеизвестный extends EdtАтрибутный<DbАтрибут
                     if( s != null ) circle.setStroke( toSvgColor( s ) );
                     s = toSvgString( SVG_ATTR_FILL, null );
                     if( s != null ) circle.setFill( toSvgColor( s ) );
-                    node = circle;
+                    group.getChildren().add( circle );
                     break;
                     
                 default:
-                    Group group = new Group();
+//                    Group group = new Group();
 //                    for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
 //                        group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
 //                    for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
 //                        group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
 //                    for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
 //                        group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
-                    node = group;
+//                    node = group;
             }
-        else
-        {
-            Group group = new Group();
+//        else
+//        {
+//            Group group = new Group();
 //            for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
 //                group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
 //            for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
 //                group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
 //            for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
 //                group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
-            node = group;
-        }
-        
-        node.setUserData( ЭЛЕМЕНТ );
-        return node;
-    }
-
-    protected static Color toSvgColor( String s )
-    {
-        return "none".equals( s ) ? null : Color.valueOf( s );
+//            node = group;
+//        }
+        return group;
     }
     
-    
-}   
+}

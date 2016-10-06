@@ -2,13 +2,14 @@ package com.varankin.brains.jfx.editor;
 
 import javafx.scene.*;
 import com.varankin.brains.db.DbТекстовыйБлок;
+import javafx.scene.control.TextField;
 
 
 /**
  *
  * @author Николай
  */
-class EdtТекстовыйБлок extends EdtАтрибутныйЭлемент<DbТекстовыйБлок>
+class EdtТекстовыйБлок extends EdtАтрибутный<DbТекстовыйБлок>
 {
 
     EdtТекстовыйБлок( DbТекстовыйБлок элемент )
@@ -16,12 +17,13 @@ class EdtТекстовыйБлок extends EdtАтрибутныйЭлемен�
         super( элемент );
     }
     
-    Node загрузить( boolean изменяемый )
+    @Override
+    public Node загрузить( boolean изменяемый )
     {
         Node node;
         String s;
         
-        node = null;//.setUserData( ЭЛЕМЕНТ );
+        node = super.загрузить( new TextField( "TODO" ), изменяемый );//null;//.setUserData( ЭЛЕМЕНТ );
         return node;
     }
 

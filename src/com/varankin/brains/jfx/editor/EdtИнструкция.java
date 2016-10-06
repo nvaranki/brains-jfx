@@ -2,13 +2,14 @@ package com.varankin.brains.jfx.editor;
 
 import javafx.scene.*;
 import com.varankin.brains.db.DbИнструкция;
+import javafx.scene.control.TextField;
 
 
 /**
  *
  * @author Николай
  */
-class EdtИнструкция extends EdtАтрибутныйЭлемент<DbИнструкция>
+class EdtИнструкция extends EdtАтрибутный<DbИнструкция>
 {
 
     EdtИнструкция( DbИнструкция элемент )
@@ -16,12 +17,13 @@ class EdtИнструкция extends EdtАтрибутныйЭлемент<DbИ
         super( элемент );
     }
     
-    Node загрузить( boolean изменяемый )
+    @Override
+    public Node загрузить( boolean изменяемый )
     {
         Node node;
         String s;
         
-        node = null;//.setUserData( ЭЛЕМЕНТ );
+        node = super.загрузить( new TextField( "TODO" ), изменяемый );//null;//.setUserData( ЭЛЕМЕНТ );
         return node;
     }
 

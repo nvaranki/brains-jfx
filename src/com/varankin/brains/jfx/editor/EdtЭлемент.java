@@ -1,10 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbИнструкция;
-import com.varankin.brains.db.DbКонтакт;
-import com.varankin.brains.db.DbПараметр;
-import com.varankin.brains.db.DbТекстовыйБлок;
+import com.varankin.brains.db.*;
 import javafx.scene.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
@@ -15,9 +11,9 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
  *
  * @author Николай
  */
-class EdtКонтакт extends EdtЭлемент<DbКонтакт>
+abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел<T>
 {
-    EdtКонтакт( DbКонтакт элемент )
+    EdtЭлемент( T элемент )
     {
         super( элемент );
     }
@@ -27,8 +23,10 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт>
     {
         Group group = super.загрузить( изменяемый );
 
-        for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( изменяемый ) );
+        for( DbЗаметка э : ЭЛЕМЕНТ.заметки() )
+            group.getChildren().add( new EdtЗаметка( э ).загрузить( изменяемый ) );
+        for( DbГрафика э : ЭЛЕМЕНТ.графики() )
+            group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
         
         return group;
     }

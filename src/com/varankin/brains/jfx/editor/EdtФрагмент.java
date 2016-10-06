@@ -1,13 +1,12 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.io.xml.XmlBrains;
-
-import static com.varankin.brains.io.xml.XmlBrains.BRAINS_ATTR_NAME;
-import static com.varankin.brains.io.xml.XmlSvg.*;
-
-import com.varankin.brains.db.Коммутируемый;
+import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbСоединение;
+import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbФрагмент;
+import com.varankin.brains.db.Коммутируемый;
+import com.varankin.brains.io.xml.XmlBrains;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -17,15 +16,15 @@ import java.util.logging.Logger;
 import javafx.scene.*;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
-import com.varankin.brains.db.DbТекстовыйБлок;
-import com.varankin.brains.db.DbИнструкция;
-import com.varankin.brains.db.DbАтрибутный;
+
+import static com.varankin.brains.io.xml.XmlBrains.BRAINS_ATTR_NAME;
+import static com.varankin.brains.io.xml.XmlSvg.*;
 
 /**
  *
  * @author Николай
  */
-class EdtФрагмент extends EdtАтрибутныйЭлемент<DbФрагмент>
+class EdtФрагмент extends EdtЭлемент<DbФрагмент>
 {
     static private final Logger LOGGER = Logger.getLogger( EdtФрагмент.class.getName() );
 
@@ -34,9 +33,10 @@ class EdtФрагмент extends EdtАтрибутныйЭлемент<DbФра
         super( элемент );
     }
     
-    Node загрузить( boolean изменяемый )
+    @Override
+    public Group загрузить( boolean изменяемый )
     {
-        Group group = new Group();
+        Group group = super.загрузить( изменяемый );
         if( изменяемый )
             group.setUserData( ЭЛЕМЕНТ );
 
