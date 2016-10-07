@@ -26,10 +26,6 @@ class EdtСигнал extends EdtЭлемент<DbСигнал>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        group.setUserData( ЭЛЕМЕНТ );
-
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         String атрибутName  = ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, "" );
         

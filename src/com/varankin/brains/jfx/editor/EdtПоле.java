@@ -27,10 +27,6 @@ class EdtПоле extends EdtЭлемент<DbПоле>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbСенсор сигнал : ЭЛЕМЕНТ.сенсоры() )
             group.getChildren().add( new EdtСенсор( сигнал ).загрузить( изменяемый ) );

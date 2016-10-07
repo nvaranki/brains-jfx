@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.editor;
 
 import javafx.scene.*;
 import com.varankin.brains.db.DbТекстовыйБлок;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 
@@ -20,10 +21,8 @@ class EdtТекстовыйБлок extends EdtАтрибутный<DbТекст
     @Override
     public Node загрузить( boolean изменяемый )
     {
-        Node node;
-        String s;
-        
-        node = super.загрузить( new TextField( "TODO" ), изменяемый );//null;//.setUserData( ЭЛЕМЕНТ );
+        Node node = изменяемый ? new TextField( ЭЛЕМЕНТ.текст() ) : new Label( ЭЛЕМЕНТ.текст() );
+        node = super.загрузить( node, изменяемый );
         return node;
     }
 

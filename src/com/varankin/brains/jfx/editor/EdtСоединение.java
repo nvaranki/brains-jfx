@@ -31,7 +31,7 @@ class EdtСоединение extends EdtЭлемент<DbСоединение>
         Group group = super.загрузить( изменяемый );
 
         for( DbКонтакт контакт : ЭЛЕМЕНТ.контакты() )
-            group.getChildren().add( new EdtКонтакт( контакт ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtКонтакт( контакт ).загрузить( false ) );
         
         return group;
     }

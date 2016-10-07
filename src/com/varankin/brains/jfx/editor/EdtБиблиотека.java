@@ -26,10 +26,6 @@ class EdtБиблиотека extends EdtЭлемент<DbБиблиотека>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbМодуль модуль : ЭЛЕМЕНТ.модули() )
             group.getChildren().add( new EdtМодуль( модуль ).загрузить( изменяемый ) );

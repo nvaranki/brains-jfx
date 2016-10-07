@@ -9,6 +9,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbNameSpace;
+import javafx.scene.transform.Transform;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
 import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
@@ -29,12 +30,17 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
     
     <T extends Node> T загрузить( T node, boolean изменяемый )
     {
-        if( изменяемый ) node.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        node.getTransforms().addAll( toTransforms( ts ) );
-        
+        if( изменяемый ) 
+            node.setUserData( ЭЛЕМЕНТ );
+        else
+            node.getTransforms().addAll( getTransformList() );
         return node;
+    }
+    
+    private List<Transform> getTransformList()
+    {
+        return toTransforms( DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( 
+                SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) ) );
     }
 
     double toSvgDouble( String атрибут, double нет )

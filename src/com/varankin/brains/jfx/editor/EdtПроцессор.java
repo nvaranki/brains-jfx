@@ -25,10 +25,6 @@ class EdtПроцессор extends EdtЭлемент<DbПроцессор>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
             group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );

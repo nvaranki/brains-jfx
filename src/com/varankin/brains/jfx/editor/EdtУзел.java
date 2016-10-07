@@ -4,11 +4,9 @@ import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbУзел;
+import java.util.List;
 import javafx.scene.*;
-
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -25,13 +23,19 @@ abstract class EdtУзел<T extends DbУзел> extends EdtАтрибутный
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( new Group(), изменяемый );
+        List<Node> children = group.getChildren();
 
         for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
-        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+            children.add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+        if( !ЭЛЕМЕНТ.тексты().isEmpty() )
+        {
+            VBox box = new VBox();
+            for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+                box.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+            children.add( box );
+        }
         for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
+            children.add( new EdtНеизвестный( н ).загрузить( false ) );
         
         return group;
     }

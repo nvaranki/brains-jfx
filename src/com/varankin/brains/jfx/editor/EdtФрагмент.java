@@ -37,11 +37,6 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        if( изменяемый )
-            group.setUserData( ЭЛЕМЕНТ );
-
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         if( изменяемый )
             group.getChildren().add( createMarker( 3d ) );

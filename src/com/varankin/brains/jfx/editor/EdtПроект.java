@@ -24,10 +24,6 @@ class EdtПроект extends EdtЭлемент<DbПроект>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         if( изменяемый )
             group.getChildren().add( createMarker( 3d ) );

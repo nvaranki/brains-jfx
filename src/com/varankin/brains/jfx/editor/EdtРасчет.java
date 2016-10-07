@@ -27,10 +27,6 @@ class EdtРасчет extends EdtЭлемент<DbРасчет>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbСоединение соединение : ЭЛЕМЕНТ.соединения() )
             group.getChildren().add( new EdtСоединение( соединение ).загрузить( изменяемый ) );

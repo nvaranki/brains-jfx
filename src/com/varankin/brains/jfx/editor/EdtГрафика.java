@@ -28,10 +28,6 @@ class EdtГрафика extends EdtУзел<DbГрафика>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbГрафика э : ЭЛЕМЕНТ.графики() )
             group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );

@@ -163,7 +163,7 @@ final class ActionProcessor //TODO RT-37820
                 else
                 {
                     // Создать, разместить и показатеть пустой редактор
-                    BuilderFX<Node,EditorController> builder = new BuilderFX<>();
+                    BuilderFX<Parent,EditorController> builder = new BuilderFX<>();
                     builder.init( EditorController.class, EditorController.RESOURCE_FXML, EditorController.RESOURCE_BUNDLE );
                     EditorController controller = builder.getController();
                     Parent view = controller.build();

@@ -30,10 +30,6 @@ class EdtМодуль extends EdtЭлемент<DbМодуль>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbФрагмент фрагмент : ЭЛЕМЕНТ.фрагменты() )
             group.getChildren().add( new EdtФрагмент( фрагмент ).загрузить( изменяемый ) );

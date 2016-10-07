@@ -28,7 +28,7 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт>
         Group group = super.загрузить( изменяемый );
 
         for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );
         
         return group;
     }

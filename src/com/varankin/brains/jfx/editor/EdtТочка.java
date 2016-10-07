@@ -25,10 +25,6 @@ class EdtТочка extends EdtЭлемент<DbТочка>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbТочка соединение : ЭЛЕМЕНТ.точки() )
             group.getChildren().add( new EdtТочка( соединение ).загрузить( изменяемый ) );

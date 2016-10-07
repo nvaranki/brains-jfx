@@ -22,15 +22,11 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     public Group загрузить( boolean изменяемый )
     {
         Group group = super.загрузить( изменяемый );
-        if( изменяемый ) group.setUserData( ЭЛЕМЕНТ );
-        
-        String ts = DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) );
-        group.getTransforms().addAll( toTransforms( ts ) );
 
         for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );
         for( DbКлассJava э : ЭЛЕМЕНТ.классы() )
-            group.getChildren().add( new EdtКлассJava( э ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
         
         return group;
     }
