@@ -1,48 +1,57 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.io.xml.Xml;
-
-import static com.varankin.brains.io.xml.XmlSvg.*;
-
 import com.varankin.brains.db.*;
-
-import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.*;
-
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
-import javafx.beans.binding.Bindings;
-import javafx.event.*;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.*;
-import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
+
+import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.*;
 
 /**
  * FXML-контроллер текста SVG. 
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
-public final class SvgTextController implements Builder<Text>
+final class SvgTextController implements Builder<Text>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( SvgTextController.class );
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgText.css";
     private static final String CSS_CLASS = "svg-text";
     
     private final DbАтрибутный ЭЛЕМЕНТ;
-    private final EventHandler<? super MouseEvent> handlerMouseClick, handlerMouseDrag;
+    private final DbИнструкция инструкция;
+    private final DbТекстовыйБлок блок;
     
     @FXML private Text text;
     
-    public SvgTextController( DbАтрибутный элемент, boolean изменяемый ) 
+    SvgTextController( DbАтрибутный элемент, DbИнструкция инструкция ) 
+    {
+        this( элемент, инструкция, null );
+    }
+    
+    SvgTextController( DbАтрибутный элемент, DbТекстовыйБлок блок ) 
+    {
+        this( элемент, null, блок );
+    }
+    
+    private SvgTextController( DbАтрибутный элемент, DbИнструкция инструкция, DbТекстовыйБлок блок ) 
     {
         ЭЛЕМЕНТ = элемент;
-        handlerMouseClick = изменяемый ? this::handleMouseClick : null;
-        handlerMouseDrag  = изменяемый ? this::handleMouseDrag  : null;
+        this.инструкция = инструкция;
+        this.блок = блок;
     }
 
     /**
@@ -67,24 +76,27 @@ public final class SvgTextController implements Builder<Text>
     @FXML
     protected void initialize()
     {
-        text.setX( asDouble( ЭЛЕМЕНТ, SVG_ATTR_X, 0d ) );
-        text.setY( asDouble( ЭЛЕМЕНТ, SVG_ATTR_Y, 0d ) );
-        text.setFill( asColor( ЭЛЕМЕНТ, SVG_ATTR_FILL, null ) );
-        text.setStroke( asColor( ЭЛЕМЕНТ, SVG_ATTR_STROKE, null ) );
-        text.setOnMouseClicked( handlerMouseClick );
-        text.setOnDragDetected( handlerMouseDrag );
-        text.textProperty().bind( Bindings.createStringBinding( 
-                () -> getContent(), text.visibleProperty() )); //TODO (1) on set vis=true only (2) extend approach on x,y,...
+        text.setOnMouseClicked( this::onMouseClicked );
+        text.setOnDragDetected( this::onDragDetected );
+        text.visibleProperty().addListener( this::onVisibleChanged );
+        text.setVisible( false );
+        text.setVisible( true );
+        text.setText( "Loading..." );
+    }
+    
+    private void onVisibleChanged( ObservableValue<? extends Boolean> o, Boolean oldValue, Boolean newValue )
+    {
+        if( newValue ) JavaFX.getInstance().execute( new TextUpdateTask() );
     }
     
     @FXML
-    private void handleMouseClick( MouseEvent event )
+    private void onMouseClicked( MouseEvent event )
     {
         if( MouseButton.PRIMARY == event.getButton() )
             switch( event.getClickCount() )
             {
                 case 2: 
-                    raiseInPlaceEditor( event.isControlDown() ); 
+                    raiseInPlaceEditor( ); 
                     event.consume();
                     break;
                 case 1: 
@@ -95,7 +107,7 @@ public final class SvgTextController implements Builder<Text>
     }
     
     @FXML
-    private void handleMouseDrag( MouseEvent event )
+    private void onDragDetected( MouseEvent event )
     {
         if( MouseButton.PRIMARY == event.getButton() )
         {
@@ -107,19 +119,7 @@ public final class SvgTextController implements Builder<Text>
         }
     }
 
-    private String getContent()
-    {
-        String update = "";
-//        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-//            if( н.тип().название() == null )
-//                update = н.атрибут( Xml.XML_TEXT, "?" );
-//            else if( н instanceof DbИнструкция )
-//                update = ((DbИнструкция)н).выполнить();
-        if( update.trim().isEmpty() ) update = "?";
-        return update;
-    }
-
-    private void raiseInPlaceEditor( boolean controlDown )
+    private void raiseInPlaceEditor()
     {
         Collection<Node> children = childrenOf( text.getParent() );
         if( children == null )
@@ -127,11 +127,13 @@ public final class SvgTextController implements Builder<Text>
             LOGGER.log( Level.FINE, "No accessible children list of parent {0}", text.getParent() );
             return;
         }
-        
-        Builder<TextField> controller = new SvgTextFieldController( ЭЛЕМЕНТ, text, controlDown );
-        TextField editor = controller.build();
-        editor.setTranslateX( text.getX() );
-        editor.setTranslateY( text.getY() - text.getBaselineOffset() );
+        Node editor = инструкция != null ? new SvgTextField2Controller( инструкция ).build() : 
+                блок != null ? new SvgTextFieldController( блок ).build() : null;
+        if( editor == null ) return; //TODO
+        editor.setTranslateX( text.getTranslateX() );
+        editor.setTranslateY( text.getTranslateY() );
+        editor.visibleProperty().addListener( (x,o,n) -> 
+            { if( !n ) { children.remove( editor ); text.setVisible( true ); } } );
         
         text.setVisible( false );
         children.add( editor );
@@ -141,6 +143,63 @@ public final class SvgTextController implements Builder<Text>
     private void select()
     {
         //throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private class TextUpdateTask extends Task<Void>
+    {
+        volatile double y, x;
+        volatile Font font;
+        volatile Color stroke, fill;
+        volatile String content;
+
+        @Override
+        protected Void call() throws Exception
+        {
+            try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
+            {
+                транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, ЭЛЕМЕНТ );
+                x = asDouble( ЭЛЕМЕНТ, SVG_ATTR_X, 0d );
+                y = asDouble( ЭЛЕМЕНТ, SVG_ATTR_Y, 0d );
+                fill = asColor( ЭЛЕМЕНТ, SVG_ATTR_FILL, null );
+                stroke = asColor( ЭЛЕМЕНТ, SVG_ATTR_STROKE, null );
+                font = Font.font( asDouble( ЭЛЕМЕНТ, SVG_ATTR_FONT_SIZE, 10d ) );
+                content = инструкция != null ? content( инструкция ) : блок != null ? блок.текст() : null;
+            }
+            return null;
+        }
+        
+        String content( DbИнструкция инструкция )
+        {
+            if( инструкция == null ) return null;
+            String text = инструкция.выполнить();
+            if( text == null )
+                text = "!!! " + инструкция.процессор() + '(' + инструкция.код() + ')' + "=null";
+            else if( text.isEmpty() )
+                text = "??? " + инструкция.процессор() + '(' + инструкция.код() + ')' + "=\"\"";
+            return text;
+        }
+        
+        @Override
+        protected void succeeded()
+        {
+            text.setFont( font );
+            text.setTranslateX( x );
+            text.setTranslateY( y - text.getBaselineOffset() );
+            text.setFill( fill );
+            text.setStroke( stroke );
+            text.setText( content );
+        }
+        
+        @Override
+        protected void failed()
+        {
+            Throwable exception = getException();
+            String msg = exception == null ? null : exception.getMessage() != null ? exception.getMessage() : 
+                    exception.getClass().getSimpleName();
+            LOGGER.getLogger().log( Level.SEVERE, "Failure to update visible text{0}.", 
+                    msg != null ? ": " + msg : "" );
+        }
+        
     }
     
 }

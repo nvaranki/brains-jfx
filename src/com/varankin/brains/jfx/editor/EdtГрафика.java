@@ -1,17 +1,15 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbГрафика;
+import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.io.xml.XmlSvg;
 import javafx.scene.*;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
 import static com.varankin.brains.jfx.editor.EdtНеизвестный.toSvgColor;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
@@ -27,7 +25,7 @@ class EdtГрафика extends EdtУзел<DbГрафика>
     @Override
     public Group загрузить( boolean изменяемый )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = изменяемый ? загрузить( new Group(), true ) : super.загрузить( false ); // без текстов, инструкций и прочего
 
         for( DbГрафика э : ЭЛЕМЕНТ.графики() )
             group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
@@ -37,7 +35,16 @@ class EdtГрафика extends EdtУзел<DbГрафика>
             switch( ЭЛЕМЕНТ.тип().название() )
             {
                 case XmlSvg.SVG_ELEMENT_TEXT:
-                    group.getChildren().add( new SvgTextController( ЭЛЕМЕНТ, изменяемый ).build() );
+                    VBox box = new VBox();
+                    for( DbИнструкция э : ЭЛЕМЕНТ.инструкции() )
+                        box.getChildren().add( изменяемый ?
+                                new SvgTextController( ЭЛЕМЕНТ, э ).build() :
+                                new EdtИнструкция( э ).загрузить( false ) );
+                    for( DbТекстовыйБлок э : ЭЛЕМЕНТ.тексты() )
+                        box.getChildren().add( изменяемый ?
+                                new SvgTextController( ЭЛЕМЕНТ, э ).build() :
+                                new EdtТекстовыйБлок( э ).загрузить( false ) );
+                    group.getChildren().add( box );
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_RECT:

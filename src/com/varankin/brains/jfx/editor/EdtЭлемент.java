@@ -22,7 +22,7 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
         for( DbЗаметка э : ЭЛЕМЕНТ.заметки() )
             group.getChildren().add( new EdtЗаметка( э ).загрузить( false ) );
         for( DbГрафика э : ЭЛЕМЕНТ.графики() )
-            group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
+            group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
         
         return group;
     }
