@@ -4,8 +4,6 @@ import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
@@ -17,7 +15,7 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер набора инструментов навигатора по архиву.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public class ArchiveToolBarController implements Builder<ToolBar>
 {
@@ -256,8 +254,8 @@ public class ArchiveToolBarController implements Builder<ToolBar>
         disableEdit.bind( processor.disableEditProperty() );
         disableRemove.bind( processor.disableRemoveProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
-        disableImportFile.bind( processor.disableImportFileProperty() );
-        disableImportNet.bind( processor.disableImportNetProperty() );
+        disableImportFile.bind( processor.disableImportProperty() );
+        disableImportNet.bind( processor.disableImportProperty() );
         disableExportXml.bind( processor.disableExportXmlProperty() );
         disableExportPic.bind( processor.disableExportPicProperty() );
         

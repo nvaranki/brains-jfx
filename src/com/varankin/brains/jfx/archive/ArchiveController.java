@@ -3,8 +3,10 @@ package com.varankin.brains.jfx.archive;
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.*;
 import com.varankin.util.LoggerX;
+
 import java.util.*;
-import java.util.logging.Level;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -66,32 +68,45 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
         tree.setCellFactory( view -> new ArchiveTreeCell() );
         tree.setRoot( new TreeItem<>() );
-        tree.getRoot().getChildren().add( getLocalArchiveTreeItem() );
+
+        ObservableList<DbАрхив> архивы = JavaFX.getInstance().архивы;
+        архивы.addListener( this::onArchiveListChanged );
+        for( DbАрхив архив : архивы )
+            tree.getRoot().getChildren().add( createArchiveTree( архив ) );
         
         ActionProcessor processor = new ActionProcessor( tree.getSelectionModel().getSelectedItems() );
         toolbarController.setProcessor( processor );
         popupController.setProcessor( processor );
     }
     
-    private TreeItem<DbАтрибутный> getLocalArchiveTreeItem()
+    private TreeItem createArchiveTree( DbАрхив архив )
     {
-        JavaFX jfx = JavaFX.getInstance();
-        DbАрхив архив = jfx.контекст.архив;
-        TreeItem<DbАтрибутный> item;
-        if( архив != null )
-        {
-            item = jfx.archiveFoldedTreeItems ?
-                    new FoldedTreeItem( архив ) : new MergedTreeItem( архив );
-        }
-        else
-        {
-            LOGGER.getLogger().log( Level.CONFIG, "No local database available.");
-            item = new TreeItem<DbАтрибутный>() 
-            {
-                @Override public String toString() { return "No database"; }
-            };
-        }
-        return item;
+        return JavaFX.getInstance().archiveFoldedTreeItems ?
+            new FoldedTreeItem( архив ) : new MergedTreeItem( архив );
     }
     
+    private void onArchiveListChanged( ListChangeListener.Change<? extends DbАрхив> c )
+    {
+        while( c.next() )
+        {
+            if( c.wasPermutated() )
+            {
+                for( int i = c.getFrom(); i < c.getTo(); ++i )
+                {
+                    //if(true)continue;//permutate
+                }
+            }
+            else if( c.wasUpdated() )
+            {
+                //if(true)continue;//update item
+            }
+            else
+            {
+                ObservableList<TreeItem<DbАтрибутный>> children = tree.getRoot().getChildren();
+                c.getRemoved().forEach( архив -> children.removeIf( i -> i.getValue().equals( архив ) ) );
+                c.getAddedSubList().forEach( архив -> children.add( createArchiveTree( архив ) ) );
+            }
+        }
+    }
+
 }

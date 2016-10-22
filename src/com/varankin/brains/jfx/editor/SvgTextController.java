@@ -77,7 +77,6 @@ final class SvgTextController implements Builder<Text>
     protected void initialize()
     {
         text.setOnMouseClicked( this::onMouseClicked );
-        text.setOnDragDetected( this::onDragDetected );
         text.visibleProperty().addListener( this::onVisibleChanged );
         text.setVisible( false );
         text.setVisible( true );
@@ -106,19 +105,6 @@ final class SvgTextController implements Builder<Text>
             }
     }
     
-    @FXML
-    private void onDragDetected( MouseEvent event )
-    {
-        if( MouseButton.PRIMARY == event.getButton() )
-        {
-            SnapshotParameters snapParams = new SnapshotParameters();
-            snapParams.setFill( Color.TRANSPARENT );
-            Dragboard dndb = text.startDragAndDrop( TransferMode.MOVE );
-            dndb.setDragView( text.snapshot( snapParams, null ) );
-            dndb.setContent( Collections.singletonMap( DataFormat.PLAIN_TEXT, text.getText() ) );
-        }
-    }
-
     private void raiseInPlaceEditor()
     {
         Collection<Node> children = childrenOf( text.getParent() );
@@ -127,8 +113,8 @@ final class SvgTextController implements Builder<Text>
             LOGGER.log( Level.FINE, "No accessible children list of parent {0}", text.getParent() );
             return;
         }
-        Node editor = инструкция != null ? new SvgTextField2Controller( инструкция ).build() : 
-                блок != null ? new SvgTextFieldController( блок ).build() : null;
+        Node editor = инструкция != null ? new InPlaceText2Controller( инструкция ).build() : 
+                блок != null ? new InPlaceTextController( блок ).build() : null;
         if( editor == null ) return; //TODO
         editor.setTranslateX( text.getTranslateX() );
         editor.setTranslateY( text.getTranslateY() );

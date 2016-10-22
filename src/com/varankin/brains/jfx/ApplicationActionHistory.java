@@ -14,12 +14,12 @@ import javafx.event.ActionEvent;
  * 
  * @see com.varankin.brains.appl.HistoricProvider
  *
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  * 
  * @param <КОНТЕКСТ> класс контекста действия.
  * @param <ЭЛЕМЕНТ>  класс элемента истории.
  */
-class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ> 
+public class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ> 
     extends CoordinatedAction<КОНТЕКСТ>
     implements InvalidationListener
 {
@@ -33,7 +33,7 @@ class ApplicationActionHistory<КОНТЕКСТ,ЭЛЕМЕНТ>
      * @param история  менеджер истории.
      * @param позиция  индекс назначенного элемента истории.
      */
-    ApplicationActionHistory( 
+    public ApplicationActionHistory( 
             СогласованноеДействие<КОНТЕКСТ> действие, КОНТЕКСТ контекст, 
             JavaFX jfx, HistoryList<ЭЛЕМЕНТ> история, int позиция )
     {

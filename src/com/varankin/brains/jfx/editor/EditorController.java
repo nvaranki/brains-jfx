@@ -5,6 +5,7 @@ import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -16,8 +17,12 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
@@ -148,6 +153,20 @@ public final class EditorController implements Builder<Parent>
     }
     
     @FXML
+    private void onDragDetected( MouseEvent event, Node content )
+    {
+        if( MouseButton.PRIMARY == event.getButton() )
+        {
+            SnapshotParameters snapParams = new SnapshotParameters();
+            snapParams.setFill( Color.TRANSPARENT );
+            Dragboard dndb = content.startDragAndDrop( TransferMode.MOVE );
+            dndb.setDragView( content.snapshot( snapParams, null ) );
+            //dndb.setContent( Collections.singletonMap( DataFormat.PLAIN_TEXT, text.getText() ) );
+//            content.setVisible( false );
+        }
+    }
+
+    @FXML
     protected void onDragOver( DragEvent event )
     {
         Object acceptingObject = event.getAcceptingObject();
@@ -167,11 +186,10 @@ public final class EditorController implements Builder<Parent>
 
     public void setContent( DbЭлемент элемент )
     {
-        DbАрхив архив = JavaFX.getInstance().контекст.архив;
-        Транзакция транзакция = архив.транзакция();
-        транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+        Транзакция транзакция = элемент.транзакция();
         try
         {
+            транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
             Node content = EdtФабрика.getInstance().создать( элемент ).загрузить( true );
             Platform.runLater(() -> 
             { 
@@ -183,8 +201,9 @@ public final class EditorController implements Builder<Parent>
                 children.add( pad );
 //                content.setContextMenu( popup );
                 pane.setUserData( элемент ); 
-                content.setOnDragOver( this::onDragOver );
-                content.setOnDragDropped( this::onDragDropped );
+                content.setOnDragDetected( e -> onDragDetected( e, content ) );
+                stackPane.setOnDragOver( this::onDragOver );
+                stackPane.setOnDragDropped( this::onDragDropped );
             } );
         }
         catch( Exception ex )

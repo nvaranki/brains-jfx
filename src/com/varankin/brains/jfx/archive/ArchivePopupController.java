@@ -34,14 +34,14 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     private final BooleanProperty disableEdit;
     private final BooleanProperty disableRemove;
     private final BooleanProperty disableProperties;
-    private final BooleanProperty disableImportFile;
-    private final BooleanProperty disableImportNet;
+    private final BooleanProperty disableImport;
     private final BooleanProperty disableExportXml;
     private final BooleanProperty disableExportPic;
     
     private ActionProcessor processor;
     
     @FXML ArchivePopupNewController menuNewController;
+    @FXML MenuImportController menuImportController;
 
     public ArchivePopupController()
     {
@@ -51,8 +51,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         disableEdit = new SimpleBooleanProperty( this, "disableEdit" );
         disableRemove = new SimpleBooleanProperty( this, "disableRemove" );
         disableProperties = new SimpleBooleanProperty( this, "disableProperties" );
-        disableImportFile = new SimpleBooleanProperty( this, "disableImportFile" );
-        disableImportNet = new SimpleBooleanProperty( this, "disableImportNet" );
+        disableImport = new SimpleBooleanProperty( this, "disableImport" );
         disableExportXml = new SimpleBooleanProperty( this, "disableExportXml" );
         disableExportPic = new SimpleBooleanProperty( this, "disableExportPic" );
     }
@@ -89,15 +88,9 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         menuNewController = new ArchivePopupNewController();
         Menu menuNew = menuNewController.build();
         
-        MenuItem menuImportFile = new MenuItem(
-                LOGGER.text( "archive.action.import.file" ), icon( "icons16x16/file-xml.png" ) );
-        menuImportFile.setOnAction( this::onActionImportFile );
-        menuImportFile.disableProperty().bind( disableImportFile );
-        
-        MenuItem menuImportNet = new MenuItem(
-                LOGGER.text( "archive.action.import.network" ), icon( "icons16x16/load-internet.png" ) );
-        menuImportNet.setOnAction( this::onActionImportNet );
-        menuImportNet.disableProperty().bind( disableImportNet );
+        menuImportController = new MenuImportController();
+        Menu menuImport = menuImportController.build();
+        menuImport.disableProperty().bind( disableImport );
         
         MenuItem menuExportXml = new MenuItem(
                 LOGGER.text( "archive.action.export.xml" ), icon( "icons16x16/file-export.png" ) );
@@ -125,8 +118,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
                 menuNew,
                 menuProperties,
                 new SeparatorMenuItem(),
-                menuImportFile,
-                menuImportNet,
+                menuImport,
                 menuExportXml,
                 menuExportPic
         );
@@ -169,20 +161,6 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     }
     
     @FXML
-    private void onActionImportFile( ActionEvent event )
-    {
-        processor.onActionImportFile( event );
-        event.consume();
-    }
-    
-    @FXML
-    private void onActionImportNet( ActionEvent event )
-    {
-        processor.onActionImportNet( event );
-        event.consume();
-    }
-    
-    @FXML
     private void onActionExportXml( ActionEvent event )
     {
         processor.onActionExportXml( event );
@@ -209,8 +187,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     public BooleanProperty disableEditProperty() { return disableEdit; }
     public BooleanProperty disableRemoveProperty() { return disableRemove; }
     public BooleanProperty disablePropertiesProperty() { return disableProperties; }
-    public BooleanProperty disableImportFileProperty() { return disableImportFile; }
-    public BooleanProperty disableImportNetProperty() { return disableImportNet; }
+    public BooleanProperty disableImportProperty() { return disableImport; }
     public BooleanProperty disableExportXmlProperty() { return disableExportXml; }
     public BooleanProperty disableExportPicProperty() { return disableExportPic; }
     
@@ -220,14 +197,14 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     public boolean getDisableEdit() { return disableEdit.get(); }
     public boolean getDisableRemove() { return disableRemove.get(); }
     public boolean getDisableProperties() { return disableProperties.get(); }
-    public boolean getDisableImportFile() { return disableImportFile.get(); }
-    public boolean getDisableImportNet() { return disableImportNet.get(); }
+    public boolean getDisableImport() { return disableImport.get(); }
     public boolean getDisableExportXml() { return disableExportXml.get(); }
     public boolean getDisableExportPic() { return disableExportPic.get(); }
 
     void setProcessor( ActionProcessor processor )
     {
         this.processor = processor; // helps for onActionXxx()
+        menuImportController.setProcessor( processor );
         
         disableNew.bind( processor.disableNewProperty() );
         disableLoad.bind( processor.disableLoadProperty() );
@@ -235,8 +212,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         disableEdit.bind( processor.disableEditProperty() );
         disableRemove.bind( processor.disableRemoveProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
-        disableImportFile.bind( processor.disableImportFileProperty() );
-        disableImportNet.bind( processor.disableImportNetProperty() );
+        disableImport.bind( processor.disableImportProperty() );
         disableExportXml.bind( processor.disableExportXmlProperty() );
         disableExportPic.bind( processor.disableExportPicProperty() );
         

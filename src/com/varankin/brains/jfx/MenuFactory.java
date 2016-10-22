@@ -45,7 +45,15 @@ public class MenuFactory
     {
         private final AbstractJfxAction node;
         private final MenuNode childs[];
+        private MenuItem menuItem;
 
+        @Deprecated
+        public MenuNode( MenuItem menuItem )
+        {
+            this( (AbstractJfxAction)null );
+            this.menuItem = menuItem;
+        }
+        
         public MenuNode( AbstractJfxAction node, MenuNode... childs )
         {
             this.node = node;
@@ -54,7 +62,11 @@ public class MenuFactory
 
         private MenuItem toMenuItem()
         {
-            if( childs.length > 0 )
+            if( menuItem != null )
+            {
+                return menuItem;
+            }
+            else if( childs.length > 0 )
             {
                 return toMenu();
             }

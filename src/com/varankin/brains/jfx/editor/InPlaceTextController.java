@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
@@ -10,12 +10,9 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.Builder;
 
 /**
@@ -23,21 +20,19 @@ import javafx.util.Builder;
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-public class SvgTextField2Controller implements Builder<Node>
+public class InPlaceTextController implements Builder<Node>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger(SvgTextField2Controller.class );
+    private static final LoggerX LOGGER = LoggerX.getLogger(InPlaceText2Controller.class );
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgTextField.css";
     private static final String CSS_CLASS = "svg-text-field";
     
-    private final DbИнструкция ЭЛЕМЕНТ;
+    private final DbТекстовыйБлок ЭЛЕМЕНТ;
     
     @FXML private TextField text;
-    @FXML private ComboBox<String> type;
-    @FXML private Node редактор;
     
-    SvgTextField2Controller( DbИнструкция инструкция )
+    InPlaceTextController( DbТекстовыйБлок блок )
     {
-        this.ЭЛЕМЕНТ = инструкция;
+        this.ЭЛЕМЕНТ = блок;
     }
     
     /**
@@ -54,21 +49,12 @@ public class SvgTextField2Controller implements Builder<Node>
         text.setOnKeyPressed( this::onKeyPressed );
         text.setOnAction( this::onAction );
         
-        type = new ComboBox<>();
-        type.getItems().addAll( "xpath" );
-        type.setEditable( true );
-        type.setMaxWidth( 75 );
-        type.setOnKeyPressed( this::onKeyPressed );
-//        type.setOnAction( this::onAction );
-        
-        редактор = new VBox( new HBox( text, type ) );
-        
-        редактор.getStyleClass().add( CSS_CLASS );
+        text.getStyleClass().add( CSS_CLASS );
         //text.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
 
         initialize();
         
-        return редактор;
+        return text;
     }
     
     @FXML
@@ -80,19 +66,11 @@ public class SvgTextField2Controller implements Builder<Node>
     @FXML
     private void onAction( ActionEvent e )
     {
-        Data data = new Data( type.getEditor().getText(), text.getText() );
-        if( data.processor.trim().isEmpty() )
-            LOGGER.getLogger().log( Level.SEVERE, "Processor wasn't set" );
-        else if( data.content.trim().isEmpty() )
-            LOGGER.getLogger().log( Level.SEVERE, "Instruction wasn't set" );
-        else if( ЭЛЕМЕНТ.выполнить() == null )
-            LOGGER.getLogger().log( Level.SEVERE, "Instruction fails" );
-        else 
-        {
-            if( ЭЛЕМЕНТ.выполнить().trim().isEmpty() )
-                LOGGER.getLogger().log( Level.WARNING, "Instruction returns no text" );
+        String data = text.getText();
+        if( data.trim().isEmpty() )
+            LOGGER.getLogger().log( Level.SEVERE, "Text wasn't set" );
+        else
             JavaFX.getInstance().getExecutorService().submit( new DbUpdateTask( data ) );
-        }
         e.consume();
     }
     
@@ -101,16 +79,16 @@ public class SvgTextField2Controller implements Builder<Node>
     {
         if( KeyCode.ESCAPE.equals( e.getCode() ) )
         {
-            редактор.setVisible( false );
+            text.setVisible( false );
             e.consume();
         }
     }
     
     private class DbUpdateTask extends Task<Void>
     {
-        final Data data;
+        final String data;
         
-        DbUpdateTask( Data input )
+        DbUpdateTask( String input )
         {
             this.data = input;
         }
@@ -121,8 +99,7 @@ public class SvgTextField2Controller implements Builder<Node>
             try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
             {
                 транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, ЭЛЕМЕНТ );
-                ЭЛЕМЕНТ.процессор( data.processor );
-                ЭЛЕМЕНТ.код( data.content );
+                ЭЛЕМЕНТ.текст( data );
                 транзакция.завершить( true );
             }
             return null;
@@ -130,7 +107,7 @@ public class SvgTextField2Controller implements Builder<Node>
         
         @Override protected void succeeded()
         {
-            редактор.setVisible( false );
+            text.setVisible( false );
         }
         
         @Override protected void failed() 
@@ -144,16 +121,16 @@ public class SvgTextField2Controller implements Builder<Node>
         
     }
     
-    private class ScreenUpdateTask extends Task<Data>
+    private class ScreenUpdateTask extends Task<String>
     {
         @Override
-        protected Data call() throws Exception
+        protected String call() throws Exception
         {
-            Data data;
+            String data;
             try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
             {
                 транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, ЭЛЕМЕНТ );
-                data = new Data( ЭЛЕМЕНТ.процессор(), ЭЛЕМЕНТ.код() );
+                data = ЭЛЕМЕНТ.текст();
             }
             return data;
         }
@@ -161,11 +138,8 @@ public class SvgTextField2Controller implements Builder<Node>
         @Override
         protected void succeeded()
         {
-            Data data = getValue();
-            if( !type.getItems().contains( data.processor ) )
-                type.getItems().add( data.processor );
-            type.getSelectionModel().select( data.processor );
-            text.setText( data.content );
+            String data = getValue();
+            text.setText( data );
         }
         
         @Override
@@ -178,17 +152,6 @@ public class SvgTextField2Controller implements Builder<Node>
                     msg != null ? ": " + msg : "" );
         }
         
-    }
-    
-    private static class Data
-    {
-        String processor, content;
-
-        Data( String processor, String content )
-        {
-            this.processor = processor;
-            this.content = content;
-        }
     }
     
 }

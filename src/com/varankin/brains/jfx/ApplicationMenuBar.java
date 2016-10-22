@@ -1,25 +1,19 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.biz.action.СогласованноеДействие;
-import com.varankin.brains.appl.HistoricProvider;
-import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.КаталогДействий;
+
 import static com.varankin.brains.appl.КаталогДействий.Индекс.*;
+
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.brains.jfx.MenuFactory.SubMenuAction;
-import com.varankin.io.container.Provider;
-import com.varankin.util.HistoryList;
-import java.io.InputStream;
+import com.varankin.brains.jfx.archive.MenuArchiveController;
 import java.util.*;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 
 /**
  * Построитель главного меню приложения.
  *
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 class ApplicationMenuBar 
 {
@@ -54,19 +48,7 @@ class ApplicationMenuBar
 //                    new MenuNode( действие( Загрузить, jfx, "ApplicationActionLoad" ) ),
 //                    new MenuNode( действие( Очистить,  jfx, "ApplicationActionClean" ) ),
 //                    null,
-                    new MenuNode( new SubMenuAction( ApplicationMenuBar.class, ".1.2", специфика ),
-                        new MenuNode( new ApplicationActionImportXml( 
-                            (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
-                            jfx.getImportXmlFilelProvider(), jfx.historyXml ) ),
-                        new MenuNode( new ApplicationActionImportXml( 
-                            (СогласованноеДействие)jfx.контекст.действие( ИмпортироватьXML ), 
-                            jfx.getImportXmlUrlProvider(), jfx.historyXml ) ),
-                        null,
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 1 ) ), 
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 2 ) ), 
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 3 ) ),
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 4 ) ),
-                        new MenuNode( повторИмпортаXml( ИмпортироватьXML, jfx, 5 ) ) ),
+                    new MenuNode( new MenuArchiveController().build() ),
                     null,
                     new MenuNode( new ApplicationActionExit( jfx ) ) ),
 
@@ -86,17 +68,6 @@ class ApplicationMenuBar
 //                    null,
                     new MenuNode( new ApplicationActionAbout( jfx ) ) )
         };
-    }
-    
-    static private AbstractJfxAction повторИмпортаXml( КаталогДействий.Индекс индекс, JavaFX jfx, int позиция ) 
-    {
-        ApplicationActionHistory<Импортировать.Контекст,Provider<InputStream>> действие = 
-            new ApplicationActionHistory<>(
-                (СогласованноеДействие)jfx.контекст.действие( индекс ), 
-                new Импортировать.Контекст( new HistoricProvider<>( jfx.historyXml, позиция ), jfx.контекст.архив ),
-                jfx, jfx.historyXml, позиция );
-        jfx.providersXml.addListener( действие );
-        return действие;
     }
     
     static private AbstractJfxAction действие( КаталогДействий.Индекс индекс, JavaFX jfx, String префикс )

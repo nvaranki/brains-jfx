@@ -1,9 +1,10 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.biz.action.Действие;
+import com.varankin.brains.appl.LocalArchiveProvider;
+import com.varankin.brains.appl.RemoteArchiveProvider;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
-import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.УдалитьИзКоллекции;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.appl.ЭкспортироватьXml;
@@ -14,6 +15,7 @@ import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.*;
@@ -23,6 +25,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -39,9 +42,7 @@ final class ActionProcessor //TODO RT-37820
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ActionProcessor.class );
     private static final Действие<DbПроект> действиеЗагрузитьПроект 
-        = new ЗагрузитьАрхивныйПроект( JavaFX.getInstance().контекст );
-    private static final Импортировать импортировать
-        = new Импортировать( JavaFX.getInstance().контекст );
+        = new ЗагрузитьАрхивныйПроект();
     
     private final ObservableList<TreeItem<DbАтрибутный>> SELECTION;
 
@@ -52,7 +53,7 @@ final class ActionProcessor //TODO RT-37820
         disableNew, disableLoad, 
         disablePreview, disableEdit, disableRemove, 
         disableProperties, 
-        disableImportFile, disableImportNet, disableExportXml, disableExportPic;
+        disableImport, disableExportXml, disableExportPic;
     
     ActionProcessor( ObservableList<TreeItem<DbАтрибутный>> selection )
     {
@@ -63,8 +64,7 @@ final class ActionProcessor //TODO RT-37820
         disableEdit = createBooleanBinding( () -> disableActionEdit(), selection );
         disableRemove = createBooleanBinding( () -> disableActionRemove(), selection );
         disableProperties = createBooleanBinding( () -> disableActionProperties(), selection );
-        disableImportFile = createBooleanBinding( () -> disableActionImportFile(), selection );
-        disableImportNet = createBooleanBinding( () -> disableActionImportNet(), selection );
+        disableImport = createBooleanBinding( () -> disableActionImport(), selection );
         disableExportXml = createBooleanBinding( () -> disableActionExportXml(), selection );
         disableExportPic = createBooleanBinding( () -> disableActionExportPic(), selection );
     }
@@ -75,8 +75,7 @@ final class ActionProcessor //TODO RT-37820
     BooleanBinding disableEditProperty() { return disableEdit; }
     BooleanBinding disableRemoveProperty() { return disableRemove; }
     BooleanBinding disablePropertiesProperty() { return disableProperties; }
-    BooleanBinding disableImportFileProperty() { return disableImportFile; }
-    BooleanBinding disableImportNetProperty() { return disableImportNet; }
+    BooleanBinding disableImportProperty() { return disableImport; }
     BooleanBinding disableExportXmlProperty() { return disableExportXml; }
     BooleanBinding disableExportPicProperty() { return disableExportPic; }
     
@@ -190,23 +189,56 @@ final class ActionProcessor //TODO RT-37820
             .collect( Collectors.toList() ) );
     }
     
+    static void onArchiveFromFile( ActionEvent event )
+    {
+        JavaFX jfx = JavaFX.getInstance();
+        File file = jfx.getLocalFolderSelector().newInstance();
+        if( file != null && file.isDirectory() )
+            jfx.execute( new ArchiveTask( new LocalArchiveProvider( file ) ) );
+    }
+    
+    static void onArchiveFromNet( ActionEvent event )
+    {
+        JavaFX jfx = JavaFX.getInstance();
+        URL url = jfx.getUrlSelector().newInstance();
+        if( url != null )
+            jfx.execute( new ArchiveTask( new RemoteArchiveProvider( url ) ) );
+    }
+    
+    static void onArchiveFromHistory( int позиция, ActionEvent event )
+    {
+        JavaFX jfx = JavaFX.getInstance();
+        Provider<DbАрхив> provider = jfx.historyArchive.get( позиция );
+        if( provider != null )
+            jfx.execute( new ArchiveTask( provider ) );
+    }
+    
     void onActionImportFile( ActionEvent event )
     {
-        импортироватьXml( JavaFX.getInstance().getImportXmlFilelProvider() );
+        импортироватьXml( JavaFX.getInstance().getLocalXmlProvider() );
     }
     
     void onActionImportNet( ActionEvent event )
     {
-        импортироватьXml( JavaFX.getInstance().getImportXmlUrlProvider() );
+        импортироватьXml( JavaFX.getInstance().getNetworkXmlProvider() );
+    }
+    
+    void onActionImportFromHistory( int позиция, ActionEvent event )
+    {
+        импортироватьXml( () -> JavaFX.getInstance().historyXml.get( позиция ) );
     }
     
     void onActionExportXml( ActionEvent event )
     {
-        if( SELECTION.size() != 1 )
-            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", SELECTION.size() );
+        List<DbЭлемент> list = SELECTION.stream()
+                .map( i -> i.getValue() )
+                .filter( i -> i instanceof DbЭлемент ).map( i -> (DbЭлемент)i )
+                .collect( Collectors.toList() );
+        if( list.size() != 1 )
+            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", list.size() );
         else
         {
-            DbАтрибутный элемент = SELECTION.get( 0 ).getValue();
+            DbЭлемент элемент = list.get( 0 );
             JavaFX jfx = JavaFX.getInstance();
             if( fileProviderExportXml == null ) 
             {
@@ -215,8 +247,7 @@ final class ActionProcessor //TODO RT-37820
             }
             File file = fileProviderExportXml.newInstance();
             if( file != null )
-                jfx.execute( new ЭкспортироватьXml(), new ЭкспортироватьXml.Контекст( 
-                        jfx.контекст, элемент, file ) );
+                jfx.execute( new ЭкспортироватьXml(), new ЭкспортироватьXml.Контекст( элемент, file ) );
         }
         event.consume();
     }
@@ -239,7 +270,7 @@ final class ActionProcessor //TODO RT-37820
                 File file = fileProviderExportSvg.newInstance();
                 if( file != null )
                     jfx.execute( new ЭкспортироватьSvg(), new ЭкспортироватьSvg.Контекст( 
-                            jfx.контекст, (DbЭлемент)элемент, file ) );
+                            (DbЭлемент)элемент, file ) );
             }
             else
                 LOGGER.getLogger().log( Level.WARNING, "Unnamed item cannot be exported: {0}", элемент.getClass().getName());
@@ -306,22 +337,16 @@ final class ActionProcessor //TODO RT-37820
         return SELECTION.size() != 1;
     }
     
-    boolean disableActionImportFile()
+    boolean disableActionImport()
     {
-        return SELECTION.size() != 1 || !SELECTION.stream()
-                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbАрхив );
-    }
-    
-    boolean disableActionImportNet()
-    {
-        return SELECTION.size() != 1 || !SELECTION.stream()
+        return SELECTION.isEmpty() || !SELECTION.stream()
                 .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbАрхив );
     }
     
     boolean disableActionExportXml()
     {
         return SELECTION.size() != 1 || !SELECTION.stream()
-                .map( ti -> ti.getValue() ).allMatch( i -> !( i instanceof DbАрхив || i instanceof DbМусор ) );
+                .map( ti -> ti.getValue() ).allMatch( i -> i instanceof DbЭлемент );//TODO( i -> !( i instanceof DbАрхив || i instanceof DbМусор ) );
     }
     
     boolean disableActionExportPic()
@@ -335,30 +360,20 @@ final class ActionProcessor //TODO RT-37820
     
     private void импортироватьXml( Provider<Provider<InputStream>> селектор )
     {
-        JavaFX jfx = JavaFX.getInstance();
         List<DbАрхив> архивы = SELECTION.stream()
             .map( ti -> ti.getValue() )
             .flatMap( i -> i instanceof DbАрхив ? Stream.of( (DbАрхив)i ) : Stream.empty() )
             .collect( Collectors.toList() );
         if( архивы.isEmpty() )
             LOGGER.log( "002005003I" );
-        else if( архивы.size() > 1 )
-            LOGGER.log( "002005004I", архивы.size() );
         else
         {
-            DbАрхив архив = архивы.get( 0 );
-            Provider<InputStream> поставщик = селектор.newInstance();
-            if( поставщик != null )
-                jfx.execute( new ApplicationActionWorker<Импортировать.Контекст>( 
-                        импортировать, new Импортировать.Контекст( поставщик, архив ) )
-                {
-                    @Override
-                    protected void succeeded()
-                    {
-                        super.succeeded();
-                        jfx.historyXml.advance( контекст().поставщик() );
-                    }
-                } );
+            Provider<InputStream> поставщик = селектор.newInstance(); // только теперь
+            if( поставщик == null )
+                LOGGER.log( "002005012S" );
+            else
+                for( DbАрхив архив : архивы )
+                    JavaFX.getInstance().execute( new ImportTask( поставщик, архив ) );
         }
     }
     
@@ -390,5 +405,5 @@ final class ActionProcessor //TODO RT-37820
         controller.reset();
         return stage;
     }
-    
+
 }

@@ -1,12 +1,14 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.biz.action.Действие;
+import com.varankin.brains.appl.LocalArchiveProvider;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.Коллекция;
+import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.jfx.archive.MenuArchiveController;
+import com.varankin.brains.jfx.archive.MenuImportController;
 import com.varankin.brains.Контекст;
 import com.varankin.io.container.Provider;
-import com.varankin.util.HistoryList;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
 import java.io.File;
@@ -18,7 +20,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
@@ -64,10 +65,15 @@ public final class JavaFX
     private final ExecutorService es;
     private final ScheduledExecutorService ses;
     private final Provider<Provider<InputStream>> xmlFileSelector, xmlUrlSelector;
-    public final ListProperty<Provider<InputStream>> providersXml; 
-    public final HistoryList<Provider<InputStream>> historyXml;
+    public final ObservableHistoryList<Provider<InputStream>> historyXml;
+    public final ObservableHistoryList<Provider<DbАрхив>> historyArchive;
+    private Provider<File> localFolderSelector;
+    private Provider<URL> urlSelector;
+    public int historyXmlSize;            
+    public int historyArchiveSize;
     public final boolean archiveFoldedTreeItems;
-            
+    public final ObservableList<DbАрхив> архивы;
+    public boolean archiveLoadLastOnStart = true, archiveLoadDefault = false; //TODO enum
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -84,12 +90,21 @@ public final class JavaFX
             new SynchronousQueue<>() );
         ses = new ScheduledThreadPoolExecutor( 10 ); //TODO appl config
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
+        
         xmlFileSelector = new XmlFileSelector( JavaFX.this );
         xmlUrlSelector  = new XmlUrlSelector( JavaFX.this );
-        providersXml = new SimpleListProperty<>( FXCollections.observableArrayList() );
+        ObservableList<Provider<InputStream>> providersXml = FXCollections.observableArrayList();
         providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
-        historyXml = new HistoryList<>( providersXml, ApplicationActionImportXml.class );
+        historyXml = new ObservableHistoryList<>( providersXml, MenuImportController.class );
+        historyXmlSize = 5; //TODO preferences
+        
+        ObservableList<Provider<DbАрхив>> providersArchive = new SimpleListProperty<>( FXCollections.observableArrayList() );
+        providersArchive.add( null ); // пустышка; видимый индекс истории начинается с 1
+        historyArchive = new ObservableHistoryList<>( providersArchive, MenuArchiveController.class );
+        historyArchiveSize = 5; //TODO preferences
         archiveFoldedTreeItems = false;
+        
+        архивы = FXCollections.observableArrayList();
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -170,17 +185,19 @@ public final class JavaFX
     {
         new GuiBuilder( this ).createView( платформа );
         платформа.show();
-        es.execute( new Task<Void>()
-        {
-            @Override
-            protected Void call() throws Exception
+        if( архивы.isEmpty() )
+            if( archiveLoadLastOnStart )
             {
-                //TODO should not be called!!!
-                контекст.архив.пакеты().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
-                контекст.архив.namespaces().setPropertyValue( Коллекция.PROPERTY_UPDATED, Boolean.TRUE );
-                return null;
+                Provider<DbАрхив> provider = historyArchive.size() > 1 ? historyArchive.get( 1 ) : null; // история начинается с индекса 1
+                if( provider != null )
+                    execute( new ArchiveTask( provider ) ); // последний архив --> архивы
             }
-        } );
+            else if( archiveLoadDefault )
+            {
+                String dbpath = контекст.параметр( Контекст.Параметры.ARCHIVE_NEO4J_PATH ); //TODO config
+                if( dbpath != null )
+                    execute( new ArchiveTask( new LocalArchiveProvider( new File( dbpath ) ) ) );
+            }
         Runnable r = () -> { Font.getFamilies(); };
         Thread t = new Thread( r, "Font Family loader" );
         t.setPriority( Thread.currentThread().getPriority() - 1 );
@@ -208,7 +225,7 @@ public final class JavaFX
 
     public static ImageView icon( String path )
     {
-        InputStream stream = path.isEmpty() ? null : JavaFX.class.getClassLoader().getResourceAsStream( path );
+        InputStream stream = path == null || path.isEmpty() ? null : JavaFX.class.getClassLoader().getResourceAsStream( path );
         return stream != null ? new ImageView( new Image( stream ) ) : null;
     }
 
@@ -278,12 +295,26 @@ public final class JavaFX
         //TODO this.контекст.выполнить( действие, контекст );
     }
     
-    public Provider<Provider<InputStream>> getImportXmlFilelProvider() {
+    public Provider<Provider<InputStream>> getLocalXmlProvider() {
         return xmlFileSelector;
     }
 
-    public Provider<Provider<InputStream>> getImportXmlUrlProvider() {
+    public Provider<Provider<InputStream>> getNetworkXmlProvider() {
         return xmlUrlSelector;
+    }
+
+    public Provider<File> getLocalFolderSelector()
+    {
+        if( localFolderSelector == null )
+            localFolderSelector = new LocalFolderSelector();
+        return localFolderSelector;
+    }
+
+    public Provider<URL> getUrlSelector()
+    {
+        if( urlSelector == null )
+            urlSelector = new UrlSelector();
+        return urlSelector;
     }
 
     public boolean isRemovePermanently()
