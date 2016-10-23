@@ -1,5 +1,6 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.selector;
 
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.io.container.Provider;
 import java.net.URL;
 
@@ -8,11 +9,11 @@ import java.net.URL;
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-class UrlSelector implements Provider<URL>
+public class UrlSelector implements Provider<URL>
 {
     private final UrlChooser селектор;
 
-    UrlSelector() 
+    public UrlSelector() 
     {
         селектор = new UrlChooser( JavaFX.getInstance(), false );
     }
@@ -28,6 +29,11 @@ class UrlSelector implements Provider<URL>
             селектор.initialPathProperty().setValue( url.toExternalForm() );
             return url;
         } 
+    }
+
+    public void setTitle( String text )
+    {
+        селектор.setTitle( text );
     }
     
 }

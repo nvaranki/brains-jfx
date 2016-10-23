@@ -1,9 +1,9 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.selector;
 
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.io.container.Provider;
 import java.io.File;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 
 /**
  * Интерактивный поставщик папок локальной файловой системы.
@@ -12,21 +12,18 @@ import javafx.stage.Stage;
  */
 public class LocalFolderSelector implements Provider<File>
 {
-    private final Stage платформа;
     private final DirectoryChooser селектор;
 
-    LocalFolderSelector() 
+    public LocalFolderSelector() 
     {
-        JavaFX jfx = JavaFX.getInstance();
-        платформа = jfx.платформа;
         селектор = new DirectoryChooser();
-        селектор.setInitialDirectory( jfx.getCurrentLocalDirectory() );
+        селектор.setInitialDirectory( JavaFX.getInstance().getCurrentLocalDirectory() );
     }
 
     @Override
     public File newInstance() 
     {
-        File выбор = селектор.showDialog( платформа );
+        File выбор = селектор.showDialog( JavaFX.getInstance().платформа );
         if( выбор == null )
             return null;
         else
@@ -36,6 +33,11 @@ public class LocalFolderSelector implements Provider<File>
                 селектор.setInitialDirectory( директория );
             return выбор;
         }
+    }
+    
+    public void setTitle( String text )
+    {
+        селектор.setTitle( text );
     }
     
 }

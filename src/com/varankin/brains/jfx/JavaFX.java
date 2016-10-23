@@ -1,14 +1,21 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.jfx.archive.ArchiveTask;
+import com.varankin.brains.jfx.selector.UrlSelector;
+import com.varankin.brains.jfx.selector.LocalFolderSelector;
+import com.varankin.brains.jfx.history.ObservableHistoryList;
 import com.varankin.biz.action.Действие;
-import com.varankin.brains.appl.LocalArchiveProvider;
+import com.varankin.brains.jfx.history.LocalNeo4jProvider;
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.archive.MenuArchiveController;
 import com.varankin.brains.jfx.archive.MenuImportController;
+import com.varankin.brains.jfx.history.SerializableProvider;
+import com.varankin.brains.jfx.selector.LocalFileSelector;
 import com.varankin.brains.Контекст;
 import com.varankin.io.container.Provider;
+import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
 import java.io.File;
@@ -20,7 +27,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
@@ -35,6 +41,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -56,24 +63,47 @@ public final class JavaFX
         return JFX = new JavaFX( платформа, контекст );
     }
     
+    public class History
+    {
+
+        public int historyXmlSize;
+        public final ObservableHistoryList<SerializableProvider<InputStream>> xml;
+        public int historyArchiveSize;
+        public final ObservableHistoryList<SerializableProvider<DbАрхив>> archive;
+
+        private History()
+        {
+            ObservableList<SerializableProvider<InputStream>> providersXml = FXCollections.observableArrayList();
+            providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
+            xml = new ObservableHistoryList<>( providersXml, MenuImportController.class );
+            historyXmlSize = 5; //TODO preferences
+            
+            ObservableList<SerializableProvider<DbАрхив>> providersArchive = FXCollections.observableArrayList();
+            providersArchive.add( null ); // пустышка; видимый индекс истории начинается с 1
+            archive = new ObservableHistoryList<>( providersArchive, MenuArchiveController.class );
+            historyArchiveSize = 5; //TODO preferences
+        }
+        
+    }
+    
+    private static final LoggerX LOGGER = LoggerX.getLogger( JavaFX.class );
+    
     public static final String STYLE_WRONG_TEXT_VALUE = "-fx-text-fill: red;";
 
     public final Контекст контекст;
     public final Stage платформа;
+    public final History history = new History();
     //public final Позиционер позиционер;
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
     private final ScheduledExecutorService ses;
-    private final Provider<Provider<InputStream>> xmlFileSelector, xmlUrlSelector;
-    public final ObservableHistoryList<Provider<InputStream>> historyXml;
-    public final ObservableHistoryList<Provider<DbАрхив>> historyArchive;
-    private Provider<File> localFolderSelector;
-    private Provider<URL> urlSelector;
-    public int historyXmlSize;            
-    public int historyArchiveSize;
+    private LocalFileSelector localFileSelector;
+    private LocalFolderSelector localFolderSelector;
+    private UrlSelector urlSelector;
     public final boolean archiveFoldedTreeItems;
     public final ObservableList<DbАрхив> архивы;
     public boolean archiveLoadLastOnStart = true, archiveLoadDefault = false; //TODO enum
+    public FileChooser.ExtensionFilter[] filtersXml;
 
     /**
      * @param платформа первичная платформа приложения JavaFX.
@@ -91,20 +121,12 @@ public final class JavaFX
         ses = new ScheduledThreadPoolExecutor( 10 ); //TODO appl config
         views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
         
-        xmlFileSelector = new XmlFileSelector( JavaFX.this );
-        xmlUrlSelector  = new XmlUrlSelector( JavaFX.this );
-        ObservableList<Provider<InputStream>> providersXml = FXCollections.observableArrayList();
-        providersXml.add( null ); // пустышка; видимый индекс истории начинается с 1
-        historyXml = new ObservableHistoryList<>( providersXml, MenuImportController.class );
-        historyXmlSize = 5; //TODO preferences
+        filtersXml = new FileChooser.ExtensionFilter[]{
+                new FileChooser.ExtensionFilter( LOGGER.text( "ext.xml" ), "*.xml" ) };
         
-        ObservableList<Provider<DbАрхив>> providersArchive = new SimpleListProperty<>( FXCollections.observableArrayList() );
-        providersArchive.add( null ); // пустышка; видимый индекс истории начинается с 1
-        historyArchive = new ObservableHistoryList<>( providersArchive, MenuArchiveController.class );
-        historyArchiveSize = 5; //TODO preferences
-        archiveFoldedTreeItems = false;
         
         архивы = FXCollections.observableArrayList();
+        archiveFoldedTreeItems = false;
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -188,7 +210,7 @@ public final class JavaFX
         if( архивы.isEmpty() )
             if( archiveLoadLastOnStart )
             {
-                Provider<DbАрхив> provider = historyArchive.size() > 1 ? historyArchive.get( 1 ) : null; // история начинается с индекса 1
+                SerializableProvider<DbАрхив> provider = history.archive.size() > 1 ? history.archive.get( 1 ) : null; // история начинается с индекса 1
                 if( provider != null )
                     execute( new ArchiveTask( provider ) ); // последний архив --> архивы
             }
@@ -196,7 +218,7 @@ public final class JavaFX
             {
                 String dbpath = контекст.параметр( Контекст.Параметры.ARCHIVE_NEO4J_PATH ); //TODO config
                 if( dbpath != null )
-                    execute( new ArchiveTask( new LocalArchiveProvider( new File( dbpath ) ) ) );
+                    execute( new ArchiveTask( new LocalNeo4jProvider( new File( dbpath ) ) ) );
             }
         Runnable r = () -> { Font.getFamilies(); };
         Thread t = new Thread( r, "Font Family loader" );
@@ -218,7 +240,7 @@ public final class JavaFX
         return Текст.ПАКЕТЫ.словарь( c, контекст.специфика );
     }
 
-    File getCurrentLocalDirectory()
+    public File getCurrentLocalDirectory()
     {
         return new File( System.getProperty( "user.dir" ) );
     }
@@ -295,22 +317,21 @@ public final class JavaFX
         //TODO this.контекст.выполнить( действие, контекст );
     }
     
-    public Provider<Provider<InputStream>> getLocalXmlProvider() {
-        return xmlFileSelector;
+    public LocalFileSelector getLocalFileSelector()
+    {
+        if( localFileSelector == null )
+            localFileSelector = new LocalFileSelector();
+        return localFileSelector;
     }
 
-    public Provider<Provider<InputStream>> getNetworkXmlProvider() {
-        return xmlUrlSelector;
-    }
-
-    public Provider<File> getLocalFolderSelector()
+    public LocalFolderSelector getLocalFolderSelector()
     {
         if( localFolderSelector == null )
             localFolderSelector = new LocalFolderSelector();
         return localFolderSelector;
     }
 
-    public Provider<URL> getUrlSelector()
+    public UrlSelector getUrlSelector()
     {
         if( urlSelector == null )
             urlSelector = new UrlSelector();

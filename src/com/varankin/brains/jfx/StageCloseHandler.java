@@ -8,12 +8,13 @@ import javafx.stage.Stage;
  *
  * @author Николай
  */
-class StageCloseHandler<T extends Event> implements EventHandler<T>
+@Deprecated
+public class StageCloseHandler<T extends Event> implements EventHandler<T>
 {
     private final Stage stage;
     private final boolean dispose;
 
-    StageCloseHandler( Stage stage, boolean dispose )
+    public StageCloseHandler( Stage stage, boolean dispose )
     {
         this.stage = stage;
         this.dispose = dispose;

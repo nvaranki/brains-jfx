@@ -1,6 +1,6 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.history;
 
-import com.varankin.util.HistoryList;
+import com.varankin.history.HistoryList;
 import java.io.Serializable;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -21,7 +21,7 @@ import javafx.collections.ObservableList;
  * @param <T> класс элементов списка; обязан реализовать интерфейс {@link Serializable}
  *              для успешного сохранения/восстановления в хранилище.
  */
-public final class ObservableHistoryList<T/* extends Serializable*/> 
+public final class ObservableHistoryList<T extends Serializable> 
         extends HistoryList<T> implements Observable
 {
     private final Observable observable;

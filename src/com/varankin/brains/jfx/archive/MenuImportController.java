@@ -1,10 +1,9 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.ObservableHistoryList;
 import com.varankin.io.container.Provider;
-import com.varankin.io.stream.FileInputStreamProvider;
-import com.varankin.io.stream.UrlInputStreamProvider;
+import com.varankin.brains.jfx.history.LocalInputStreamProvider;
+import com.varankin.brains.jfx.history.RemoteInputStreamProvider;
 import com.varankin.util.LoggerX;
 
 import java.io.InputStream;
@@ -70,15 +69,15 @@ public final class MenuImportController implements Builder<Menu>
     {
         JavaFX jfx = JavaFX.getInstance();
         ObservableList<MenuItem> items = menu.getItems();
-        for( int i = 1; i <= jfx.historyXmlSize; i++ )
+        for( int i = 1; i <= jfx.history.historyXmlSize; i++ )
         {
             MenuItem item = new MenuItem();
             item.setUserData( i );
             item.setOnAction( (e) -> onImportFromHistory( (Integer)item.getUserData(), e ) );
             item.setMnemonicParsing( false );
             //item.setAccelerator( KeyCombination.valueOf( "Ctrl+" + Integer.toString( i ) ) );
-            onInvalidatedHistory( item, jfx.historyXml );
-            jfx.historyXml.addListener( (o) -> onInvalidatedHistory( item, o ) );
+            onInvalidatedHistory( item, jfx.history.xml );
+            jfx.history.xml.addListener( (o) -> onInvalidatedHistory( item, o ) );
             if( i == 1 ) items.add( new SeparatorMenuItem() );
             items.add( item );
         }
@@ -87,28 +86,27 @@ public final class MenuImportController implements Builder<Menu>
     @FXML
     private void onActionImportFile( ActionEvent event )
     {
-        processor.onActionImportFile( event );
+        processor.onPackageFromFile( event );
         event.consume();
     }
     
     @FXML
     private void onActionImportNet( ActionEvent event )
     {
-        processor.onActionImportNet( event );
+        processor.onPackageFromNet( event );
         event.consume();
     }
     
     private void onImportFromHistory( int позиция, ActionEvent event )
     {
-        processor.onActionImportFromHistory( позиция, event );
+        processor.onPackageFromHistory( позиция, event );
         event.consume();
     }
     
     private void onInvalidatedHistory( MenuItem menuItem, Observable observable )
     {
         int позиция = (Integer)menuItem.getUserData();
-        ObservableHistoryList<Provider<InputStream>> история = JavaFX.getInstance().historyXml; // == observable
-        Provider<InputStream> элемент = история.get( позиция );
+        Provider<InputStream> элемент = JavaFX.getInstance().history.xml.get( позиция );
         
         menuItem.disableProperty().setValue( элемент == null );
         
@@ -116,8 +114,8 @@ public final class MenuImportController implements Builder<Menu>
         menuItem.textProperty().setValue( Integer.toString( позиция ) + ' ' + название );
         
         String path = 
-                элемент instanceof FileInputStreamProvider ? ICON_FILE :
-                элемент instanceof UrlInputStreamProvider ? ICON_NET :
+                элемент instanceof LocalInputStreamProvider ? ICON_FILE :
+                элемент instanceof RemoteInputStreamProvider ? ICON_NET :
                 null;
         menuItem.graphicProperty().setValue( icon( path ) );
     }

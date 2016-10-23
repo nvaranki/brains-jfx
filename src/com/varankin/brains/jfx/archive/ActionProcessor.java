@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.biz.action.Действие;
-import com.varankin.brains.appl.LocalArchiveProvider;
-import com.varankin.brains.appl.RemoteArchiveProvider;
+import com.varankin.brains.jfx.history.LocalNeo4jProvider;
+import com.varankin.brains.jfx.history.RemoteNeo4jProvider;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.УдалитьИзКоллекции;
@@ -12,6 +12,11 @@ import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.io.container.Provider;
+import com.varankin.brains.jfx.history.LocalInputStreamProvider;
+import com.varankin.brains.jfx.history.RemoteInputStreamProvider;
+import com.varankin.brains.jfx.history.SerializableProvider;
+import com.varankin.brains.jfx.selector.LocalFileSelector;
+import com.varankin.brains.jfx.selector.UrlSelector;
 import com.varankin.util.LoggerX;
 import java.io.File;
 import java.io.InputStream;
@@ -25,7 +30,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -194,7 +198,7 @@ final class ActionProcessor //TODO RT-37820
         JavaFX jfx = JavaFX.getInstance();
         File file = jfx.getLocalFolderSelector().newInstance();
         if( file != null && file.isDirectory() )
-            jfx.execute( new ArchiveTask( new LocalArchiveProvider( file ) ) );
+            jfx.execute(new ArchiveTask( new LocalNeo4jProvider( file ) ) );
     }
     
     static void onArchiveFromNet( ActionEvent event )
@@ -202,30 +206,50 @@ final class ActionProcessor //TODO RT-37820
         JavaFX jfx = JavaFX.getInstance();
         URL url = jfx.getUrlSelector().newInstance();
         if( url != null )
-            jfx.execute( new ArchiveTask( new RemoteArchiveProvider( url ) ) );
+            jfx.execute(new ArchiveTask( new RemoteNeo4jProvider( url ) ) );
     }
     
     static void onArchiveFromHistory( int позиция, ActionEvent event )
     {
         JavaFX jfx = JavaFX.getInstance();
-        Provider<DbАрхив> provider = jfx.historyArchive.get( позиция );
+        SerializableProvider<DbАрхив> provider = jfx.history.archive.get( позиция );
         if( provider != null )
             jfx.execute( new ArchiveTask( provider ) );
     }
     
-    void onActionImportFile( ActionEvent event )
+    void onPackageFromFile( ActionEvent event )
     {
-        импортироватьXml( JavaFX.getInstance().getLocalXmlProvider() );
+        JavaFX jfx = JavaFX.getInstance();
+        LocalFileSelector selector = jfx.getLocalFileSelector();
+        selector.setFilters( jfx.filtersXml );
+        selector.setTitle( LOGGER.text( "import.xml.title" ) );
+        File file = selector.newInstance();
+        if( file != null )
+            selectiveImport( new LocalInputStreamProvider( file ) );
     }
     
-    void onActionImportNet( ActionEvent event )
+    void onPackageFromNet( ActionEvent event )
     {
-        импортироватьXml( JavaFX.getInstance().getNetworkXmlProvider() );
+        UrlSelector selector = JavaFX.getInstance().getUrlSelector();
+        selector.setTitle( LOGGER.text( "import.xml.title" ) );
+        URL url = selector.newInstance();
+        if( url != null )
+            selectiveImport( new RemoteInputStreamProvider( url ) );
     }
     
-    void onActionImportFromHistory( int позиция, ActionEvent event )
+    void onPackageFromHistory( int позиция, ActionEvent event )
     {
-        импортироватьXml( () -> JavaFX.getInstance().historyXml.get( позиция ) );
+        SerializableProvider<InputStream> provider = JavaFX.getInstance().history.xml.get( позиция );
+        if( provider != null )
+            selectiveImport( provider );
+    }
+    
+    private void selectiveImport( SerializableProvider<InputStream> provider )
+    {
+        SELECTION.stream()
+            .map( ti -> ti.getValue() )
+            .filter( i -> i instanceof DbАрхив ).map( i -> (DbАрхив)i )
+            .forEach( архив -> JavaFX.getInstance().execute( new ImportTask( provider, архив ) ) );
     }
     
     void onActionExportXml( ActionEvent event )
@@ -356,26 +380,6 @@ final class ActionProcessor //TODO RT-37820
     }
     
     //</editor-fold>
-    
-    
-    private void импортироватьXml( Provider<Provider<InputStream>> селектор )
-    {
-        List<DbАрхив> архивы = SELECTION.stream()
-            .map( ti -> ti.getValue() )
-            .flatMap( i -> i instanceof DbАрхив ? Stream.of( (DbАрхив)i ) : Stream.empty() )
-            .collect( Collectors.toList() );
-        if( архивы.isEmpty() )
-            LOGGER.log( "002005003I" );
-        else
-        {
-            Provider<InputStream> поставщик = селектор.newInstance(); // только теперь
-            if( поставщик == null )
-                LOGGER.log( "002005012S" );
-            else
-                for( DbАрхив архив : архивы )
-                    JavaFX.getInstance().execute( new ImportTask( поставщик, архив ) );
-        }
-    }
     
     private Stage buildProperties()
     {

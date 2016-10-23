@@ -1,11 +1,12 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.selector;
 
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.StageCloseHandler;
 import com.varankin.util.Текст;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

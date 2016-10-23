@@ -6,8 +6,7 @@ import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.КаталогДействий;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.io.container.Provider;
-import com.varankin.util.HistoryList;
+import com.varankin.brains.jfx.history.SerializableProvider;
 
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -28,13 +27,11 @@ class ImportTask extends Task<Результат>
             (Действие)JavaFX.getInstance().контекст.действие( КаталогДействий.Индекс.ИмпортироватьXML );
     
     private volatile Импортировать.Контекст контекст;
-    private final Provider<InputStream> источник;
-    private final HistoryList<Provider<InputStream>> история;
+    private final SerializableProvider<InputStream> поставщик;
 
-    ImportTask( Provider<InputStream> provider, DbАрхив архив )
+    ImportTask( SerializableProvider<InputStream> provider, DbАрхив архив )
     {
-        история = JavaFX.getInstance().historyXml;
-        источник = provider;
+        поставщик = provider;
         контекст = new Импортировать.Контекст( provider, архив );
     }
 
@@ -45,17 +42,23 @@ class ImportTask extends Task<Результат>
     }
 
     @Override
+    protected void scheduled()
+    {
+        LOGGER.log( Level.INFO, "task.import.scheduled", поставщик );
+    }
+    
+    @Override
     protected void succeeded()
     {
         Результат результат = getValue();
         if( результат.код() == Результат.НОРМА )
         {
-            история.advance( источник );
-            LOGGER.log( Level.INFO, "task.import.succeeded", источник );
+            JavaFX.getInstance().history.xml.advance( поставщик );
+            LOGGER.log( Level.INFO, "task.import.succeeded", поставщик );
         }
         else
         {
-            LOGGER.log( Level.SEVERE, "task.import.failed", источник );
+            LOGGER.log( Level.SEVERE, "task.import.failed", поставщик );
         }
     }
 
@@ -63,7 +66,7 @@ class ImportTask extends Task<Результат>
     protected void failed()
     {
         LogRecord lr = new LogRecord( Level.SEVERE, "task.import.failed" );
-        lr.setParameters( new Object[]{ источник } );
+        lr.setParameters( new Object[]{ поставщик } );
         lr.setResourceBundle( LOGGER.getResourceBundle() );
         lr.setThrown( getException() );
         LOGGER.log( lr );

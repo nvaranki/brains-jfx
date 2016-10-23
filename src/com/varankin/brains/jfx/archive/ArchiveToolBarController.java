@@ -190,14 +190,14 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     @FXML
     private void onActionImportFile( ActionEvent event )
     {
-        processor.onActionImportFile( event );
+        processor.onPackageFromFile( event );
         event.consume();
     }
     
     @FXML
     private void onActionImportNet( ActionEvent event )
     {
-        processor.onActionImportNet( event );
+        processor.onPackageFromNet( event );
         event.consume();
     }
     

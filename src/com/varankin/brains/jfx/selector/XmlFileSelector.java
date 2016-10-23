@@ -1,7 +1,8 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.selector;
 
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.io.container.Provider;
-import com.varankin.io.stream.FileInputStreamProvider;
+import com.varankin.brains.jfx.history.LocalInputStreamProvider;
 import com.varankin.util.Текст;
 import java.io.File;
 import java.io.InputStream;
@@ -40,7 +41,7 @@ class XmlFileSelector implements Provider<Provider<InputStream>>
             File директория = выбор.getParentFile();
             if( директория != null )
                 селектор.setInitialDirectory( директория );
-            return new FileInputStreamProvider( выбор );
+            return new LocalInputStreamProvider( выбор );
         }
     }
     

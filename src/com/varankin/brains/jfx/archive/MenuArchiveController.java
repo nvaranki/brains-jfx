@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.appl.LocalArchiveProvider;
-import com.varankin.brains.appl.RemoteArchiveProvider;
+import com.varankin.brains.jfx.history.LocalNeo4jProvider;
+import com.varankin.brains.jfx.history.RemoteNeo4jProvider;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.io.container.Provider;
@@ -67,15 +67,15 @@ public final class MenuArchiveController implements Builder<Menu>
     {
         JavaFX jfx = JavaFX.getInstance();
         ObservableList<MenuItem> items = menu.getItems();
-        for( int i = 1; i <= jfx.historyArchiveSize; i++ )
+        for( int i = 1; i <= jfx.history.historyArchiveSize; i++ )
         {
             MenuItem item = new MenuItem();
             item.setUserData( i );
             item.setOnAction( (e) -> onArchiveFromHistory( (Integer)item.getUserData(), e ) );
             item.setMnemonicParsing( false );
             //item.setAccelerator( KeyCombination.valueOf( "Ctrl+" + Integer.toString( i ) ) );
-            onInvalidatedHistory( item, jfx.historyArchive );
-            jfx.historyArchive.addListener( (o) -> onInvalidatedHistory( item, o ) );
+            onInvalidatedHistory( item, jfx.history.archive );
+            jfx.history.archive.addListener( (o) -> onInvalidatedHistory( item, o ) );
             if( i == 1 ) items.add( new SeparatorMenuItem() );
             items.add( item );
         }
@@ -104,7 +104,7 @@ public final class MenuArchiveController implements Builder<Menu>
     private void onInvalidatedHistory( MenuItem menuItem, Observable observable )
     {
         int позиция = (Integer)menuItem.getUserData();
-        Provider<DbАрхив> элемент = JavaFX.getInstance().historyArchive.get( позиция );
+        Provider<DbАрхив> элемент = JavaFX.getInstance().history.archive.get( позиция );
         
         menuItem.disableProperty().setValue( элемент == null );
         
@@ -112,8 +112,8 @@ public final class MenuArchiveController implements Builder<Menu>
         menuItem.textProperty().setValue( Integer.toString( позиция ) + ' ' + название );
         
         String path = 
-                элемент instanceof LocalArchiveProvider ? ICON_FILE :
-                элемент instanceof RemoteArchiveProvider ? ICON_NET :
+                элемент instanceof LocalNeo4jProvider ? ICON_FILE :
+                элемент instanceof RemoteNeo4jProvider ? ICON_NET :
                 null;
         menuItem.graphicProperty().setValue( icon( path ) );
     }

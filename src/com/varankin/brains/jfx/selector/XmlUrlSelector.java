@@ -1,7 +1,9 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.selector;
 
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.selector.UrlChooser;
 import com.varankin.io.container.Provider;
-import com.varankin.io.stream.UrlInputStreamProvider;
+import com.varankin.brains.jfx.history.RemoteInputStreamProvider;
 import java.io.InputStream;
 import java.net.URL;
 import javafx.stage.Stage;
@@ -31,7 +33,7 @@ class XmlUrlSelector implements Provider<Provider<InputStream>>
         else
         {
             селектор.initialPathProperty().setValue( url.toExternalForm() );
-            return new UrlInputStreamProvider( url );
+            return new RemoteInputStreamProvider( url );
         } 
     }
     

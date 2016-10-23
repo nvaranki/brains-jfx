@@ -1,7 +1,8 @@
-package com.varankin.brains.jfx;
+package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.DbАрхив;
-import com.varankin.io.container.Provider;
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.history.SerializableProvider;
 
 import java.util.logging.*;
 import javafx.concurrent.Task;
@@ -16,9 +17,9 @@ public final class ArchiveTask extends Task<DbАрхив>
     private static final Logger LOGGER = Logger.getLogger( ArchiveTask.class.getName(), 
             ArchiveTask.class.getPackage().getName() + ".text" );
     
-    private final Provider<DbАрхив> поставщик;
+    private final SerializableProvider<DbАрхив> поставщик;
 
-    public ArchiveTask( Provider<DbАрхив> provider )
+    public ArchiveTask( SerializableProvider<DbАрхив> provider )
     {
         поставщик = provider;
     }
@@ -43,7 +44,7 @@ public final class ArchiveTask extends Task<DbАрхив>
         {
             JavaFX jfx = JavaFX.getInstance();
             jfx.архивы.add( архив );
-            jfx.historyArchive.advance( поставщик );
+            jfx.history.archive.advance( поставщик );
             LOGGER.log( Level.INFO, "task.archive.open.succeeded", поставщик );
         }
         else
