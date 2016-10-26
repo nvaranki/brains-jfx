@@ -1,6 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbОператор;
+import com.varankin.brains.db.DbУзел;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
@@ -9,12 +12,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
@@ -49,13 +61,19 @@ public final class EditorController implements Builder<Parent>
     @FXML private BorderPane pane;
     @FXML private StackPane stackPane;
     @FXML private Pane grid;
+    @FXML private Pane board;
     @FXML private TextField snap;
     @FXML private Label posX;
     @FXML private Label posY;
     @FXML private ContextMenu popup;
     
+    private final ObjectProperty<EventHandler<? super MouseEvent>> onMouseClickedProperty = 
+           new SimpleObjectProperty<>();
     private final IntegerProperty snapProperty;
+    private final IntegerProperty xProperty = new SimpleIntegerProperty();
+    private final IntegerProperty yProperty = new SimpleIntegerProperty();
     private int offsetX, offsetY;
+    private Node content;
 
     public EditorController()
     {
@@ -78,11 +96,25 @@ public final class EditorController implements Builder<Parent>
         progress.setPrefSize( 50, 50 );
         progress.setMaxSize( 150, 150 );
         
-        Button buttonMove = new Button( "Move" );
+        ToggleButton buttonSelect = new ToggleButton( "Select" );
+        buttonSelect.setOnAction( ae -> onMouseClickedProperty.setValue( this::onSelect ) );
+        ToggleButton buttonAdd = new ToggleButton( "Add" );
+        buttonAdd.setOnAction( ae -> onMouseClickedProperty.setValue( this::onAdd ) );
+        ToggleButton buttonDelete = new ToggleButton( "Delete" );
+        buttonDelete.setOnAction( ae -> onMouseClickedProperty.setValue( this::onDelete ) );
+        ChoiceBox<String> itemsAdd = new ChoiceBox<>();
+        itemsAdd.getItems().addAll( "type 1", "type 2" );
+        itemsAdd.disableProperty().bind( Bindings.not( buttonAdd.selectedProperty() ) );
+
+        ToggleGroup group = new ToggleGroup();
+        buttonSelect.setToggleGroup(group);
+        buttonAdd.setToggleGroup(group);
+        buttonDelete.setToggleGroup(group);
+        buttonSelect.setSelected( true );
+        
         posX = new Label( "0" );
         posY = new Label( "0" );
-        Label labelX = new Label( " X: " );
-        HBox pos = new HBox( labelX, posX, new Label( " Y: " ), posY );
+        HBox pos = new HBox( new Label( " X: " ), posX, new Label( " Y: " ), posY );
         pos.setAlignment( Pos.CENTER_RIGHT );
         pos.setFillHeight( true );
         HBox.setHgrow( pos, Priority.ALWAYS );
@@ -105,12 +137,13 @@ public final class EditorController implements Builder<Parent>
         snapFormatter.valueProperty().bindBidirectional( snapProperty );
         snap.setTextFormatter( snapFormatter );
         
-        ToolBar toolBar = new ToolBar( buttonMove, snap, pos );
+        ToolBar toolBar = new ToolBar( buttonSelect, itemsAdd, buttonAdd, buttonDelete, snap, pos );
         
         grid = new Pane();
         
-        stackPane = new StackPane( grid, new BorderPane( progress ) );
+        stackPane = new StackPane( grid, board = new BorderPane( progress ) );
         stackPane.setBackground( new Background( new BackgroundFill( Color.WHITE, null, null ) ) );
+        board.setCursor( Cursor.CROSSHAIR );
         
         ScrollPane scrollPane = new ScrollPane( stackPane );
         scrollPane.setFitToWidth( true );
@@ -129,10 +162,12 @@ public final class EditorController implements Builder<Parent>
         
         return pane;
     }
-        
+    
     @FXML
     protected void initialize()
     {
+        posX.textProperty().bind( Bindings.format( "%d", xProperty ) );
+        posY.textProperty().bind( Bindings.format( "%d", yProperty ) );
         List<Node> children = grid.getChildren();
         int d = 1;
         for( int x = 0; x <= 1000; x += 50 )
@@ -143,13 +178,10 @@ public final class EditorController implements Builder<Parent>
             }
     }
 
-    private void handleMouseMove( MouseEvent event )
+    @FXML
+    private void onMouseMove( MouseEvent event )
     {
-        int round = snapProperty.get();//Integer.valueOf( snap.getText() );
-        Integer x = (int)Math.round( event.getX() / round ) * round - offsetX;
-        Integer y = (int)Math.round( event.getY() / round ) * round - offsetY;
-        posX.setText( x.toString() );
-        posY.setText( y.toString() );
+        updateMousePosition( event );
     }
     
     @FXML
@@ -190,20 +222,24 @@ public final class EditorController implements Builder<Parent>
         try
         {
             транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
-            Node content = EdtФабрика.getInstance().создать( элемент ).загрузить( true );
+            content = EdtФабрика.getInstance().создать( элемент ).загрузить( true );
             Platform.runLater(() -> 
             { 
                 ObservableList<Node> children = stackPane.getChildren();
                 children.subList( 1, children.size() ).clear(); // кроме сетки
-                Pane pad = new Pane( content );
-                pad.setOnMouseMoved( this::handleMouseMove );
+                board = new Pane( content );
+                board.setOnMouseMoved( this::onMouseMove );
                 content.getTransforms().add( 0, new Translate( offsetX, offsetY ) );
-                children.add( pad );
+                children.add( board );
+                board.onMouseClickedProperty().bind( onMouseClickedProperty );
 //                content.setContextMenu( popup );
                 pane.setUserData( элемент ); 
                 content.setOnDragDetected( e -> onDragDetected( e, content ) );
                 stackPane.setOnDragOver( this::onDragOver );
                 stackPane.setOnDragDropped( this::onDragDropped );
+                if( content instanceof Group )
+                    ((Group)content).getChildren().forEach( 
+                            n -> n.onMouseClickedProperty().bind( onMouseClickedProperty ) );
             } );
         }
         catch( Exception ex )
@@ -217,4 +253,105 @@ public final class EditorController implements Builder<Parent>
         }
     }
 
+    private void updateMousePosition( MouseEvent event )
+    {
+        int snap = snapProperty.get();
+        xProperty.set( (int)Math.round( event.getX() / snap ) * snap - offsetX );
+        yProperty.set( (int)Math.round( event.getY() / snap ) * snap - offsetY );
+    }
+    
+    private void onSelect( MouseEvent e )
+    {
+        updateMousePosition( e );
+        LOGGER.getLogger().info( "selection at "+xProperty.get()+","+yProperty.get() );
+        e.consume();
+    }
+        
+    private void onAdd( MouseEvent e )
+    {
+        updateMousePosition( e );
+        LOGGER.getLogger().info( "addition at "+xProperty.get()+","+yProperty.get() );
+        e.consume();
+    }
+        
+    private void onDelete( MouseEvent e )
+    {
+        updateMousePosition( e );
+        if( MouseButton.PRIMARY == e.getButton() )
+            if( e.getSource() instanceof Node )
+            {
+                Node node = (Node)e.getSource();
+                Object userData = node.getUserData();
+                if( userData != null && content.getUserData() != userData && content instanceof Group )
+                {
+                    Bounds bounds = content.getBoundsInParent();
+                    boolean contains = bounds.contains( e.getX(), e.getY() );
+                    LOGGER.getLogger().info( "deletion at "+xProperty.get()+","+yProperty.get()+" for "+userData+" in bounds="+contains );
+                    JavaFX.getInstance().execute( new DeleteTask( node, (Group)content ) );
+                }
+                else
+                {
+                    LOGGER.getLogger().info( "deletion at "+xProperty.get()+","+yProperty.get()+" for "+e.getSource() );
+                }
+            }
+        e.consume();
+    }
+    
+    private static class DeleteTask extends Task<Boolean>
+    {
+        final static DbОператор оператор = (o,c) -> c.remove(o);
+        final DbАтрибутный выбор;
+        final DbУзел узел;
+        final Node node;
+        final Group group;
+
+        private DeleteTask( Node node, Group group )
+        {
+            this.node = node;
+            this.group = group;
+            Object userDataNode = node.getUserData();
+            Object userDataGroup = group.getUserData();
+            this.выбор = userDataNode instanceof DbАтрибутный ? (DbАтрибутный)userDataNode : null;
+            this.узел = userDataGroup instanceof DbУзел ? (DbУзел)userDataGroup : null;
+        }
+
+        @Override
+        protected Boolean call() throws Exception
+        {
+            if( выбор == null | узел == null ) return false;
+            try( Транзакция транзакция = узел.транзакция() )
+            {
+                транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
+                Boolean удалено = (Boolean)узел.выполнить( оператор, выбор );
+                транзакция.завершить( true );
+                return удалено;
+            }
+        }
+        
+        @Override
+        protected void succeeded()
+        {
+            if( getValue() )
+            {
+                group.getChildren().remove( node );
+                LOGGER.getLogger().info( "deletion of "+узел+"."+выбор+" result="+true );
+            }
+            else
+            {
+                LOGGER.getLogger().info( "deletion of "+узел+"."+выбор+" result="+false );
+            }
+        }
+        
+        @Override
+        protected void failed()
+        {
+            LogRecord lr = new LogRecord( Level.SEVERE, "task.delete.failed" );
+            //lr.setParameters( new Object[]{ поставщик } );
+            lr.setResourceBundle( LOGGER.getLogger().getResourceBundle() );
+            lr.setThrown( getException() );
+            LOGGER.getLogger().log( lr );
+        }
+
+    }
+        
 }

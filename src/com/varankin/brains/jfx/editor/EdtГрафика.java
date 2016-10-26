@@ -35,16 +35,16 @@ class EdtГрафика extends EdtУзел<DbГрафика>
             switch( ЭЛЕМЕНТ.тип().название() )
             {
                 case XmlSvg.SVG_ELEMENT_TEXT:
-                    VBox box = new VBox();
+                    //VBox box = new VBox();
                     for( DbИнструкция э : ЭЛЕМЕНТ.инструкции() )
-                        box.getChildren().add( изменяемый ?
+                        /*box*/group.getChildren().add( изменяемый ?
                                 new SvgTextController( ЭЛЕМЕНТ, э ).build() :
-                                new EdtИнструкция( э ).загрузить( false ) );
+                                new EdtИнструкция( э ).загрузить( false ) ); //TODO offset?
                     for( DbТекстовыйБлок э : ЭЛЕМЕНТ.тексты() )
-                        box.getChildren().add( изменяемый ?
+                        /*box*/group.getChildren().add( изменяемый ?
                                 new SvgTextController( ЭЛЕМЕНТ, э ).build() :
-                                new EdtТекстовыйБлок( э ).загрузить( false ) );
-                    group.getChildren().add( box );
+                                new EdtТекстовыйБлок( э ).загрузить( false ) ); //TODO offset?
+                    //group.getChildren().add( box );
                     break;
                     
                 case XmlSvg.SVG_ELEMENT_RECT:

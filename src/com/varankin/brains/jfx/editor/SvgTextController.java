@@ -98,10 +98,10 @@ final class SvgTextController implements Builder<Text>
                     raiseInPlaceEditor( ); 
                     event.consume();
                     break;
-                case 1: 
-                    select(); 
-                    event.consume();
-                    break;
+//                case 1: 
+//                    select(); 
+//                    event.consume();
+//                    break;
             }
     }
     
