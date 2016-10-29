@@ -1,18 +1,17 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАрхив;
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbОператор;
-import com.varankin.brains.db.DbУзел;
+import com.varankin.brains.db.DbАтрибутный.Ключ;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
@@ -20,10 +19,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -31,7 +30,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
@@ -39,7 +37,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Translate;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
@@ -66,6 +66,10 @@ public final class EditorController implements Builder<Parent>
     @FXML private Label posX;
     @FXML private Label posY;
     @FXML private ContextMenu popup;
+    @FXML private ChoiceBox<Ключ> itemsAdd;
+    @FXML private ToggleButton buttonSelect;
+    @FXML private ToggleButton buttonAdd;
+    @FXML private ToggleButton buttonDelete;
     
     private final ObjectProperty<EventHandler<? super MouseEvent>> onMouseClickedProperty = 
            new SimpleObjectProperty<>();
@@ -74,6 +78,7 @@ public final class EditorController implements Builder<Parent>
     private final IntegerProperty yProperty = new SimpleIntegerProperty();
     private int offsetX, offsetY;
     private Node content;
+    private LinkedList<int[]> clicks = new LinkedList<>();
 
     public EditorController()
     {
@@ -96,15 +101,14 @@ public final class EditorController implements Builder<Parent>
         progress.setPrefSize( 50, 50 );
         progress.setMaxSize( 150, 150 );
         
-        ToggleButton buttonSelect = new ToggleButton( "Select" );
-        buttonSelect.setOnAction( ae -> onMouseClickedProperty.setValue( this::onSelect ) );
-        ToggleButton buttonAdd = new ToggleButton( "Add" );
-        buttonAdd.setOnAction( ae -> onMouseClickedProperty.setValue( this::onAdd ) );
-        ToggleButton buttonDelete = new ToggleButton( "Delete" );
-        buttonDelete.setOnAction( ae -> onMouseClickedProperty.setValue( this::onDelete ) );
-        ChoiceBox<String> itemsAdd = new ChoiceBox<>();
-        itemsAdd.getItems().addAll( "type 1", "type 2" );
-        itemsAdd.disableProperty().bind( Bindings.not( buttonAdd.selectedProperty() ) );
+        buttonSelect = new ToggleButton( "Select" );
+        buttonSelect.setOnAction( this::onSelectMode );
+        buttonAdd = new ToggleButton( "Add" );
+        buttonAdd.setOnAction( this::onAddMode );
+        buttonDelete = new ToggleButton( "Delete" );
+        buttonDelete.setOnAction( this::onDeleteMode );
+        
+        itemsAdd = new ChoiceBox<>();
 
         ToggleGroup group = new ToggleGroup();
         buttonSelect.setToggleGroup(group);
@@ -168,20 +172,77 @@ public final class EditorController implements Builder<Parent>
     {
         posX.textProperty().bind( Bindings.format( "%d", xProperty ) );
         posY.textProperty().bind( Bindings.format( "%d", yProperty ) );
+        itemsAdd.setConverter( new StringConverter<Ключ>()
+        {
+            @Override
+            public String toString( Ключ ключ )
+            {
+                return ключ.название();
+            }
+
+            @Override
+            public Ключ fromString( String string )
+            {
+                for( Ключ ключ : itemsAdd.getItems() )
+                    if( ключ.название().equals( string ) )
+                        return ключ;
+                return null;
+            }
+        } );
+        itemsAdd.disableProperty().bind( Bindings.not( buttonAdd.selectedProperty() ) );
         List<Node> children = grid.getChildren();
-        int d = 1;
+        Line line;
+        Polyline pline;
+        Paint paint = Color.GRAY;
+        int d = 0;
         for( int x = 0; x <= 1000; x += 50 )
             for( int y = 0; y <= 1000; y += 50 )
             {
-                children.add( new Line( x-d, y, x+d, y ) );
-                children.add( new Line( x, y-d, x, y+d ) );
+                line = new Line( x-d, y, x+d, y ); line.setStroke( paint ); children.add( line );
+                //line = new Line( x, y-d, x, y+d ); line.setStroke( paint ); children.add( line );
             }
+        d = 10;
+        line = new Line( offsetX-d/2, offsetY, offsetX+d, offsetY ); line.setStroke( paint ); children.add( line );
+        line = new Line( offsetX, offsetY-d/2, offsetX, offsetY+d ); line.setStroke( paint ); children.add( line );
+        int a = 3;
+        pline = new Polyline( offsetX+d-a, offsetY-a, offsetX+d, offsetY, offsetX+d-a, offsetY+a ); pline.setStroke( paint ); children.add( pline );
+        pline = new Polyline( offsetX-a, offsetY+d-a, offsetX, offsetY+d, offsetX+a, offsetY+d-a ); pline.setStroke( paint ); children.add( pline );
     }
 
+    @FXML
+    private void onSelectMode( ActionEvent event )
+    {
+        board.getChildren().remove( path );
+        clicks.clear();
+        onMouseClickedProperty.setValue( this::onSelect );
+    }
+    
+    @FXML
+    private void onAddMode( ActionEvent event )
+    {
+        board.getChildren().remove( path );
+        clicks.clear();
+        onMouseClickedProperty.setValue( this::onAdd );
+    }
+    
+    @FXML
+    private void onDeleteMode( ActionEvent event )
+    {
+        board.getChildren().remove( path );
+        clicks.clear();
+        onMouseClickedProperty.setValue( this::onDelete );
+    }
+    
     @FXML
     private void onMouseMove( MouseEvent event )
     {
         updateMousePosition( event );
+        if( path != null )
+        {
+            ObservableList<Double> points = path.getPoints();
+            points.subList( points.size() - 2, points.size() ).clear();
+            points.addAll( event.getX(), event.getY() );
+        }
     }
     
     @FXML
@@ -222,15 +283,17 @@ public final class EditorController implements Builder<Parent>
         try
         {
             транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
-            content = EdtФабрика.getInstance().создать( элемент ).загрузить( true );
-            Platform.runLater(() -> 
+            NodeBuilder builder = EdtФабрика.getInstance().создать( элемент );
+            content = builder.загрузить( true );
+            Platform.runLater( () -> 
             { 
+                itemsAdd.getItems().setAll( builder.компоненты() );
                 ObservableList<Node> children = stackPane.getChildren();
                 children.subList( 1, children.size() ).clear(); // кроме сетки
                 board = new Pane( content );
+                children.add( board );
                 board.setOnMouseMoved( this::onMouseMove );
                 content.getTransforms().add( 0, new Translate( offsetX, offsetY ) );
-                children.add( board );
                 board.onMouseClickedProperty().bind( onMouseClickedProperty );
 //                content.setContextMenu( popup );
                 pane.setUserData( элемент ); 
@@ -266,92 +329,84 @@ public final class EditorController implements Builder<Parent>
         LOGGER.getLogger().info( "selection at "+xProperty.get()+","+yProperty.get() );
         e.consume();
     }
+    private static final Map<String,Integer> limit;
+    static
+    {
+        limit = new HashMap<>();
+        limit.put( XmlSvg.SVG_ELEMENT_TEXT, 1 );
+        limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
+        limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );
+        limit.put( XmlSvg.SVG_ELEMENT_CIRCLE, 2 );
+    }
+    private Polyline path;
         
     private void onAdd( MouseEvent e )
     {
         updateMousePosition( e );
-        LOGGER.getLogger().info( "addition at "+xProperty.get()+","+yProperty.get() );
-        e.consume();
-    }
-        
-    private void onDelete( MouseEvent e )
-    {
-        updateMousePosition( e );
         if( MouseButton.PRIMARY == e.getButton() )
-            if( e.getSource() instanceof Node )
+            if( e.getSource() == board && content instanceof Group )
             {
-                Node node = (Node)e.getSource();
-                Object userData = node.getUserData();
-                if( userData != null && content.getUserData() != userData && content instanceof Group )
+                int[] xy = new int[]{ xProperty.get(), yProperty.get() };
+                clicks.add( xy );
+                Ключ ключ = itemsAdd.getValue();
+                Integer goal = limit.get( ключ.название() );
+                if( goal != null && clicks.size() == goal || e.isControlDown() )
                 {
-                    Bounds bounds = content.getBoundsInParent();
-                    boolean contains = bounds.contains( e.getX(), e.getY() );
-                    LOGGER.getLogger().info( "deletion at "+xProperty.get()+","+yProperty.get()+" for "+userData+" in bounds="+contains );
-                    JavaFX.getInstance().execute( new DeleteTask( node, (Group)content ) );
+                    LOGGER.getLogger().info( "addition at "+xProperty.get()+","+yProperty.get()/*+" for "+userData+""*/ );
+                    board.getChildren().remove( path );
+                    JavaFX.getInstance().execute( new AddTask( ключ, clicks, (Group)content ) );
+                    clicks.clear();
+                }
+                else if( clicks.size() == 1 )
+                {
+                    path = new Polyline();
+                    path.setFill( null );
+                    path.setStroke( Color.GREY );
+                    path.setStyle( "style:dashed" );
+                    double px = e.getX();
+                    double py = e.getY();
+                    ObservableList<Double> points = path.getPoints();
+                    points.addAll( px, py, px, py );
+                    board.getChildren().add( path );
                 }
                 else
                 {
-                    LOGGER.getLogger().info( "deletion at "+xProperty.get()+","+yProperty.get()+" for "+e.getSource() );
+                    ObservableList<Double> points = path.getPoints();
+                    points.subList( points.size() - 2, points.size() ).clear();
+                    double px = e.getX();
+                    double py = e.getY();
+                    points.addAll( px, py, px, py );
                 }
+            }
+            else
+            {
+                LOGGER.getLogger().info( "missed addition at "+xProperty.get()+","+yProperty.get()+" for "+e.getSource() );
             }
         e.consume();
     }
     
-    private static class DeleteTask extends Task<Boolean>
+    private void onDelete( MouseEvent e )
     {
-        final static DbОператор оператор = (o,c) -> c.remove(o);
-        final DbАтрибутный выбор;
-        final DbУзел узел;
-        final Node node;
-        final Group group;
-
-        private DeleteTask( Node node, Group group )
+        if( e.getSource() == board )
         {
-            this.node = node;
-            this.group = group;
-            Object userDataNode = node.getUserData();
-            Object userDataGroup = group.getUserData();
-            this.выбор = userDataNode instanceof DbАтрибутный ? (DbАтрибутный)userDataNode : null;
-            this.узел = userDataGroup instanceof DbУзел ? (DbУзел)userDataGroup : null;
-        }
-
-        @Override
-        protected Boolean call() throws Exception
-        {
-            if( выбор == null | узел == null ) return false;
-            try( Транзакция транзакция = узел.транзакция() )
+            updateMousePosition( e );
+            EventTarget target = e.getTarget();
+            for( Node node = target instanceof Node ? (Node)target : null; 
+                    node != null & node != content; node = node.getParent() )
             {
-                транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
-                Boolean удалено = (Boolean)узел.выполнить( оператор, выбор );
-                транзакция.завершить( true );
-                return удалено;
+                Object userData = node.getUserData();
+                if( userData != null )
+                {
+                    if( MouseButton.PRIMARY == e.getButton() )
+                    {
+                        LOGGER.getLogger().info( "deletion at "+xProperty.get()+","+yProperty.get()+" for "+userData+"" );
+                        JavaFX.getInstance().execute( new DeleteTask( node ) );
+                    }
+                    break;
+                }
             }
+            e.consume();
         }
-        
-        @Override
-        protected void succeeded()
-        {
-            if( getValue() )
-            {
-                group.getChildren().remove( node );
-                LOGGER.getLogger().info( "deletion of "+узел+"."+выбор+" result="+true );
-            }
-            else
-            {
-                LOGGER.getLogger().info( "deletion of "+узел+"."+выбор+" result="+false );
-            }
-        }
-        
-        @Override
-        protected void failed()
-        {
-            LogRecord lr = new LogRecord( Level.SEVERE, "task.delete.failed" );
-            //lr.setParameters( new Object[]{ поставщик } );
-            lr.setResourceBundle( LOGGER.getLogger().getResourceBundle() );
-            lr.setThrown( getException() );
-            LOGGER.getLogger().log( lr );
-        }
-
     }
-        
+    
 }

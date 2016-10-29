@@ -9,6 +9,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbNameSpace;
+import java.util.Collections;
+import java.util.Queue;
 import javafx.scene.transform.Transform;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
@@ -26,6 +28,13 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
     protected EdtАтрибутный( T элемент )
     {
         ЭЛЕМЕНТ = элемент;
+    }
+    
+    @Deprecated
+    @Override
+    public Node загрузить( boolean изменяемый, Queue<int[]> path )
+    {
+        return this.загрузить( изменяемый );
     }
     
     <T extends Node> T загрузить( T node, boolean изменяемый )
@@ -82,6 +91,12 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
         Group group = new Group();
         group.getChildren().addAll( dot, countor );
         return group;
+    }
+    
+    @Override
+    public List<DbАтрибутный.Ключ> компоненты()
+    {
+        return Collections.emptyList();
     }
     
 }

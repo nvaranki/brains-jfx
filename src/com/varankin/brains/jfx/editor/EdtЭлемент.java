@@ -1,7 +1,15 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.*;
+import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.io.xml.XmlSvg;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
 import javafx.scene.*;
+
+import static com.varankin.brains.io.xml.XmlSvg.*;
 
 /**
  *
@@ -25,6 +33,31 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
             group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
         
         return group;
+    }
+    
+    @Override
+    public Group загрузить( boolean изменяемый, Queue<int[]> path )
+    {
+        if( path.isEmpty() ) return null;
+        Group group = загрузить( изменяемый );
+        int[] s = path.peek();
+        ЭЛЕМЕНТ.определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, null, 
+                String.format( "translate(%d,%d)", s[0], s[1] ) );
+        return group;
+    }
+    
+    @Override
+    public List<DbАтрибутный.Ключ> компоненты()
+    {
+        List<DbАтрибутный.Ключ> list = new ArrayList<>( Arrays.asList( 
+                new КлючImpl( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS, null ), 
+                new КлючImpl( SVG_ELEMENT_CIRCLE, XmlSvg.XMLNS_SVG, null ), 
+                new КлючImpl( SVG_ELEMENT_RECT, XmlSvg.XMLNS_SVG, null ), 
+                new КлючImpl( SVG_ELEMENT_LINE, XmlSvg.XMLNS_SVG, null ),
+                new КлючImpl( SVG_ELEMENT_POLYLINE, XmlSvg.XMLNS_SVG, null ), 
+                new КлючImpl( SVG_ELEMENT_TEXT, XmlSvg.XMLNS_SVG, null ) ) );
+        list.addAll( super.компоненты() );
+        return list;
     }
     
 }

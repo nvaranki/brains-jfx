@@ -50,7 +50,7 @@ public final class EdtФабрика implements Фабрика<DbАтрибут�
 //        if( элемент instanceof DbУзел          ) p = new EdtУзел( (DbУзел)элемент ); else
         if( элемент instanceof DbИнструкция    ) p = new EdtИнструкция( (DbИнструкция)элемент ); else
         if( элемент instanceof DbТекстовыйБлок ) p = new EdtТекстовыйБлок( (DbТекстовыйБлок)элемент ); else
-        p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
+        throw new UnsupportedOperationException();//p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
 //                                                 p = new EdtАтрибутный( (DbАтрибутный)элемент );
 //                content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
         return p;

@@ -168,11 +168,11 @@ final class SvgTextController implements Builder<Text>
         @Override
         protected void succeeded()
         {
-            text.setFont( font );
+            if( font != null ) text.setFont( font );
             text.setTranslateX( x );
-            text.setTranslateY( y - text.getBaselineOffset() );
-            text.setFill( fill );
-            text.setStroke( stroke );
+            text.setTranslateY( y /*- text.getBaselineOffset()*/ );
+            if( fill != null ) text.setFill( fill );
+            if( stroke != null ) text.setStroke( stroke );
             text.setText( content );
         }
         

@@ -4,6 +4,11 @@ import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbУзел;
+import com.varankin.brains.db.КлючImpl;
+import com.varankin.brains.io.xml.Xml;
+import com.varankin.brains.io.xml.XmlBrains;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javafx.scene.*;
 import javafx.scene.layout.VBox;
@@ -38,6 +43,14 @@ abstract class EdtУзел<T extends DbУзел> extends EdtАтрибутный
             children.add( new EdtНеизвестный( н ).загрузить( false ) );
         
         return group;
+    }
+    
+    @Override
+    public List<DbАтрибутный.Ключ> компоненты()
+    {
+        return Arrays.asList( 
+                new КлючImpl( Xml.XML_CDATA, XmlBrains.XMLNS_BRAINS, null ), 
+                new КлючImpl( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
     }
     
 }
