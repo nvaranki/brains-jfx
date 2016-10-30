@@ -9,6 +9,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbNameSpace;
+import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Queue;
 import javafx.scene.transform.Transform;
@@ -66,18 +67,15 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
 
     Double[] toSvgPoints( String атрибут, Double[] нет )
     {
-        Object a = ЭЛЕМЕНТ.атрибут(атрибут, (DbNameSpace)null, null );
-        if( a == null )
-        {
-            return нет;
-        }
+        Object a = ЭЛЕМЕНТ.атрибут( атрибут, (DbNameSpace)null, null );
+        if( a == null ) return нет;
         List<Double> v = new ArrayList<>();
-        for( String p : DbАтрибутный.toStringValue( a ).split( "\\s" ) )
-        {
-            String[] xy = p.split( "," );
-            v.add( Double.valueOf( xy[0].trim() ) );
-            v.add( Double.valueOf( xy[1].trim() ) );
-        }
+        if( a.getClass().isArray() && !( a instanceof char[] ) )
+            for( int i = 0, max = Array.getLength( a ); i < max; i++ )
+                v.add( Array.getDouble( a, i ) );
+         else
+            for( String p : DbАтрибутный.toStringValue( a ).split( "[\\s,]" ) )
+                v.add( Double.valueOf( p.trim() ) );
         return v.isEmpty() ? нет : v.toArray( new Double[v.size()] );
     }
     

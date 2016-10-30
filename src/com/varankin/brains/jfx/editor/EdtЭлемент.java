@@ -52,9 +52,11 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
         List<DbАтрибутный.Ключ> list = new ArrayList<>( Arrays.asList( 
                 new КлючImpl( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS, null ), 
                 new КлючImpl( SVG_ELEMENT_CIRCLE, XmlSvg.XMLNS_SVG, null ), 
+                new КлючImpl( SVG_ELEMENT_ELLIPSE, XmlSvg.XMLNS_SVG, null ), 
                 new КлючImpl( SVG_ELEMENT_RECT, XmlSvg.XMLNS_SVG, null ), 
                 new КлючImpl( SVG_ELEMENT_LINE, XmlSvg.XMLNS_SVG, null ),
                 new КлючImpl( SVG_ELEMENT_POLYLINE, XmlSvg.XMLNS_SVG, null ), 
+                new КлючImpl( SVG_ELEMENT_POLYGON, XmlSvg.XMLNS_SVG, null ), 
                 new КлючImpl( SVG_ELEMENT_TEXT, XmlSvg.XMLNS_SVG, null ) ) );
         list.addAll( super.компоненты() );
         return list;

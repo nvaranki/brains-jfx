@@ -337,6 +337,7 @@ public final class EditorController implements Builder<Parent>
         limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
         limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );
         limit.put( XmlSvg.SVG_ELEMENT_CIRCLE, 2 );
+        limit.put( XmlSvg.SVG_ELEMENT_ELLIPSE, 2 );
     }
     private Polyline path;
         
