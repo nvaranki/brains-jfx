@@ -41,7 +41,7 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
         if( path.isEmpty() ) return null;
         Group group = загрузить( изменяемый );
         int[] s = path.peek();
-        ЭЛЕМЕНТ.определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, null, 
+        ЭЛЕМЕНТ.определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, 
                 String.format( "translate(%d,%d)", s[0], s[1] ) );
         return group;
     }

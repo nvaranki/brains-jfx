@@ -148,10 +148,10 @@ class EdtГрафика extends EdtУзел<DbГрафика>
             case SVG_ELEMENT_TEXT:
                 int[] xy = path.poll();
                 if( !path.isEmpty() ) return null;
-                ЭЛЕМЕНТ.определить( SVG_ATTR_X, XMLNS_SVG, null, xy[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_Y, XMLNS_SVG, null, xy[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_X, XMLNS_SVG, xy[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_Y, XMLNS_SVG, xy[1] );
                 DbТекстовыйБлок текст = (DbТекстовыйБлок)ЭЛЕМЕНТ.пакет().архив()
-                        .создатьНовыйЭлемент( Xml.XML_CDATA, null, null );
+                        .создатьНовыйЭлемент( Xml.XML_CDATA, null );
                 текст.текст( "New text" );
                 ЭЛЕМЕНТ.тексты().add( текст );
                 group = загрузить( изменяемый );
@@ -164,45 +164,45 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 if( !path.isEmpty() ) return null;
                 if( lt[0] > rb[0] ) { int t = lt[0]; lt[0] = rb[0]; rb[0] = t; }
                 if( lt[1] > rb[1] ) { int t = lt[1]; lt[1] = rb[1]; rb[1] = t; }
-                ЭЛЕМЕНТ.определить( SVG_ATTR_X, XMLNS_SVG, null, lt[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_Y, XMLNS_SVG, null, lt[1] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_WIDTH, XMLNS_SVG, null, rb[0]-lt[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_HEIGHT, XMLNS_SVG, null, rb[1]-lt[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_X, XMLNS_SVG, lt[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_Y, XMLNS_SVG, lt[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_WIDTH, XMLNS_SVG, rb[0]-lt[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_HEIGHT, XMLNS_SVG, rb[1]-lt[1] );
                 group = загрузить( изменяемый );
                 break;
                 
                 
             case SVG_ELEMENT_LINE:
                 xy = path.poll();
-                ЭЛЕМЕНТ.определить( SVG_ATTR_X1, XMLNS_SVG, null, xy[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_Y1, XMLNS_SVG, null, xy[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_X1, XMLNS_SVG, xy[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_Y1, XMLNS_SVG, xy[1] );
                 xy = path.poll();
-                ЭЛЕМЕНТ.определить( SVG_ATTR_X2, XMLNS_SVG, null, xy[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_Y2, XMLNS_SVG, null, xy[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_X2, XMLNS_SVG, xy[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_Y2, XMLNS_SVG, xy[1] );
                 if( !path.isEmpty() ) return null;
-                ЭЛЕМЕНТ.определить( SVG_ATTR_STROKE, XMLNS_SVG, null, "black" ); // не видно, если не задать
+                ЭЛЕМЕНТ.определить( SVG_ATTR_STROKE, XMLNS_SVG, "black" ); // не видно, если не задать
                 group = загрузить( изменяемый );
                 break;
 
             case SVG_ELEMENT_CIRCLE:
                 int[] cxy = path.poll();
-                ЭЛЕМЕНТ.определить( SVG_ATTR_CX, XMLNS_SVG, null, cxy[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_CY, XMLNS_SVG, null, cxy[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_CX, XMLNS_SVG, cxy[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_CY, XMLNS_SVG, cxy[1] );
                 xy = path.poll();
                 double dx = cxy[0] - xy[0];
                 double dy = cxy[1] - xy[1];
-                ЭЛЕМЕНТ.определить( SVG_ATTR_R, XMLNS_SVG, null, (int)Math.round( Math.sqrt(dx*dx+dy*dy) ) ); //TODO round ?!
+                ЭЛЕМЕНТ.определить( SVG_ATTR_R, XMLNS_SVG, (int)Math.round( Math.sqrt(dx*dx+dy*dy) ) ); //TODO round ?!
                 if( !path.isEmpty() ) return null;
                 group = загрузить( изменяемый );
                 break;
 
             case SVG_ELEMENT_ELLIPSE:
                 cxy = path.poll();
-                ЭЛЕМЕНТ.определить( SVG_ATTR_CX, XMLNS_SVG, null, cxy[0] );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_CY, XMLNS_SVG, null, cxy[1] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_CX, XMLNS_SVG, cxy[0] );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_CY, XMLNS_SVG, cxy[1] );
                 xy = path.poll();
-                ЭЛЕМЕНТ.определить( SVG_ATTR_RX, XMLNS_SVG, null, Math.abs( cxy[0] - xy[0] ) );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_RY, XMLNS_SVG, null, Math.abs( cxy[1] - xy[1] ) );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_RX, XMLNS_SVG, Math.abs( cxy[0] - xy[0] ) );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_RY, XMLNS_SVG, Math.abs( cxy[1] - xy[1] ) );
                 if( !path.isEmpty() ) return null;
                 group = загрузить( изменяемый );
                 break;
@@ -215,9 +215,9 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                     points[i*2+0] = xy[0];
                     points[i*2+1] = xy[1];
                 }
-                ЭЛЕМЕНТ.определить( SVG_ATTR_POINTS, XMLNS_SVG, null, points );
-                ЭЛЕМЕНТ.определить( SVG_ATTR_STROKE, XMLNS_SVG, null, "black" ); // не видно, если не задать
-                ЭЛЕМЕНТ.определить( SVG_ATTR_FILL, XMLNS_SVG, null, "none" ); // выполняется заливка, если не задать
+                ЭЛЕМЕНТ.определить( SVG_ATTR_POINTS, XMLNS_SVG, points );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_STROKE, XMLNS_SVG, "black" ); // не видно, если не задать
+                ЭЛЕМЕНТ.определить( SVG_ATTR_FILL, XMLNS_SVG, "none" ); // выполняется заливка, если не задать
                 group = загрузить( изменяемый );
                 break;
                 
@@ -229,14 +229,14 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                     points[i*2+0] = xy[0];
                     points[i*2+1] = xy[1];
                 }
-                ЭЛЕМЕНТ.определить( SVG_ATTR_POINTS, XMLNS_SVG, null, points );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_POINTS, XMLNS_SVG, points );
                 //ЭЛЕМЕНТ.определить( SVG_ATTR_FILL, XMLNS_SVG, null, "black" ); // не видно, если не задать
                 group = загрузить( изменяемый );
                 break;
 
             default:
                 xy = path.poll();
-                ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG, null, String.format( "translate(%d,%d)", xy[0], xy[1] ) );
+                ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG, String.format( "translate(%d,%d)", xy[0], xy[1] ) );
                 group = загрузить( изменяемый );
         }
         

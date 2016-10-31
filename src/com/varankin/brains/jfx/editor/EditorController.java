@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.DbАтрибутный.Ключ;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.util.LoggerX;
@@ -333,6 +334,7 @@ public final class EditorController implements Builder<Parent>
     static
     {
         limit = new HashMap<>();
+        limit.put( XmlBrains.XML_PARAMETER, 1 );
         limit.put( XmlSvg.SVG_ELEMENT_TEXT, 1 );
         limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
         limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );
@@ -354,8 +356,8 @@ public final class EditorController implements Builder<Parent>
                 if( goal != null && clicks.size() == goal || e.isControlDown() )
                 {
                     LOGGER.getLogger().info( "addition at "+xProperty.get()+","+yProperty.get()/*+" for "+userData+""*/ );
-                    board.getChildren().remove( path );
                     JavaFX.getInstance().execute( new AddTask( ключ, clicks, (Group)content ) );
+                    board.getChildren().remove( path );
                     clicks.clear();
                 }
                 else if( clicks.size() == 1 )

@@ -9,6 +9,7 @@ import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import javafx.scene.*;
 
 /**
@@ -28,7 +29,7 @@ class EdtСигнал extends EdtЭлемент<DbСигнал>
         Group group = super.загрузить( изменяемый );
 
         for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );
+            group.getChildren().add( new EdtПараметр( н ).загрузить( изменяемый ) );
         for( DbКлассJava н : ЭЛЕМЕНТ.классы() )
             group.getChildren().add( new EdtНеизвестный( н ).загрузить( false ) );
         
@@ -45,7 +46,7 @@ class EdtСигнал extends EdtЭлемент<DbСигнал>
     }
 
 //    @Override
-//    public Group загрузить( boolean изменяемый, int x, int y )
+//    public Group загрузить( boolean изменяемый, Queue<int[]> path )
 //    {
 //        Group group = загрузить( изменяемый );
 //        ЭЛЕМЕНТ.определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, null, String.format( "translate(%d,%d)", x, y ) );

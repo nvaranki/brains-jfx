@@ -67,7 +67,7 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
 
     Double[] toSvgPoints( String атрибут, Double[] нет )
     {
-        Object a = ЭЛЕМЕНТ.атрибут( атрибут, (DbNameSpace)null, null );
+        Object a = ЭЛЕМЕНТ.атрибут( атрибут, null, null );
         if( a == null ) return нет;
         List<Double> v = new ArrayList<>();
         if( a.getClass().isArray() && !( a instanceof char[] ) )

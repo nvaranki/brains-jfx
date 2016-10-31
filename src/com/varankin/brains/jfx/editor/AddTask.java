@@ -50,9 +50,10 @@ class AddTask extends Task<Node>
         {
             транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
             DbАрхив архив = узел.пакет().архив();
-            DbАтрибутный атрибутный = архив.создатьНовыйЭлемент( type.название(), type.uri(), null );
+            DbАтрибутный атрибутный = архив.создатьНовыйЭлемент( type.название(), type.uri() );
             boolean добавлено = (Boolean)узел.выполнить( оператор, атрибутный );
-            Node node = добавлено ? EdtФабрика.getInstance().создать( атрибутный ).загрузить( XmlSvg.XMLNS_SVG.equals( type.uri() ), path ) : null;
+            Node node = добавлено ? EdtФабрика.getInstance().создать( атрибутный )
+                    .загрузить( true/*XmlSvg.XMLNS_SVG.equals( type.uri() )*/, path ) : null;
             транзакция.завершить( добавлено );
             return node;
         }
