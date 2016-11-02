@@ -13,7 +13,7 @@ public interface NodeBuilder
 {
     Node загрузить( boolean изменяемый );
     
-    Node загрузить( boolean изменяемый, Queue<int[]> path );
+    boolean составить( Queue<int[]> path );
     
     List<DbАтрибутный.Ключ> компоненты();
 }

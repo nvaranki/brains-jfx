@@ -85,12 +85,12 @@ public class InPlaceText2Controller implements Builder<Node>
             LOGGER.getLogger().log( Level.SEVERE, "Processor wasn't set" );
         else if( data.content.trim().isEmpty() )
             LOGGER.getLogger().log( Level.SEVERE, "Instruction wasn't set" );
-        else if( ЭЛЕМЕНТ.выполнить() == null )
-            LOGGER.getLogger().log( Level.SEVERE, "Instruction fails" );
+//        else if( ЭЛЕМЕНТ.выполнить() == null )
+//            LOGGER.getLogger().log( Level.SEVERE, "Instruction fails" );
         else 
         {
-            if( ЭЛЕМЕНТ.выполнить().trim().isEmpty() )
-                LOGGER.getLogger().log( Level.WARNING, "Instruction returns no text" );
+//            if( ЭЛЕМЕНТ.выполнить().trim().isEmpty() )
+//                LOGGER.getLogger().log( Level.WARNING, "Instruction returns no text" );
             JavaFX.getInstance().getExecutorService().submit( new DbUpdateTask( data ) );
         }
         e.consume();

@@ -19,10 +19,10 @@ class EdtТекстовыйБлок extends EdtАтрибутный<DbТекст
     }
     
     @Override
-    public Node загрузить( boolean изменяемый )
+    public Node загрузить( boolean основной )
     {
-        Node node = изменяемый ? new TextField( ЭЛЕМЕНТ.текст() ) : new Label( ЭЛЕМЕНТ.текст() );
-        node = super.загрузить( node, изменяемый );
+        Node node = true/*основной*/ ? new TextField( ЭЛЕМЕНТ.текст() ) : new Label( ЭЛЕМЕНТ.текст() );
+        node = super.загрузить( node, основной );
         return node;
     }
 

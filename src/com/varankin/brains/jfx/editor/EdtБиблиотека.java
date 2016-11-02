@@ -23,16 +23,16 @@ class EdtБиблиотека extends EdtЭлемент<DbБиблиотека>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         for( DbМодуль модуль : ЭЛЕМЕНТ.модули() )
-            group.getChildren().add( new EdtМодуль( модуль ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtМодуль( модуль ).загрузить( false ) );
         for( DbРасчет расчет : ЭЛЕМЕНТ.расчеты() )
-            group.getChildren().add( new EdtРасчет( расчет ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtРасчет( расчет ).загрузить( false ) );
         for( DbПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
-            group.getChildren().add( new EdtПроцессор( процессор ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtПроцессор( процессор ).загрузить( false ) );
         
         return group;
     }

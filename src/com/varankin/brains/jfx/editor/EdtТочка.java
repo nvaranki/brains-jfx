@@ -22,18 +22,18 @@ class EdtТочка extends EdtЭлемент<DbТочка>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         for( DbТочка соединение : ЭЛЕМЕНТ.точки() )
-            group.getChildren().add( new EdtТочка( соединение ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtТочка( соединение ).загрузить( false ) );
         for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtИнструкция( н ).загрузить( false ) );
         for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( false ) );
         for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtНеизвестный( н ).загрузить( false ) );
         
         
         return group;

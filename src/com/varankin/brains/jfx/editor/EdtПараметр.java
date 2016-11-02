@@ -5,9 +5,9 @@ import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
 import java.util.Queue;
 import javafx.scene.*;
+import javafx.scene.text.Text;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
@@ -21,12 +21,12 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
-        for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );
+        for( DbПараметр э : ЭЛЕМЕНТ.параметры() )
+            group.getChildren().add( new EdtПараметр( э ).загрузить( false ) );
         for( DbКлассJava э : ЭЛЕМЕНТ.классы() )
             group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
         
@@ -34,18 +34,25 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый, Queue<int[]> path )
+    protected Text текст( DbТекстовыйБлок н )
     {
-        int[] xy = path.poll();
-        if( !path.isEmpty() ) return null;
-        Group group = загрузить( изменяемый );
-        DbАрхив архив = ЭЛЕМЕНТ.пакет().архив();
+        Text text = super.текст( н );
+        text.setX( 300 );
+        return text;
+    }
+    
+    @Override
+    public boolean составить( Queue<int[]> path )
+    {
+        DbАрхив архив = ЭЛЕМЕНТ.архив();
         DbТекстовыйБлок блок;
         DbГрафика графика;
         DbИнструкция инструкция;
         
-        // название и позиция параметра
+        // название и позиция заголовка параметра
         ЭЛЕМЕНТ.определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый параметр" );
+        int[] xy = path.poll();
+        if( !path.isEmpty() ) return false;
         ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
                 String.format( "translate(%d,%d)", xy[0], xy[1] ) );
         
@@ -83,6 +90,6 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
         графика.инструкции().add( инструкция );
         ЭЛЕМЕНТ.графики().add( графика );
         
-        return group;
+        return true;
     }
 }

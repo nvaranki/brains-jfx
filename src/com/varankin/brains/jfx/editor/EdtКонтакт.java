@@ -23,9 +23,9 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
             group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );

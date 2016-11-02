@@ -33,16 +33,15 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
     
     @Deprecated
     @Override
-    public Node загрузить( boolean изменяемый, Queue<int[]> path )
+    public boolean составить( Queue<int[]> path )
     {
-        return this.загрузить( изменяемый );
+        return true;
     }
     
-    <T extends Node> T загрузить( T node, boolean изменяемый )
+    <T extends Node> T загрузить( T node, boolean основной )
     {
-        if( изменяемый ) 
-            node.setUserData( ЭЛЕМЕНТ );
-        else
+        node.setUserData( ЭЛЕМЕНТ );
+        if( !основной ) 
             node.getTransforms().addAll( getTransformList() );
         return node;
     }

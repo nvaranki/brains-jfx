@@ -24,14 +24,14 @@ class EdtСигнал extends EdtЭлемент<DbСигнал>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
-        for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( изменяемый ) );
-        for( DbКлассJava н : ЭЛЕМЕНТ.классы() )
-            group.getChildren().add( new EdtНеизвестный( н ).загрузить( false ) );
+        for( DbПараметр э : ЭЛЕМЕНТ.параметры() )
+            group.getChildren().add( new EdtПараметр( э ).загрузить( false ) );
+        for( DbКлассJava э : ЭЛЕМЕНТ.классы() )
+            group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
         
         return group;
     }

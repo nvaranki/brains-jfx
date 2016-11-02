@@ -21,12 +21,12 @@ class EdtЗаметка extends EdtУзел<DbЗаметка>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         for( DbГрафика э : ЭЛЕМЕНТ.графики() )
-            group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
 //        for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
 //            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
 //        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )

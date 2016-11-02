@@ -23,12 +23,12 @@ class EdtГрафика extends EdtУзел<DbГрафика>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = изменяемый ? загрузить( new Group(), true ) : super.загрузить( false ); // без текстов, инструкций и прочего
+        Group group = true/*основной*/ ? загрузить( new Group(), true ) : super.загрузить( false ); // без текстов, инструкций и прочего
 
         for( DbГрафика э : ЭЛЕМЕНТ.графики() )
-            group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
         
         String s;
         if( XMLNS_SVG.equals( ЭЛЕМЕНТ.тип().uri() ) )
@@ -37,11 +37,11 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 case SVG_ELEMENT_TEXT:
                     //VBox box = new VBox();
                     for( DbИнструкция э : ЭЛЕМЕНТ.инструкции() )
-                        /*box*/group.getChildren().add( изменяемый ?
+                        /*box*/group.getChildren().add( true/*основной*/ ?
                                 new SvgTextController( ЭЛЕМЕНТ, э ).build() :
                                 new EdtИнструкция( э ).загрузить( false ) ); //TODO offset?
                     for( DbТекстовыйБлок э : ЭЛЕМЕНТ.тексты() )
-                        /*box*/group.getChildren().add( изменяемый ?
+                        /*box*/group.getChildren().add( true/*основной*/ ?
                                 new SvgTextController( ЭЛЕМЕНТ, э ).build() :
                                 new EdtТекстовыйБлок( э ).загрузить( false ) ); //TODO offset?
                     //group.getChildren().add( box );
@@ -139,36 +139,32 @@ class EdtГрафика extends EdtУзел<DbГрафика>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый, Queue<int[]> path )
+    public boolean составить( Queue<int[]> path )
     {
-        if( path.isEmpty() ) return null;
-        Group group;
+        if( path.isEmpty() ) return false;
         switch( ЭЛЕМЕНТ.тип().название() )
         {
             case SVG_ELEMENT_TEXT:
                 int[] xy = path.poll();
-                if( !path.isEmpty() ) return null;
+                if( !path.isEmpty() ) return false;
                 ЭЛЕМЕНТ.определить( SVG_ATTR_X, XMLNS_SVG, xy[0] );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_Y, XMLNS_SVG, xy[1] );
-                DbТекстовыйБлок текст = (DbТекстовыйБлок)ЭЛЕМЕНТ.пакет().архив()
+                DbТекстовыйБлок текст = (DbТекстовыйБлок)ЭЛЕМЕНТ.архив()
                         .создатьНовыйЭлемент( Xml.XML_CDATA, null );
                 текст.текст( "New text" );
                 ЭЛЕМЕНТ.тексты().add( текст );
-                group = загрузить( изменяемый );
-                //group.getChildren().add( new SvgTextController( ЭЛЕМЕНТ, текст ).build() );
                 break;
 
             case SVG_ELEMENT_RECT:
                 int[] lt = path.poll();
                 int[] rb = path.poll();
-                if( !path.isEmpty() ) return null;
+                if( !path.isEmpty() ) return false;
                 if( lt[0] > rb[0] ) { int t = lt[0]; lt[0] = rb[0]; rb[0] = t; }
                 if( lt[1] > rb[1] ) { int t = lt[1]; lt[1] = rb[1]; rb[1] = t; }
                 ЭЛЕМЕНТ.определить( SVG_ATTR_X, XMLNS_SVG, lt[0] );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_Y, XMLNS_SVG, lt[1] );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_WIDTH, XMLNS_SVG, rb[0]-lt[0] );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_HEIGHT, XMLNS_SVG, rb[1]-lt[1] );
-                group = загрузить( изменяемый );
                 break;
                 
                 
@@ -179,9 +175,8 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 xy = path.poll();
                 ЭЛЕМЕНТ.определить( SVG_ATTR_X2, XMLNS_SVG, xy[0] );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_Y2, XMLNS_SVG, xy[1] );
-                if( !path.isEmpty() ) return null;
+                if( !path.isEmpty() ) return false;
                 ЭЛЕМЕНТ.определить( SVG_ATTR_STROKE, XMLNS_SVG, "black" ); // не видно, если не задать
-                group = загрузить( изменяемый );
                 break;
 
             case SVG_ELEMENT_CIRCLE:
@@ -192,8 +187,7 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 double dx = cxy[0] - xy[0];
                 double dy = cxy[1] - xy[1];
                 ЭЛЕМЕНТ.определить( SVG_ATTR_R, XMLNS_SVG, (int)Math.round( Math.sqrt(dx*dx+dy*dy) ) ); //TODO round ?!
-                if( !path.isEmpty() ) return null;
-                group = загрузить( изменяемый );
+                if( !path.isEmpty() ) return false;
                 break;
 
             case SVG_ELEMENT_ELLIPSE:
@@ -203,8 +197,7 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 xy = path.poll();
                 ЭЛЕМЕНТ.определить( SVG_ATTR_RX, XMLNS_SVG, Math.abs( cxy[0] - xy[0] ) );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_RY, XMLNS_SVG, Math.abs( cxy[1] - xy[1] ) );
-                if( !path.isEmpty() ) return null;
-                group = загрузить( изменяемый );
+                if( !path.isEmpty() ) return false;
                 break;
 
             case SVG_ELEMENT_POLYLINE:
@@ -218,7 +211,6 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 ЭЛЕМЕНТ.определить( SVG_ATTR_POINTS, XMLNS_SVG, points );
                 ЭЛЕМЕНТ.определить( SVG_ATTR_STROKE, XMLNS_SVG, "black" ); // не видно, если не задать
                 ЭЛЕМЕНТ.определить( SVG_ATTR_FILL, XMLNS_SVG, "none" ); // выполняется заливка, если не задать
-                group = загрузить( изменяемый );
                 break;
                 
             case SVG_ELEMENT_POLYGON:
@@ -231,16 +223,14 @@ class EdtГрафика extends EdtУзел<DbГрафика>
                 }
                 ЭЛЕМЕНТ.определить( SVG_ATTR_POINTS, XMLNS_SVG, points );
                 //ЭЛЕМЕНТ.определить( SVG_ATTR_FILL, XMLNS_SVG, null, "black" ); // не видно, если не задать
-                group = загрузить( изменяемый );
                 break;
 
             default:
                 xy = path.poll();
                 ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG, String.format( "translate(%d,%d)", xy[0], xy[1] ) );
-                group = загрузить( изменяемый );
         }
         
-        return group;
+        return true;
     }
     
 }

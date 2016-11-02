@@ -22,16 +22,16 @@ class EdtПроцессор extends EdtЭлемент<DbПроцессор>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtИнструкция( н ).загрузить( false ) );
         for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( false ) );
         for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtНеизвестный( н ).загрузить( false ) );
         
         return group;
     }

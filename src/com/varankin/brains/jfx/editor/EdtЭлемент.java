@@ -23,27 +23,26 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         for( DbЗаметка э : ЭЛЕМЕНТ.заметки() )
             group.getChildren().add( new EdtЗаметка( э ).загрузить( false ) );
         for( DbГрафика э : ЭЛЕМЕНТ.графики() )
-            group.getChildren().add( new EdtГрафика( э ).загрузить( изменяемый ) );
+            group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
         
         return group;
     }
     
     @Override
-    public Group загрузить( boolean изменяемый, Queue<int[]> path )
+    public boolean составить( Queue<int[]> path )
     {
-        if( path.isEmpty() ) return null;
-        Group group = загрузить( изменяемый );
+        if( path.isEmpty() ) return false;
         int[] s = path.peek();
         ЭЛЕМЕНТ.определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, 
                 String.format( "translate(%d,%d)", s[0], s[1] ) );
-        return group;
+        return true;
     }
     
     @Override

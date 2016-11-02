@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
@@ -24,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -41,6 +43,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
@@ -66,8 +70,10 @@ public final class EditorController implements Builder<Parent>
     @FXML private TextField snap;
     @FXML private Label posX;
     @FXML private Label posY;
+    @FXML private Group zero;
     @FXML private ContextMenu popup;
     @FXML private ChoiceBox<Ключ> itemsAdd;
+    @FXML private ToggleButton buttonBase;
     @FXML private ToggleButton buttonSelect;
     @FXML private ToggleButton buttonAdd;
     @FXML private ToggleButton buttonDelete;
@@ -102,6 +108,8 @@ public final class EditorController implements Builder<Parent>
         progress.setPrefSize( 50, 50 );
         progress.setMaxSize( 150, 150 );
         
+        buttonBase = new ToggleButton( "Base" );
+        buttonBase.setOnAction( this::onBaseMode );
         buttonSelect = new ToggleButton( "Select" );
         buttonSelect.setOnAction( this::onSelectMode );
         buttonAdd = new ToggleButton( "Add" );
@@ -112,6 +120,7 @@ public final class EditorController implements Builder<Parent>
         itemsAdd = new ChoiceBox<>();
 
         ToggleGroup group = new ToggleGroup();
+        buttonBase.setToggleGroup(group);
         buttonSelect.setToggleGroup(group);
         buttonAdd.setToggleGroup(group);
         buttonDelete.setToggleGroup(group);
@@ -142,9 +151,12 @@ public final class EditorController implements Builder<Parent>
         snapFormatter.valueProperty().bindBidirectional( snapProperty );
         snap.setTextFormatter( snapFormatter );
         
-        ToolBar toolBar = new ToolBar( buttonSelect, itemsAdd, buttonAdd, buttonDelete, snap, pos );
+        ToolBar toolBar = new ToolBar( buttonBase, buttonSelect, itemsAdd, buttonAdd, buttonDelete, snap, pos );
+        
+        zero = new Group();
         
         grid = new Pane();
+        grid.getChildren().add( zero );
         
         stackPane = new StackPane( grid, board = new BorderPane( progress ) );
         stackPane.setBackground( new Background( new BackgroundFill( Color.WHITE, null, null ) ) );
@@ -202,14 +214,25 @@ public final class EditorController implements Builder<Parent>
                 line = new Line( x-d, y, x+d, y ); line.setStroke( paint ); children.add( line );
                 //line = new Line( x, y-d, x, y+d ); line.setStroke( paint ); children.add( line );
             }
+        zero.setTranslateX( offsetX );
+        zero.setTranslateY( offsetY );
+        children = zero.getChildren();
         d = 10;
-        line = new Line( offsetX-d/2, offsetY, offsetX+d, offsetY ); line.setStroke( paint ); children.add( line );
-        line = new Line( offsetX, offsetY-d/2, offsetX, offsetY+d ); line.setStroke( paint ); children.add( line );
+        line = new Line( -d/2, 0, +d, 0 ); line.setStroke( paint ); children.add( line );
+        line = new Line( 0, -d/2, 0, +d ); line.setStroke( paint ); children.add( line );
         int a = 3;
-        pline = new Polyline( offsetX+d-a, offsetY-a, offsetX+d, offsetY, offsetX+d-a, offsetY+a ); pline.setStroke( paint ); children.add( pline );
-        pline = new Polyline( offsetX-a, offsetY+d-a, offsetX, offsetY+d, offsetX+a, offsetY+d-a ); pline.setStroke( paint ); children.add( pline );
+        pline = new Polyline( +d-a, -a, +d, 0, +d-a, +a ); pline.setStroke( paint ); children.add( pline );
+        pline = new Polyline( -a, +d-a, 0, +d, +a, +d-a ); pline.setStroke( paint ); children.add( pline );
     }
 
+    @FXML
+    private void onBaseMode( ActionEvent event )
+    {
+        board.getChildren().remove( path );
+        clicks.clear();
+        onMouseClickedProperty.setValue( this::onBase );
+    }
+    
     @FXML
     private void onSelectMode( ActionEvent event )
     {
@@ -324,17 +347,72 @@ public final class EditorController implements Builder<Parent>
         yProperty.set( (int)Math.round( event.getY() / snap ) * snap - offsetY );
     }
     
+    private void onBase( MouseEvent e )
+    {
+        updateMousePosition( e );
+        EventTarget target = e.getTarget();
+        if( target == board || target == content )
+        {
+            offsetX = offsetY = 50;
+            zero.setTranslateX( offsetX );
+            zero.setTranslateY( offsetY );
+            LOGGER.getLogger().info( "rebase at board "+offsetX+","+offsetX );
+        }
+        else 
+        {
+            for( Node node = target instanceof Node ? (Node)target : null; 
+                    node != null & node != content; node = node.getParent() )
+            {
+                Object userData = node.getUserData();
+                if( userData != null )
+                {
+                    if( MouseButton.PRIMARY == e.getButton() )
+                    {
+//                        try {
+//                            double layoutX = node.getLayoutX();
+//                            double translateX = node.getTranslateX();
+                            Transform localToSceneTransform = node.getLocalToSceneTransform();
+                            Point2D sceneAnchor = localToSceneTransform.transform( 0, 0 );
+                            Point2D boardAnchor = board.getLocalToSceneTransform().transform( 50, 50 );
+                            Point2D offset = sceneAnchor.subtract( boardAnchor );
+                            offsetX = 50 + (int)Math.round( offset.getX() );
+                            offsetY = 50 + (int)Math.round( offset.getY() );
+                            zero.setTranslateX( offsetX );
+                            zero.setTranslateY( offsetY );
+//                            Point2D d = board.getLocalToSceneTransform().inverseTransform( offset );
+//                            double dx = d.getX();
+//                            double dy = d.getY();
+//                            double mouseX = e.getX();
+//                            double mouseSceneX = e.getSceneX();
+                            LOGGER.getLogger().info( "rebase at "+xProperty.get()+","+yProperty.get()+" for "+userData+"" );
+                            //JavaFX.getInstance().execute( new DeleteTask( node ) );
+//                        }
+//                        catch( NonInvertibleTransformException ex ) {
+//                            LOGGER.getLogger().log( Level.SEVERE, null, ex );
+//                        }
+                    }
+                    break;
+                }
+            }
+            e.consume();
+            //LOGGER.getLogger().info( "rebase at "+xProperty.get()+","+yProperty.get() );
+        }
+        e.consume();
+    }
+    
     private void onSelect( MouseEvent e )
     {
         updateMousePosition( e );
         LOGGER.getLogger().info( "selection at "+xProperty.get()+","+yProperty.get() );
         e.consume();
     }
+    
     private static final Map<String,Integer> limit;
     static
     {
         limit = new HashMap<>();
         limit.put( XmlBrains.XML_PARAMETER, 1 );
+        limit.put( XmlBrains.XML_JAVA, 1 );
         limit.put( XmlSvg.SVG_ELEMENT_TEXT, 1 );
         limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
         limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );

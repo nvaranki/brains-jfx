@@ -1,12 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbОператор;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.util.LoggerX;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -25,14 +24,14 @@ class AddTask extends Task<Node>
     private static final LoggerX LOGGER = LoggerX.getLogger( AddTask.class );
     
     static final DbОператор оператор = (o, c) -> c.add( o );
-    final DbАтрибутный.Ключ type;
+    final DbАтрибутный.Ключ ключ;
     final Queue<int[]> path;
     final Group group;
     final DbЭлемент узел;
 
-    AddTask( DbАтрибутный.Ключ type, Queue<int[]> path, Group group )
+    AddTask( DbАтрибутный.Ключ ключ, Queue<int[]> path, Group group )
     {
-        this.type = type;
+        this.ключ = ключ;
         this.path = new LinkedList<>( path );
         this.group = group;
         Object userDataGroup = group.getUserData();
@@ -42,36 +41,24 @@ class AddTask extends Task<Node>
     @Override
     protected Node call() throws Exception
     {
-        if( type == null | узел == null )
-        {
-            return null;
-        }
+        if( ключ == null | узел == null ) return null;
+
         try( final Транзакция транзакция = узел.транзакция() )
         {
             транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
-            DbАрхив архив = узел.пакет().архив();
-            DbАтрибутный атрибутный = архив.создатьНовыйЭлемент( type.название(), type.uri() );
-            boolean добавлено = (Boolean)узел.выполнить( оператор, атрибутный );
-            Node node = добавлено ? EdtФабрика.getInstance().создать( атрибутный )
-                    .загрузить( true/*XmlSvg.XMLNS_SVG.equals( type.uri() )*/, path ) : null;
+            DbАтрибутный атрибутный = узел.архив().создатьНовыйЭлемент( ключ.название(), ключ.uri() );
+            NodeBuilder создатель = атрибутный != null ? EdtФабрика.getInstance().создать( атрибутный ) : null;
+            Node edt = создатель != null && создатель.составить( path ) ? создатель.загрузить( false ) : null;
+            boolean добавлено = edt != null && (Boolean)узел.выполнить( оператор, атрибутный );
             транзакция.завершить( добавлено );
-            return node;
+            return добавлено ? edt : null;
         }
     }
 
     @Override
     protected void succeeded()
     {
-        Node edt = getValue();
-        if( edt != null )
-        {
-            group.getChildren().add( edt );
-            path.clear();
-        }
-        else
-        {
-            path.clear();
-        }
+        group.getChildren().add( getValue() );
     }
 
     @Override

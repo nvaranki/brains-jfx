@@ -20,11 +20,11 @@ class EdtИнструкция extends EdtАтрибутный<DbИнструкц
     }
     
     @Override
-    public Node загрузить( boolean изменяемый )
+    public Node загрузить( boolean основной )
     {
-        Node node = изменяемый ? new HBox( new TextField( ЭЛЕМЕНТ.процессор() ), 
+        Node node = основной ? new HBox( new TextField( ЭЛЕМЕНТ.процессор() ), 
                 new TextField( ЭЛЕМЕНТ.код() ) ) : new Label( ЭЛЕМЕНТ.выполнить() );
-        node = super.загрузить( node, изменяемый );
+        node = super.загрузить( node, основной );
         return node;
     }
 

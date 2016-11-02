@@ -22,7 +22,7 @@ class EdtНеизвестный extends EdtАтрибутный<DbАтрибут
     }
     
     @Override
-    public Node загрузить( boolean изменяемый )
+    public Node загрузить( boolean основной )
     {
         Node node;
         String s;

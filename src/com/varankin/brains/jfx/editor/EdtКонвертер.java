@@ -19,9 +19,9 @@ class EdtКонвертер extends EdtЭлемент<DbКонвертер>
     }
     
     @Override
-    public Group загрузить( boolean изменяемый )
+    public Group загрузить( boolean основной )
     {
-        Group group = super.загрузить( изменяемый );
+        Group group = super.загрузить( основной );
 
         return group;
     }
