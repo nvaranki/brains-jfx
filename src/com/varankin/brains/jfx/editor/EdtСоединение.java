@@ -13,6 +13,10 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.КлючImpl;
+import com.varankin.brains.io.xml.XmlBrains;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -36,4 +40,12 @@ class EdtСоединение extends EdtЭлемент<DbСоединение>
         return group;
     }
     
+    @Override
+    public List<DbАтрибутный.Ключ> компоненты()
+    {
+        List<DbАтрибутный.Ключ> list = new ArrayList<>( super.компоненты() );
+        list.add( 0, new КлючImpl( XmlBrains.XML_PIN, XmlBrains.XMLNS_BRAINS, null ) );
+        return list;
+    }
+
 }

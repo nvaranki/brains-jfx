@@ -6,6 +6,10 @@ import com.varankin.brains.db.DbРасчет;
 import com.varankin.brains.db.DbСоединение;
 import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbТочка;
+import com.varankin.brains.db.КлючImpl;
+import com.varankin.brains.io.xml.XmlBrains;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.scene.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
@@ -32,15 +36,17 @@ class EdtРасчет extends EdtЭлемент<DbРасчет>
             group.getChildren().add( new EdtСоединение( соединение ).загрузить( false ) );
         for( DbТочка соединение : ЭЛЕМЕНТ.точки() )
             group.getChildren().add( new EdtТочка( соединение ).загрузить( false ) );
-        for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-            group.getChildren().add( new EdtИнструкция( н ).загрузить( false ) );
-        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( false ) );
-        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            group.getChildren().add( new EdtНеизвестный( н ).загрузить( false ) );
-        
         
         return group;
     }
     
+    @Override
+    public List<DbАтрибутный.Ключ> компоненты()
+    {
+        List<DbАтрибутный.Ключ> list = new ArrayList<>( super.компоненты() );
+        list.add( 0, new КлючImpl( XmlBrains.XML_POINT, XmlBrains.XMLNS_BRAINS, null ) );
+        list.add( 1, new КлючImpl( XmlBrains.XML_JOINT, XmlBrains.XMLNS_BRAINS, null ) );
+        return list;
+    }
+
 }

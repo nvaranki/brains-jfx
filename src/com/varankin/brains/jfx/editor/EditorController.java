@@ -411,8 +411,10 @@ public final class EditorController implements Builder<Parent>
     static
     {
         limit = new HashMap<>();
-        limit.put( XmlBrains.XML_PARAMETER, 1 );
+        limit.put( XmlBrains.XML_PARAMETER, 2 );
         limit.put( XmlBrains.XML_JAVA, 1 );
+        limit.put( XmlBrains.XML_PIN, 2 );
+        limit.put( XmlBrains.XML_POINT, 2 );
         limit.put( XmlSvg.SVG_ELEMENT_TEXT, 1 );
         limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
         limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );

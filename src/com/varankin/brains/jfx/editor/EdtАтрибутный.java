@@ -73,7 +73,7 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
             for( int i = 0, max = Array.getLength( a ); i < max; i++ )
                 v.add( Array.getDouble( a, i ) );
          else
-            for( String p : DbАтрибутный.toStringValue( a ).split( "[\\s,]" ) )
+            for( String p : DbАтрибутный.toStringValue( a ).split( "[\\s,]+" ) )
                 v.add( Double.valueOf( p.trim() ) );
         return v.isEmpty() ? нет : v.toArray( new Double[v.size()] );
     }

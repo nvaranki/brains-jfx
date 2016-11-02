@@ -3,6 +3,9 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import javafx.scene.*;
 import javafx.scene.text.Text;
@@ -34,6 +37,15 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     }
     
     @Override
+    public List<DbАтрибутный.Ключ> компоненты()
+    {
+        List<DbАтрибутный.Ключ> list = new ArrayList<>( super.компоненты() );
+        list.add( 0, new КлючImpl( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS, null ) );
+        list.add( 1, new КлючImpl( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS, null ) );
+        return list;
+    }
+
+    @Override
     protected Text текст( DbТекстовыйБлок н )
     {
         Text text = super.текст( н );
@@ -48,32 +60,32 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
         DbТекстовыйБлок блок;
         DbГрафика графика;
         DbИнструкция инструкция;
+        int[] a, xy;
         
-        // название и позиция заголовка параметра
+        // название, значение и позиция заголовка параметра
         ЭЛЕМЕНТ.определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый параметр" );
-        int[] xy = path.poll();
-        if( !path.isEmpty() ) return false;
-        ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
-                String.format( "translate(%d,%d)", xy[0], xy[1] ) );
-        
-        // образец значения параметра
         блок = (DbТекстовыйБлок)архив.создатьНовыйЭлемент( Xml.XML_CDATA, null );
         блок.текст( "Значение" );
         ЭЛЕМЕНТ.тексты().add( блок );
+        if( path.isEmpty() ) return false;
+        a = path.poll();
+        ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
+                String.format( "translate(%d,%d)", a[0], a[1] ) );
         
         // заголовок
-        графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
-        графика.определить( SVG_ATTR_X, XMLNS_SVG, 0 );
-        //графика.определить( SVG_ATTR_Y, XMLNS_SVG, null, 0 );
-        блок = (DbТекстовыйБлок)архив.создатьНовыйЭлемент( Xml.XML_CDATA, null );
-        блок.текст( "Параметр" );
-        графика.тексты().add( блок );
-        ЭЛЕМЕНТ.графики().add( графика );
+//        графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
+//        //графика.определить( SVG_ATTR_X, XMLNS_SVG, 0 );
+//        //графика.определить( SVG_ATTR_Y, XMLNS_SVG, 0 );
+//        блок = (DbТекстовыйБлок)архив.создатьНовыйЭлемент( Xml.XML_CDATA, null );
+//        блок.текст( "Параметр" );
+//        графика.тексты().add( блок );
+//        ЭЛЕМЕНТ.графики().add( графика );
         
         // название параметра в заголовок
         графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
-        графика.определить( SVG_ATTR_X, XMLNS_SVG, 80 );
-        //графика.определить( SVG_ATTR_Y, XMLNS_SVG, null, xy[1] );
+        //xy = path.isEmpty() ? new int[]{+80,0} : отн( path.poll(), a );
+        //графика.определить( SVG_ATTR_X, XMLNS_SVG, xy[0] );
+        //графика.определить( SVG_ATTR_Y, XMLNS_SVG, xy[1] );
         инструкция = (DbИнструкция)архив.создатьНовыйЭлемент( Xml.PI_ELEMENT, null );
         инструкция.процессор( "xpath" );
         инструкция.код( "../@name" );
@@ -82,14 +94,15 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
         
         // значение параметра в заголовок
         графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
-        графика.определить( SVG_ATTR_X, XMLNS_SVG, 200 );
-        //графика.определить( SVG_ATTR_Y, XMLNS_SVG, null, xy[1] );
+        xy = path.isEmpty() ? new int[]{+120,0} : отн( path.poll(), a );
+        графика.определить( SVG_ATTR_X, XMLNS_SVG, xy[0] );
+        графика.определить( SVG_ATTR_Y, XMLNS_SVG, xy[1] );
         инструкция = (DbИнструкция)архив.создатьНовыйЭлемент( Xml.PI_ELEMENT, null );
         инструкция.процессор( "xpath" );
         инструкция.код( "../text()" );
         графика.инструкции().add( инструкция );
         ЭЛЕМЕНТ.графики().add( графика );
         
-        return true;
+        return path.isEmpty();
     }
 }

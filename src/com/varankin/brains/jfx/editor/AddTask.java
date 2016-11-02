@@ -58,7 +58,11 @@ class AddTask extends Task<Node>
     @Override
     protected void succeeded()
     {
-        group.getChildren().add( getValue() );
+        Node edt = getValue();
+        if( edt != null )
+            group.getChildren().add( edt );
+        else
+            LOGGER.getLogger().severe( "Failed to create new element." );
     }
 
     @Override

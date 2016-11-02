@@ -61,4 +61,12 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
         return list;
     }
     
+    static protected int[] отн( int[] pt, int[] base )
+    {
+        int[] copy = Arrays.copyOf( pt, pt.length );
+        for( int i = 0, max = Math.min( pt.length, base.length ); i < max; i++ )
+            copy[i] -= base[i];
+        return copy;
+    }
+    
 }
