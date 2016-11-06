@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 
@@ -21,7 +21,7 @@ final class MergedTreeItem extends AbstractTreeItem
      * 
      * @param элемент владелец узла.
      */
-    MergedTreeItem( DbАтрибутный элемент )
+    MergedTreeItem( FxАтрибутный элемент )
     {
         super( элемент, э -> new MergedTreeItem( э ) );
         textProperty().setValue( ЗАГРУЗКА ); // временно, до загрузки узла

@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.brains.jfx.history.SerializableProvider;
 
 import java.util.logging.*;
@@ -12,7 +14,7 @@ import javafx.concurrent.Task;
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-public final class ArchiveTask extends Task<DbАрхив>
+public final class ArchiveTask extends Task<FxАрхив>
 {
     private static final Logger LOGGER = Logger.getLogger( ArchiveTask.class.getName(), 
             ArchiveTask.class.getPackage().getName() + ".text" );
@@ -25,9 +27,16 @@ public final class ArchiveTask extends Task<DbАрхив>
     }
 
     @Override
-    protected DbАрхив call() throws Exception
+    protected FxАрхив call() throws Exception
     {
-        return поставщик.newInstance();
+        DbАрхив архив = поставщик.newInstance();
+        try( final Транзакция т = архив.транзакция() )
+        {
+            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+            FxАрхив fxАрхив = new FxАрхив( архив );
+            т.завершить( true );
+            return fxАрхив;
+        }
     }
     
     @Override
@@ -39,7 +48,7 @@ public final class ArchiveTask extends Task<DbАрхив>
     @Override
     protected void succeeded()
     {
-        DbАрхив архив = getValue();
+        FxАрхив архив = getValue();
         if( архив != null )
         {
             JavaFX jfx = JavaFX.getInstance();

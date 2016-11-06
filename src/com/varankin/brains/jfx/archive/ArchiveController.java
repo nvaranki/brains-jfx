@@ -1,7 +1,8 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.*;
+import com.varankin.brains.jfx.db.FxАрхив;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.util.LoggerX;
 
 import java.util.*;
@@ -29,7 +30,7 @@ public final class ArchiveController implements Builder<TitledPane>
 
     @FXML private ArchiveToolBarController toolbarController;
     @FXML private ArchivePopupController popupController;
-    @FXML private TreeView<DbАтрибутный> tree;
+    @FXML private TreeView<FxАтрибутный> tree;
 
     /**
      * Создает панель навигатора. 
@@ -69,9 +70,9 @@ public final class ArchiveController implements Builder<TitledPane>
         tree.setCellFactory( view -> new ArchiveTreeCell() );
         tree.setRoot( new TreeItem<>() );
 
-        ObservableList<DbАрхив> архивы = JavaFX.getInstance().архивы;
+        ObservableList<FxАрхив> архивы = JavaFX.getInstance().архивы;
         архивы.addListener( this::onArchiveListChanged );
-        for( DbАрхив архив : архивы )
+        for( FxАрхив архив : архивы )
             tree.getRoot().getChildren().add( createArchiveTree( архив ) );
         
         ActionProcessor processor = new ActionProcessor( tree.getSelectionModel().getSelectedItems() );
@@ -79,13 +80,13 @@ public final class ArchiveController implements Builder<TitledPane>
         popupController.setProcessor( processor );
     }
     
-    private TreeItem createArchiveTree( DbАрхив архив )
+    private TreeItem createArchiveTree( FxАрхив архив )
     {
         return JavaFX.getInstance().archiveFoldedTreeItems ?
             new FoldedTreeItem( архив ) : new MergedTreeItem( архив );
     }
     
-    private void onArchiveListChanged( ListChangeListener.Change<? extends DbАрхив> c )
+    private void onArchiveListChanged( ListChangeListener.Change<? extends FxАрхив> c )
     {
         while( c.next() )
         {
@@ -102,7 +103,7 @@ public final class ArchiveController implements Builder<TitledPane>
             }
             else
             {
-                ObservableList<TreeItem<DbАтрибутный>> children = tree.getRoot().getChildren();
+                ObservableList<TreeItem<FxАтрибутный>> children = tree.getRoot().getChildren();
                 c.getRemoved().forEach( архив -> children.removeIf( i -> i.getValue().equals( архив ) ) );
                 c.getAddedSubList().forEach( архив -> children.add( createArchiveTree( архив ) ) );
             }

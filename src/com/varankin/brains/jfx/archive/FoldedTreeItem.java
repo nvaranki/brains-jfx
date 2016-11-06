@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 
 import java.util.*;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
 import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
@@ -19,14 +20,14 @@ import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
  */
 final class FoldedTreeItem extends AbstractTreeItem
 {
-    private final Коллекция<? extends DbАтрибутный> коллекция;
+    private final ObservableList<? extends FxАтрибутный> коллекция;
 
     /**
      * Узел дерева для элемента.
      * 
      * @param элемент владелец узла.
      */
-    FoldedTreeItem( DbАтрибутный элемент )
+    FoldedTreeItem( FxАтрибутный элемент )
     {
         super( элемент, э -> new FoldedTreeItem( э ) );
         коллекция = null;
@@ -41,7 +42,7 @@ final class FoldedTreeItem extends AbstractTreeItem
      * @param коллекция коллекция как узел дерева.
      * @param тип название метода как тип коллекции.
      */
-    private FoldedTreeItem( DbАтрибутный элемент, Коллекция<? extends DbАтрибутный> коллекция, String тип )
+    private FoldedTreeItem( FxАтрибутный элемент, ObservableList<? extends FxАтрибутный> коллекция, String тип )
     {
         super( элемент, э -> new FoldedTreeItem( э ) );
         this.коллекция = коллекция;
@@ -63,8 +64,8 @@ final class FoldedTreeItem extends AbstractTreeItem
             else
             {
                 // отложенная подготовка папок для коллекций
-                DbАтрибутный элемент = getValue();
-                for( Map.Entry<String,Коллекция> e : коллекции( getValue() ).entrySet() )
+                FxАтрибутный элемент = getValue();
+                for( Map.Entry<String,ObservableList> e : коллекции( getValue() ).entrySet() )
                     getChildren().add( new FoldedTreeItem( элемент, e.getValue(), e.getKey() ) );
                 удалитьВременныеПотомки();
                 expandedProperty().removeListener( пд );

@@ -11,10 +11,10 @@ import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.archive.MenuArchiveController;
 import com.varankin.brains.jfx.archive.MenuImportController;
+import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.brains.jfx.history.SerializableProvider;
 import com.varankin.brains.jfx.selector.LocalFileSelector;
 import com.varankin.brains.Контекст;
-import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
@@ -101,7 +101,7 @@ public final class JavaFX
     private LocalFolderSelector localFolderSelector;
     private UrlSelector urlSelector;
     public final boolean archiveFoldedTreeItems;
-    public final ObservableList<DbАрхив> архивы;
+    public final ObservableList<FxАрхив> архивы;
     public boolean archiveLoadLastOnStart = true, archiveLoadDefault = false; //TODO enum
     public FileChooser.ExtensionFilter[] filtersXml;
 
