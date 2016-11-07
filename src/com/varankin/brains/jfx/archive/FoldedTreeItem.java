@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 
@@ -64,9 +65,9 @@ final class FoldedTreeItem extends AbstractTreeItem
             else
             {
                 // отложенная подготовка папок для коллекций
-                FxАтрибутный элемент = getValue();
-                for( Map.Entry<String,ObservableList> e : коллекции( getValue() ).entrySet() )
-                    getChildren().add( new FoldedTreeItem( элемент, e.getValue(), e.getKey() ) );
+                FxАтрибутный<? extends DbАтрибутный> элемент = getValue();
+                элемент.коллекции().entrySet().forEach( 
+                    e -> getChildren().add( new FoldedTreeItem( элемент, e.getValue(), e.getKey() ) ) );
                 удалитьВременныеПотомки();
                 expandedProperty().removeListener( пд );
             }

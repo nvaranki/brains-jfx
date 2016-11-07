@@ -23,4 +23,10 @@ public final class FxМусор extends FxАтрибутный<DbМусор>
         return МУСОР;
     }
     
+    @Override
+    /*default*/ public <X> X выполнить( FxОператор<X> оператор, FxАтрибутный узел )
+    {
+        return оператор.выполнить( узел, мусор() ); //TODO review!!!
+    }
+    
 }

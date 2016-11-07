@@ -5,7 +5,6 @@ import com.varankin.brains.jfx.history.LocalNeo4jProvider;
 import com.varankin.brains.jfx.history.RemoteNeo4jProvider;
 import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
-import com.varankin.brains.appl.УдалитьИзКоллекции;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.appl.ЭкспортироватьXml;
 import com.varankin.brains.db.*;
@@ -26,7 +25,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
@@ -184,11 +182,8 @@ final class ActionProcessor //TODO RT-37820
     void onActionRemove( ActionEvent event )
     {
         //TODO confirmation dialog
-        ДействияПоПорядку<УдалитьИзКоллекции.Контекст> действие = 
-            new ДействияПоПорядку<>( ДействияПоПорядку.Приоритет.КОНТЕКСТ, new УдалитьИзКоллекции() );
-        JavaFX.getInstance().execute( действие, SELECTION.stream()
-            .map( ti -> new УдалитьИзКоллекции.Контекст( ti.getValue().getSource(), ti.getParent().getValue().getSource() ) )
-            .collect( Collectors.toList() ) );
+        SELECTION.stream().forEach( 
+            i -> JavaFX.getInstance().execute( new DeleteTreeItemTask( i ) ) );
     }
     
     static void onArchiveFromFile( ActionEvent event )

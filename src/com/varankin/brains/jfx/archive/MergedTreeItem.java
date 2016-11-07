@@ -33,7 +33,7 @@ final class MergedTreeItem extends AbstractTreeItem
     {
         if( n ) 
             JavaFX.getInstance().execute(
-                new PopulateTask( (Iterable)коллекции( getValue() ).values() ) );
+                new PopulateTask( (Iterable)getValue().коллекции().values() ) );
             // PopulateTask удалит временных потомков и пд в случае успеха
     }
 

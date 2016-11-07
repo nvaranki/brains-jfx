@@ -32,6 +32,15 @@ final class FxList<E, X> extends AbstractList<E>
     }
     
     @Override
+    public E remove( int index )
+    {
+        E removed = image.remove( index );
+        if( removed != null )
+            source.remove( extractant.apply( removed ) );
+        return removed;
+    }
+    
+    @Override
     public boolean add( E e )
     {
         return source.add( extractant.apply( e ) ) && image.add( e );

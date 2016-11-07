@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.FxАтрибутный;
@@ -11,25 +10,16 @@ import com.varankin.brains.jfx.db.FxУзел;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -63,6 +53,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
     private final ObjectProperty<Tooltip> tooltipProperty = new SimpleObjectProperty<>();
     private final Callback<FxАтрибутный,AbstractTreeItem> фабрика;
     protected final ChangeListener<Boolean> пд;
+    private Составитель составитель;
 
     AbstractTreeItem( FxАтрибутный value, Callback<FxАтрибутный,AbstractTreeItem> фабрика)
     {
@@ -94,7 +85,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
      *
      * @param элемент элемент-потомок.
      */
-    final void построитьДерево( FxАтрибутный элемент )
+    private void построитьДерево( FxАтрибутный элемент )
     {
         AbstractTreeItem дерево = фабрика.call( элемент );
         List<TreeItem<FxАтрибутный>> список = getChildren();
@@ -106,7 +97,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
      *
      * @param элемент элемент-потомок.
      */
-    final void разобратьДерево( FxАтрибутный элемент )
+    private void разобратьДерево( FxАтрибутный элемент )
     {
         getChildren().removeAll( getChildren().stream()
                 .filter( ti -> ti.getValue().equals( элемент ) )
@@ -126,15 +117,6 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
             список.add( дерево.позиция( список, TREE_ITEM_COMPARATOR ), дерево );
         }
         удалитьВременныеПотомки();
-    }
-    
-    private void установитьНаблюдатели( Iterable<ObservableList<? extends FxАтрибутный>> коллекции )
-    {
-        for( ObservableList<? extends FxАтрибутный> к : коллекции )
-        {
-            ListChangeListener составитель = new Составитель( this );
-            к.addListener( составитель );
-        }
     }
     
     private void создатьВременныеПотомки()
@@ -250,8 +232,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
             {
                 т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
                 List<FxАтрибутный> c = new LinkedList<>();
-                for( ObservableList<? extends FxАтрибутный> к : коллекции )
-                    c.addAll( к );
+                коллекции.forEach( к -> c.addAll( к ) );
                 т.завершить( true );
                 return c;
             }
@@ -264,7 +245,9 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         protected void succeeded()
         {
             построитьПотомки( PopulateTask.this.getValue() );
-            установитьНаблюдатели( коллекции );
+            // установить наблюдатели на коллекции
+            if( составитель == null ) составитель = new Составитель( AbstractTreeItem.this );
+            коллекции.forEach( к -> к.addListener( составитель ) );
             expandedProperty().removeListener( пд );
         }
         
@@ -284,27 +267,16 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         
     //<editor-fold defaultstate="collapsed" desc="статические методы, классы и константы">
     
-    protected static Map<String,ObservableList> коллекции( FxАтрибутный элемент )
-    {
-        Function<? super Method,? extends String> nm = m -> m.getName();
-        Function<? super Method,? extends ObservableList> xm = new XM( элемент );
-        Collector<Method, ?, Map<String, ObservableList>> toMap = 
-                Collectors.toMap( nm, xm ); // название метода -> коллекция
-        return элемент == null ? Collections.emptyMap() :
-            Arrays.stream( элемент.getClass().getMethods() )
-                .filter( m -> ReadOnlyListProperty.class.isAssignableFrom( m.getReturnType() ) )
-                .collect( toMap );
-    }
-    
     private static void разобратьПотомковДерева( TreeItem<FxАтрибутный> ti )
     {
         Collection<TreeItem<FxАтрибутный>> список = ti.getChildren();
-//TODO        // удалить своих наблюдателей с коллекций
-//        список.stream()
-//                .map( i -> i.getValue() )
-//                .flatMap( e -> коллекции( e ).values().stream() )
-//                .map( c -> (Collection<Наблюдатель<?>>)c.наблюдатели() )
-//                .forEach( ОПЕРАТОР_УБРАТЬ_СОСТАВИТЕЛЯ );
+        // удалить своих наблюдателей с коллекций
+        Составитель составитель = ti instanceof AbstractTreeItem ? ((AbstractTreeItem)ti).составитель : null;
+        if( составитель != null )
+            список.stream()
+                .map( i -> (FxАтрибутный<? extends DbАтрибутный>)i.getValue() )
+                .flatMap( e -> e.коллекции().values().stream() )
+                .forEach( c -> c.removeListener( составитель ) );
         // удалить всех потомков
         список.forEach( AbstractTreeItem::разобратьПотомковДерева );
         список.clear();
@@ -361,35 +333,6 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
 
     }
 
-    /**
-     * Извлекатель коллекции элемента.
-     */
-    private static class XM implements Function<Method,ObservableList>
-    {
-        final FxАтрибутный элемент;
-        
-        public XM( FxАтрибутный элемент )
-        {
-            this.элемент = элемент;
-        }
-        
-        @Override
-        public ObservableList apply( Method m )
-        {
-            try
-            {
-                m.setAccessible( true ); // проблема с унаследованным public final
-                return ((ReadOnlyListProperty)m.invoke( элемент )).getValue();
-            }
-            catch( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex )
-            {
-                LOGGER.log( Level.SEVERE, m.getName(), ex );
-                return null;
-            }
-        }
-        
-    }
-    
     private static class LoadingTreeItem extends TreeItem<FxАтрибутный>
     {
         @Override
@@ -404,9 +347,6 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
             .thenComparing( ti -> ФабрикаНазваний.индекс( ti.getValue() ) )
             .thenComparing( TreeItem::toString );
 
-    private final static Consumer<Collection<Наблюдатель<?>>> ОПЕРАТОР_УБРАТЬ_СОСТАВИТЕЛЯ
-            = c -> c.removeAll( c.stream().filter( o -> o instanceof Составитель ).collect( Collectors.toList() ) );
-    
     //</editor-fold>
     
 }

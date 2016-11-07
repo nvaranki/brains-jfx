@@ -29,4 +29,10 @@ public final class FxИнструкция extends FxАтрибутный<DbИн�
         return ПРОЦЕССОР;
     }
     
+    @Override
+    /*default*/ public <X> X выполнить( FxОператор<X> оператор, FxАтрибутный узел )
+    {
+        throw new UnsupportedOperationException();
+    }
+    
 }
