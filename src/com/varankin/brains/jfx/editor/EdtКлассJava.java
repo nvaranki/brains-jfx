@@ -3,19 +3,19 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 import java.util.Queue;
 import javafx.scene.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
-import static com.varankin.brains.jfx.editor.EdtЭлемент.отн;
 
 /**
  *
  * @author Николай
  */
-class EdtКлассJava extends EdtЭлемент<DbКлассJava>
+class EdtКлассJava extends EdtЭлемент<DbКлассJava,FxКлассJava>
 {
-    EdtКлассJava( DbКлассJava элемент )
+    EdtКлассJava( FxКлассJava элемент )
     {
         super( элемент );
     }
@@ -25,7 +25,7 @@ class EdtКлассJava extends EdtЭлемент<DbКлассJava>
     {
         Group group = super.загрузить( основной );
 
-        for( DbКонвертер э : ЭЛЕМЕНТ.конвертеры() )
+        for( FxКонвертер э : ЭЛЕМЕНТ.конвертеры() )
             group.getChildren().add( new EdtКонвертер( э ).загрузить( false ) );
         
         return group;
@@ -34,17 +34,17 @@ class EdtКлассJava extends EdtЭлемент<DbКлассJava>
     @Override
     public boolean составить( Queue<int[]> path )
     {
-        DbАрхив архив = ЭЛЕМЕНТ.архив();
+        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
         DbТекстовыйБлок блок;
         DbГрафика графика;
         DbИнструкция инструкция;
         int[] a, xy;
         
         // название и позиция заголовка класса
-        ЭЛЕМЕНТ.определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый класс" );
+        ЭЛЕМЕНТ.getSource().определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый класс" );
         if( path.isEmpty() ) return false;
         a = path.poll();
-        ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
+        ЭЛЕМЕНТ.getSource().определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
                 String.format( "translate(%d,%d)", a[0], a[1] ) );
         
 //        // заголовок
@@ -65,7 +65,7 @@ class EdtКлассJava extends EdtЭлемент<DbКлассJava>
         инструкция.процессор( "xpath" );
         инструкция.код( "../@name" );
         графика.инструкции().add( инструкция );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         return path.isEmpty();
     }

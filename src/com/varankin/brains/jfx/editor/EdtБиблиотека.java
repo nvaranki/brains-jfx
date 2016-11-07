@@ -1,23 +1,17 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbБиблиотека;
-import com.varankin.brains.db.DbМодуль;
-import com.varankin.brains.db.DbПроцессор;
-import com.varankin.brains.db.DbРасчет;
+import com.varankin.brains.jfx.db.*;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
  * @author Николай
  */
-class EdtБиблиотека extends EdtЭлемент<DbБиблиотека>
+class EdtБиблиотека extends EdtЭлемент<DbБиблиотека,FxБиблиотека>
 {
-    EdtБиблиотека( DbБиблиотека элемент )
+    EdtБиблиотека( FxБиблиотека элемент )
     {
         super( элемент );
     }
@@ -27,11 +21,11 @@ class EdtБиблиотека extends EdtЭлемент<DbБиблиотека>
     {
         Group group = super.загрузить( основной );
 
-        for( DbМодуль модуль : ЭЛЕМЕНТ.модули() )
+        for( FxМодуль модуль : ЭЛЕМЕНТ.модули() )
             group.getChildren().add( new EdtМодуль( модуль ).загрузить( false ) );
-        for( DbРасчет расчет : ЭЛЕМЕНТ.расчеты() )
+        for( FxРасчет расчет : ЭЛЕМЕНТ.расчеты() )
             group.getChildren().add( new EdtРасчет( расчет ).загрузить( false ) );
-        for( DbПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
+        for( FxПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
             group.getChildren().add( new EdtПроцессор( процессор ).загрузить( false ) );
         
         return group;

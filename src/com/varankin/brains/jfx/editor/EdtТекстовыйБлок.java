@@ -1,7 +1,8 @@
 package com.varankin.brains.jfx.editor;
 
-import javafx.scene.*;
 import com.varankin.brains.db.DbТекстовыйБлок;
+import javafx.scene.*;
+import com.varankin.brains.jfx.db.FxТекстовыйБлок;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -10,10 +11,10 @@ import javafx.scene.control.TextField;
  *
  * @author Николай
  */
-class EdtТекстовыйБлок extends EdtАтрибутный<DbТекстовыйБлок>
+class EdtТекстовыйБлок extends EdtАтрибутный<DbТекстовыйБлок,FxТекстовыйБлок>
 {
 
-    EdtТекстовыйБлок( DbТекстовыйБлок элемент )
+    EdtТекстовыйБлок( FxТекстовыйБлок элемент )
     {
         super( элемент );
     }
@@ -21,7 +22,7 @@ class EdtТекстовыйБлок extends EdtАтрибутный<DbТекст
     @Override
     public Node загрузить( boolean основной )
     {
-        Node node = true/*основной*/ ? new TextField( ЭЛЕМЕНТ.текст() ) : new Label( ЭЛЕМЕНТ.текст() );
+        Node node = true/*основной*/ ? new TextField( ЭЛЕМЕНТ.getSource().текст() ) : new Label( ЭЛЕМЕНТ.getSource().текст() );
         node = super.загрузить( node, основной );
         return node;
     }

@@ -12,7 +12,7 @@ public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
 {
     private final ReadOnlyListProperty<FxИнструкция> ИНСТРУКЦИИ;
     private final ReadOnlyListProperty<FxТекстовыйБлок> ТЕКСТЫ;
-    private final ReadOnlyListProperty<FxАтрибутный> ПРОЧЕЕ;
+    private final ReadOnlyListProperty<FxНеизвестный> ПРОЧЕЕ;
 
     public FxУзел( T элемент )
     {
@@ -22,7 +22,7 @@ public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
         ТЕКСТЫ = buildReadOnlyListProperty( элемент, "тексты", 
             new FxList<>( элемент.тексты(), e -> new FxТекстовыйБлок( e ), e -> e.getSource() ) );
         ПРОЧЕЕ = buildReadOnlyListProperty( элемент, "прочее", 
-            new FxList<>( элемент.прочее(), e -> new FxАтрибутный( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.прочее(), e -> new FxНеизвестный( e ), e -> e.getSource() ) );
     }
     
     public final ReadOnlyListProperty<FxИнструкция> инструкции()
@@ -35,7 +35,7 @@ public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
         return ТЕКСТЫ;
     }
     
-    public final ReadOnlyListProperty<FxАтрибутный> прочее()
+    public final ReadOnlyListProperty<FxНеизвестный> прочее()
     {
         return ПРОЧЕЕ;
     }
@@ -57,10 +57,10 @@ public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
             результат = оператор.выполнить( (FxИнструкция)узел, инструкции() );
         else if( узел instanceof FxТекстовыйБлок )
             результат = оператор.выполнить( (FxТекстовыйБлок)узел, тексты() );
-        else if( узел != null )
-            результат = оператор.выполнить( узел, прочее() );
+        else if( узел instanceof FxНеизвестный )
+            результат = оператор.выполнить( (FxНеизвестный)узел, прочее() );
         else 
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         return результат;
     }
     

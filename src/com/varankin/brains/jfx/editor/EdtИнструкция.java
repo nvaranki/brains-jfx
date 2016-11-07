@@ -1,7 +1,8 @@
 package com.varankin.brains.jfx.editor;
 
-import javafx.scene.*;
 import com.varankin.brains.db.DbИнструкция;
+import javafx.scene.*;
+import com.varankin.brains.jfx.db.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -11,10 +12,10 @@ import javafx.scene.layout.HBox;
  *
  * @author Николай
  */
-class EdtИнструкция extends EdtАтрибутный<DbИнструкция>
+class EdtИнструкция extends EdtАтрибутный<DbИнструкция,FxИнструкция>
 {
 
-    EdtИнструкция( DbИнструкция элемент )
+    EdtИнструкция( FxИнструкция элемент )
     {
         super( элемент );
     }
@@ -22,8 +23,8 @@ class EdtИнструкция extends EdtАтрибутный<DbИнструкц
     @Override
     public Node загрузить( boolean основной )
     {
-        Node node = основной ? new HBox( new TextField( ЭЛЕМЕНТ.процессор() ), 
-                new TextField( ЭЛЕМЕНТ.код() ) ) : new Label( ЭЛЕМЕНТ.выполнить() );
+        Node node = основной ? new HBox( new TextField( ЭЛЕМЕНТ.getSource().процессор() ), 
+                new TextField( ЭЛЕМЕНТ.getSource().код() ) ) : new Label( ЭЛЕМЕНТ.getSource().выполнить() );
         node = super.загрузить( node, основной );
         return node;
     }

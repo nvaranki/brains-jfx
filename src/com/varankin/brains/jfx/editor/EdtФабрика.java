@@ -1,16 +1,14 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.*;
-import com.varankin.io.container.Provider;
-import javafx.scene.control.TextArea;
+import com.varankin.brains.jfx.db.*;
 
 /**
  * Фабрика генераторов текста в формате XML для произвольного элемента.
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-public final class EdtФабрика implements Фабрика<DbАтрибутный,NodeBuilder>
+public final class EdtФабрика implements Фабрика<FxАтрибутный,NodeBuilder>
 {
     private static final EdtФабрика ФАБРИКА = new EdtФабрика();
     
@@ -23,35 +21,35 @@ public final class EdtФабрика implements Фабрика<DbАтрибут�
     
     @SuppressWarnings("Confusing indentation")
     @Override
-    public NodeBuilder создать( DbАтрибутный элемент )
+    public NodeBuilder создать( FxАтрибутный элемент )
     {
         NodeBuilder p;
         if( элемент == null ) throw new NullPointerException(); else 
-        if( элемент instanceof DbБиблиотека    ) p = new EdtБиблиотека( (DbБиблиотека)элемент ); else 
-        if( элемент instanceof DbКонтакт       ) p = new EdtКонтакт( (DbКонтакт)элемент ); else 
-//        if( элемент instanceof DbЛента         ) p = new EdtЛента( (DbЛента)элемент ); else 
-        if( элемент instanceof DbМодуль        ) p = new EdtМодуль( (DbМодуль)элемент ); else 
-        if( элемент instanceof DbПараметр      ) p = new EdtПараметр( (DbПараметр)элемент ); else
-        if( элемент instanceof DbПоле          ) p = new EdtПоле( (DbПоле)элемент ); else 
-        if( элемент instanceof DbПроект        ) p = new EdtПроект( (DbПроект)элемент ); else 
-        if( элемент instanceof DbПроцессор     ) p = new EdtПроцессор( (DbПроцессор)элемент ); else 
-        if( элемент instanceof DbРасчет        ) p = new EdtРасчет( (DbРасчет)элемент ); else 
-        if( элемент instanceof DbСигнал        ) p = new EdtСигнал( (DbСигнал)элемент ); else 
-        if( элемент instanceof DbСоединение    ) p = new EdtСоединение( (DbСоединение)элемент ); else 
-        if( элемент instanceof DbТочка         ) p = new EdtТочка( (DbТочка)элемент ); else 
-        if( элемент instanceof DbФрагмент      ) p = new EdtФрагмент( (DbФрагмент)элемент ); else
-//        if( элемент instanceof DbПакет         ) p = new EdtПакет( (DbПакет)элемент ); else
-        if( элемент instanceof DbКлассJava     ) p = new EdtКлассJava( (DbКлассJava)элемент ); else
-        if( элемент instanceof DbКонвертер     ) p = new EdtКонвертер( (DbКонвертер)элемент ); else
-//        if( элемент instanceof DbЭлемент       ) p = new EdtЭлемент( (DbЭлемент)элемент ); else
-        if( элемент instanceof DbГрафика       ) p = new EdtГрафика( (DbГрафика)элемент ); else
-        if( элемент instanceof DbЗаметка       ) p = new EdtЗаметка( (DbЗаметка)элемент ); else
-        if( элемент instanceof DbНеизвестный   ) p = new EdtНеизвестный( (DbНеизвестный)элемент ); else
-//        if( элемент instanceof DbУзел          ) p = new EdtУзел( (DbУзел)элемент ); else
-        if( элемент instanceof DbИнструкция    ) p = new EdtИнструкция( (DbИнструкция)элемент ); else
-        if( элемент instanceof DbТекстовыйБлок ) p = new EdtТекстовыйБлок( (DbТекстовыйБлок)элемент ); else
+        if( элемент instanceof FxБиблиотека    ) p = new EdtБиблиотека( (FxБиблиотека)элемент ); else 
+        if( элемент instanceof FxКонтакт       ) p = new EdtКонтакт( (FxКонтакт)элемент ); else 
+//        if( элемент instanceof FxЛента         ) p = new EdtЛента( (FxЛента)элемент ); else 
+        if( элемент instanceof FxМодуль        ) p = new EdtМодуль( (FxМодуль)элемент ); else 
+        if( элемент instanceof FxПараметр      ) p = new EdtПараметр( (FxПараметр)элемент ); else
+        if( элемент instanceof FxПоле          ) p = new EdtПоле( (FxПоле)элемент ); else 
+        if( элемент instanceof FxПроект        ) p = new EdtПроект( (FxПроект)элемент ); else 
+        if( элемент instanceof FxПроцессор     ) p = new EdtПроцессор( (FxПроцессор)элемент ); else 
+        if( элемент instanceof FxРасчет        ) p = new EdtРасчет( (FxРасчет)элемент ); else 
+        if( элемент instanceof FxСигнал        ) p = new EdtСигнал( (FxСигнал)элемент ); else 
+        if( элемент instanceof FxСоединение    ) p = new EdtСоединение( (FxСоединение)элемент ); else 
+        if( элемент instanceof FxТочка         ) p = new EdtТочка( (FxТочка)элемент ); else 
+        if( элемент instanceof FxФрагмент      ) p = new EdtФрагмент( (FxФрагмент)элемент ); else
+//        if( элемент instanceof FxПакет         ) p = new EdtПакет( (FxПакет)элемент ); else
+        if( элемент instanceof FxКлассJava     ) p = new EdtКлассJava( (FxКлассJava)элемент ); else
+        if( элемент instanceof FxКонвертер     ) p = new EdtКонвертер( (FxКонвертер)элемент ); else
+//        if( элемент instanceof FxЭлемент       ) p = new EdtЭлемент( (FxЭлемент)элемент ); else
+        if( элемент instanceof FxГрафика       ) p = new EdtГрафика( (FxГрафика)элемент ); else
+        if( элемент instanceof FxЗаметка       ) p = new EdtЗаметка( (FxЗаметка)элемент ); else
+//        if( элемент instanceof FxНеизвестный   ) p = new EdtНеизвестный( (FxНеизвестный)элемент ); else
+//        if( элемент instanceof FxУзел          ) p = new EdtУзел( (FxУзел)элемент ); else
+        if( элемент instanceof FxИнструкция    ) p = new EdtИнструкция( (FxИнструкция)элемент ); else
+        if( элемент instanceof FxТекстовыйБлок ) p = new EdtТекстовыйБлок( (FxТекстовыйБлок)элемент ); else
         throw new UnsupportedOperationException();//p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
-//                                                 p = new EdtАтрибутный( (DbАтрибутный)элемент );
+//                                                 p = new EdtАтрибутный( (FxАтрибутный)элемент );
 //                content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
         return p;
     }

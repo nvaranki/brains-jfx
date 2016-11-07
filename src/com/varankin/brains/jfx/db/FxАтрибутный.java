@@ -58,7 +58,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         {
             return JavaBeanBooleanPropertyBuilder.create()
                     .bean( элемент ).name( название )
-                    .getter( название ).setter( название )
+                    .getter( getAccessibleMethod( элемент, название, 0 ) )
+                    .setter( getAccessibleMethod( элемент, название, 1 ) )
                     .build();
         }
         catch( NoSuchMethodException ex )
@@ -74,7 +75,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         {
             return JavaBeanIntegerPropertyBuilder.create()
                     .bean( элемент ).name( название )
-                    .getter( название ).setter( название )
+                    .getter( getAccessibleMethod( элемент, название, 0 ) )
+                    .setter( getAccessibleMethod( элемент, название, 1 ) )
                     .build();
         }
         catch( NoSuchMethodException ex )
@@ -90,7 +92,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         {
             return JavaBeanLongPropertyBuilder.create()
                     .bean( элемент ).name( название )
-                    .getter( название ).setter( название )
+                    .getter( getAccessibleMethod( элемент, название, 0 ) )
+                    .setter( getAccessibleMethod( элемент, название, 1 ) )
                     .build();
         }
         catch( NoSuchMethodException ex )
@@ -106,7 +109,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         {
             return JavaBeanFloatPropertyBuilder.create()
                     .bean( элемент ).name( название )
-                    .getter( название ).setter( название )
+                    .getter( getAccessibleMethod( элемент, название, 0 ) )
+                    .setter( getAccessibleMethod( элемент, название, 1 ) )
                     .build();
         }
         catch( NoSuchMethodException ex )
@@ -122,13 +126,26 @@ public class FxАтрибутный<T extends DbАтрибутный>
         {
             return JavaBeanStringPropertyBuilder.create()
                     .bean( элемент ).name( название )
-                    .getter( название ).setter( название )
+                    .getter( getAccessibleMethod( элемент, название, 0 ) )
+                    .setter( getAccessibleMethod( элемент, название, 1 ) )
                     .build();
         }
         catch( NoSuchMethodException ex )
         {
             throw new RuntimeException( ex );
         }
+    }
+    
+    private static Method getAccessibleMethod( Object элемент, String название, int pc )
+    {
+        for( Method m : элемент.getClass().getMethods() )
+            if( m.getName().equals( название ) )
+                if( m.getParameterCount() == pc )
+                {
+                    m.setAccessible( true ); // проблема с унаследованным public final
+                    return m;
+                }
+        return null;
     }
     
     protected static JavaBeanObjectProperty buildObjectProperty( 

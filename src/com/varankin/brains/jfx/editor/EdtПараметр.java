@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,9 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
  *
  * @author Николай
  */
-class EdtПараметр extends EdtЭлемент<DbПараметр>
+class EdtПараметр extends EdtЭлемент<DbПараметр,FxПараметр>
 {
-    EdtПараметр( DbПараметр элемент )
+    EdtПараметр( FxПараметр элемент )
     {
         super( элемент );
     }
@@ -28,9 +29,9 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     {
         Group group = super.загрузить( основной );
 
-        for( DbПараметр э : ЭЛЕМЕНТ.параметры() )
+        for( FxПараметр э : ЭЛЕМЕНТ.параметры() )
             group.getChildren().add( new EdtПараметр( э ).загрузить( false ) );
-        for( DbКлассJava э : ЭЛЕМЕНТ.классы() )
+        for( FxКлассJava э : ЭЛЕМЕНТ.классы() )
             group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
         
         return group;
@@ -46,7 +47,7 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     }
 
     @Override
-    protected Text текст( DbТекстовыйБлок н )
+    protected Text текст( FxТекстовыйБлок н )
     {
         Text text = super.текст( н );
         text.setX( 300 );
@@ -56,20 +57,20 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
     @Override
     public boolean составить( Queue<int[]> path )
     {
-        DbАрхив архив = ЭЛЕМЕНТ.архив();
+        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
         DbТекстовыйБлок блок;
         DbГрафика графика;
         DbИнструкция инструкция;
         int[] a, xy;
         
         // название, значение и позиция заголовка параметра
-        ЭЛЕМЕНТ.определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый параметр" );
+        ЭЛЕМЕНТ.getSource().определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый параметр" );
         блок = (DbТекстовыйБлок)архив.создатьНовыйЭлемент( Xml.XML_CDATA, null );
         блок.текст( "Значение" );
-        ЭЛЕМЕНТ.тексты().add( блок );
+        ЭЛЕМЕНТ.getSource().тексты().add( блок );
         if( path.isEmpty() ) return false;
         a = path.poll();
-        ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
+        ЭЛЕМЕНТ.getSource().определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
                 String.format( "translate(%d,%d)", a[0], a[1] ) );
         
         // заголовок
@@ -90,7 +91,7 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
         инструкция.процессор( "xpath" );
         инструкция.код( "../@name" );
         графика.инструкции().add( инструкция );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         // значение параметра в заголовок
         графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
@@ -101,7 +102,7 @@ class EdtПараметр extends EdtЭлемент<DbПараметр>
         инструкция.процессор( "xpath" );
         инструкция.код( "../text()" );
         графика.инструкции().add( инструкция );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         return path.isEmpty();
     }

@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
+import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
  *
  * @author Николай
  */
-abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел<T>
+abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭлемент<D>> extends EdtУзел<D,T>
 {
     EdtЭлемент( T элемент )
     {
@@ -27,9 +28,9 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
     {
         Group group = super.загрузить( основной );
 
-        for( DbЗаметка э : ЭЛЕМЕНТ.заметки() )
+        for( FxЗаметка э : ЭЛЕМЕНТ.заметки() )
             group.getChildren().add( new EdtЗаметка( э ).загрузить( false ) );
-        for( DbГрафика э : ЭЛЕМЕНТ.графики() )
+        for( FxГрафика э : ЭЛЕМЕНТ.графики() )
             group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
         
         return group;
@@ -40,7 +41,7 @@ abstract class EdtЭлемент<T extends DbЭлемент> extends EdtУзел
     {
         if( path.isEmpty() ) return false;
         int[] s = path.peek();
-        ЭЛЕМЕНТ.определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, 
+        ЭЛЕМЕНТ.getSource().определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, 
                 String.format( "translate(%d,%d)", s[0], s[1] ) );
         return true;
     }

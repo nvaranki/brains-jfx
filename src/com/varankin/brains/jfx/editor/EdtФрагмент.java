@@ -1,12 +1,10 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbСоединение;
-import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbФрагмент;
 import com.varankin.brains.db.Коммутируемый;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -24,11 +22,11 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
  *
  * @author Николай
  */
-class EdtФрагмент extends EdtЭлемент<DbФрагмент>
+class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФрагмент>
 {
     static private final Logger LOGGER = Logger.getLogger( EdtФрагмент.class.getName() );
 
-    EdtФрагмент( DbФрагмент элемент )
+    EdtФрагмент( FxФрагмент элемент )
     {
         super( элемент );
     }
@@ -41,9 +39,9 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент>
         if( основной )
             group.getChildren().add( createMarker( 3d ) );
 
-        String атрибутName  = ЭЛЕМЕНТ.атрибут( XmlBrains.XML_NAME, "" );
+        String атрибутName  = ЭЛЕМЕНТ.getSource().атрибут( XmlBrains.XML_NAME, "" );
 
-        Коммутируемый экземпляр = ЭЛЕМЕНТ.экземпляр();
+        Коммутируемый экземпляр = ЭЛЕМЕНТ.getSource().экземпляр();
 //        if( экземпляр instanceof Модуль )
 //            group.getChildren().add( new EdtМодуль( (Модуль)экземпляр ).загрузить( false ) );
 //        else if( экземпляр instanceof Поле )
@@ -53,28 +51,22 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент>
 //        else
 //            LOGGER.log( Level.SEVERE, "Unknown instance of fragment: {0}", экземпляр );
 
-        for( DbСоединение снаружи : ЭЛЕМЕНТ.соединения() )
+        for( FxСоединение снаружи : ЭЛЕМЕНТ.соединения() )
         {
             group.getChildren().add( new EdtСоединение( снаружи ).загрузить( false ) );
-            String ref = снаружи.атрибут( BRAINS_ATTR_NAME, "" );
+            String ref = снаружи.getSource().атрибут( BRAINS_ATTR_NAME, "" );
             for( DbСоединение внутри : экземпляр.соединения() )
             {
                 String id = внутри.атрибут( BRAINS_ATTR_NAME, "" );
                 if( ref.equals( id ) )
                 {
-                    Node image = new EdtСоединение( внутри ).загрузить( false );
+                    Node image = new EdtСоединение( new FxСоединение( внутри ) ).загрузить( false );
                     image.getTransforms().clear();
                     group.getChildren().add( image );
                     //TODO relocatePins();
                 }
             }
         }
-        for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
-            group.getChildren().add( new EdtИнструкция( н ).загрузить( false ) );
-        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( false ) );
-        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
-            group.getChildren().add( new EdtНеизвестный( н ).загрузить( false ) );
 
         return group;
     }

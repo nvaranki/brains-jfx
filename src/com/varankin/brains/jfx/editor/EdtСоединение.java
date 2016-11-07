@@ -1,30 +1,21 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbКонтакт;
-import com.varankin.brains.db.DbСоединение;
-import javafx.scene.*;
-
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-
-
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
-
-import com.varankin.brains.db.DbТекстовыйБлок;
-import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbСоединение;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.*;
 
 /**
  *
  * @author Николай
  */
-class EdtСоединение extends EdtЭлемент<DbСоединение>
+class EdtСоединение extends EdtЭлемент<DbСоединение,FxСоединение>
 {
-    EdtСоединение( DbСоединение элемент )
+    EdtСоединение( FxСоединение элемент )
     {
         super( элемент );
     }
@@ -34,7 +25,7 @@ class EdtСоединение extends EdtЭлемент<DbСоединение>
     {
         Group group = super.загрузить( основной );
 
-        for( DbКонтакт контакт : ЭЛЕМЕНТ.контакты() )
+        for( FxКонтакт контакт : ЭЛЕМЕНТ.контакты() )
             group.getChildren().add( new EdtКонтакт( контакт ).загрузить( false ) );
         
         return group;

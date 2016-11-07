@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +16,9 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
  *
  * @author Николай
  */
-class EdtКонтакт extends EdtЭлемент<DbКонтакт>
+class EdtКонтакт extends EdtЭлемент<DbКонтакт,FxКонтакт>
 {
-    EdtКонтакт( DbКонтакт элемент )
+    EdtКонтакт( FxКонтакт элемент )
     {
         super( элемент );
     }
@@ -27,7 +28,7 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт>
     {
         Group group = super.загрузить( основной );
 
-        for( DbПараметр н : ЭЛЕМЕНТ.параметры() )
+        for( FxПараметр н : ЭЛЕМЕНТ.параметры() )
             group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );
         
         return group;
@@ -44,24 +45,24 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт>
     @Override
     public boolean составить( Queue<int[]> path )
     {
-        DbАрхив архив = ЭЛЕМЕНТ.архив();
+        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
         DbГрафика графика;
         DbИнструкция инструкция;
         int[] a, xy;
         
         // название, тип и позиция заголовка контакта
-        ЭЛЕМЕНТ.определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый контакт" );
-        ЭЛЕМЕНТ.определить( XmlBrains.XML_TYPE, XmlBrains.XMLNS_BRAINS, "Тип &inp; или &out;" );
+        ЭЛЕМЕНТ.getSource().определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новый контакт" );
+        ЭЛЕМЕНТ.getSource().определить( XmlBrains.XML_TYPE, XmlBrains.XMLNS_BRAINS, "Тип &inp; или &out;" );
         if( path.isEmpty() ) return false;
         a = path.poll();
-        ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
+        ЭЛЕМЕНТ.getSource().определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
                 String.format( "translate(%d,%d)", a[0], a[1] ) );
         
         // изображение
         графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_CIRCLE, XMLNS_SVG );
         графика.определить( SVG_ATTR_R, XMLNS_SVG, 5 );
         //графика.определить( SVG_ATTR_FILL, XMLNS_SVG, "black" );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         // название контакта 
         графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
@@ -74,7 +75,7 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт>
         инструкция.процессор( "xpath" );
         инструкция.код( "../@name" );
         графика.инструкции().add( инструкция );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         return path.isEmpty();
     }

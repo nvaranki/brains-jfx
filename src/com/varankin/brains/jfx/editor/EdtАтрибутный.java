@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbNameSpace;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Queue;
@@ -22,7 +22,8 @@ import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
  *
  * @author Николай
  */
-abstract class EdtАтрибутный<T extends DbАтрибутный> implements NodeBuilder
+abstract class EdtАтрибутный<D extends DbАтрибутный, T extends FxАтрибутный<D>> 
+        implements NodeBuilder
 {
     protected final T ЭЛЕМЕНТ;
 
@@ -48,25 +49,25 @@ abstract class EdtАтрибутный<T extends DbАтрибутный> impleme
     
     private List<Transform> getTransformList()
     {
-        return toTransforms( DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( 
+        return toTransforms( DbАтрибутный.toStringValue( ЭЛЕМЕНТ.getSource().атрибут( 
                 SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) ) );
     }
 
     double toSvgDouble( String атрибут, double нет )
     {
-        Double v = ЭЛЕМЕНТ.атрибут( атрибут, нет );
+        Double v = ЭЛЕМЕНТ.getSource().атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
     String toSvgString( String атрибут, String нет )
     {
-        String v = ЭЛЕМЕНТ.атрибут( атрибут, нет );
+        String v = ЭЛЕМЕНТ.getSource().атрибут( атрибут, нет );
         return v != null ? v : нет;
     }
 
     Double[] toSvgPoints( String атрибут, Double[] нет )
     {
-        Object a = ЭЛЕМЕНТ.атрибут( атрибут, null, null );
+        Object a = ЭЛЕМЕНТ.getSource().атрибут( атрибут, null, null );
         if( a == null ) return нет;
         List<Double> v = new ArrayList<>();
         if( a.getClass().isArray() && !( a instanceof char[] ) )

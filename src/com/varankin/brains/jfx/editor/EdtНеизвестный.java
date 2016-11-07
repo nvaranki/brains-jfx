@@ -1,26 +1,24 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.io.xml.XmlSvg;
+import com.varankin.brains.db.DbНеизвестный;
+import com.varankin.brains.jfx.db.*;
 import javafx.scene.*;
 import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-
-import static com.varankin.brains.io.xml.XmlSvg.*;
 
 
 /**
  *
  * @author Николай
  */
-class EdtНеизвестный extends EdtАтрибутный<DbАтрибутный>
+class EdtНеизвестный extends EdtАтрибутный<DbНеизвестный,FxНеизвестный>
 {
 
-    EdtНеизвестный( DbАтрибутный элемент )
+    EdtНеизвестный( FxНеизвестный элемент )
     {
         super( элемент );
     }
-    
+
     @Override
     public Node загрузить( boolean основной )
     {
@@ -80,22 +78,22 @@ class EdtНеизвестный extends EdtАтрибутный<DbАтрибут
 //                    
 //                default:
 //                    Group group = new Group();
-////                    for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+////                    for( FxИнструкция н : ЭЛЕМЕНТ.инструкции() )
 ////                        group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
-////                    for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+////                    for( FxТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
 ////                        group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
-////                    for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+////                    for( FxАтрибутный н : ЭЛЕМЕНТ.прочее() )
 ////                        group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
 //                    node = group;
 //            }
 //        else
         {
             Group group = new Group();
-//            for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+//            for( FxИнструкция н : ЭЛЕМЕНТ.инструкции() )
 //                group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
-//            for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+//            for( FxТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
 //                group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
-//            for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//            for( FxАтрибутный н : ЭЛЕМЕНТ.прочее() )
 //                group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
             node = group;
         }

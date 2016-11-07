@@ -1,28 +1,22 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbИнструкция;
 import com.varankin.brains.db.DbРасчет;
-import com.varankin.brains.db.DbСоединение;
-import com.varankin.brains.db.DbТекстовыйБлок;
-import com.varankin.brains.db.DbТочка;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
  * @author Николай
  */
-class EdtРасчет extends EdtЭлемент<DbРасчет>
+class EdtРасчет extends EdtЭлемент<DbРасчет,FxРасчет>
 {
-    EdtРасчет( DbРасчет элемент )
+    EdtРасчет( FxРасчет элемент )
     {
         super( элемент );
     }
@@ -32,9 +26,9 @@ class EdtРасчет extends EdtЭлемент<DbРасчет>
     {
         Group group = super.загрузить( основной );
 
-        for( DbСоединение соединение : ЭЛЕМЕНТ.соединения() )
+        for( FxСоединение соединение : ЭЛЕМЕНТ.соединения() )
             group.getChildren().add( new EdtСоединение( соединение ).загрузить( false ) );
-        for( DbТочка соединение : ЭЛЕМЕНТ.точки() )
+        for( FxТочка соединение : ЭЛЕМЕНТ.точки() )
             group.getChildren().add( new EdtТочка( соединение ).загрузить( false ) );
         
         return group;

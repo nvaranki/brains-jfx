@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -14,9 +15,9 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
  *
  * @author Николай
  */
-class EdtТочка extends EdtЭлемент<DbТочка>
+class EdtТочка extends EdtЭлемент<DbТочка,FxТочка>
 {
-    EdtТочка( DbТочка элемент )
+    EdtТочка( FxТочка элемент )
     {
         super( элемент );
     }
@@ -26,11 +27,11 @@ class EdtТочка extends EdtЭлемент<DbТочка>
     {
         Group group = super.загрузить( основной );
 
-        for( DbТочка э : ЭЛЕМЕНТ.точки() )
+        for( FxТочка э : ЭЛЕМЕНТ.точки() )
             group.getChildren().add( new EdtТочка( э ).загрузить( false ) );
-        for( DbПараметр э : ЭЛЕМЕНТ.параметры() )
+        for( FxПараметр э : ЭЛЕМЕНТ.параметры() )
             group.getChildren().add( new EdtПараметр( э ).загрузить( false ) );
-        for( DbКлассJava э : ЭЛЕМЕНТ.классы() )
+        for( FxКлассJava э : ЭЛЕМЕНТ.классы() )
             group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
         
         return group;
@@ -49,17 +50,17 @@ class EdtТочка extends EdtЭлемент<DbТочка>
     @Override
     public boolean составить( Queue<int[]> path )
     {
-        DbАрхив архив = ЭЛЕМЕНТ.архив();
+        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
         DbГрафика графика;
         DbИнструкция инструкция;
         int[] a, xy;
         
         // название, тип и позиция заголовка точки
-        ЭЛЕМЕНТ.определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новая точка" );
-        ЭЛЕМЕНТ.определить( XmlBrains.XML_PIN, XmlBrains.XMLNS_BRAINS, "Контакт" );
+        ЭЛЕМЕНТ.getSource().определить( XmlBrains.XML_NAME, XmlBrains.XMLNS_BRAINS, "Новая точка" );
+        ЭЛЕМЕНТ.getSource().определить( XmlBrains.XML_PIN, XmlBrains.XMLNS_BRAINS, "Контакт" );
         if( path.isEmpty() ) return false;
         a = path.poll();
-        ЭЛЕМЕНТ.определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
+        ЭЛЕМЕНТ.getSource().определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
                 String.format( "translate(%d,%d)", a[0], a[1] ) );
         
         // изображение
@@ -67,7 +68,7 @@ class EdtТочка extends EdtЭлемент<DbТочка>
         графика.определить( SVG_ATTR_R, XMLNS_SVG, 7 );
         графика.определить( SVG_ATTR_FILL, XMLNS_SVG, "none" );
         графика.определить( SVG_ATTR_STROKE, XMLNS_SVG, "black" );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         // название точки 
         графика = (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_TEXT, XMLNS_SVG );
@@ -80,7 +81,7 @@ class EdtТочка extends EdtЭлемент<DbТочка>
         инструкция.процессор( "xpath" );
         инструкция.код( "../@name" );
         графика.инструкции().add( инструкция );
-        ЭЛЕМЕНТ.графики().add( графика );
+        ЭЛЕМЕНТ.getSource().графики().add( графика );
         
         // класс точки 
         

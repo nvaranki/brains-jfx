@@ -151,9 +151,10 @@ final class ActionProcessor //TODO RT-37820
         Predicate<TitledSceneGraph> inEditor = ( TitledSceneGraph tsg ) -> tsg!=null;//tsg.node instanceof Pane; //TODO identification;
         for( TreeItem<FxАтрибутный> item : SELECTION )
         {
-            DbАтрибутный value = item.getValue().getSource();
-            if( value instanceof DbЭлемент )
+            FxАтрибутный fxValue = item.getValue();
+            if( fxValue instanceof FxЭлемент )
             {
+                DbАтрибутный value = fxValue.getSource();
                 DbЭлемент элемент = (DbЭлемент)value;
                 JavaFX jfx = JavaFX.getInstance();
                 if( jfx.isShown( элемент, inEditor ) )
@@ -170,7 +171,7 @@ final class ActionProcessor //TODO RT-37820
                     Image icon = JavaFX.icon( "icons16x16/edit.png" ).getImage();
                     jfx.show( элемент, inEditor, ( DbЭлемент э ) -> new TitledSceneGraph( view, icon, название ) );
                     // загрузить элемент для редактирования
-                    jfx.execute( new EditLoaderTask( элемент, название, controller ) );
+                    jfx.execute(new EditLoaderTask( (FxЭлемент)fxValue, название, controller ) );
                 }
             }
             else

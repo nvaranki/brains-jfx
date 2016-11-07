@@ -1,21 +1,17 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbГрафика;
 import com.varankin.brains.db.DbЗаметка;
+import com.varankin.brains.jfx.db.*;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
  * @author Николай
  */
-class EdtЗаметка extends EdtУзел<DbЗаметка>
+class EdtЗаметка extends EdtУзел<DbЗаметка,FxЗаметка>
 {
-    EdtЗаметка( DbЗаметка элемент )
+    EdtЗаметка( FxЗаметка элемент )
     {
         super( элемент );
     }
@@ -25,13 +21,13 @@ class EdtЗаметка extends EdtУзел<DbЗаметка>
     {
         Group group = super.загрузить( основной );
 
-        for( DbГрафика э : ЭЛЕМЕНТ.графики() )
+        for( FxГрафика э : ЭЛЕМЕНТ.графики() )
             group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
-//        for( DbИнструкция н : ЭЛЕМЕНТ.инструкции() )
+//        for( FxИнструкция н : ЭЛЕМЕНТ.инструкции() )
 //            group.getChildren().add( new EdtИнструкция( н ).загрузить( изменяемый ) );
-//        for( DbТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
+//        for( FxТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
 //            group.getChildren().add( new EdtТекстовыйБлок( н ).загрузить( изменяемый ) );
-//        for( DbАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//        for( FxАтрибутный н : ЭЛЕМЕНТ.прочее() )
 //            group.getChildren().add( new EdtНеизвестный( н ).загрузить( изменяемый ) );
         
         return group;

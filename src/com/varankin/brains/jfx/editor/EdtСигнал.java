@@ -1,24 +1,21 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbКлассJava;
-import com.varankin.brains.db.DbПараметр;
 import com.varankin.brains.db.DbСигнал;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.io.xml.XmlBrains;
-import com.varankin.brains.io.xml.XmlSvg;
+import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import javafx.scene.*;
 
 /**
  *
  * @author Николай
  */
-class EdtСигнал extends EdtЭлемент<DbСигнал>
+class EdtСигнал extends EdtЭлемент<DbСигнал,FxСигнал>
 {
-    EdtСигнал( DbСигнал элемент )
+    EdtСигнал( FxСигнал элемент )
     {
         super( элемент );
     }
@@ -28,9 +25,9 @@ class EdtСигнал extends EdtЭлемент<DbСигнал>
     {
         Group group = super.загрузить( основной );
 
-        for( DbПараметр э : ЭЛЕМЕНТ.параметры() )
+        for( FxПараметр э : ЭЛЕМЕНТ.параметры() )
             group.getChildren().add( new EdtПараметр( э ).загрузить( false ) );
-        for( DbКлассJava э : ЭЛЕМЕНТ.классы() )
+        for( FxКлассJava э : ЭЛЕМЕНТ.классы() )
             group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
         
         return group;

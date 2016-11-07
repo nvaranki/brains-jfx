@@ -6,6 +6,7 @@ import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -301,12 +302,12 @@ public final class EditorController implements Builder<Parent>
         event.consume();
     }
 
-    public void setContent( DbЭлемент элемент )
+    public void setContent( FxЭлемент элемент )
     {
-        Транзакция транзакция = элемент.транзакция();
+        Транзакция транзакция = элемент.getSource().транзакция();
         try
         {
-            транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
+            транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.getSource() );
             NodeBuilder builder = EdtФабрика.getInstance().создать( элемент );
             content = builder.загрузить( true );
             Platform.runLater( () -> 

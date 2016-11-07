@@ -4,6 +4,8 @@ import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbОператор;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.jfx.db.FxАтрибутный;
+import com.varankin.brains.jfx.db.FxФабрика;
 import com.varankin.util.LoggerX;
 
 import java.util.LinkedList;
@@ -47,7 +49,8 @@ class AddTask extends Task<Node>
         {
             транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
             DbАтрибутный атрибутный = узел.архив().создатьНовыйЭлемент( ключ.название(), ключ.uri() );
-            NodeBuilder создатель = атрибутный != null ? EdtФабрика.getInstance().создать( атрибутный ) : null;
+            FxАтрибутный fxАтрибутный = атрибутный != null ? FxФабрика.getInstance().создать( атрибутный ) : null;
+            NodeBuilder создатель = fxАтрибутный != null ? EdtФабрика.getInstance().создать( fxАтрибутный ) : null;
             Node edt = создатель != null && создатель.составить( path ) ? создатель.загрузить( false ) : null;
             boolean добавлено = edt != null && (Boolean)узел.выполнить( оператор, атрибутный );
             транзакция.завершить( добавлено );

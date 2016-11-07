@@ -1,7 +1,8 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.util.LoggerX;
 import java.util.logging.*;
@@ -18,13 +19,13 @@ class EditLoaderTask extends Task<Void>
     private static final LoggerX LOGGER = LoggerX.getLogger( EditLoaderTask.class );
     
     
-    private final DbЭлемент элемент;
+    private final FxЭлемент элемент;
     private final StringProperty название;
     private final EditorController controller;
     
     private volatile String текст;
 
-    EditLoaderTask( DbЭлемент элемент, StringProperty название, EditorController controller )
+    EditLoaderTask( FxЭлемент элемент, StringProperty название, EditorController controller )
     {
         this.элемент = элемент;
         this.название = название;
@@ -34,10 +35,10 @@ class EditLoaderTask extends Task<Void>
     @Override
     protected Void call() throws Exception
     {
-        try( Транзакция т = элемент.транзакция() )
+        try( Транзакция т = элемент.getSource().транзакция() )
         {
             //TODO блокировка?
-            текст = элемент.название();
+            текст = элемент.название().getValue();
             controller.setContent( элемент );
             т.завершить( true );
         }
@@ -56,6 +57,9 @@ class EditLoaderTask extends Task<Void>
         Throwable exception = getException();
         if( exception != null )
         {
+            Throwable cause = exception.getCause();
+            if( cause != null && cause != exception)
+                LOGGER.log( Level.SEVERE, "002005007S", текст, cause );
             LOGGER.log( Level.SEVERE, "002005007S", текст, exception );
         }
     }

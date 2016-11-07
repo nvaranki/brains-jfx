@@ -1,19 +1,17 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.*;
+import com.varankin.brains.db.DbКонвертер;
+import com.varankin.brains.jfx.db.*;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
  * @author Николай
  */
-class EdtКонвертер extends EdtЭлемент<DbКонвертер>
+class EdtКонвертер extends EdtЭлемент<DbКонвертер,FxКонвертер>
 {
-    EdtКонвертер( DbКонвертер элемент )
+    EdtКонвертер( FxКонвертер элемент )
     {
         super( элемент );
     }
