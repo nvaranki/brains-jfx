@@ -37,8 +37,8 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
                 children/*box.getChildren()*/.add( текст( н ) );
             //children.add( box );
         }
-        for( FxНеизвестный н : ЭЛЕМЕНТ.прочее() )
-            children.add( new EdtНеизвестный( н ).загрузить( false ) );
+//        for( FxАтрибутный н : ЭЛЕМЕНТ.прочее() )
+//            children.add( new EdtАтрибутный<D, T>( н ).загрузить( false ) );
         
         return group;
     }

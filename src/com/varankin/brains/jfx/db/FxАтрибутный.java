@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javafx.beans.binding.ListExpression;
 import javafx.beans.property.ReadOnlyListProperty;

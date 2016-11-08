@@ -2,10 +2,15 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
+import com.varankin.biz.action.РезультатТипа;
 import com.varankin.brains.appl.Импортировать;
 import com.varankin.brains.appl.КаталогДействий;
 import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbПакет;
+import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxАрхив;
+import com.varankin.brains.jfx.db.FxПакет;
 import com.varankin.brains.jfx.history.SerializableProvider;
 
 import java.io.InputStream;
@@ -19,26 +24,35 @@ import javafx.concurrent.Task;
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-class ImportTask extends Task<Результат>
+class ImportTask extends Task<Boolean>
 {
     private static final Logger LOGGER = Logger.getLogger( ImportTask.class.getName(), 
             ImportTask.class.getPackage().getName() + ".text" );
-    private static final Действие<Импортировать.Контекст> ИМПОРТИРОВАТЬ = 
-            (Действие)JavaFX.getInstance().контекст.действие( КаталогДействий.Индекс.ИмпортироватьXML );
+    private static final Импортировать ИМПОРТИРОВАТЬ = new Импортировать();
+//            (Действие)JavaFX.getInstance().контекст.действие( КаталогДействий.Индекс.ИмпортироватьXML );
     
-    private volatile Импортировать.Контекст контекст;
+    private final Импортировать.Контекст контекст;
     private final SerializableProvider<InputStream> поставщик;
+    private final FxАрхив архив;
 
-    ImportTask( SerializableProvider<InputStream> provider, DbАрхив архив )
+    ImportTask( SerializableProvider<InputStream> provider, FxАрхив архив )
     {
         поставщик = provider;
-        контекст = new Импортировать.Контекст( provider, архив );
+        this.архив = архив;
+        контекст = new Импортировать.Контекст( provider, архив.getSource() );
     }
 
     @Override
-    protected Результат call() throws Exception
+    protected Boolean call() throws Exception
     {
-        return ИМПОРТИРОВАТЬ.выполнить( контекст );
+        РезультатТипа<DbПакет> результат = ИМПОРТИРОВАТЬ.выполнить( контекст );
+        DbПакет пакет = результат.значение();
+        try( final Транзакция транзакция = архив.getSource().транзакция() )
+        {
+            транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив.getSource() );
+            return результат.код() == Результат.НОРМА && пакет != null 
+                    && архив.пакеты().add( new FxПакет( пакет ) );
+        }
     }
 
     @Override
@@ -50,8 +64,7 @@ class ImportTask extends Task<Результат>
     @Override
     protected void succeeded()
     {
-        Результат результат = getValue();
-        if( результат.код() == Результат.НОРМА )
+        if( getValue() )
         {
             JavaFX.getInstance().history.xml.advance( поставщик );
             LOGGER.log( Level.INFO, "task.import.succeeded", поставщик );

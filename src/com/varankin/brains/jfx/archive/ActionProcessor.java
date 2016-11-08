@@ -242,7 +242,7 @@ final class ActionProcessor //TODO RT-37820
     {
         SELECTION.stream()
             .map( ti -> ti.getValue() )
-            .filter( i -> i instanceof DbАрхив ).map( i -> (DbАрхив)i )
+            .filter( i -> i instanceof FxАрхив ).map( i -> (FxАрхив)i )
             .forEach( архив -> JavaFX.getInstance().execute( new ImportTask( provider, архив ) ) );
     }
     

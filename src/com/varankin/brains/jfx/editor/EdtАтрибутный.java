@@ -97,4 +97,9 @@ abstract class EdtАтрибутный<D extends DbАтрибутный, T exten
         return Collections.emptyList();
     }
     
+    protected static Color toSvgColor( String s )
+    {
+        return "none".equals( s ) ? null : Color.valueOf( s );
+    }
+    
 }

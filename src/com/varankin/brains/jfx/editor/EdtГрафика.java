@@ -9,7 +9,6 @@ import javafx.scene.*;
 import javafx.scene.shape.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
-import static com.varankin.brains.jfx.editor.EdtНеизвестный.toSvgColor;
 
 /**
  *
