@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbМодуль;
 import com.varankin.brains.jfx.db.*;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 
 
@@ -20,18 +21,13 @@ class EdtМодуль extends EdtЭлемент<DbМодуль,FxМодуль>
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.фрагменты() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.процессоры() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.сигналы() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.соединения() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.библиотеки() ) );
 
-        for( FxФрагмент фрагмент : ЭЛЕМЕНТ.фрагменты() )
-            group.getChildren().add( new EdtФрагмент( фрагмент ).загрузить( false ) );
-        for( FxПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
-            group.getChildren().add( new EdtПроцессор( процессор ).загрузить( false ) );
-        for( FxСигнал сигнал : ЭЛЕМЕНТ.сигналы() )
-            group.getChildren().add( new EdtСигнал( сигнал ).загрузить( false ) );
-        for( FxСоединение соединение : ЭЛЕМЕНТ.соединения() )
-            group.getChildren().add( new EdtСоединение( соединение ).загрузить( false ) );
-        for( FxБиблиотека библиотека : ЭЛЕМЕНТ.библиотеки() )
-            group.getChildren().add( new EdtБиблиотека( библиотека ).загрузить( false ) );
-        
         return group;
     }
     

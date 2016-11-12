@@ -4,6 +4,7 @@ import com.varankin.brains.db.DbГрафика;
 import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.jfx.db.*;
+import java.util.List;
 import java.util.Queue;
 import javafx.scene.*;
 import javafx.scene.shape.*;
@@ -22,13 +23,21 @@ class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
     }
     
     @Override
+    protected void инструкции( List<Node> children )
+    {
+    }
+    
+    @Override
+    protected void тексты( List<Node> children )
+    {
+    }
+    
+    @Override
     public Group загрузить( boolean основной )
     {
-        Group group = true/*основной*/ ? загрузить( new Group(), true ) : super.загрузить( false ); // без текстов, инструкций и прочего
+        Group group = /*основной ? загрузить( new Group(), true ) :*/ super.загрузить( true/*false*/ ); // без текстов, инструкций и прочего
+        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.графики() ) );
 
-        for( FxГрафика э : ЭЛЕМЕНТ.графики() )
-            group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
-        
         String s;
         if( XMLNS_SVG.equals( ЭЛЕМЕНТ.getSource().тип().uri() ) )
             switch( ЭЛЕМЕНТ.getSource().тип().название() )

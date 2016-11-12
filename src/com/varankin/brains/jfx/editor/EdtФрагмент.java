@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
@@ -35,15 +36,16 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.параметры() ) );
 
         if( основной )
-            group.getChildren().add( createMarker( 3d ) );
+            children.add( createMarker( 3d ) );
 
         String атрибутName  = ЭЛЕМЕНТ.getSource().атрибут( XmlBrains.XML_NAME, "" );
 
+
         Коммутируемый экземпляр = ЭЛЕМЕНТ.getSource().экземпляр();
-//        if( экземпляр instanceof Модуль )
-//            group.getChildren().add( new EdtМодуль( (Модуль)экземпляр ).загрузить( false ) );
 //        else if( экземпляр instanceof Поле )
 //            group.getChildren().add( new EdtПоле( (Поле)экземпляр ).загрузить( false ) );
 //        else if( экземпляр instanceof Расчет )
@@ -53,7 +55,7 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
 
         for( FxСоединение снаружи : ЭЛЕМЕНТ.соединения() )
         {
-            group.getChildren().add( new EdtСоединение( снаружи ).загрузить( false ) );
+            children.add( new EdtСоединение( снаружи ).загрузить( false ) );
             String ref = снаружи.getSource().атрибут( BRAINS_ATTR_NAME, "" );
             for( DbСоединение внутри : экземпляр.соединения() )
             {
@@ -62,7 +64,7 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
                 {
                     Node image = new EdtСоединение( new FxСоединение( внутри ) ).загрузить( false );
                     image.getTransforms().clear();
-                    group.getChildren().add( image );
+                    children.add( image );
                     //TODO relocatePins();
                 }
             }

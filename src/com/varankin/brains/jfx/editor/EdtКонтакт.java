@@ -8,6 +8,7 @@ import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
@@ -27,10 +28,10 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт,FxКонта�
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.параметры() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.классы() ) );
 
-        for( FxПараметр н : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( н ).загрузить( false ) );
-        
         return group;
     }
     

@@ -7,6 +7,7 @@ import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 
 
@@ -25,12 +26,10 @@ class EdtРасчет extends EdtЭлемент<DbРасчет,FxРасчет>
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.соединения() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.точки() ) );
 
-        for( FxСоединение соединение : ЭЛЕМЕНТ.соединения() )
-            group.getChildren().add( new EdtСоединение( соединение ).загрузить( false ) );
-        for( FxТочка соединение : ЭЛЕМЕНТ.точки() )
-            group.getChildren().add( new EdtТочка( соединение ).загрузить( false ) );
-        
         return group;
     }
     

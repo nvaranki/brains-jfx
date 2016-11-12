@@ -7,6 +7,7 @@ import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 
 /**
@@ -24,12 +25,10 @@ class EdtСигнал extends EdtЭлемент<DbСигнал,FxСигнал>
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.параметры() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.классы() ) );
 
-        for( FxПараметр э : ЭЛЕМЕНТ.параметры() )
-            group.getChildren().add( new EdtПараметр( э ).загрузить( false ) );
-        for( FxКлассJava э : ЭЛЕМЕНТ.классы() )
-            group.getChildren().add( new EdtКлассJava( э ).загрузить( false ) );
-        
         return group;
     }
     

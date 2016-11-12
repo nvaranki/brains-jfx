@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbОператор;
-import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.db.FxАтрибутный;
+import com.varankin.brains.jfx.db.FxОператор;
 import com.varankin.brains.jfx.db.FxФабрика;
+import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;
 
 import java.util.LinkedList;
@@ -25,11 +25,11 @@ class AddTask extends Task<Node>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( AddTask.class );
     
-    static final DbОператор оператор = (o, c) -> c.add( o );
+    static final FxОператор оператор = (o, c) -> c.add( o );
     final DbАтрибутный.Ключ ключ;
     final Queue<int[]> path;
     final Group group;
-    final DbЭлемент узел;
+    final FxЭлемент узел;
 
     AddTask( DbАтрибутный.Ключ ключ, Queue<int[]> path, Group group )
     {
@@ -37,7 +37,7 @@ class AddTask extends Task<Node>
         this.path = new LinkedList<>( path );
         this.group = group;
         Object userDataGroup = group.getUserData();
-        this.узел = userDataGroup instanceof DbЭлемент ? (DbЭлемент)userDataGroup : null;
+        this.узел = userDataGroup instanceof FxЭлемент ? (FxЭлемент)userDataGroup : null;
     }
 
     @Override
@@ -45,14 +45,15 @@ class AddTask extends Task<Node>
     {
         if( ключ == null | узел == null ) return null;
 
-        try( final Транзакция транзакция = узел.транзакция() )
+        DbАтрибутный source = узел.getSource();
+        try( final Транзакция транзакция = source.транзакция() )
         {
-            транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
-            DbАтрибутный атрибутный = узел.архив().создатьНовыйЭлемент( ключ.название(), ключ.uri() );
+            транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, source );
+            DbАтрибутный атрибутный = source.архив().создатьНовыйЭлемент( ключ.название(), ключ.uri() );
             FxАтрибутный fxАтрибутный = атрибутный != null ? FxФабрика.getInstance().создать( атрибутный ) : null;
             NodeBuilder создатель = fxАтрибутный != null ? EdtФабрика.getInstance().создать( fxАтрибутный ) : null;
             Node edt = создатель != null && создатель.составить( path ) ? создатель.загрузить( false ) : null;
-            boolean добавлено = edt != null && (Boolean)узел.выполнить( оператор, атрибутный );
+            boolean добавлено = edt != null && (Boolean)узел.выполнить( оператор, fxАтрибутный );
             транзакция.завершить( добавлено );
             return добавлено ? edt : null;
         }

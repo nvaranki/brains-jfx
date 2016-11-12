@@ -1,17 +1,16 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbЗаметка;
+import com.varankin.brains.db.DbЛента;
 import com.varankin.brains.jfx.db.*;
 import javafx.scene.*;
-
 
 /**
  *
  * @author Николай
  */
-class EdtЗаметка extends EdtУзел<DbЗаметка,FxЗаметка>
+class EdtЛента extends EdtЭлемент<DbЛента,FxЛента>
 {
-    EdtЗаметка( FxЗаметка элемент )
+    EdtЛента( FxЛента элемент )
     {
         super( элемент );
     }
@@ -20,7 +19,7 @@ class EdtЗаметка extends EdtУзел<DbЗаметка,FxЗаметка>
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
-        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.графики() ) );
+        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.соединения() ) );
 
         return group;
     }

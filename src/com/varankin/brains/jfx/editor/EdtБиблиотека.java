@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbБиблиотека;
 import com.varankin.brains.jfx.db.*;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 
 
@@ -20,14 +21,14 @@ class EdtБиблиотека extends EdtЭлемент<DbБиблиотека,F
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.классы() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.ленты() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.модули() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.поля() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.процессоры() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.расчеты() ) );
 
-        for( FxМодуль модуль : ЭЛЕМЕНТ.модули() )
-            group.getChildren().add( new EdtМодуль( модуль ).загрузить( false ) );
-        for( FxРасчет расчет : ЭЛЕМЕНТ.расчеты() )
-            group.getChildren().add( new EdtРасчет( расчет ).загрузить( false ) );
-        for( FxПроцессор процессор : ЭЛЕМЕНТ.процессоры() )
-            group.getChildren().add( new EdtПроцессор( процессор ).загрузить( false ) );
-        
         return group;
     }
     

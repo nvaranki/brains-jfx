@@ -24,10 +24,8 @@ class EdtСоединение extends EdtЭлемент<DbСоединение,F
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.контакты() ) );
 
-        for( FxКонтакт контакт : ЭЛЕМЕНТ.контакты() )
-            group.getChildren().add( new EdtКонтакт( контакт ).загрузить( false ) );
-        
         return group;
     }
     

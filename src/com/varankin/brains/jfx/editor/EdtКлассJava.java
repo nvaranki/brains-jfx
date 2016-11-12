@@ -24,10 +24,8 @@ class EdtКлассJava extends EdtЭлемент<DbКлассJava,FxКлассJ
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.конвертеры() ) );
 
-        for( FxКонвертер э : ЭЛЕМЕНТ.конвертеры() )
-            group.getChildren().add( new EdtКонвертер( э ).загрузить( false ) );
-        
         return group;
     }
     

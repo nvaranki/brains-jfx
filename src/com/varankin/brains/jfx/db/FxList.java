@@ -15,25 +15,33 @@ import java.util.stream.Collectors;
 final class FxList<E, X> extends AbstractList<E>
 {
     private final Collection<X> source;
-    private final List<E> image;
     private final Function<E, X> extractant;
+    private final Function<X, E> wrapper;
+    private List<E> image;
 
     FxList( Collection<X> source, Function<X, E> wrapper, Function<E, X> extractant )
     {
         this.source = source;
-        this.image = new LinkedList<>( source.stream().map( wrapper ).collect( Collectors.toList() ) );
         this.extractant = extractant;
+        this.wrapper = wrapper;
+    }
+    
+    private void load()
+    {
+        image = new LinkedList<>( source.stream().map( wrapper ).collect( Collectors.toList() ) );
     }
 
     @Override
     public E get( int index )
     {
+        if( image == null ) load();
         return image.get( index );
     }
     
     @Override
     public E remove( int index )
     {
+        if( image == null ) load();
         E removed = image.remove( index );
         if( removed != null )
             source.remove( extractant.apply( removed ) );
@@ -43,16 +51,16 @@ final class FxList<E, X> extends AbstractList<E>
     @Override
     public void add( int index, E e )
     {
+        if( image == null ) load();
         X ee = extractant.apply( e );
         if( source.add( ee ) ) 
             image.add( index, e );
-        else
-            source.remove( ee );
     }
 
     @Override
     public Iterator<E> iterator()
     {
+        if( image == null ) load();
         return new Iterator<E>()
         {
             final Iterator<E> it = image.iterator();
@@ -82,7 +90,7 @@ final class FxList<E, X> extends AbstractList<E>
     @Override
     public int size()
     {
-        return image.size();
+        return source.size();
     }
 
 }

@@ -8,6 +8,12 @@ import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 import javafx.scene.text.Text;
 
@@ -17,6 +23,8 @@ import javafx.scene.text.Text;
  */
 abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extends EdtАтрибутный<D,T>
 {
+    private ListChangeListener<FxАтрибутный> составитель;
+    
     EdtУзел( T элемент )
     {
         super( элемент );
@@ -27,26 +35,35 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     {
         Group group = super.загрузить( new Group(), основной );
         List<Node> children = group.getChildren();
+        составитель = ( ListChangeListener.Change<? extends FxАтрибутный> c ) 
+            -> onListPropertyChanged( c, children, 
+                i -> EdtФабрика.getInstance().создать( i ).загрузить( false ) );
 
-        for( FxИнструкция н : ЭЛЕМЕНТ.инструкции() )
-            children.add( new EdtИнструкция( н ).загрузить( false ) );
-        if( !ЭЛЕМЕНТ.тексты().isEmpty() )
-        {
-            //VBox box = new VBox();
-            for( FxТекстовыйБлок н : ЭЛЕМЕНТ.тексты() )
-                children/*box.getChildren()*/.add( текст( н ) );
-            //children.add( box );
-        }
+        инструкции( children );
+        тексты( children );
 //        for( FxАтрибутный н : ЭЛЕМЕНТ.прочее() )
 //            children.add( new EdtАтрибутный<D, T>( н ).загрузить( false ) );
         
         return group;
     }
     
-    protected Text текст( FxТекстовыйБлок н )
+    protected List<Node> загрузить( ReadOnlyListProperty<? extends FxАтрибутный<?>> p )
     {
-        return new SvgTextController( ЭЛЕМЕНТ.getSource(), н.getSource() ).build()
-                        /*new EdtТекстовыйБлок( н ).загрузить( false )*/;
+        List<Node> list = p.stream()
+            .map( э -> EdtФабрика.getInstance().создать( э ).загрузить( false ) )
+            .collect( Collectors.toList() );
+        p.addListener( составитель() );
+        return list;
+    }
+    
+    protected void инструкции( List<Node> children )
+    {
+        children.addAll( загрузить( ЭЛЕМЕНТ.инструкции() ) );
+    }
+    
+    protected void тексты( List<Node> children )
+    {
+        children.addAll( загрузить( ЭЛЕМЕНТ.тексты() ) );
     }
     
     @Override
@@ -57,4 +74,34 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
                 new КлючImpl( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
     }
     
+    protected final ListChangeListener<FxАтрибутный> составитель()
+    {
+        return составитель;
+    }
+    
+    private static <T> void onListPropertyChanged( 
+            ListChangeListener.Change<? extends T> c, 
+            List<Node> children, 
+            Function<? super T, ? extends Node> builder )
+    {
+        while( c.next() )
+            if( c.wasPermutated() )
+                for( int i = c.getFrom(); i < c.getTo(); ++i ) {}
+            else if( c.wasUpdated() )
+            {
+                //update item
+            }
+            else
+            {
+                List<? extends T> removed = c.getRemoved();
+                List<Node> cToRemove = children.stream()
+                        .filter( i -> removed.contains( (T)i.getUserData() ) )
+                        .collect( Collectors.toList() );
+                List<Node> cToAdd = c.getAddedSubList().stream()
+                    .map( builder )
+                    .collect( Collectors.toList() );
+                Platform.runLater( () -> { children.removeAll( cToRemove ); children.addAll( cToAdd ); } );
+            }
+    }
+   
 }

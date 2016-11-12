@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
+import javafx.collections.ObservableList;
 import javafx.scene.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
@@ -27,12 +28,10 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
+        ObservableList<Node> children = group.getChildren();
+        children.addAll( загрузить( ЭЛЕМЕНТ.заметки() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.графики() ) );
 
-        for( FxЗаметка э : ЭЛЕМЕНТ.заметки() )
-            group.getChildren().add( new EdtЗаметка( э ).загрузить( false ) );
-        for( FxГрафика э : ЭЛЕМЕНТ.графики() )
-            group.getChildren().add( new EdtГрафика( э ).загрузить( false ) );
-        
         return group;
     }
     
