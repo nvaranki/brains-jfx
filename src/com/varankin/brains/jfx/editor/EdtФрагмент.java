@@ -2,21 +2,24 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbСоединение;
 import com.varankin.brains.db.DbФрагмент;
+import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.db.Коммутируемый;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 
-import static com.varankin.brains.io.xml.XmlBrains.BRAINS_ATTR_NAME;
+import static com.varankin.brains.io.xml.XmlBrains.*;
 import static com.varankin.brains.io.xml.XmlSvg.*;
 
 /**
@@ -37,25 +40,22 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     {
         Group group = super.загрузить( основной );
         ObservableList<Node> children = group.getChildren();
-        children.addAll( загрузить( ЭЛЕМЕНТ.параметры() ) );
+        children.addAll( загрузить_( ЭЛЕМЕНТ.соединения(), 0, XML_JOINT ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.параметры(), 1, XML_PARAMETER ) );
 
         if( основной )
             children.add( createMarker( 3d ) );
 
-        String атрибутName  = ЭЛЕМЕНТ.getSource().атрибут( XmlBrains.XML_NAME, "" );
-
-
+        return group;
+    }
+    
+    protected List<Node> загрузить_( ReadOnlyListProperty<FxСоединение> p, int pos, String ключ )
+    {
         Коммутируемый экземпляр = ЭЛЕМЕНТ.getSource().экземпляр();
-//        else if( экземпляр instanceof Поле )
-//            group.getChildren().add( new EdtПоле( (Поле)экземпляр ).загрузить( false ) );
-//        else if( экземпляр instanceof Расчет )
-//            group.getChildren().add( new EdtРасчет( (Расчет)экземпляр ).загрузить( false ) );
-//        else
-//            LOGGER.log( Level.SEVERE, "Unknown instance of fragment: {0}", экземпляр );
-
-        for( FxСоединение снаружи : ЭЛЕМЕНТ.соединения() )
+        List<Node> nodes = new ArrayList<>();
+        for( FxСоединение снаружи : p )
         {
-            children.add( new EdtСоединение( снаружи ).загрузить( false ) );
+            nodes.add( new EdtСоединение( снаружи ).загрузить( false ) );
             String ref = снаружи.getSource().атрибут( BRAINS_ATTR_NAME, "" );
             for( DbСоединение внутри : экземпляр.соединения() )
             {
@@ -64,13 +64,15 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
                 {
                     Node image = new EdtСоединение( new FxСоединение( внутри ) ).загрузить( false );
                     image.getTransforms().clear();
-                    children.add( image );
+                    nodes.add( image );
                     //TODO relocatePins();
                 }
             }
         }
-
-        return group;
+        
+        компоненты.add( pos, new КлючImpl( ключ, XMLNS_BRAINS, null ) );
+        
+        return nodes;
     }
     
     protected static List<Transform> toTransforms( String spec )
@@ -127,4 +129,15 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
         return t;
     }
     
+    @Override
+    public boolean составить( Queue<int[]> path )
+    {
+        if( path.isEmpty() ) return false;
+        позиция( path.poll() );
+        ЭЛЕМЕНТ.getSource().определить( Xml.XLINK_SHOW, Xml.XMLNS_XLINK, "other" );
+        ЭЛЕМЕНТ.getSource().определить( Xml.XLINK_HREF, Xml.XMLNS_XLINK, "Ссылка фрагмента" );
+        ЭЛЕМЕНТ.графики().add( название( "Новый фрагмент", "../@xlink:" + Xml.XLINK_TITLE ) );
+        return path.isEmpty();
+    }
+
 }

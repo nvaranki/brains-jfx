@@ -2,9 +2,11 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbБиблиотека;
 import com.varankin.brains.jfx.db.*;
+import java.util.Queue;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 
+import static com.varankin.brains.io.xml.XmlBrains.*;
 
 /**
  *
@@ -22,14 +24,22 @@ class EdtБиблиотека extends EdtЭлемент<DbБиблиотека,F
     {
         Group group = super.загрузить( основной );
         ObservableList<Node> children = group.getChildren();
-        children.addAll( загрузить( ЭЛЕМЕНТ.классы() ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.ленты() ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.модули() ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.поля() ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.процессоры() ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.расчеты() ) );
-
+        children.addAll( загрузить( ЭЛЕМЕНТ.модули(), 0, XML_MODULE ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.расчеты(), 1, XML_COMPUTE ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.ленты(), 2, XML_TIMELINE ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.поля(), 3, XML_FIELD ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.процессоры(), 4, XML_PROCESSOR ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.классы(), 5, XML_JAVA ) );
         return group;
     }
-    
+
+    @Override
+    public boolean составить( Queue<int[]> path )
+    {
+        if( path.isEmpty() ) return false;
+        позиция( path.poll() );
+        ЭЛЕМЕНТ.графики().add( название( "Новая библиотека", "../@" + XML_NAME ) );
+        return path.isEmpty();
+    }
+
 }

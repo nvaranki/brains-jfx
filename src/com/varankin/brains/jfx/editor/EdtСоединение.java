@@ -1,13 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbСоединение;
-import com.varankin.brains.db.КлючImpl;
-import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
 import javafx.scene.*;
+
+import static com.varankin.brains.io.xml.XmlBrains.*;
 
 /**
  *
@@ -24,17 +22,20 @@ class EdtСоединение extends EdtЭлемент<DbСоединение,F
     public Group загрузить( boolean основной )
     {
         Group group = super.загрузить( основной );
-        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.контакты() ) );
+        group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.контакты(), 0, XML_PIN ) );
 
         return group;
     }
     
     @Override
-    public List<DbАтрибутный.Ключ> компоненты()
+    public boolean составить( Queue<int[]> path )
     {
-        List<DbАтрибутный.Ключ> list = new ArrayList<>( super.компоненты() );
-        list.add( 0, new КлючImpl( XmlBrains.XML_PIN, XmlBrains.XMLNS_BRAINS, null ) );
-        return list;
+        if( path.isEmpty() ) return false;
+        int[] a = path.poll();
+        позиция( a );
+        ЭЛЕМЕНТ.графики().add( название( "Новое соединение", "../@" + XML_NAME, 
+            path.isEmpty() ? new int[]{0,-15} : отн( path.poll(), a ) ) );
+        return path.isEmpty();
     }
 
 }

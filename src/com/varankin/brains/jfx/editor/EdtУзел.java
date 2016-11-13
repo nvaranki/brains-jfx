@@ -1,11 +1,14 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbГрафика;
 import com.varankin.brains.db.DbУзел;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -17,6 +20,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.*;
 import javafx.scene.text.Text;
 
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ELEMENT_CIRCLE;
+import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+
 /**
  *
  * @author Николай
@@ -24,10 +30,12 @@ import javafx.scene.text.Text;
 abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extends EdtАтрибутный<D,T>
 {
     private ListChangeListener<FxАтрибутный> составитель;
+    protected final List<DbАтрибутный.Ключ> компоненты;
     
     EdtУзел( T элемент )
     {
         super( элемент );
+        компоненты = new ArrayList<>(30);
     }
     
     @Override
@@ -59,24 +67,31 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     protected void инструкции( List<Node> children )
     {
         children.addAll( загрузить( ЭЛЕМЕНТ.инструкции() ) );
+        компоненты.add( new КлючImpl( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
     }
     
     protected void тексты( List<Node> children )
     {
         children.addAll( загрузить( ЭЛЕМЕНТ.тексты() ) );
+        компоненты.add( new КлючImpl( Xml.XML_CDATA, XmlBrains.XMLNS_BRAINS, null ) );
     }
     
     @Override
     public List<DbАтрибутный.Ключ> компоненты()
     {
-        return Arrays.asList( 
-                new КлючImpl( Xml.XML_CDATA, XmlBrains.XMLNS_BRAINS, null ), 
-                new КлючImpl( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
+        return компоненты;
     }
     
     protected final ListChangeListener<FxАтрибутный> составитель()
     {
         return составитель;
+    }
+    
+    protected FxГрафика графика( String тип )
+    {
+        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
+        return FxФабрика.getInstance().создать(
+                (DbГрафика)архив.создатьНовыйЭлемент( тип, XMLNS_SVG ) );
     }
     
     private static <T> void onListPropertyChanged( 

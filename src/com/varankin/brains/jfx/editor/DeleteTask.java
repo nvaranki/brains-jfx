@@ -1,9 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbОператор;
-import com.varankin.brains.db.DbУзел;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.jfx.db.*;
 import com.varankin.util.LoggerX;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -19,10 +17,10 @@ import javafx.scene.Node;
 class DeleteTask extends Task<Boolean>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( DeleteTask.class );
-    private static final DbОператор оператор = (o, c) -> c.remove( o );
+    private static final FxОператор оператор = (o, c) -> c.remove( o );
     
-    private final DbАтрибутный выбор;
-    private final DbУзел узел;
+    private final FxАтрибутный выбор;
+    private final FxУзел узел;
     private final Node node;
     private final Node parent;
 
@@ -30,10 +28,10 @@ class DeleteTask extends Task<Boolean>
     {
         this.node = node;
         Object userDataNode = node.getUserData();
-        this.выбор = userDataNode instanceof DbАтрибутный ? (DbАтрибутный)userDataNode : null;
+        this.выбор = userDataNode instanceof FxАтрибутный ? (FxАтрибутный)userDataNode : null;
         this.parent = node.getParent();
         Object userDataParent = parent.getUserData();
-        this.узел = userDataParent instanceof DbУзел ? (DbУзел)userDataParent : null;
+        this.узел = userDataParent instanceof FxУзел ? (FxУзел)userDataParent : null;
     }
 
     @Override
@@ -43,9 +41,9 @@ class DeleteTask extends Task<Boolean>
         {
             return false;
         }
-        try( final Транзакция транзакция = узел.транзакция() )
+        try( final Транзакция транзакция = узел.getSource().транзакция() )
         {
-            транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел );
+            транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, узел.getSource() );
             boolean удалено = (Boolean)узел.выполнить( оператор, выбор );
             транзакция.завершить( удалено );
             return удалено;

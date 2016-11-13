@@ -19,6 +19,11 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
 
     private FxФабрика() {}
     
+    public FxГрафика создать( DbГрафика элемент )
+    {
+        return new FxГрафика( (DbГрафика)элемент );
+    }
+    
     @SuppressWarnings("Confusing indentation")
     @Override
     public FxАтрибутный создать( DbАтрибутный элемент )
