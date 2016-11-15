@@ -3,11 +3,14 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.DbСоединение;
 import com.varankin.brains.db.DbФрагмент;
 import com.varankin.brains.db.КлючImpl;
+import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Коммутируемый;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
@@ -49,17 +52,19 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
         return group;
     }
     
-    protected List<Node> загрузить_( ReadOnlyListProperty<FxСоединение> p, int pos, String ключ )
+    protected List<Node> загрузить_( ReadOnlyListProperty<FxСоединение> соединенияСнаружи, 
+            int pos, String ключ )
     {
         Коммутируемый экземпляр = ЭЛЕМЕНТ.getSource().экземпляр();
+        Collection<DbСоединение> соединенияВнутри = экземпляр != null ? экземпляр.соединения() : Collections.emptyList();
         List<Node> nodes = new ArrayList<>();
-        for( FxСоединение снаружи : p )
+        for( FxСоединение снаружи : соединенияСнаружи )
         {
             nodes.add( new EdtСоединение( снаружи ).загрузить( false ) );
-            String ref = снаружи.getSource().атрибут( BRAINS_ATTR_NAME, "" );
-            for( DbСоединение внутри : экземпляр.соединения() )
+            String ref = снаружи.getSource().название();
+            for( DbСоединение внутри : соединенияВнутри )
             {
-                String id = внутри.атрибут( BRAINS_ATTR_NAME, "" );
+                String id = внутри.название();
                 if( ref.equals( id ) )
                 {
                     Node image = new EdtСоединение( new FxСоединение( внутри ) ).загрузить( false );

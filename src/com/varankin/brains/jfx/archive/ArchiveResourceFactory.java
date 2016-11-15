@@ -10,20 +10,20 @@ import javafx.scene.control.Tooltip;
 
 import static com.varankin.brains.io.xml.Xml.*;
 import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.io.xml.XmlSvg.*;
 
 /**
  * Фабрика ресурсов для навигатора по проектам.
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-final class ArchiveResourceFactory
+public final class ArchiveResourceFactory
 {
     private static final String RB_BASE_NAME = ArchiveResourceFactory.class.getPackage().getName() + ".text";
     private static final Logger LOGGER = Logger.getLogger( ArchiveResourceFactory.class.getName(), RB_BASE_NAME );
     private static final ResourceBundle RB = LOGGER.getResourceBundle();
     private static final String XML_NS_TEMP = "#NS";
     private static final String XML_WB_TEMP = "#WB";
-    private static final String XML_TB_TEMP = "#TB";
     private static final String XML_UN_TEMP = "#OTHER";
     private static final String XML_GRAPHIC = "#GRAPHIC";
     private static final Map<String,String> ключМаркиКоллекции, ключМеткиКоллекции, 
@@ -31,7 +31,7 @@ final class ArchiveResourceFactory
 
     private ArchiveResourceFactory() {}
 
-    static Node марка( DbАтрибутный элемент )
+    public static Node марка( DbАтрибутный элемент )
     {
         return JavaFX.icon( "icons16x16/" + ключМаркиЭлемента.get( тип( элемент, ключМаркиЭлемента ) ) );
     }
@@ -40,6 +40,13 @@ final class ArchiveResourceFactory
     {
         String файл = ключМаркиКоллекции.containsKey( тип ) ? ключМаркиКоллекции.get( тип ) : "fragment.png";
         return JavaFX.icon( "icons16x16/" + файл );
+    }
+
+    public static String метка( DbАтрибутный.Ключ ключ )
+    {
+        String тип = ключ.название();
+        if( !ключМеткиЭлемента.containsKey( тип ) ) тип = XML_UN_TEMP;
+        return RB.getString( ключМеткиЭлемента.get( тип ) );
     }
 
     static String метка( DbАтрибутный элемент )
@@ -72,8 +79,6 @@ final class ArchiveResourceFactory
             тип = XML_NS_TEMP;
         else if( элемент instanceof DbМусор )
             тип = XML_WB_TEMP;
-        else if( элемент instanceof DbТекстовыйБлок )
-            тип = XML_TB_TEMP;
         else if( элемент instanceof DbГрафика )
             тип = XML_GRAPHIC;
         return карта.containsKey( тип ) ? тип : XML_UN_TEMP;
@@ -106,9 +111,17 @@ final class ArchiveResourceFactory
             { PI_ELEMENT,    "instruction","instruction",     "инструкции", },
             { XML_NS_TEMP,   "namespace",  "namespace",       "namespaces", }, // нет такого типа
             { XML_WB_TEMP,   "waste",      "remove.png",      "мусор",      }, // нет такого типа
-            { XML_TB_TEMP,   "text",       "text",            "тексты",     }, // нет такого типа
+            { XML_CDATA,     "text",       "text",            "тексты",     },
             { XML_UN_TEMP,   "other",      "other",           "прочее",     }, // нет такого типа
             { XML_GRAPHIC,   "graphic",    "preview.png",     "графики",    }, // нет такого типа
+            { SVG_ELEMENT_CIRCLE,   "svg."+SVG_ELEMENT_CIRCLE,   "preview.png", "графики", },
+            { SVG_ELEMENT_ELLIPSE,  "svg."+SVG_ELEMENT_ELLIPSE,  "preview.png", "графики", },
+            { SVG_ELEMENT_G,        "svg."+SVG_ELEMENT_G,        "preview.png", "графики", },
+            { SVG_ELEMENT_LINE,     "svg."+SVG_ELEMENT_LINE,     "preview.png", "графики", },
+            { SVG_ELEMENT_POLYGON,  "svg."+SVG_ELEMENT_POLYGON,  "preview.png", "графики", },
+            { SVG_ELEMENT_POLYLINE, "svg."+SVG_ELEMENT_POLYLINE, "preview.png", "графики", },
+            { SVG_ELEMENT_RECT,     "svg."+SVG_ELEMENT_RECT,     "preview.png", "графики", },
+            { SVG_ELEMENT_TEXT,     "svg."+SVG_ELEMENT_TEXT,     "preview.png", "графики", },
         };
 
         ключМеткиЭлемента = new HashMap<>();

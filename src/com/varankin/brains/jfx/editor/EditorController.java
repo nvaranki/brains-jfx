@@ -186,23 +186,7 @@ public final class EditorController implements Builder<Parent>
     {
         posX.textProperty().bind( Bindings.format( "%d", xProperty ) );
         posY.textProperty().bind( Bindings.format( "%d", yProperty ) );
-        itemsAdd.setConverter( new StringConverter<Ключ>()
-        {
-            @Override
-            public String toString( Ключ ключ )
-            {
-                return ключ.название();
-            }
-
-            @Override
-            public Ключ fromString( String string )
-            {
-                for( Ключ ключ : itemsAdd.getItems() )
-                    if( ключ.название().equals( string ) )
-                        return ключ;
-                return null;
-            }
-        } );
+        itemsAdd.setConverter( new ConverterКлюч() );
         itemsAdd.disableProperty().bind( Bindings.not( buttonAdd.selectedProperty() ) );
         List<Node> children = grid.getChildren();
         Line line;
