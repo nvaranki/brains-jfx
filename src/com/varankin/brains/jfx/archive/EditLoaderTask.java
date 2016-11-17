@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.brains.jfx.editor.EditorController;
 import com.varankin.util.LoggerX;
@@ -19,7 +18,7 @@ class EditLoaderTask extends Task<Void>
     private static final LoggerX LOGGER = LoggerX.getLogger( EditLoaderTask.class );
     
     
-    private final FxЭлемент элемент;
+    private final FxЭлемент<?> элемент;
     private final StringProperty название;
     private final EditorController controller;
     

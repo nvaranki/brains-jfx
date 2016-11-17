@@ -7,6 +7,7 @@ import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxМусор;
 import com.varankin.brains.jfx.db.FxУзел;
+import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
 
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -163,7 +165,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
 
         class Descr
         {
-            String name;
+            Property<String> name;
             Node icon;
             Tooltip tooltip;
         }
@@ -171,14 +173,16 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         @Override
         protected Descr call() throws Exception
         {
-            DbАтрибутный элемент = AbstractTreeItem.this.getValue().getSource();
-            try( Транзакция т = элемент.транзакция() )
+            FxАтрибутный элемент = AbstractTreeItem.this.getValue();
+            try( Транзакция т = элемент.getSource().транзакция() )
             {
-                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
+                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.getSource() );
                 Descr d = new Descr();
-                d.name = метка( элемент );
-                d.icon = марка( элемент );
-                d.tooltip = подсказка( элемент );
+                d.name = элемент instanceof FxЭлемент ? 
+                        ((FxЭлемент)элемент).название() : 
+                        new SimpleStringProperty( метка( элемент.getSource() ) );
+                d.icon = марка( элемент.getSource() );
+                d.tooltip = подсказка( элемент.getSource() );
                 т.завершить( true );
                 return d;
             }
@@ -191,7 +195,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         protected void succeeded()
         {
             Descr d = getValue();
-            AbstractTreeItem.this.textProperty.setValue( d.name );
+            AbstractTreeItem.this.textProperty.bind( d.name );
             AbstractTreeItem.this.graphicProperty().setValue( d.icon );
             AbstractTreeItem.this.tooltipProperty.setValue( d.tooltip );
         }

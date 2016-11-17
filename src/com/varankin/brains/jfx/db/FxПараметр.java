@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbПараметр;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -12,7 +12,7 @@ public final class FxПараметр extends FxЭлемент<DbПарамет�
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final StringProperty ИНДЕКС;
+    private final Property<String> ИНДЕКС;
 
     public FxПараметр( DbПараметр параметр ) 
     {
@@ -21,7 +21,7 @@ public final class FxПараметр extends FxЭлемент<DbПарамет�
             new FxList<>( параметр.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( параметр, "классы", 
             new FxList<>( параметр.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС = buildStringProperty( параметр, "индекс" );
+        ИНДЕКС = new FxProperty<>( параметр, "индекс" );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()
@@ -34,7 +34,7 @@ public final class FxПараметр extends FxЭлемент<DbПарамет�
         return КЛАССЫ;
     }
     
-    public StringProperty индекс()
+    public Property<String> индекс()
     {
         return ИНДЕКС;
     }

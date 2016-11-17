@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.*;
+import com.varankin.brains.jfx.db.*;
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.beans.binding.BooleanBinding;
@@ -137,37 +138,37 @@ public class PropertiesController implements Builder<Parent>
             if( change.wasAdded() )
             {
                 Object value = change.getValueAdded();
-                if( value instanceof DbNameSpace )
+                if( value instanceof FxNameSpace )
                 {
                     PropertiesXmlNameSpaceController controller = new PropertiesXmlNameSpaceController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.namespace" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (DbNameSpace)value );
+                    controller.reset( ((FxNameSpace)value).getSource() );
                 }
-                else if( value instanceof DbПроцессор )
+                else if( value instanceof FxПроцессор )
                 {
                     PropertiesProcessorController controller = new PropertiesProcessorController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.processor" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (DbПроцессор)value );
+                    controller.reset( ((FxПроцессор)value).getSource() );
                 }
-                else if( value instanceof DbКлассJava )
+                else if( value instanceof FxКлассJava )
                 {
                     PropertiesClassJavaController controller = new PropertiesClassJavaController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.class.java" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (DbКлассJava)value );
+                    controller.reset( ((FxКлассJava)value).getSource() );
                 }
-                else if( value instanceof DbКонвертер )
+                else if( value instanceof FxКонвертер )
                 {
                     PropertiesConverterController controller = new PropertiesConverterController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.converter" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (DbКонвертер)value );
+                    controller.reset( ((FxКонвертер)value).getSource() );
                 }
 //                else if( value instanceof DbСкаляр )
 //                {
@@ -185,21 +186,21 @@ public class PropertiesController implements Builder<Parent>
 //                    buttonApply.setOnAction( controller::onActionApply );
 //                    controller.reset( (DbМассив)value );
 //                }
-                else if( value instanceof DbТекстовыйБлок )
+                else if( value instanceof FxТекстовыйБлок )
                 {
                     TextController controller = new TextController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.text" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (DbТекстовыйБлок)value );
+                    controller.reset( ((FxТекстовыйБлок)value).getSource() );
                 }
-                else if( value instanceof DbЭлемент )
+                else if( value instanceof FxЭлемент )
                 {
                     PropertiesElementController controller = new PropertiesElementController();
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.element" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( (DbЭлемент)value );
+                    controller.reset( ((FxЭлемент<? extends DbЭлемент>)value).getSource() );
                 }
                 else
                 {

@@ -1,9 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbТочка;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
@@ -15,9 +13,9 @@ public final class FxТочка extends FxЭлемент<DbТочка>
     private final ReadOnlyListProperty<FxТочка> ТОЧКИ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final IntegerProperty ИНДЕКС;
-    private final BooleanProperty ДАТЧИК;
-    private final FloatProperty ПОРОГ;
+    private final Property<Integer> ИНДЕКС;
+    private final Property<Boolean> ДАТЧИК;
+    private final Property<Float> ПОРОГ;
 
     public FxТочка( DbТочка точка ) 
     {
@@ -28,9 +26,9 @@ public final class FxТочка extends FxЭлемент<DbТочка>
             new FxList<>( точка.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( точка, "классы", 
             new FxList<>( точка.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС = buildIntegerProperty( точка, "индекс" );
-        ДАТЧИК = buildBooleanProperty( точка, "датчик" );
-        ПОРОГ = buildFloatProperty( точка, "порог" );
+        ИНДЕКС = new FxProperty<>( точка, "индекс" );
+        ДАТЧИК = new FxProperty<>( точка, "датчик" );
+        ПОРОГ = new FxProperty<>( точка, "порог" );
     }
 
     public ReadOnlyListProperty<FxТочка> точки()
@@ -48,17 +46,17 @@ public final class FxТочка extends FxЭлемент<DbТочка>
         return КЛАССЫ;
     }
     
-    public IntegerProperty индекс()
+    public Property<Integer> индекс()
     {
         return ИНДЕКС;
     }
     
-    public BooleanProperty датчик()
+    public Property<Boolean> датчик()
     {
         return ДАТЧИК;
     }
     
-    public FloatProperty порог()
+    public Property<Float> порог()
     {
         return ПОРОГ;
     }

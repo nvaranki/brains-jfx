@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbСоединение;
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
@@ -11,14 +11,14 @@ import javafx.beans.property.ReadOnlyListProperty;
 public final class FxСоединение extends FxЭлемент<DbСоединение>
 {
     private final ReadOnlyListProperty<FxКонтакт> КОНТАКТЫ;
-    private final BooleanProperty МЕСТНОЕ;
+    private final Property<Boolean> МЕСТНОЕ;
 
     public FxСоединение( DbСоединение соединение ) 
     {
         super( соединение );
         КОНТАКТЫ = buildReadOnlyListProperty( соединение, "контакты", 
             new FxList<>( соединение.контакты(), e -> new FxКонтакт( e ), e -> e.getSource() ) );
-        МЕСТНОЕ = buildBooleanProperty( соединение, "местное" );
+        МЕСТНОЕ = new FxProperty<>( соединение, "местное" );
     }
 
     public ReadOnlyListProperty<FxКонтакт> контакты()
@@ -26,7 +26,7 @@ public final class FxСоединение extends FxЭлемент<DbСоеди�
         return КОНТАКТЫ;
     }
     
-    public BooleanProperty местное()
+    public Property<Boolean> местное()
     {
         return МЕСТНОЕ;
     }

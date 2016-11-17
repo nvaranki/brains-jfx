@@ -10,16 +10,16 @@ import javafx.beans.property.*;
 public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 {
     private final ReadOnlyListProperty<FxКонвертер> КОНВЕРТЕРЫ;
-    private final BooleanProperty ОСНОВНОЙ;
-    private final StringProperty КОД;
+    private final Property<Boolean> ОСНОВНОЙ;
+    private final Property<String> КОД;
 
     public FxКлассJava( DbКлассJava класс ) 
     {
         super( класс );
         КОНВЕРТЕРЫ = buildReadOnlyListProperty( класс, "конвертеры", 
             new FxList<>( класс.конвертеры(), e -> new FxКонвертер( e ), e -> e.getSource() ) );
-        ОСНОВНОЙ = buildBooleanProperty( класс, "основной" );
-        КОД = buildStringProperty( класс, "код" );
+        ОСНОВНОЙ = new FxProperty<>( класс, "основной" );
+        КОД = new FxProperty<>( класс, "код" );
     }
     
     
@@ -28,12 +28,12 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
         return КОНВЕРТЕРЫ;
     }
     
-    public BooleanProperty основной()
+    public Property<Boolean> основной()
     {
         return ОСНОВНОЙ;
     }
     
-    public StringProperty код()
+    public Property<String> код()
     {
         return КОД;
     }

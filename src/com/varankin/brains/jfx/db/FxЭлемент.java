@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbЭлемент;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -13,7 +13,7 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
 {
     private final ReadOnlyListProperty<FxЗаметка> ЗАМЕТКИ;
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
-    private final StringProperty НАЗВАНИЕ;
+    private final Property<String> НАЗВАНИЕ;
 
     public FxЭлемент( T элемент ) 
     {
@@ -22,7 +22,7 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
             new FxList<>( элемент.заметки(), e -> new FxЗаметка( e ), e -> e.getSource() ) );
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
             new FxList<>( элемент.графики(), e -> new FxГрафика( e ), e -> e.getSource() ) );
-        НАЗВАНИЕ = buildStringProperty( элемент, "название" );
+        НАЗВАНИЕ = new FxProperty<>( элемент, "название" );
     }
 
     public final ReadOnlyListProperty<FxЗаметка> заметки()
@@ -35,7 +35,7 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
         return ГРАФИКИ;
     }
     
-    public final StringProperty название()
+    public final Property<String> название()
     {
         return НАЗВАНИЕ;
     }

@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbФрагмент;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -12,7 +12,7 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
 {
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
-    private final StringProperty ПРОЦЕССОР;
+    private final Property<String> ПРОЦЕССОР;
 
     public FxФрагмент( DbФрагмент фрагмент ) 
     {
@@ -21,7 +21,7 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
             new FxList<>( фрагмент.соединения(), e -> new FxСоединение( e ), e -> e.getSource() ) );
         ПАРАМЕТРЫ = buildReadOnlyListProperty( фрагмент, "параметры", 
             new FxList<>( фрагмент.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
-        ПРОЦЕССОР = buildStringProperty( фрагмент, "процессор" );
+        ПРОЦЕССОР = new FxProperty<>( фрагмент, "процессор" );
     }
 
     public ReadOnlyListProperty<FxСоединение> соединения()
@@ -34,7 +34,7 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
         return ПАРАМЕТРЫ;
     }
     
-    public StringProperty процессор()
+    public Property<String> процессор()
     {
         return ПРОЦЕССОР;
     }

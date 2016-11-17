@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbТекстовыйБлок;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
 
 /**
  *
@@ -9,15 +9,15 @@ import javafx.beans.property.StringProperty;
  */
 public final class FxТекстовыйБлок extends FxАтрибутный<DbТекстовыйБлок>
 {
-    private final StringProperty ТЕКСТ;
+    private final Property<String> ТЕКСТ;
 
     public FxТекстовыйБлок( DbТекстовыйБлок блок ) 
     {
         super( блок );
-        ТЕКСТ = buildStringProperty( блок, "текст" );
+        ТЕКСТ = new FxProperty<>( блок, "текст" );
     }
 
-    public StringProperty текст()
+    public Property<String> текст()
     {
         return ТЕКСТ;
     }

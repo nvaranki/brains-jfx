@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbИнструкция;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
 
 /**
  *
@@ -9,22 +9,22 @@ import javafx.beans.property.StringProperty;
  */
 public final class FxИнструкция extends FxАтрибутный<DbИнструкция>
 {
-    private final StringProperty КОД;
-    private final StringProperty ПРОЦЕССОР;
+    private final Property<String> КОД;
+    private final Property<String> ПРОЦЕССОР;
 
     public FxИнструкция( DbИнструкция инструкция ) 
     {
         super( инструкция );
-        КОД = buildStringProperty( инструкция, "код" );
-        ПРОЦЕССОР = buildStringProperty( инструкция, "процессор" );
+        КОД = new FxProperty<>( инструкция, "код" );
+        ПРОЦЕССОР = new FxProperty<>( инструкция, "процессор" );
     }
 
-    public StringProperty код()
+    public Property<String> код()
     {
         return КОД;
     }
     
-    public StringProperty процессор()
+    public Property<String> процессор()
     {
         return ПРОЦЕССОР;
     }

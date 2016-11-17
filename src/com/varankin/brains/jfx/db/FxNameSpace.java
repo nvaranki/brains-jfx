@@ -2,8 +2,7 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbNameSpace;
 import java.util.List;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
 
 /**
  *
@@ -11,29 +10,29 @@ import javafx.beans.property.StringProperty;
  */
 public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
 {
-    private final ObjectProperty<List<String>> ВАРИАНТЫ;
-    private final StringProperty НАЗВАНИЕ;
-    private final StringProperty URI;
+    private final Property<List<String>> ВАРИАНТЫ;
+    private final Property<String> НАЗВАНИЕ;
+    private final Property<String> URI;
 
     public FxNameSpace( DbNameSpace элемент ) 
     {
         super( элемент );
-        ВАРИАНТЫ = buildObjectProperty( элемент, "варианты" );
-        НАЗВАНИЕ = buildStringProperty( элемент, "название" );
-        URI = buildStringProperty( элемент, "uri" );
+        ВАРИАНТЫ = new FxProperty<>( элемент, "варианты" );
+        НАЗВАНИЕ = new FxProperty<>( элемент, "название" );
+        URI      = new FxProperty<>( элемент, "uri" );
     }
 
-    public ObjectProperty<List<String>> варианты()
+    public Property<List<String>> варианты()
     {
         return ВАРИАНТЫ;
     }
     
-    public StringProperty название()
+    public Property<String> название()
     {
         return НАЗВАНИЕ;
     }
     
-    public StringProperty uri()
+    public Property<String> uri()
     {
         return URI;
     }

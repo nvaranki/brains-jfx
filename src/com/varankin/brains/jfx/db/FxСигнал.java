@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbСигнал;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
@@ -12,7 +12,7 @@ public final class FxСигнал extends FxЭлемент<DbСигнал>
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final ObjectProperty<DbСигнал.Приоритет> ПРИОРИТЕТ;
+    private final Property<DbСигнал.Приоритет> ПРИОРИТЕТ;
 
     public FxСигнал( DbСигнал сигнал ) 
     {
@@ -21,7 +21,7 @@ public final class FxСигнал extends FxЭлемент<DbСигнал>
             new FxList<>( сигнал.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( сигнал, "классы", 
             new FxList<>( сигнал.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ПРИОРИТЕТ = buildObjectProperty( сигнал, "приоритет" );
+        ПРИОРИТЕТ = new FxProperty<>( сигнал, "приоритет" );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()
@@ -34,7 +34,7 @@ public final class FxСигнал extends FxЭлемент<DbСигнал>
         return КЛАССЫ;
     }
     
-    public ObjectProperty<DbСигнал.Приоритет> приоритет()
+    public Property<DbСигнал.Приоритет> приоритет()
     {
         return ПРИОРИТЕТ;
     }

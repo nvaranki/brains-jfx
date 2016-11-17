@@ -2,10 +2,7 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.artificial.ПроцессорРасчета;
 import com.varankin.brains.db.DbПроцессор;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
@@ -16,13 +13,13 @@ public final class FxПроцессор extends FxЭлемент<DbПроцес�
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final LongProperty ЗАДЕРЖКА;
-    private final IntegerProperty НАКОПЛЕНИЕ;
-    private final LongProperty ПАУЗА;
-    private final BooleanProperty РЕСТАРТ;
-    private final BooleanProperty СЖАТИЕ;
-    private final BooleanProperty ОЧИСТКА;
-    private final ObjectProperty<ПроцессорРасчета.Стратегия> СТРАТЕГИЯ;
+    private final Property<Long> ЗАДЕРЖКА;
+    private final Property<Integer> НАКОПЛЕНИЕ;
+    private final Property<Long> ПАУЗА;
+    private final Property<Boolean> РЕСТАРТ;
+    private final Property<Boolean> СЖАТИЕ;
+    private final Property<Boolean> ОЧИСТКА;
+    private final Property<ПроцессорРасчета.Стратегия> СТРАТЕГИЯ;
 
     public FxПроцессор( DbПроцессор элемент ) 
     {
@@ -31,13 +28,13 @@ public final class FxПроцессор extends FxЭлемент<DbПроцес�
             new FxList<>( элемент.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ЗАДЕРЖКА = buildLongProperty( элемент, "задержка" );
-        НАКОПЛЕНИЕ = buildIntegerProperty( элемент, "накопление" );
-        ПАУЗА = buildLongProperty( элемент, "пауза" );
-        РЕСТАРТ = buildBooleanProperty( элемент, "рестарт" );
-        СЖАТИЕ = buildBooleanProperty( элемент, "сжатие" );
-        ОЧИСТКА = buildBooleanProperty( элемент, "очистка" );
-        СТРАТЕГИЯ = buildObjectProperty( элемент, "стратегия" );
+        ЗАДЕРЖКА = new FxProperty<>( элемент, "задержка" );
+        НАКОПЛЕНИЕ = new FxProperty<>( элемент, "накопление" );
+        ПАУЗА = new FxProperty<>( элемент, "пауза" );
+        РЕСТАРТ = new FxProperty<>( элемент, "рестарт" );
+        СЖАТИЕ = new FxProperty<>( элемент, "сжатие" );
+        ОЧИСТКА = new FxProperty<>( элемент, "очистка" );
+        СТРАТЕГИЯ = new FxProperty<>( элемент, "стратегия" );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()
@@ -50,37 +47,37 @@ public final class FxПроцессор extends FxЭлемент<DbПроцес�
         return КЛАССЫ;
     }
     
-    public LongProperty задержка()
+    public Property<Long> задержка()
     {
         return ЗАДЕРЖКА;
     }
     
-    public IntegerProperty накопление()
+    public Property<Integer> накопление()
     {
         return НАКОПЛЕНИЕ;
     }
     
-    public LongProperty пауза()
+    public Property<Long> пауза()
     {
         return ПАУЗА;
     }
     
-    public BooleanProperty рестарт()
+    public Property<Boolean> рестарт()
     {
         return РЕСТАРТ;
     }
     
-    public BooleanProperty сжатие()
+    public Property<Boolean> сжатие()
     {
         return СЖАТИЕ;
     }
     
-    public BooleanProperty очистка()
+    public Property<Boolean> очистка()
     {
         return ОЧИСТКА;
     }
     
-    public ObjectProperty<ПроцессорРасчета.Стратегия> стратегия()
+    public Property<ПроцессорРасчета.Стратегия> стратегия()
     {
         return СТРАТЕГИЯ;
     }
