@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.editor;
 
-import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -9,7 +8,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.jfx.db.FxАтрибутный;
-import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Queue;
 import javafx.scene.transform.Transform;
@@ -49,36 +47,10 @@ abstract class EdtАтрибутный<D extends DbАтрибутный, T exten
     
     private List<Transform> getTransformList()
     {
-        return toTransforms( DbАтрибутный.toStringValue( ЭЛЕМЕНТ.getSource().атрибут( 
-                SVG_ATTR_TRANSFORM, XMLNS_SVG, "" ) ) );
+        return toTransforms( DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( 
+                SVG_ATTR_TRANSFORM, XMLNS_SVG ).getValue() ) );
     }
 
-    double toSvgDouble( String атрибут, double нет )
-    {
-        Double v = ЭЛЕМЕНТ.getSource().атрибут( атрибут, нет );
-        return v != null ? v : нет;
-    }
-
-    String toSvgString( String атрибут, String нет )
-    {
-        String v = ЭЛЕМЕНТ.getSource().атрибут( атрибут, нет );
-        return v != null ? v : нет;
-    }
-
-    Double[] toSvgPoints( String атрибут, Double[] нет )
-    {
-        Object a = ЭЛЕМЕНТ.getSource().атрибут( атрибут, null, null );
-        if( a == null ) return нет;
-        List<Double> v = new ArrayList<>();
-        if( a.getClass().isArray() && !( a instanceof char[] ) )
-            for( int i = 0, max = Array.getLength( a ); i < max; i++ )
-                v.add( Array.getDouble( a, i ) );
-         else
-            for( String p : DbАтрибутный.toStringValue( a ).split( "[\\s,]+" ) )
-                v.add( Double.valueOf( p.trim() ) );
-        return v.isEmpty() ? нет : v.toArray( new Double[v.size()] );
-    }
-    
     protected Node createMarker( double s2 )
     {
         Polygon countor = new Polygon( 0d, -s2, s2, s2, -s2, s2 );

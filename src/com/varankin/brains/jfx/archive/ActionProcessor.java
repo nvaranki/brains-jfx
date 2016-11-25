@@ -167,11 +167,10 @@ final class ActionProcessor //TODO RT-37820
                     builder.init( EditorController.class, EditorController.RESOURCE_FXML, EditorController.RESOURCE_BUNDLE );
                     EditorController controller = builder.getController();
                     Parent view = controller.build();
-                    SimpleStringProperty название = new SimpleStringProperty();
                     Image icon = JavaFX.icon( "icons16x16/edit.png" ).getImage();
-                    jfx.show( элемент, inEditor, ( DbЭлемент э ) -> new TitledSceneGraph( view, icon, название ) );
+                    jfx.show( элемент, inEditor, ( DbЭлемент э ) -> new TitledSceneGraph( view, icon, ((FxЭлемент)fxValue).название() ) );
                     // загрузить элемент для редактирования
-                    jfx.execute(new EditLoaderTask( (FxЭлемент)fxValue, название, controller ) );
+                    jfx.execute( new EditLoaderTask( (FxЭлемент)fxValue, controller ) );
                 }
             }
             else

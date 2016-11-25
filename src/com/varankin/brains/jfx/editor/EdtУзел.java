@@ -3,6 +3,8 @@ package com.varankin.brains.jfx.editor;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbГрафика;
+import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbУзел;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.io.xml.Xml;
@@ -89,9 +91,22 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     
     protected FxГрафика графика( String тип )
     {
-        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
-        return FxФабрика.getInstance().создать(
-                (DbГрафика)архив.создатьНовыйЭлемент( тип, XMLNS_SVG ) );
+        return (FxГрафика)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( тип, XMLNS_SVG );
+    }
+    
+    protected FxИнструкция инструкция( String процессор, String код )
+    {
+        FxИнструкция и = (FxИнструкция)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( Xml.PI_ELEMENT, null );
+        и.процессор().setValue( процессор );
+        и.код().setValue( код );
+        return и;
+    }
+    
+    protected FxТекстовыйБлок блок( String значение )
+    {
+        FxТекстовыйБлок тб = (FxТекстовыйБлок)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
+        тб.текст().setValue( значение );
+        return тб;
     }
     
     private static <T> void onListPropertyChanged( 

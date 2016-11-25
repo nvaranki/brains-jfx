@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxМусор;
@@ -174,18 +173,13 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         protected Descr call() throws Exception
         {
             FxАтрибутный элемент = AbstractTreeItem.this.getValue();
-            try( Транзакция т = элемент.getSource().транзакция() )
-            {
-                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.getSource() );
-                Descr d = new Descr();
-                d.name = элемент instanceof FxЭлемент ? 
-                        ((FxЭлемент)элемент).название() : 
-                        new SimpleStringProperty( метка( элемент.getSource() ) );
-                d.icon = марка( элемент.getSource() );
-                d.tooltip = подсказка( элемент.getSource() );
-                т.завершить( true );
-                return d;
-            }
+            Descr d = new Descr();
+            d.name = элемент instanceof FxЭлемент ? 
+                    ((FxЭлемент)элемент).название() : 
+                    new SimpleStringProperty( метка( элемент ) );
+            d.icon = марка( элемент );
+            d.tooltip = подсказка( элемент );
+            return d;
         }
         
         /**
@@ -231,15 +225,9 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         @Override
         protected Collection<FxАтрибутный> call() throws Exception
         {
-            DbАтрибутный элемент = AbstractTreeItem.this.getValue().getSource();
-            try( Транзакция т = элемент.транзакция() )
-            {
-                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент );
-                List<FxАтрибутный> c = new LinkedList<>();
-                коллекции.forEach( к -> c.addAll( к ) );
-                т.завершить( true );
-                return c;
-            }
+            List<FxАтрибутный> c = new LinkedList<>();
+            коллекции.forEach( к -> c.addAll( к ) );
+            return c;
         }
 
         /**

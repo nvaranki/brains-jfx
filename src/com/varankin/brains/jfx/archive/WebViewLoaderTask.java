@@ -48,7 +48,6 @@ class WebViewLoaderTask extends Task<String>
             название = элемент.название();
             Фильтр<DbЭлемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
             String code = SvgФабрика.getInstance().providerOf( элемент, сборка ).newInstance(); //TODO Отображаемый.MIME_SVG
-            т.завершить( true );
             return code;
         }
     }

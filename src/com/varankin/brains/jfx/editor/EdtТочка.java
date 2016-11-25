@@ -38,7 +38,7 @@ class EdtТочка extends EdtЭлемент<DbТочка,FxТочка>
         int[] a = path.poll();
         
         // тип и позиция
-        ЭЛЕМЕНТ.getSource().атрибут( XML_PIN, "Контакт новой точки" );
+        ЭЛЕМЕНТ.атрибут( XML_PIN, XMLNS_BRAINS ).setValue( "Контакт новой точки" );
         позиция( a );
         
         // название 
@@ -47,9 +47,9 @@ class EdtТочка extends EdtЭлемент<DbТочка,FxТочка>
         
         // изображение
         FxГрафика графика = графика( SVG_ELEMENT_CIRCLE );
-        графика.определить( SVG_ATTR_R, 7 );
-        графика.определить( SVG_ATTR_FILL, "none" );
-        графика.определить( SVG_ATTR_STROKE, "black" );
+        графика.атрибут( SVG_ATTR_R ).setValue( 7 );
+        графика.атрибут( SVG_ATTR_FILL ).setValue( "none" );
+        графика.атрибут( SVG_ATTR_STROKE ).setValue( "black" );
         ЭЛЕМЕНТ.графики().add( графика );
         
         return path.isEmpty();

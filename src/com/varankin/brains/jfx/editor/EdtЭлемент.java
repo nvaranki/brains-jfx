@@ -42,8 +42,8 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     {
         if( path.isEmpty() ) return false;
         int[] s = path.peek();
-        ЭЛЕМЕНТ.getSource().определить( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, 
-                String.format( "translate(%d,%d)", s[0], s[1] ) );
+        ЭЛЕМЕНТ.атрибут( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG )
+                .setValue( String.format( "translate(%d,%d)", s[0], s[1] ) );
         return true;
     }
     
@@ -79,8 +79,8 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     
     void позиция( int[] xy )
     {
-        ЭЛЕМЕНТ.getSource().определить( SVG_ATTR_TRANSFORM, XMLNS_SVG,  
-                String.format( "translate(%d,%d)", xy[0], xy[1] ) );
+        ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG )
+                .setValue( String.format( "translate(%d,%d)", xy[0], xy[1] ) );
     }
     
     /**
@@ -99,23 +99,17 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     protected FxГрафика надпись( String ссылка, int[] xy )
     {
         FxГрафика графика = надпись( ссылка );
-        графика.определить( SVG_ATTR_X, xy[0] );
-        графика.определить( SVG_ATTR_Y, xy[1] );
+        графика.атрибут( SVG_ATTR_X ).setValue( xy[0] );
+        графика.атрибут( SVG_ATTR_Y ).setValue( xy[1] );
         return графика;
     }
     
     protected FxГрафика надпись( String ссылка )
     {
-        FxИнструкция инструкция = (FxИнструкция)FxФабрика.getInstance().создать( 
-            ЭЛЕМЕНТ.getSource().архив().создатьНовыйЭлемент( Xml.PI_ELEMENT, null ) );
-        инструкция.процессор().setValue( "xpath" );
-        инструкция.код().setValue( ссылка );
-        
         FxГрафика графика = графика( SVG_ELEMENT_TEXT );
-        графика.определить( SVG_ATTR_FILL, "black" );
-        графика.определить( SVG_ATTR_FONT_SIZE, 10 );
-        графика.инструкции().add( инструкция );
-        
+        графика.атрибут( SVG_ATTR_FILL ).setValue( "black" );
+        графика.атрибут( SVG_ATTR_FONT_SIZE ).setValue( 10 );
+        графика.инструкции().add( инструкция( "xpath", ссылка ) );
         return графика;
     }
     
@@ -131,8 +125,8 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     protected FxГрафика название( String текст, String ссылка, int[] xy )
     {
         FxГрафика графика = название( текст, ссылка );
-        графика.getSource().определить( SVG_ATTR_X, XMLNS_SVG, xy[0] );
-        графика.getSource().определить( SVG_ATTR_Y, XMLNS_SVG, xy[1] );
+        графика.атрибут( SVG_ATTR_X ).setValue( xy[0] );
+        графика.атрибут( SVG_ATTR_Y ).setValue( xy[1] );
         return графика;
     }
     

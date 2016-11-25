@@ -2,6 +2,8 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Фабрика генераторов текста в формате XML для произвольного элемента.
@@ -16,12 +18,24 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
     {
         return ФАБРИКА;
     }
-
-    private FxФабрика() {}
     
+    private final Map<DbАрхив,FxАрхив> АРХИВЫ;
+
+    private FxФабрика() 
+    {
+        АРХИВЫ = new HashMap<>();
+    }
+    
+    public FxАрхив создать( DbАрхив элемент )
+    {
+        FxАрхив архив = АРХИВЫ.get( элемент );
+        if( архив == null ) АРХИВЫ.put( элемент, архив = new FxАрхив( элемент ) );
+        return архив;
+    }
+        
     public FxГрафика создать( DbГрафика элемент )
     {
-        return new FxГрафика( (DbГрафика)элемент );
+        return new FxГрафика( элемент );
     }
     
     @SuppressWarnings("Confusing indentation")

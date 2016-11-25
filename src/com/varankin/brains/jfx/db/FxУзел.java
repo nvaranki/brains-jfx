@@ -18,11 +18,11 @@ public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
     {
         super( элемент );
         ИНСТРУКЦИИ = buildReadOnlyListProperty( элемент, "инструкции", 
-            new FxList<>( элемент.инструкции(), e -> new FxИнструкция( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.инструкции(), элемент, e -> new FxИнструкция( e ), e -> e.getSource() ) );
         ТЕКСТЫ = buildReadOnlyListProperty( элемент, "тексты", 
-            new FxList<>( элемент.тексты(), e -> new FxТекстовыйБлок( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.тексты(), элемент, e -> new FxТекстовыйБлок( e ), e -> e.getSource() ) );
         ПРОЧЕЕ = buildReadOnlyListProperty( элемент, "прочее", 
-            new FxList<>( элемент.прочее(), e -> new FxАтрибутный<>( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.прочее(), элемент, e -> new FxАтрибутный<>( e ), e -> e.getSource() ) );
     }
     
     public final ReadOnlyListProperty<FxИнструкция> инструкции()

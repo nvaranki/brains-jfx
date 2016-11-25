@@ -16,9 +16,9 @@ public final class FxПакет extends FxУзел<DbПакет>
     {
         super( пакет );
         ПРОЕКТЫ = buildReadOnlyListProperty( пакет, "проекты", 
-            new FxList<>( пакет.проекты(), e -> new FxПроект( e ), e -> e.getSource() ) );
+            new FxList<>( пакет.проекты(), пакет, e -> new FxПроект( e ), e -> e.getSource() ) );
         БИБЛИОТЕКИ = buildReadOnlyListProperty( пакет, "библиотеки", 
-            new FxList<>( пакет.библиотеки(), e -> new FxБиблиотека( e ), e -> e.getSource() ) );
+            new FxList<>( пакет.библиотеки(), пакет, e -> new FxБиблиотека( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxПроект> проекты()

@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.DbАрхив;
-import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.brains.jfx.history.SerializableProvider;
@@ -29,14 +28,7 @@ public final class ArchiveTask extends Task<FxАрхив>
     @Override
     protected FxАрхив call() throws Exception
     {
-        DbАрхив архив = поставщик.newInstance();
-        try( final Транзакция т = архив.транзакция() )
-        {
-            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
-            FxАрхив fxАрхив = new FxАрхив( архив );
-            т.завершить( true );
-            return fxАрхив;
-        }
+        return new FxАрхив( поставщик.newInstance() );
     }
     
     @Override

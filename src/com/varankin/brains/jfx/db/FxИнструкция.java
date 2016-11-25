@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbИнструкция;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 
 /**
  *
@@ -11,12 +12,14 @@ public final class FxИнструкция extends FxАтрибутный<DbИн�
 {
     private final Property<String> КОД;
     private final Property<String> ПРОЦЕССОР;
+    private final ReadOnlyProperty<String> ВЫПОЛНИТЬ;
 
-    public FxИнструкция( DbИнструкция инструкция ) 
+    public FxИнструкция( DbИнструкция элемент ) 
     {
-        super( инструкция );
-        КОД = new FxProperty<>( инструкция, "код" );
-        ПРОЦЕССОР = new FxProperty<>( инструкция, "процессор" );
+        super( элемент );
+        КОД = new FxProperty<>( элемент, "код", () -> элемент.код(), (t) -> элемент.код( t ) );
+        ПРОЦЕССОР = new FxProperty<>( элемент, "процессор", () -> элемент.процессор(), (t) -> элемент.процессор( t ) );
+        ВЫПОЛНИТЬ = new FxReadOnlyProperty<>( элемент, "выполнить", () -> элемент.выполнить() );
     }
 
     public Property<String> код()
@@ -27,6 +30,11 @@ public final class FxИнструкция extends FxАтрибутный<DbИн�
     public Property<String> процессор()
     {
         return ПРОЦЕССОР;
+    }
+    
+    public ReadOnlyProperty<String> выполнить()
+    {
+        return ВЫПОЛНИТЬ;
     }
     
     @Override

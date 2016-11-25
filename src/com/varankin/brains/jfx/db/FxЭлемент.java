@@ -19,10 +19,10 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
     {
         super( элемент );
         ЗАМЕТКИ = buildReadOnlyListProperty( элемент, "заметки", 
-            new FxList<>( элемент.заметки(), e -> new FxЗаметка( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.заметки(), элемент, e -> new FxЗаметка( e ), e -> e.getSource() ) );
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
-            new FxList<>( элемент.графики(), e -> new FxГрафика( e ), e -> e.getSource() ) );
-        НАЗВАНИЕ = new FxProperty<>( элемент, "название" );
+            new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
+        НАЗВАНИЕ = new FxProperty<>( элемент, "название", () -> элемент.название(), (t) -> элемент.название( t ) );
     }
 
     public final ReadOnlyListProperty<FxЗаметка> заметки()

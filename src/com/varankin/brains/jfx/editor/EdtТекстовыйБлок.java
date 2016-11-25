@@ -22,7 +22,19 @@ class EdtТекстовыйБлок extends EdtАтрибутный<DbТекст
     @Override
     public Node загрузить( boolean основной )
     {
-        Node node = true/*основной*/ ? new TextField( ЭЛЕМЕНТ.getSource().текст() ) : new Label( ЭЛЕМЕНТ.getSource().текст() );
+        Node node;
+        if( true/*основной*/ ) 
+        {
+            TextField textField = new TextField();
+            textField.textProperty().bindBidirectional( ЭЛЕМЕНТ.текст() );
+            node = textField;
+        }
+        else
+        {
+            Label label = new Label();
+            label.textProperty().bind( ЭЛЕМЕНТ.текст() );
+            node = label;
+        }
         node = super.загрузить( node, основной );
         return node;
     }

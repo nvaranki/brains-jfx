@@ -1,10 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbСоединение;
 import com.varankin.brains.db.DbФрагмент;
 import com.varankin.brains.db.КлючImpl;
-import com.varankin.brains.db.Коллекция;
-import com.varankin.brains.db.Коммутируемый;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
@@ -55,19 +52,20 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     protected List<Node> загрузить_( ReadOnlyListProperty<FxСоединение> соединенияСнаружи, 
             int pos, String ключ )
     {
-        Коммутируемый экземпляр = ЭЛЕМЕНТ.getSource().экземпляр();
-        Collection<DbСоединение> соединенияВнутри = экземпляр != null ? экземпляр.соединения() : Collections.emptyList();
+        FxКоммутируемый экземпляр = ЭЛЕМЕНТ.экземпляр().getValue();
+        Collection<FxСоединение> соединенияВнутри = экземпляр != null ? 
+                экземпляр.соединения().getValue() : Collections.emptyList();
         List<Node> nodes = new ArrayList<>();
         for( FxСоединение снаружи : соединенияСнаружи )
         {
             nodes.add( new EdtСоединение( снаружи ).загрузить( false ) );
-            String ref = снаружи.getSource().название();
-            for( DbСоединение внутри : соединенияВнутри )
+            String ref = снаружи.название().getValue();
+            for( FxСоединение внутри : соединенияВнутри )
             {
-                String id = внутри.название();
+                String id = внутри.название().getValue();
                 if( ref.equals( id ) )
                 {
-                    Node image = new EdtСоединение( new FxСоединение( внутри ) ).загрузить( false );
+                    Node image = new EdtСоединение( внутри ).загрузить( false );
                     image.getTransforms().clear();
                     nodes.add( image );
                     //TODO relocatePins();
@@ -82,6 +80,7 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     
     protected static List<Transform> toTransforms( String spec )
     {
+        if( spec == null ) return Collections.emptyList();
         List<Transform> transforms = new ArrayList<>();
         List<String> parsed = new ArrayList<>( Arrays.asList( spec.split( "[\\(\\)]" ) ) );
         parsed.removeAll( Arrays.asList( "" ) );
@@ -139,8 +138,8 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     {
         if( path.isEmpty() ) return false;
         позиция( path.poll() );
-        ЭЛЕМЕНТ.getSource().определить( Xml.XLINK_SHOW, Xml.XMLNS_XLINK, "other" );
-        ЭЛЕМЕНТ.getSource().определить( Xml.XLINK_HREF, Xml.XMLNS_XLINK, "Ссылка фрагмента" );
+        ЭЛЕМЕНТ.атрибут( Xml.XLINK_SHOW, Xml.XMLNS_XLINK ).setValue( "other" );
+        ЭЛЕМЕНТ.атрибут( Xml.XLINK_HREF, Xml.XMLNS_XLINK ).setValue( "Ссылка фрагмента" );
         ЭЛЕМЕНТ.графики().add( название( "Новый фрагмент", "../@xlink:" + Xml.XLINK_TITLE ) );
         return path.isEmpty();
     }

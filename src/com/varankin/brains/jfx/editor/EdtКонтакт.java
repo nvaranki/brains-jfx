@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.*;
-import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.Queue;
@@ -38,7 +37,7 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт,FxКонта�
         int[] a;
         
         // тип и позиция контакта
-        ЭЛЕМЕНТ.getSource().атрибут( XmlBrains.XML_TYPE, "Тип &inp; или &out;" );
+        ЭЛЕМЕНТ.свойства().setValue( (short)0 ); //TODO type selector
         if( path.isEmpty() ) return false;
         позиция( a = path.poll() );
         
@@ -48,7 +47,7 @@ class EdtКонтакт extends EdtЭлемент<DbКонтакт,FxКонта�
         
         // изображение
         FxГрафика графика = графика( SVG_ELEMENT_CIRCLE );
-        графика.определить( SVG_ATTR_R, 5 );
+        графика.атрибут( SVG_ATTR_R ).setValue( 5 );
         //графика.определить( SVG_ATTR_FILL, "black" );
         ЭЛЕМЕНТ.графики().add( графика );
         

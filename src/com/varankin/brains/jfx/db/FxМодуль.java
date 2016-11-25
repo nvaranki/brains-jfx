@@ -7,7 +7,7 @@ import javafx.beans.property.ReadOnlyListProperty;
  *
  * @author Varankine
  */
-public final class FxМодуль extends FxЭлемент<DbМодуль>
+public final class FxМодуль extends FxЭлемент<DbМодуль> implements FxКоммутируемый
 {
     private final ReadOnlyListProperty<FxБиблиотека> БИБЛИОТЕКИ;
     private final ReadOnlyListProperty<FxПроцессор> ПРОЦЕССОРЫ;
@@ -19,15 +19,15 @@ public final class FxМодуль extends FxЭлемент<DbМодуль>
     {
         super( модуль );
         БИБЛИОТЕКИ = buildReadOnlyListProperty( модуль, "библиотеки", 
-            new FxList<>( модуль.библиотеки(), e -> new FxБиблиотека( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.библиотеки(), модуль, e -> new FxБиблиотека( e ), e -> e.getSource() ) );
         ПРОЦЕССОРЫ = buildReadOnlyListProperty( модуль, "процессоры", 
-            new FxList<>( модуль.процессоры(), e -> new FxПроцессор( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.процессоры(), модуль, e -> new FxПроцессор( e ), e -> e.getSource() ) );
         ФРАГМЕНТЫ = buildReadOnlyListProperty( модуль, "фрагменты", 
-            new FxList<>( модуль.фрагменты(), e -> new FxФрагмент( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.фрагменты(), модуль, e -> new FxФрагмент( e ), e -> e.getSource() ) );
         СИГНАЛЫ = buildReadOnlyListProperty( модуль, "сигналы", 
-            new FxList<>( модуль.сигналы(), e -> new FxСигнал( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.сигналы(), модуль, e -> new FxСигнал( e ), e -> e.getSource() ) );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( модуль, "соединения", 
-            new FxList<>( модуль.соединения(), e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.соединения(), модуль, e -> new FxСоединение( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxБиблиотека> библиотеки()
@@ -50,6 +50,7 @@ public final class FxМодуль extends FxЭлемент<DbМодуль>
         return СИГНАЛЫ;
     }
     
+    @Override
     public ReadOnlyListProperty<FxСоединение> соединения()
     {
         return СОЕДИНЕНИЯ;

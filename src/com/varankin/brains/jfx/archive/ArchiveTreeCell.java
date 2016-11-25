@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.Транзакция;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import com.varankin.brains.jfx.db.FxАтрибутный;
@@ -21,18 +20,9 @@ final class ArchiveTreeCell extends TreeCell<FxАтрибутный>
         if( !empty && item != null && treeItem instanceof AbstractTreeItem ) 
         {
             AbstractTreeItem ati = (AbstractTreeItem)treeItem;
-            FxАтрибутный элемент = ati.getValue();
-//            try( final Транзакция т = элемент.getSource().транзакция() )
-//            {
-                textProperty()   .bind( ati.textProperty() );
-                graphicProperty().bind( ati.graphicProperty() );
-                tooltipProperty().bind( ati.tooltipProperty() );
-//                т.завершить( true );
-//            }
-//            catch( Exception e )
-//            {
-//                //TODO т.close()!!!!
-//            }
+            textProperty()   .bind( ati.textProperty() );
+            graphicProperty().bind( ati.graphicProperty() );
+            tooltipProperty().bind( ati.tooltipProperty() );
         } 
         else 
         {

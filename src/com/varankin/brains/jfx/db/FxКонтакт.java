@@ -15,15 +15,15 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
     private final Property<Integer> ПРИОРИТЕТ;
     private final Property<Short> СВОЙСТВА;
 
-    public FxКонтакт( DbКонтакт контакт ) 
+    public FxКонтакт( DbКонтакт элемент ) 
     {
-        super( контакт );
-        ПАРАМЕТРЫ = buildReadOnlyListProperty( контакт, "параметры", 
-            new FxList<>( контакт.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
-        КЛАССЫ = buildReadOnlyListProperty( контакт, "классы", 
-            new FxList<>( контакт.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ПРИОРИТЕТ = new FxProperty<>( контакт, "приоритет" );
-        СВОЙСТВА = new FxProperty<>( контакт, "свойства" );
+        super( элемент );
+        ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
+            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
+        КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
+            new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
+        ПРИОРИТЕТ = new FxProperty<>( элемент, "приоритет", () -> элемент.приоритет(), (t) -> элемент.приоритет( t ) );
+        СВОЙСТВА = new FxProperty<>( элемент, "свойства", () -> элемент.свойства(), (t) -> элемент.свойства( t ) );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()

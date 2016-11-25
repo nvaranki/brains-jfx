@@ -1,8 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbАтрибутный.Ключ;
-import com.varankin.brains.db.DbЭлемент;
-import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
@@ -14,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
@@ -44,7 +41,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
-import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.util.Builder;
@@ -288,10 +284,8 @@ public final class EditorController implements Builder<Parent>
 
     public void setContent( FxЭлемент элемент )
     {
-        Транзакция транзакция = элемент.getSource().транзакция();
         try
         {
-            транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.getSource() );
             NodeBuilder builder = EdtФабрика.getInstance().создать( элемент );
             content = builder.загрузить( true );
             Platform.runLater( () -> 
@@ -316,12 +310,10 @@ public final class EditorController implements Builder<Parent>
         }
         catch( Exception ex )
         {
-            LOGGER.log( Level.SEVERE, "failure to setup editor for " + элемент.название(), ex );
-            LOGGER.log( Level.SEVERE, "Exception: {0}", ex.getMessage() );
-        }
-        finally
-        {
-            транзакция.завершить( true );
+            LOGGER.log( Level.SEVERE, "failure to setup editor for " + элемент.название().getValue(), ex );
+            String message = ex.getMessage();
+            LOGGER.log(Level.SEVERE, "Exception: {0}", message != null ? message : ex.getClass().getName() );
+            ex.printStackTrace();
         }
     }
 

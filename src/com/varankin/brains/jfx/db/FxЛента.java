@@ -7,7 +7,7 @@ import javafx.beans.property.ReadOnlyListProperty;
  *
  * @author Varankine
  */
-public final class FxЛента extends FxЭлемент<DbЛента>
+public final class FxЛента extends FxЭлемент<DbЛента> implements FxКоммутируемый
 {
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
 
@@ -15,9 +15,10 @@ public final class FxЛента extends FxЭлемент<DbЛента>
     {
         super( лента );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( лента, "соединения", 
-            new FxList<>( лента.соединения(), e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( лента.соединения(), лента, e -> new FxСоединение( e ), e -> e.getSource() ) );
     }
 
+    @Override
     public ReadOnlyListProperty<FxСоединение> соединения()
     {
         return СОЕДИНЕНИЯ;

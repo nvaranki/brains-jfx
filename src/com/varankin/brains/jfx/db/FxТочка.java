@@ -17,18 +17,18 @@ public final class FxТочка extends FxЭлемент<DbТочка>
     private final Property<Boolean> ДАТЧИК;
     private final Property<Float> ПОРОГ;
 
-    public FxТочка( DbТочка точка ) 
+    public FxТочка( DbТочка элемент ) 
     {
-        super( точка );
-        ТОЧКИ = buildReadOnlyListProperty( точка, "точки", 
-            new FxList<>( точка.точки(), e -> new FxТочка( e ), e -> e.getSource() ) );
-        ПАРАМЕТРЫ = buildReadOnlyListProperty( точка, "параметры", 
-            new FxList<>( точка.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
-        КЛАССЫ = buildReadOnlyListProperty( точка, "классы", 
-            new FxList<>( точка.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС = new FxProperty<>( точка, "индекс" );
-        ДАТЧИК = new FxProperty<>( точка, "датчик" );
-        ПОРОГ = new FxProperty<>( точка, "порог" );
+        super( элемент );
+        ТОЧКИ = buildReadOnlyListProperty( элемент, "точки", 
+            new FxList<>( элемент.точки(), элемент, e -> new FxТочка( e ), e -> e.getSource() ) );
+        ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
+            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
+        КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
+            new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
+        ИНДЕКС = new FxProperty<>( элемент, "индекс", () -> элемент.индекс(), (t) -> элемент.индекс( t ) );
+        ДАТЧИК = new FxProperty<>( элемент, "датчик", () -> элемент.датчик(), (t) -> элемент.датчик( t ) );
+        ПОРОГ = new FxProperty<>( элемент, "порог", () -> элемент.порог(), (t) -> элемент.порог( t ) );
     }
 
     public ReadOnlyListProperty<FxТочка> точки()

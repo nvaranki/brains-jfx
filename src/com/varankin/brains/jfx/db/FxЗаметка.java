@@ -15,7 +15,7 @@ public final class FxЗаметка extends FxУзел<DbЗаметка>
     {
         super( конвертер );
         ГРАФИКИ = buildReadOnlyListProperty( конвертер, "графики", 
-            new FxList<>( конвертер.графики(), e -> new FxГрафика( e ), e -> e.getSource() ) );
+            new FxList<>( конвертер.графики(), конвертер, e -> new FxГрафика( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxГрафика> графики()

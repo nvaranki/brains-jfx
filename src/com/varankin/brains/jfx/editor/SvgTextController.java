@@ -2,10 +2,12 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxГрафика;
+import com.varankin.brains.jfx.db.FxИнструкция;
+import com.varankin.brains.jfx.db.FxТекстовыйБлок;
 import com.varankin.util.LoggerX;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.logging.Level;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -31,23 +33,23 @@ final class SvgTextController implements Builder<Text>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgText.css";
     private static final String CSS_CLASS = "svg-text";
     
-    private final DbАтрибутный ЭЛЕМЕНТ;
-    private final DbИнструкция инструкция;
-    private final DbТекстовыйБлок блок;
+    private final FxГрафика ЭЛЕМЕНТ;
+    private final FxИнструкция инструкция;
+    private final FxТекстовыйБлок блок;
     
     @FXML private Text text;
     
-    SvgTextController( DbАтрибутный элемент, DbИнструкция инструкция ) 
+    SvgTextController( FxГрафика элемент, FxИнструкция инструкция ) 
     {
         this( элемент, инструкция, null );
     }
     
-    SvgTextController( DbАтрибутный элемент, DbТекстовыйБлок блок ) 
+    SvgTextController( FxГрафика элемент, FxТекстовыйБлок блок ) 
     {
         this( элемент, null, блок );
     }
     
-    private SvgTextController( DbАтрибутный элемент, DbИнструкция инструкция, DbТекстовыйБлок блок ) 
+    private SvgTextController( FxГрафика элемент, FxИнструкция инструкция, FxТекстовыйБлок блок ) 
     {
         ЭЛЕМЕНТ = элемент;
         this.инструкция = инструкция;
@@ -85,7 +87,10 @@ final class SvgTextController implements Builder<Text>
     
     private void onVisibleChanged( ObservableValue<? extends Boolean> o, Boolean oldValue, Boolean newValue )
     {
-        if( newValue ) JavaFX.getInstance().execute( new TextUpdateTask() );
+        if( newValue ) 
+        {
+            JavaFX.getInstance().execute( new TextUpdateTask() );
+        }
     }
     
     @FXML
@@ -141,27 +146,27 @@ final class SvgTextController implements Builder<Text>
         @Override
         protected Void call() throws Exception
         {
-            try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
+            //try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
             {
-                транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, ЭЛЕМЕНТ );
-                x = asDouble( ЭЛЕМЕНТ, SVG_ATTR_X, 0d );
-                y = asDouble( ЭЛЕМЕНТ, SVG_ATTR_Y, 0d );
-                fill = asColor( ЭЛЕМЕНТ, SVG_ATTR_FILL, null );
-                stroke = asColor( ЭЛЕМЕНТ, SVG_ATTR_STROKE, null );
-                font = Font.font( asDouble( ЭЛЕМЕНТ, SVG_ATTR_FONT_SIZE, 10d ) );
-                content = инструкция != null ? content( инструкция ) : блок != null ? блок.текст() : null;
+                //транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, ЭЛЕМЕНТ );
+                x = ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_X, 0d );
+                y = ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_Y, 0d );
+                fill = ЭЛЕМЕНТ.toSvgColor( SVG_ATTR_FILL, null );
+                stroke = ЭЛЕМЕНТ.toSvgColor( SVG_ATTR_STROKE, null );
+                font = Font.font( ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_FONT_SIZE, 10d ) );
+                content = инструкция != null ? content( инструкция ) : блок != null ? блок.текст().getValue() : null;
             }
             return null;
         }
         
-        String content( DbИнструкция инструкция )
+        String content( FxИнструкция инструкция )
         {
             if( инструкция == null ) return null;
-            String text = инструкция.выполнить();
+            String text = инструкция.выполнить().getValue();
             if( text == null )
-                text = "!!! " + инструкция.процессор() + '(' + инструкция.код() + ')' + "=null";
+                text = "!!! " + инструкция.процессор().getValue() + '(' + инструкция.код().getValue() + ')' + "=null";
             else if( text.isEmpty() )
-                text = "??? " + инструкция.процессор() + '(' + инструкция.код() + ')' + "=\"\"";
+                text = "??? " + инструкция.процессор().getValue() + '(' + инструкция.код().getValue() + ')' + "=\"\"";
             return text;
         }
         

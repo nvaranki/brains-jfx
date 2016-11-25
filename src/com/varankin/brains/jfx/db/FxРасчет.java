@@ -7,7 +7,7 @@ import javafx.beans.property.ReadOnlyListProperty;
  *
  * @author Varankine
  */
-public final class FxРасчет extends FxЭлемент<DbРасчет>
+public final class FxРасчет extends FxЭлемент<DbРасчет> implements FxКоммутируемый
 {
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
     private final ReadOnlyListProperty<FxТочка> ТОЧКИ;
@@ -16,11 +16,12 @@ public final class FxРасчет extends FxЭлемент<DbРасчет>
     {
         super( расчет );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( расчет, "соединения", 
-            new FxList<>( расчет.соединения(), e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( расчет.соединения(), расчет, e -> new FxСоединение( e ), e -> e.getSource() ) );
         ТОЧКИ = buildReadOnlyListProperty( расчет, "точки", 
-            new FxList<>( расчет.точки(), e -> new FxТочка( e ), e -> e.getSource() ) );
+            new FxList<>( расчет.точки(), расчет, e -> new FxТочка( e ), e -> e.getSource() ) );
     }
 
+    @Override
     public ReadOnlyListProperty<FxСоединение> соединения()
     {
         return СОЕДИНЕНИЯ;

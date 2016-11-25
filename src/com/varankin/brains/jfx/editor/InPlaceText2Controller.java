@@ -1,8 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbИнструкция;
-import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxИнструкция;
 import com.varankin.util.LoggerX;
 
 import java.util.logging.*;
@@ -29,13 +28,13 @@ public class InPlaceText2Controller implements Builder<Node>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgTextField.css";
     private static final String CSS_CLASS = "svg-text-field";
     
-    private final DbИнструкция ЭЛЕМЕНТ;
+    private final FxИнструкция ЭЛЕМЕНТ;
     
     @FXML private TextField text;
     @FXML private ComboBox<String> type;
     @FXML private Node редактор;
     
-    InPlaceText2Controller( DbИнструкция инструкция )
+    InPlaceText2Controller( FxИнструкция инструкция )
     {
         this.ЭЛЕМЕНТ = инструкция;
     }
@@ -118,13 +117,8 @@ public class InPlaceText2Controller implements Builder<Node>
         @Override
         public Void call() throws Exception
         {
-            try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
-            {
-                транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, ЭЛЕМЕНТ );
-                ЭЛЕМЕНТ.процессор( data.processor );
-                ЭЛЕМЕНТ.код( data.content );
-                транзакция.завершить( true );
-            }
+            ЭЛЕМЕНТ.процессор().setValue( data.processor );
+            ЭЛЕМЕНТ.код().setValue( data.content );
             return null;
         }
         
@@ -149,13 +143,7 @@ public class InPlaceText2Controller implements Builder<Node>
         @Override
         protected Data call() throws Exception
         {
-            Data data;
-            try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
-            {
-                транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, ЭЛЕМЕНТ );
-                data = new Data( ЭЛЕМЕНТ.процессор(), ЭЛЕМЕНТ.код() );
-            }
-            return data;
+            return new Data( ЭЛЕМЕНТ.процессор().getValue(), ЭЛЕМЕНТ.код().getValue() );
         }
         
         @Override

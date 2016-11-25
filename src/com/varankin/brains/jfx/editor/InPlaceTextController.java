@@ -1,8 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbТекстовыйБлок;
-import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxТекстовыйБлок;
 import com.varankin.util.LoggerX;
 
 import java.util.logging.*;
@@ -26,11 +25,11 @@ public class InPlaceTextController implements Builder<Node>
     //private static final String RESOURCE_CSS  = "/fxml/editor/SvgTextField.css";
     private static final String CSS_CLASS = "svg-text-field";
     
-    private final DbТекстовыйБлок ЭЛЕМЕНТ;
+    private final FxТекстовыйБлок ЭЛЕМЕНТ;
     
     @FXML private TextField text;
     
-    InPlaceTextController( DbТекстовыйБлок блок )
+    InPlaceTextController( FxТекстовыйБлок блок )
     {
         this.ЭЛЕМЕНТ = блок;
     }
@@ -96,12 +95,7 @@ public class InPlaceTextController implements Builder<Node>
         @Override
         public Void call() throws Exception
         {
-            try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
-            {
-                транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, ЭЛЕМЕНТ );
-                ЭЛЕМЕНТ.текст( data );
-                транзакция.завершить( true );
-            }
+            ЭЛЕМЕНТ.текст().setValue( data );
             return null;
         }
         
@@ -126,13 +120,7 @@ public class InPlaceTextController implements Builder<Node>
         @Override
         protected String call() throws Exception
         {
-            String data;
-            try( Транзакция транзакция = ЭЛЕМЕНТ.транзакция() )
-            {
-                транзакция.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, ЭЛЕМЕНТ );
-                data = ЭЛЕМЕНТ.текст();
-            }
-            return data;
+            return ЭЛЕМЕНТ.текст().getValue();
         }
         
         @Override

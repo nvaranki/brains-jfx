@@ -23,8 +23,21 @@ class EdtИнструкция extends EdtАтрибутный<DbИнструкц
     @Override
     public Node загрузить( boolean основной )
     {
-        Node node = основной ? new HBox( new TextField( ЭЛЕМЕНТ.getSource().процессор() ), 
-                new TextField( ЭЛЕМЕНТ.getSource().код() ) ) : new Label( ЭЛЕМЕНТ.getSource().выполнить() );
+        Node node;
+        if( основной )
+        {
+            TextField процессор = new TextField();
+            процессор.textProperty().bindBidirectional( ЭЛЕМЕНТ.процессор() );
+            TextField код = new TextField();
+            код.textProperty().bindBidirectional( ЭЛЕМЕНТ.код() );
+            node = new HBox( процессор, код );
+        }
+        else
+        {
+            Label label = new Label();
+            label.textProperty().bind( ЭЛЕМЕНТ.выполнить() );
+            node = label;
+        }
         node = super.загрузить( node, основной );
         return node;
     }

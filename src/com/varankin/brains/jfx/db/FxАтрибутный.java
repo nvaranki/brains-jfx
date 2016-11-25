@@ -12,12 +12,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.ListExpression;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyListWrapper;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.property.adapter.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 
 /**
  *
@@ -27,17 +30,41 @@ import javafx.collections.ObservableList;
 public class FxАтрибутный<T extends DbАтрибутный>
 {
     private final T ЭЛЕМЕНТ;
+    private final ReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
     private final Map<String,StringProperty> АТРИБУТЫ;
+    private final Map<String,Property> properties;
 
     public FxАтрибутный( T элемент )
     {
         ЭЛЕМЕНТ = элемент;
         АТРИБУТЫ = new HashMap<>();
+        properties = new HashMap<>();
+        ТИП = new FxReadOnlyProperty<>( элемент, "тип", () -> элемент.тип() );
     }
     
     public final T getSource()
     {
         return ЭЛЕМЕНТ;
+    }
+    
+    public final FxАрхив архив()
+    {
+        return FxФабрика.getInstance().создать( ЭЛЕМЕНТ.архив() );
+    }
+    
+    public final ReadOnlyProperty<DbАтрибутный.Ключ> тип()
+    {
+        return ТИП;
+    }
+    
+    public final Property атрибут( String название, String uri )
+    {
+        Property p = properties.get( название );
+        if( p == null )
+            properties.put( название, p = new FxProperty( ЭЛЕМЕНТ, название, 
+                () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
+                (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) ) );
+        return p;
     }
     
 //    @Override

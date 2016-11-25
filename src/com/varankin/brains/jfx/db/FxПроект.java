@@ -19,13 +19,13 @@ public final class FxПроект extends FxЭлемент<DbПроект>
     {
         super( проект );
         БИБЛИОТЕКИ = buildReadOnlyListProperty( проект, "библиотеки", 
-            new FxList<>( проект.библиотеки(), e -> new FxБиблиотека( e ), e -> e.getSource() ) );
+            new FxList<>( проект.библиотеки(), проект, e -> new FxБиблиотека( e ), e -> e.getSource() ) );
         ПРОЦЕССОРЫ = buildReadOnlyListProperty( проект, "процессоры", 
-            new FxList<>( проект.процессоры(), e -> new FxПроцессор( e ), e -> e.getSource() ) );
+            new FxList<>( проект.процессоры(), проект, e -> new FxПроцессор( e ), e -> e.getSource() ) );
         ФРАГМЕНТЫ = buildReadOnlyListProperty( проект, "фрагменты", 
-            new FxList<>( проект.фрагменты(), e -> new FxФрагмент( e ), e -> e.getSource() ) );
+            new FxList<>( проект.фрагменты(), проект, e -> new FxФрагмент( e ), e -> e.getSource() ) );
         СИГНАЛЫ = buildReadOnlyListProperty( проект, "сигналы", 
-            FXCollections.observableList( new FxList<>( проект.сигналы(), 
+            FXCollections.observableList( new FxList<>( проект.сигналы(), проект, 
                 e -> new FxСигнал( e ), e -> e.getSource() ) ) );
     }
 

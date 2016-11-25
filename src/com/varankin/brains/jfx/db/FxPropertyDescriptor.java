@@ -1,46 +1,26 @@
 package com.varankin.brains.jfx.db;
 
-import com.sun.javafx.property.adapter.PropertyDescriptor;
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.Транзакция;
-import java.lang.reflect.Method;
-import javafx.beans.property.adapter.ReadOnlyJavaBeanProperty;
-import javafx.beans.value.ObservableValue;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  *
  * @author Varankine
  */
-final class FxPropertyDescriptor extends PropertyDescriptor
+final class FxPropertyDescriptor<T>
 {
+    final DbАтрибутный bean;
+    final String name;
+    final Supplier<T> supplier;
+    final Consumer<T> consumer;
     
-    FxPropertyDescriptor( String propertyName, Class<?> beanClass, Method getter, Method setter )
+    FxPropertyDescriptor( DbАтрибутный bean, String name, Supplier<T> supplier, Consumer<T> consumer )
     {
-        super( propertyName, beanClass, getter, setter );
-    }
-    
-    public class FxListener<T> extends Listener<T> 
-    {
-        
-        public FxListener( DbАтрибутный bean, ReadOnlyJavaBeanProperty<T> property )
-        {
-            super( bean, property );
-        }
-
-        @Override
-        public void changed( ObservableValue<? extends T> observable, T oldValue, T newValue ) 
-        {
-            try( final Транзакция т = ((DbАтрибутный)getBean()).транзакция() )
-            {
-                super.changed( observable, oldValue, newValue );
-                т.завершить( true );
-            }
-            catch( Exception e )
-            {
-                throw new RuntimeException( e );
-            }
-        }
-        
+        this.bean = bean;
+        this.name = name;
+        this.supplier = supplier;
+        this.consumer = consumer;
     }
     
 }

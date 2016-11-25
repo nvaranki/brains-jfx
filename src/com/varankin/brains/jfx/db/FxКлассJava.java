@@ -13,13 +13,13 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
     private final Property<Boolean> ОСНОВНОЙ;
     private final Property<String> КОД;
 
-    public FxКлассJava( DbКлассJava класс ) 
+    public FxКлассJava( DbКлассJava элемент ) 
     {
-        super( класс );
-        КОНВЕРТЕРЫ = buildReadOnlyListProperty( класс, "конвертеры", 
-            new FxList<>( класс.конвертеры(), e -> new FxКонвертер( e ), e -> e.getSource() ) );
-        ОСНОВНОЙ = new FxProperty<>( класс, "основной" );
-        КОД = new FxProperty<>( класс, "код" );
+        super( элемент );
+        КОНВЕРТЕРЫ = buildReadOnlyListProperty( элемент, "конвертеры", 
+            new FxList<>( элемент.конвертеры(), элемент, e -> new FxКонвертер( e ), e -> e.getSource() ) );
+        ОСНОВНОЙ = new FxProperty<>( элемент, "основной", () -> элемент.основной(), (t) -> элемент.основной( t ) );
+        КОД = new FxProperty<>( элемент, "код", () -> элемент.код(), (t) -> элемент.код( t ) );
     }
     
     

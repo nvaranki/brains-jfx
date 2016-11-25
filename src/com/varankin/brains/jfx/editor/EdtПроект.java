@@ -8,6 +8,7 @@ import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 
+import static com.varankin.brains.db.DbАтрибутный.*;
 import static com.varankin.brains.io.xml.XmlBrains.*;
 import static com.varankin.brains.io.xml.XmlSvg.*;
 
@@ -51,8 +52,8 @@ class EdtПроект extends EdtЭлемент<DbПроект,FxПроект>
     private Node createBounds()
     {
         double w, h;
-        Double атрибутWidth  = DbАтрибутный.toDoubleValue( ЭЛЕМЕНТ.getSource().атрибут( SVG_ATTR_WIDTH,  XMLNS_SVG, 200d ) );
-        Double атрибутHeight = DbАтрибутный.toDoubleValue( ЭЛЕМЕНТ.getSource().атрибут( SVG_ATTR_HEIGHT, XMLNS_SVG, 100d ) );
+        Double атрибутWidth  = toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_WIDTH,  XMLNS_SVG ).getValue() );
+        Double атрибутHeight = toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_HEIGHT, XMLNS_SVG ).getValue() );
         w = атрибутWidth  != null ? атрибутWidth  : 200d; 
         h = атрибутHeight != null ? атрибутHeight : 100d;
         Polygon countor = new Polygon( 0d, 0d, w, 0d, w, h, 0d, h );

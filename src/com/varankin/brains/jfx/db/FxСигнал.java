@@ -14,14 +14,14 @@ public final class FxСигнал extends FxЭлемент<DbСигнал>
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
     private final Property<DbСигнал.Приоритет> ПРИОРИТЕТ;
 
-    public FxСигнал( DbСигнал сигнал ) 
+    public FxСигнал( DbСигнал элемент ) 
     {
-        super( сигнал );
-        ПАРАМЕТРЫ = buildReadOnlyListProperty( сигнал, "параметры", 
-            new FxList<>( сигнал.параметры(), e -> new FxПараметр( e ), e -> e.getSource() ) );
-        КЛАССЫ = buildReadOnlyListProperty( сигнал, "классы", 
-            new FxList<>( сигнал.классы(), e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ПРИОРИТЕТ = new FxProperty<>( сигнал, "приоритет" );
+        super( элемент );
+        ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
+            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
+        КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
+            new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
+        ПРИОРИТЕТ = new FxProperty<>( элемент, "приоритет", () -> элемент.приоритет(), (t) -> элемент.приоритет( t ) );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()

@@ -35,25 +35,23 @@ class EdtСигнал extends EdtЭлемент<DbСигнал,FxСигнал>
     {
         if( path.size() < 3 ) return false;
         
-        DbАрхив архив = ЭЛЕМЕНТ.getSource().архив();
         FxГрафика графика;
         
         // изображение
-        графика = FxФабрика.getInstance().создать( 
-            (DbГрафика)архив.создатьНовыйЭлемент( SVG_ELEMENT_POLYLINE, XMLNS_SVG ) );
-        графика.определить( SVG_ATTR_POINTS, points( path, path.size()-1 ) );
-        графика.определить( SVG_ATTR_STROKE, "teal" );
+        графика = графика( SVG_ELEMENT_POLYLINE );
+        графика.атрибут( SVG_ATTR_POINTS ).setValue( points( path, path.size()-1 ) );
+        графика.атрибут( SVG_ATTR_STROKE ).setValue( "teal" );
         ЭЛЕМЕНТ.графики().add( графика );
         
         // название  
         графика = название( "Новый сигнал", "../@" + XML_NAME, path.poll() );
-        графика.определить( SVG_ATTR_FILL, "teal" );
+        графика.атрибут( SVG_ATTR_FILL ).setValue( "teal" );
         ЭЛЕМЕНТ.графики().add( графика );
         
         return path.isEmpty();
     }
     
-    int[] points( Queue<int[]> path, int cnt ) 
+    private static int[] points( Queue<int[]> path, int cnt ) 
     {
         int[] points = new int[ cnt*2 ];
         for( int i = 0; i < cnt; i++)

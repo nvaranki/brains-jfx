@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.characteristic.Именованный;
 import java.util.*;
 import java.util.logging.Logger;
@@ -36,6 +37,11 @@ public final class ArchiveResourceFactory
         return JavaFX.icon( "icons16x16/" + ключМаркиЭлемента.get( тип( элемент, ключМаркиЭлемента ) ) );
     }
 
+    public static Node марка( FxАтрибутный элемент )
+    {
+        return JavaFX.icon( "icons16x16/" + ключМаркиЭлемента.get( тип( элемент, ключМаркиЭлемента ) ) );
+    }
+
     static Node маркаКоллекции( String тип )
     {
         String файл = ключМаркиКоллекции.containsKey( тип ) ? ключМаркиКоллекции.get( тип ) : "fragment.png";
@@ -60,6 +66,22 @@ public final class ArchiveResourceFactory
         return RB.getString( ключМеткиЭлемента.get( тип( элемент, ключМеткиЭлемента ) ) );
     }
 
+    static String метка( FxАтрибутный элемент )
+    {
+        if( элемент.getSource() instanceof Именованный )
+            try( Транзакция т = элемент.getSource().транзакция() )
+            {
+                String текст = ((Именованный)элемент.getSource()).название();
+                if( текст != null && ! текст.trim().isEmpty() )
+                    return текст;
+            }
+            catch( Exception e )
+            {
+                throw new RuntimeException( e );
+            }
+        return RB.getString( ключМеткиЭлемента.get( тип( элемент, ключМеткиЭлемента ) ) );
+    }
+
     static String меткаКоллекции( String тип )
     {
         String ключ = ключМеткиКоллекции.get( тип );
@@ -72,9 +94,27 @@ public final class ArchiveResourceFactory
         return RB.containsKey( ключ ) ? new Tooltip( RB.getString( ключ ) ) : null;
     }
     
+    static Tooltip подсказка( FxАтрибутный элемент )
+    {
+        String ключ = ключПодсказки.get( тип( элемент, ключПодсказки ) );
+        return RB.containsKey( ключ ) ? new Tooltip( RB.getString( ключ ) ) : null;
+    }
+    
     private static String тип( DbАтрибутный элемент, Map<String,String> карта )
     {
         String тип = элемент.тип().название();
+        if( элемент instanceof DbNameSpace )
+            тип = XML_NS_TEMP;
+        else if( элемент instanceof DbМусор )
+            тип = XML_WB_TEMP;
+        else if( элемент instanceof DbГрафика )
+            тип = XML_GRAPHIC;
+        return карта.containsKey( тип ) ? тип : XML_UN_TEMP;
+    }
+    
+    private static String тип( FxАтрибутный<?> элемент, Map<String,String> карта )
+    {
+        String тип = элемент.тип().getValue().название();
         if( элемент instanceof DbNameSpace )
             тип = XML_NS_TEMP;
         else if( элемент instanceof DbМусор )

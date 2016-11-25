@@ -11,10 +11,10 @@ public final class FxТекстовыйБлок extends FxАтрибутный<D
 {
     private final Property<String> ТЕКСТ;
 
-    public FxТекстовыйБлок( DbТекстовыйБлок блок ) 
+    public FxТекстовыйБлок( DbТекстовыйБлок элемент ) 
     {
-        super( блок );
-        ТЕКСТ = new FxProperty<>( блок, "текст" );
+        super( элемент );
+        ТЕКСТ = new FxProperty<>( элемент, "текст", () -> элемент.текст(), (t) -> элемент.текст( t ) );
     }
 
     public Property<String> текст()

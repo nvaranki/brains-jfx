@@ -17,11 +17,11 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     {
         super( архив );
         ПАКЕТЫ = buildReadOnlyListProperty( архив, "пакеты", 
-            new FxList<>( архив.пакеты(), e -> new FxПакет( e ), e -> e.getSource() ) );
+            new FxList<>( архив.пакеты(), архив, e -> new FxПакет( e ), e -> e.getSource() ) );
         NAMESPACES = buildReadOnlyListProperty( архив, "namespaces", 
-            new FxList<>( архив.namespaces(), e -> new FxNameSpace( e ), e -> e.getSource() ) );
+            new FxList<>( архив.namespaces(), архив, e -> new FxNameSpace( e ), e -> e.getSource() ) );
         МУСОР = buildReadOnlyListProperty( архив, "мусор", 
-            new FxList<>( архив.мусор(), e -> new FxМусор( e ), e -> e.getSource() ) );
+            new FxList<>( архив.мусор(), архив, e -> new FxМусор( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxПакет> пакеты()
@@ -37,6 +37,11 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     public ReadOnlyListProperty<FxМусор> мусор()
     {
         return МУСОР;
+    }
+    
+    public FxАтрибутный создатьНовыйЭлемент( String название, String uri )
+    {
+        return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( название, uri ) );
     }
     
     @Override

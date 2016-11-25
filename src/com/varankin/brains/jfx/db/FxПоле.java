@@ -7,7 +7,7 @@ import javafx.beans.property.ReadOnlyListProperty;
  *
  * @author Varankine
  */
-public final class FxПоле extends FxЭлемент<DbПоле>
+public final class FxПоле extends FxЭлемент<DbПоле> implements FxКоммутируемый
 {
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
     private final ReadOnlyListProperty<FxСенсор> СЕНСОРЫ;
@@ -16,11 +16,12 @@ public final class FxПоле extends FxЭлемент<DbПоле>
     {
         super( поле );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( поле, "соединения", 
-            new FxList<>( поле.соединения(), e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( поле.соединения(), поле, e -> new FxСоединение( e ), e -> e.getSource() ) );
         СЕНСОРЫ = buildReadOnlyListProperty( поле, "сенсоры", 
-            new FxList<>( поле.сенсоры(), e -> new FxСенсор( e ), e -> e.getSource() ) );
+            new FxList<>( поле.сенсоры(), поле, e -> new FxСенсор( e ), e -> e.getSource() ) );
     }
 
+    @Override
     public ReadOnlyListProperty<FxСоединение> соединения()
     {
         return СОЕДИНЕНИЯ;
