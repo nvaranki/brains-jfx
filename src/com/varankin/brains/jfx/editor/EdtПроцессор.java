@@ -28,8 +28,8 @@ class EdtПроцессор extends EdtЭлемент<DbПроцессор,FxП�
     {
         Group group = super.загрузить( основной );
         ObservableList<Node> children = group.getChildren();
-        children.addAll( загрузить( ЭЛЕМЕНТ.параметры() ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.классы() ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.параметры(), 0, XML_PARAMETER ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.классы(), 0, XML_JAVA ) );
 
         return group;
     }

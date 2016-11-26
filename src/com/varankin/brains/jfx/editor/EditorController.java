@@ -81,13 +81,15 @@ public final class EditorController implements Builder<Parent>
     private final IntegerProperty xProperty = new SimpleIntegerProperty();
     private final IntegerProperty yProperty = new SimpleIntegerProperty();
     private int offsetX, offsetY;
+    private final LinkedList<int[]> clicks;
     private Node content;
-    private LinkedList<int[]> clicks = new LinkedList<>();
+    private Polyline path;
 
     public EditorController()
     {
         snapProperty = new SimpleIntegerProperty( 1 );
         offsetX = offsetY = 50;
+        clicks = new LinkedList<>();
     }
 
     /**
@@ -383,26 +385,6 @@ public final class EditorController implements Builder<Parent>
         LOGGER.getLogger().info( "selection at "+xProperty.get()+","+yProperty.get() );
         e.consume();
     }
-    
-    private static final Map<String,Integer> limit;
-    static
-    {
-        limit = new HashMap<>();
-        limit.put( XmlBrains.XML_PARAMETER, 2 );
-        limit.put( XmlBrains.XML_JAVA, 1 );
-        limit.put( XmlBrains.XML_PIN, 2 );
-        limit.put( XmlBrains.XML_POINT, 2 );
-        limit.put( XmlBrains.XML_JOINT, 2 );
-        limit.put( XmlBrains.XML_PROCESSOR, 1 );
-        limit.put( XmlBrains.XML_FRAGMENT, 1 );
-        limit.put( XmlBrains.XML_LIBRARY, 1 );
-        limit.put( XmlSvg.SVG_ELEMENT_TEXT, 1 );
-        limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
-        limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );
-        limit.put( XmlSvg.SVG_ELEMENT_CIRCLE, 2 );
-        limit.put( XmlSvg.SVG_ELEMENT_ELLIPSE, 2 );
-    }
-    private Polyline path;
         
     private void onAdd( MouseEvent e )
     {
@@ -473,4 +455,30 @@ public final class EditorController implements Builder<Parent>
         }
     }
     
+    private static final Map<String,Integer> limit;
+    static
+    {
+        limit = new HashMap<>();
+        limit.put( XmlBrains.XML_COMPUTE, 1 );
+        limit.put( XmlBrains.XML_CONVERTER, 1 );
+        limit.put( XmlBrains.XML_FIELD, 1 );
+        limit.put( XmlBrains.XML_FRAGMENT, 1 );
+        limit.put( XmlBrains.XML_JAVA, 1 );
+        limit.put( XmlBrains.XML_JOINT, 2 );
+        limit.put( XmlBrains.XML_LIBRARY, 1 );
+        limit.put( XmlBrains.XML_MODULE, 1 );
+        limit.put( XmlBrains.XML_NOTE, 1 );
+        limit.put( XmlBrains.XML_PIN, 2 );
+        limit.put( XmlBrains.XML_PARAMETER, 2 );
+        limit.put( XmlBrains.XML_POINT, 2 );
+        limit.put( XmlBrains.XML_PROCESSOR, 1 );
+        limit.put( XmlBrains.XML_PROJECT, 1 );
+        limit.put( XmlBrains.XML_SENSOR, 1 );
+        limit.put( XmlBrains.XML_TIMELINE, 1 );
+        limit.put( XmlSvg.SVG_ELEMENT_TEXT, 1 );
+        limit.put( XmlSvg.SVG_ELEMENT_LINE, 2 );
+        limit.put( XmlSvg.SVG_ELEMENT_RECT, 2 );
+        limit.put( XmlSvg.SVG_ELEMENT_CIRCLE, 2 );
+        limit.put( XmlSvg.SVG_ELEMENT_ELLIPSE, 2 );
+    }
 }

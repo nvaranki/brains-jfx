@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Queue;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlBrains.XML_NAME;
-import static com.varankin.brains.jfx.editor.EdtЭлемент.отн;
-
-
 /**
  *
  * @author Николай
