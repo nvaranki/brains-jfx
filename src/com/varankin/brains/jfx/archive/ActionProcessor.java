@@ -249,10 +249,11 @@ final class ActionProcessor //TODO RT-37820
     {
         List<DbЭлемент> list = SELECTION.stream()
                 .map( i -> i.getValue() )
-                .filter( i -> i instanceof DbЭлемент ).map( i -> (DbЭлемент)i )
+                .filter( i -> i instanceof FxЭлемент )
+                .map( i -> (DbЭлемент)((FxЭлемент)i).getSource() )
                 .collect( Collectors.toList() );
         if( list.size() != 1 )
-            LOGGER.log( Level.SEVERE, "Cannot save multiple {0} elements into single file.", list.size() );
+            LOGGER.log( Level.SEVERE, "Cannot save {0} elements into single file.", list.size() );
         else
         {
             DbЭлемент элемент = list.get( 0 );

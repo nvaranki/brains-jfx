@@ -2,7 +2,12 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.DbЗаметка;
 import com.varankin.brains.jfx.db.*;
+import java.util.List;
+import java.util.Queue;
 import javafx.scene.*;
+
+import static com.varankin.brains.io.xml.XmlBrains.XML_NAME;
+import static com.varankin.brains.jfx.editor.EdtЭлемент.отн;
 
 
 /**
@@ -25,4 +30,16 @@ class EdtЗаметка extends EdtУзел<DbЗаметка,FxЗаметка>
         return group;
     }
     
+    @Override
+    protected void тексты( List<Node> children ) {}
+    
+    @Override
+    public boolean составить( Queue<int[]> path )
+    {
+        if( path.isEmpty() ) return false;
+        ЭЛЕМЕНТ.тексты().add( блок( "Новая заметка" ) );
+        ЭЛЕМЕНТ.графики().add( надпись( "../text()", path.poll() ) );
+        return path.isEmpty();
+    }
+
 }

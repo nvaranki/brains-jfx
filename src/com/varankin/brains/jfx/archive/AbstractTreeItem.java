@@ -56,7 +56,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
     protected final ChangeListener<Boolean> пд;
     private Составитель составитель;
 
-    AbstractTreeItem( FxАтрибутный value, Callback<FxАтрибутный,AbstractTreeItem> фабрика)
+    AbstractTreeItem( FxАтрибутный value, Callback<FxАтрибутный,AbstractTreeItem> фабрика )
     {
         super( value );
         this.фабрика = фабрика;
@@ -199,7 +199,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         {
             Throwable exception = getException();
             if( exception != null )
-                LOGGER.log( Level.SEVERE, "LookupTask", exception );
+                LOGGER.log( Level.SEVERE, "LookupTask: " + AbstractTreeItem.this.getValue(), exception );
             else
                 LOGGER.log( Level.SEVERE, "LookupTask" );
         }
@@ -248,7 +248,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         {
             Throwable exception = getException();
             if( exception != null )
-                LOGGER.log( Level.SEVERE, "PopulateTask", exception );
+                LOGGER.log( Level.SEVERE, "PopulateTask: " + AbstractTreeItem.this.getValue(), exception );
             else
                 LOGGER.log( Level.SEVERE, "PopulateTask" );
         }

@@ -30,10 +30,10 @@ class StorageToScreenTask extends Task<Void>
     {
         try( Транзакция т = lock.транзакция() )
         {
-            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, lock );
+            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, lock.архив() );
             for( AttributeAgent agent : agents )
                 agent.fromStorage();
-//            т.завершить( true );
+            т.завершить( true );
         }
         return null;
     }

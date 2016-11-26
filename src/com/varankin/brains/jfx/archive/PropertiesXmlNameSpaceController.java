@@ -88,9 +88,10 @@ public final class PropertiesXmlNameSpaceController implements Builder<Pane>
         {
             try( Транзакция т = xmlNameSpace.транзакция() )
             {
-                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, xmlNameSpace );
+                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, xmlNameSpace.архив() );
                 название = xmlNameSpace.название();
                 текстUri = xmlNameSpace.uri();
+                т.завершить( true );
             }
             return null;
         }
@@ -119,7 +120,7 @@ public final class PropertiesXmlNameSpaceController implements Builder<Pane>
         {
             try( Транзакция т = xmlNameSpace.транзакция() )
             {
-                т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, xmlNameSpace );
+                т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, xmlNameSpace.архив() );
                 xmlNameSpace.название( название );
                 xmlNameSpace.uri( текстUri );
                 т.завершить( true );

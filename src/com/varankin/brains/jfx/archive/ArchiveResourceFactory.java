@@ -72,6 +72,7 @@ public final class ArchiveResourceFactory
             try( Транзакция т = элемент.getSource().транзакция() )
             {
                 String текст = ((Именованный)элемент.getSource()).название();
+                т.завершить( true );
                 if( текст != null && ! текст.trim().isEmpty() )
                     return текст;
             }

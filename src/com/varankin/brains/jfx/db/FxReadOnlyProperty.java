@@ -26,11 +26,14 @@ final class FxReadOnlyProperty<T>
     {
         try( final Транзакция т = getBean().транзакция() )
         {
-            return descriptor.supplier.get();
+            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, getBean().архив() );
+            T t = descriptor.supplier.get();
+            т.завершить( true );
+            return t;
         }
         catch( Exception e )
         {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Failure to get property value on " + getBean(), e );
         }
     }
     

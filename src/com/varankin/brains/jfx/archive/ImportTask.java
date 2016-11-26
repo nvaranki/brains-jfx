@@ -1,11 +1,8 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.biz.action.Действие;
 import com.varankin.biz.action.Результат;
 import com.varankin.biz.action.РезультатТипа;
 import com.varankin.brains.appl.Импортировать;
-import com.varankin.brains.appl.КаталогДействий;
-import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbПакет;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
@@ -29,7 +26,6 @@ class ImportTask extends Task<Boolean>
     private static final Logger LOGGER = Logger.getLogger( ImportTask.class.getName(), 
             ImportTask.class.getPackage().getName() + ".text" );
     private static final Импортировать ИМПОРТИРОВАТЬ = new Импортировать();
-//            (Действие)JavaFX.getInstance().контекст.действие( КаталогДействий.Индекс.ИмпортироватьXML );
     
     private final Импортировать.Контекст контекст;
     private final SerializableProvider<InputStream> поставщик;
@@ -45,13 +41,15 @@ class ImportTask extends Task<Boolean>
     @Override
     protected Boolean call() throws Exception
     {
-        РезультатТипа<DbПакет> результат = ИМПОРТИРОВАТЬ.выполнить( контекст );
-        DbПакет пакет = результат.значение();
         try( final Транзакция транзакция = архив.getSource().транзакция() )
         {
             транзакция.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, архив.getSource() );
-            return результат.код() == Результат.НОРМА && пакет != null 
+            РезультатТипа<DbПакет> результат = ИМПОРТИРОВАТЬ.выполнить( контекст );
+            DbПакет пакет = результат.значение();
+            boolean фиксация = результат.код() == Результат.НОРМА && пакет != null 
                     && архив.пакеты().add( new FxПакет( пакет ) );
+            транзакция.завершить( фиксация );
+            return фиксация;
         }
     }
 

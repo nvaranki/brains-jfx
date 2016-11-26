@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.*;
-import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.db.*;
@@ -94,23 +93,6 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     {
         ЭЛЕМЕНТ.название().setValue( текст );
         return надпись( ссылка );
-    }
-    
-    protected FxГрафика надпись( String ссылка, int[] xy )
-    {
-        FxГрафика графика = надпись( ссылка );
-        графика.атрибут( SVG_ATTR_X ).setValue( xy[0] );
-        графика.атрибут( SVG_ATTR_Y ).setValue( xy[1] );
-        return графика;
-    }
-    
-    protected FxГрафика надпись( String ссылка )
-    {
-        FxГрафика графика = графика( SVG_ELEMENT_TEXT );
-        графика.атрибут( SVG_ATTR_FILL ).setValue( "black" );
-        графика.атрибут( SVG_ATTR_FONT_SIZE ).setValue( 10 );
-        графика.инструкции().add( инструкция( "xpath", ссылка ) );
-        return графика;
     }
     
     /**

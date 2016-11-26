@@ -28,13 +28,15 @@ final class FxProperty<T>
     {
         try( final Транзакция т = getBean().транзакция() )
         {
+            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, getBean().архив() );
             T t = descriptor.supplier.get();
             super.get();
+            т.завершить( true );
             return t;
         }
         catch( Exception e )
         {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Failure to get property value on " + getBean(), e );
         }
     }
     
@@ -43,13 +45,14 @@ final class FxProperty<T>
     {
         try( final Транзакция т = getBean().транзакция() )
         {
+            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, getBean().архив() );
             descriptor.consumer.accept( value );
             super.set( value );
             т.завершить( true );
         }
         catch( Exception e )
         {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Failure to set property value on " + getBean(), e );
         }
     }
     

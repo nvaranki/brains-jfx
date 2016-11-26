@@ -32,7 +32,7 @@ class ScreenToStorageTask extends Task<Void>
     {
         try( Транзакция т = lock.транзакция() )
         {
-            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, lock );
+            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, lock.архив() );
             for( AttributeAgent agent : agents )
                 agent.toStorage();
             т.завершить( true );

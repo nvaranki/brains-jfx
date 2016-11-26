@@ -1,28 +1,25 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbГрафика;
-import com.varankin.brains.db.DbИнструкция;
-import com.varankin.brains.db.DbТекстовыйБлок;
 import com.varankin.brains.db.DbУзел;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.io.xml.Xml;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.scene.*;
-import javafx.scene.text.Text;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ELEMENT_CIRCLE;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_FILL;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_FONT_SIZE;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_X;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_Y;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ELEMENT_TEXT;
 import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 
 /**
@@ -107,6 +104,23 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
         FxТекстовыйБлок тб = (FxТекстовыйБлок)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
         тб.текст().setValue( значение );
         return тб;
+    }
+    
+    protected FxГрафика надпись( String ссылка, int[] xy )
+    {
+        FxГрафика графика = надпись( ссылка );
+        графика.атрибут( SVG_ATTR_X ).setValue( xy[0] );
+        графика.атрибут( SVG_ATTR_Y ).setValue( xy[1] );
+        return графика;
+    }
+    
+    protected FxГрафика надпись( String ссылка )
+    {
+        FxГрафика графика = графика( SVG_ELEMENT_TEXT );
+        графика.атрибут( SVG_ATTR_FILL ).setValue( "black" );
+        графика.атрибут( SVG_ATTR_FONT_SIZE ).setValue( 10 );
+        графика.инструкции().add( инструкция( "xpath", ссылка ) );
+        return графика;
     }
     
     private static <T> void onListPropertyChanged( 

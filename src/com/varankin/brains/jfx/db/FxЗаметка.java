@@ -11,11 +11,11 @@ public final class FxЗаметка extends FxУзел<DbЗаметка>
 {
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
 
-    public FxЗаметка( DbЗаметка конвертер )
+    public FxЗаметка( DbЗаметка элемент )
     {
-        super( конвертер );
-        ГРАФИКИ = buildReadOnlyListProperty( конвертер, "графики", 
-            new FxList<>( конвертер.графики(), конвертер, e -> new FxГрафика( e ), e -> e.getSource() ) );
+        super( элемент );
+        ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
+            new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxГрафика> графики()

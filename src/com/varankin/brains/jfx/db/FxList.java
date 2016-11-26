@@ -2,11 +2,8 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.Транзакция;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.AbstractList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -34,13 +31,16 @@ final class FxList<E extends FxАтрибутный<?>, X extends DbАтрибу
     
     private List<E> loadFromSource()
     {
-        try( final Транзакция т = owner.транзакция() )
+        try( final Транзакция т = owner.архив().транзакция() )
         {
-            return new LinkedList<>( source.stream().map( wrapper ).collect( Collectors.toList() ) );
+            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, owner.архив() );
+            List<E> list = new LinkedList<>( source.stream().map( wrapper ).collect( Collectors.toList() ) );
+            т.завершить( true );
+            return list;
         }
         catch( Exception e )
         {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "FxList.loadFromSource(): " + owner, e );
         }
     }
 
@@ -49,13 +49,14 @@ final class FxList<E extends FxАтрибутный<?>, X extends DbАтрибу
         X элемент = extractant.apply( e );
         try( final Транзакция т = owner.транзакция() )
         {
+            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, owner.архив() );
             boolean removed = source.remove( элемент );
             т.завершить( removed );
             return removed;
         }
         catch( Exception ex )
         {
-            throw new RuntimeException( ex );
+            throw new RuntimeException( "FxList.removeFromSource(): " + owner, ex );
         }
     }
 
@@ -64,13 +65,14 @@ final class FxList<E extends FxАтрибутный<?>, X extends DbАтрибу
         X элемент = extractant.apply( e );
         try( final Транзакция т = owner.транзакция() )
         {
+            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, owner.архив() );
             boolean added = source.add( элемент );
             т.завершить( added );
             return added;
         }
         catch( Exception ex )
         {
-            throw new RuntimeException( ex );
+            throw new RuntimeException( "FxList.addToSource(): " + owner, ex );
         }
     }
     
@@ -99,49 +101,11 @@ final class FxList<E extends FxАтрибутный<?>, X extends DbАтрибу
             image.add( index, e );
     }
 
-//    @Override
-//    public Iterator<E> iterator()
-//    {
-//        if( image == null ) image = loadFromSource();
-//        return new Iterator<E>()
-//        {
-//            final Iterator<E> it = image.iterator();
-//            E last;
-//
-//            @Override
-//            public boolean hasNext()
-//            {
-//                return it.hasNext();
-//            }
-//
-//            @Override
-//            public E next()
-//            {
-//                return last = it.next();
-//            }
-//
-//            @Override
-//            public void remove()
-//            {
-//                removeFromSource( last );
-//                it.remove();
-//            }
-//        };
-//    }
-//
     @Override
     public int size()
     {
         if( image == null ) image = loadFromSource();
         return image.size();
-//        try( final Транзакция т = owner.транзакция() )
-//        {
-//            return source.size();
-//        }
-//        catch( Exception ex )
-//        {
-//            throw new RuntimeException( ex );
-//        }
     }
 
 }
