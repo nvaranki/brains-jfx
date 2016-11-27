@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.io.xml.XmlBrains;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -12,15 +13,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.ListExpression;
-import javafx.beans.property.Property;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 
 /**
  *
@@ -30,16 +29,14 @@ import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 public class FxАтрибутный<T extends DbАтрибутный>
 {
     private final T ЭЛЕМЕНТ;
+    private final ListProperty<FxProperty> АТРИБУТЫ;
     private final ReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
-    private final Map<String,StringProperty> АТРИБУТЫ;
-    private final Map<String,Property> properties;
 
     public FxАтрибутный( T элемент )
     {
         ЭЛЕМЕНТ = элемент;
-        АТРИБУТЫ = new HashMap<>();
-        properties = new HashMap<>();
-        ТИП = new FxReadOnlyProperty<>( элемент, "тип", () -> элемент.тип() );
+        АТРИБУТЫ = new SimpleListProperty<>( FXCollections.observableArrayList() );
+        ТИП = new FxReadOnlyProperty<>( элемент, "тип", null, () -> элемент.тип() );
     }
     
     public final T getSource()
@@ -57,25 +54,40 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return ТИП;
     }
     
-    public final Property атрибут( String название, String uri )
+    public final FxProperty атрибут( String название, String uri )
     {
-        Property p = properties.get( название );
+        FxProperty p = атрибуты().stream()
+                .filter( (а) -> а.getName().equals( название ) )
+                .findFirst().orElse( null ); 
         if( p == null )
-            properties.put( название, p = new FxProperty( ЭЛЕМЕНТ, название, 
+            АТРИБУТЫ.add( p = new FxProperty( ЭЛЕМЕНТ, название, uri, 
                 () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
                 (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) ) );
         return p;
     }
     
-//    @Override
-//    public final DbАтрибут атрибут_( String название, String uri )
-//    {
-//        КлючImpl ключ = new КлючImpl( название, uri, null );
-//        DbАтрибут атрибут = АТРИБУТЫ.get( ключ );
-//        if( атрибут == null )
-//            АТРИБУТЫ.put( ключ, атрибут = new NeoАтрибут<>( ключ, getNode(), String.class ) );
-//        return атрибут;
-//    }
+    public final ListProperty<FxProperty> атрибуты()
+    {
+        if( АТРИБУТЫ.isEmpty() )
+            try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
+            {
+                for( DbАтрибутный.Ключ ключ : ЭЛЕМЕНТ.ключи() )
+                {
+                    String название = ключ.название();
+                    String uri = ключ.uri();
+                    if( !XmlBrains.XMLNS_BRAINS.equals( uri ) ) //TODO почему не все?
+                        АТРИБУТЫ.add( new FxProperty( ЭЛЕМЕНТ, название, uri, 
+                            () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
+                            (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) ) );
+                }
+                т.завершить( true );
+            }
+            catch( Exception e )
+            {
+                throw new RuntimeException( "Failure to build list of custom properties on " + ЭЛЕМЕНТ, e );
+            }
+        return АТРИБУТЫ;
+    }
     
     protected static <E,X> ReadOnlyListProperty<E> buildReadOnlyListProperty( 
             Object элемент, String название, List<E> list )
@@ -108,7 +120,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
         
         static boolean isListExpression( Method m )
         {
-            return ListExpression.class.isAssignableFrom( m.getReturnType() );
+            return !"атрибуты".equals( m.getName() ) && ListExpression.class.isAssignableFrom( m.getReturnType() );
         }
         
         @Override

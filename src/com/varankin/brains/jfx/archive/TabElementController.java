@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;
+
 import java.util.Arrays;
 import java.util.Collection;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -13,7 +15,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки общих параметров.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public class TabElementController implements Builder<GridPane>
 {
@@ -23,7 +25,7 @@ public class TabElementController implements Builder<GridPane>
 
     private final AttributeAgent pathAgent, nameAgent;
 
-    private DbЭлемент элемент;
+    private FxЭлемент<? extends DbЭлемент> элемент;
     
     @FXML private Label path;
     @FXML private TextField name;
@@ -79,7 +81,7 @@ public class TabElementController implements Builder<GridPane>
         return name.textProperty();
     }
 
-    void reset( DbЭлемент элемент )
+    void reset( FxЭлемент элемент )
     {
         this.элемент = элемент;
     }
@@ -102,8 +104,8 @@ public class TabElementController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            значение = элемент.положение( "/" );
-            значение = значение.substring( 0, значение.length() - элемент.название().length() );
+            значение = элемент.getSource().положение( "/" );
+            значение = значение.substring( 0, значение.length() - элемент.название().getValue().length() );
         }
         
         @Override
@@ -132,13 +134,13 @@ public class TabElementController implements Builder<GridPane>
         @Override
         public void fromStorage()
         {
-            значение = элемент.название();
+            значение = элемент.название().getValue();
         }
         
         @Override
         public void toStorage()
         {
-            элемент.название( значение );
+            элемент.название().setValue( значение );
         }
         
     }

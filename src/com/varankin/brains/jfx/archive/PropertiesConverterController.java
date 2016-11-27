@@ -18,7 +18,7 @@ public class PropertiesConverterController extends TabConverterController
     void onActionApply( ActionEvent event )
     {
         //applied.setValue( false );
-        JavaFX.getInstance().execute( new ScreenToStorageTask( конвертер, getAgents() ) );
+        new ScreenToStorageTask( конвертер, getAgents() ).run();
     }
 
     @Override

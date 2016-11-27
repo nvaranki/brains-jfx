@@ -67,7 +67,7 @@ public final class TextController implements Builder<GridPane>
     void onActionApply( ActionEvent event )
     {
         //applied.setValue( false );
-        JavaFX.getInstance().execute( new ScreenToStorageTask( блок, Arrays.asList( codeAgent ) ) );
+        new ScreenToStorageTask( блок, Arrays.asList( codeAgent ) ).run();
     }
 
     void reset( DbТекстовыйБлок блок )

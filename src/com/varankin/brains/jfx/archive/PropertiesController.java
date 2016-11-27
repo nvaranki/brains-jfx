@@ -152,7 +152,7 @@ public class PropertiesController implements Builder<Parent>
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.processor" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( ((FxПроцессор)value).getSource() );
+                    controller.reset( (FxПроцессор)value );
                 }
                 else if( value instanceof FxКлассJava )
                 {
@@ -160,7 +160,7 @@ public class PropertiesController implements Builder<Parent>
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.class.java" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( ((FxКлассJava)value).getSource() );
+                    controller.reset( (FxКлассJava)value );
                 }
                 else if( value instanceof FxКонвертер )
                 {
@@ -200,7 +200,7 @@ public class PropertiesController implements Builder<Parent>
                     pane.setCenter( controller.build() );
                     titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.element" ) ) );
                     buttonApply.setOnAction( controller::onActionApply );
-                    controller.reset( ((FxЭлемент<? extends DbЭлемент>)value).getSource() );
+                    controller.reset( (FxЭлемент<? extends DbЭлемент>)value );
                 }
                 else
                 {

@@ -76,7 +76,7 @@ public class PropertiesParameterJavaController implements Builder<TabPane>
     void onActionApply( ActionEvent event )
     {
         //applied.setValue( false );
-        JavaFX.getInstance().execute( new ScreenToStorageTask( параметр, agents ) );
+        new ScreenToStorageTask( параметр, agents ).run();
     }
 
     void reset( DbПараметр параметр )

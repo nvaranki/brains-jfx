@@ -1,60 +1,46 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.io.xml.XmlBrains;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectPropertyBase;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 
 /**
  *
  * @author Varankine
  */
-final class FxProperty<T> 
+public final class FxProperty<T> 
         extends ObjectPropertyBase<T>
 {
     private final FxPropertyDescriptor<T> descriptor;
+    private final ChangeListener<T> chl;
 
-    FxProperty( DbАтрибутный элемент, String название, Supplier<T> supplier, Consumer<T> consumer )
+    FxProperty( DbАтрибутный элемент, String название, 
+            Supplier<T> supplier, Consumer<T> consumer )
     {
-        descriptor = new FxPropertyDescriptor<>( элемент, название, supplier, consumer );
+        this( элемент, название, XmlBrains.XMLNS_BRAINS, supplier, consumer );
     }
 
+    FxProperty( DbАтрибутный элемент, String название, String scope, 
+            Supplier<T> supplier, Consumer<T> consumer )
+    {
+        super( FxPropertyDescriptor.get( элемент, supplier ) );
+        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, consumer );
+        chl = ( ObservableValue<? extends T> o, T ov, T nv ) -> 
+                FxPropertyDescriptor.set( элемент, consumer, nv );
+        addListener( new WeakChangeListener<>( chl ) );
+    }
+
+    public String getScope()
+    {
+        return descriptor.uri;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="ObjectPropertyBase">
-    
-    @Override
-    public T get()
-    {
-        try( final Транзакция т = getBean().транзакция() )
-        {
-            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, getBean().архив() );
-            T t = descriptor.supplier.get();
-            super.get();
-            т.завершить( true );
-            return t;
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException( "Failure to get property value on " + getBean(), e );
-        }
-    }
-    
-    @Override
-    public void set( T value )
-    {
-        try( final Транзакция т = getBean().транзакция() )
-        {
-            т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, getBean().архив() );
-            descriptor.consumer.accept( value );
-            super.set( value );
-            т.завершить( true );
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException( "Failure to set property value on " + getBean(), e );
-        }
-    }
     
     @Override
     public void bind( ObservableValue<? extends T> newObservable )

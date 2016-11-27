@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
 import com.varankin.brains.db.DbКлассJava;
+import com.varankin.brains.jfx.db.FxКлассJava;
 
 /**
  * FXML-контроллер панели установки параметров класса Java.
@@ -94,9 +95,9 @@ public class TabClassJavaController implements Builder<GridPane>
         return name.textProperty();
     }
 
-    void reset( DbКлассJava класс )
+    void reset( FxКлассJava класс )
     {
-        this.класс = класс;
+        this.класс = класс.getSource();
     }
     
     private class NameAgent implements AttributeAgent

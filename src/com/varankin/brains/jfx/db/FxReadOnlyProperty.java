@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.io.xml.XmlBrains;
 import java.util.function.Supplier;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
 
@@ -14,27 +14,29 @@ final class FxReadOnlyProperty<T>
 {
     private final FxPropertyDescriptor<T> descriptor;
 
-    FxReadOnlyProperty( DbАтрибутный элемент, String название, Supplier<T> supplier )
+    FxReadOnlyProperty( DbАтрибутный элемент, String название, 
+            Supplier<T> supplier )
     {
-        descriptor = new FxPropertyDescriptor<>( элемент, название, supplier, null );
+        this( элемент, название, XmlBrains.XMLNS_BRAINS, supplier );
     }
 
+    FxReadOnlyProperty( DbАтрибутный элемент, String название, String scope, 
+            Supplier<T> supplier )
+    {
+        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, null );
+    }
+
+    public String getScope()
+    {
+        return descriptor.uri;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="ObservableObjectValue">
     
     @Override
     public T get()
     {
-        try( final Транзакция т = getBean().транзакция() )
-        {
-            т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, getBean().архив() );
-            T t = descriptor.supplier.get();
-            т.завершить( true );
-            return t;
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException( "Failure to get property value on " + getBean(), e );
-        }
+        return FxPropertyDescriptor.get( descriptor.bean, descriptor.supplier );
     }
     
     //</editor-fold>
