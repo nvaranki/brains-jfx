@@ -38,6 +38,11 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         return new FxГрафика( элемент );
     }
     
+    public FxNameSpace создать( DbNameSpace элемент )
+    {
+        return new FxNameSpace( элемент );
+    }
+    
     @SuppressWarnings("Confusing indentation")
     @Override
     public FxАтрибутный создать( DbАтрибутный элемент )

@@ -14,7 +14,7 @@ public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
     private final Property<String> НАЗВАНИЕ;
     private final Property<String> URI;
 
-    public FxNameSpace( DbNameSpace элемент ) 
+    FxNameSpace( DbNameSpace элемент ) 
     {
         super( элемент );
         ВАРИАНТЫ = new FxProperty<>( элемент, "варианты", () -> элемент.варианты(), (t) -> элемент.варианты( t ) );

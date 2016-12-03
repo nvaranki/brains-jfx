@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.archive;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАрхив;
+import com.varankin.brains.jfx.db.FxФабрика;
 import com.varankin.brains.jfx.history.SerializableProvider;
 
 import java.util.logging.*;
@@ -28,7 +29,7 @@ public final class ArchiveTask extends Task<FxАрхив>
     @Override
     protected FxАрхив call() throws Exception
     {
-        return new FxАрхив( поставщик.newInstance() );
+        return FxФабрика.getInstance().создать( поставщик.newInstance() );
     }
     
     @Override

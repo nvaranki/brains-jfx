@@ -56,14 +56,18 @@ public class FxАтрибутный<T extends DbАтрибутный>
     
     public final FxProperty атрибут( String название, String uri )
     {
-        FxProperty p = атрибуты().stream()
-                .filter( (а) -> а.getName().equals( название ) )
-                .findFirst().orElse( null ); 
-        if( p == null )
-            АТРИБУТЫ.add( p = new FxProperty( ЭЛЕМЕНТ, название, uri, 
-                () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
-                (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) ) );
-        return p;
+        return атрибуты().stream()
+            .filter( а -> а.getName().equals( название ) )
+            .findAny().orElseGet( () -> 
+            {
+                String префикс = null;//uri.substring( Math.max( uri.lastIndexOf( '/' ) "New name space";
+                архив().определитьПространствоИмен( uri, префикс );
+                FxProperty p = new FxProperty( ЭЛЕМЕНТ, название, uri, 
+                    () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
+                    (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) );
+                АТРИБУТЫ.add( p );
+                return p;
+            } );
     }
     
     public final ListProperty<FxProperty> атрибуты()
