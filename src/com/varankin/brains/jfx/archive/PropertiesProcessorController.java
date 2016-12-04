@@ -75,8 +75,6 @@ public class PropertiesProcessorController implements Builder<TabPane>
     protected void initialize()
     {
         agents.addAll( processorController.getAgents() );
-        agents.addAll( elementController.getAgents() );
-        agents.addAll( attrsController.getAgents() );
     }
     
     @FXML
@@ -90,8 +88,8 @@ public class PropertiesProcessorController implements Builder<TabPane>
     {
         this.процессор = процессор;
         processorController.reset( процессор.getSource() );
-        elementController.reset( процессор );
-        attrsController.reset( процессор );
+        elementController.set( процессор );
+        attrsController.set( процессор );
         JavaFX.getInstance().execute( new StorageToScreenTask( процессор.getSource(), agents ) );
     }
     

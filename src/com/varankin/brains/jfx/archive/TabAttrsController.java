@@ -2,12 +2,11 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.jfx.db.FxProperty;
-import com.varankin.brains.jfx.db.FxЭлемент;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.util.LoggerX;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;
@@ -15,6 +14,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
@@ -35,50 +35,17 @@ public class TabAttrsController implements Builder<BorderPane>
     private static final LoggerX LOGGER = LoggerX.getLogger( TabAttrsController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabAttrs.css";
     private static final String CSS_CLASS = "properties-tab-attrs";
-    private static final StringConverter<Object> КОНВЕРТЕР_OBJECT = new StringConverter<Object>()
-    {
-        @Override
-        public String toString( Object object )
-        {
-            return DbАтрибутный.toStringValue( object );
-        }
+    private static final StringConverter<Object> КОНВЕРТЕР_OBJECT = new ObjectToStringConverter();
+    private static final StringConverter<String> КОНВЕРТЕР_STRING = new StringToStringConverter();
 
-        @Override
-        public Object fromString( String string )
-        {
-            return string == null || string.trim().isEmpty() ? null : string.toCharArray();
-        }
-    };
-    private static final StringConverter<String> КОНВЕРТЕР_STRING = new StringConverter<String>()
-    {
-        @Override
-        public String toString( String object )
-        {
-            return object;
-        }
+    static final String RESOURCE_FXML = "/fxml/archive/TabAttrs.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-        @Override
-        public String fromString( String string )
-        {
-            return string;
-        }
-    };
-
-    private final ValueAgent valueAgent;
-
-    private FxЭлемент элемент;
+    private FxАтрибутный<?> атрибутный;
     
-    @FXML private TableColumn<FxProperty,String> name;
-    @FXML private TableColumn<FxProperty,Object> value;
-    @FXML private TableColumn<FxProperty,String> scope;
     @FXML private TableView<FxProperty> table;
     @FXML private MenuItem delete; 
 
-    public TabAttrsController()
-    {
-        valueAgent = new ValueAgent();
-    }
-    
     /**
      * Создает панель дополнительных параметров.
      * Применяется в конфигурации без FXML.
@@ -88,19 +55,19 @@ public class TabAttrsController implements Builder<BorderPane>
     @Override
     public BorderPane build()
     {
-        name = new TableColumn<>( LOGGER.text( "properties.tab.attrs.col.name" ) );
+        TableColumn<FxProperty,String> name = new TableColumn<>( LOGGER.text( "properties.tab.attrs.col.name" ) );
         name.setEditable( true );
         name.setCellValueFactory( this::nameCellValueFactory );
         name.setCellFactory( this::textCellFactory );
         name.setOnEditCommit( this::onCommitName );
 
-        value = new TableColumn<>( LOGGER.text( "properties.tab.attrs.col.value" ) );
+        TableColumn<FxProperty,Object> value = new TableColumn<>( LOGGER.text( "properties.tab.attrs.col.value" ) );
         value.setEditable( true );
         value.setCellValueFactory( this::valueCellValueFactory );
         value.setCellFactory( this::valueCellFactory );
         value.setOnEditCommit( this::onCommitValue );
 
-        scope = new TableColumn<>( LOGGER.text( "properties.tab.attrs.col.scope" ) );
+        TableColumn<FxProperty,String> scope = new TableColumn<>( LOGGER.text( "properties.tab.attrs.col.scope" ) );
         scope.setEditable( true );
         scope.setCellValueFactory( this::scopeCellValueFactory );
         scope.setCellFactory( this::textCellFactory );
@@ -141,7 +108,7 @@ public class TabAttrsController implements Builder<BorderPane>
     @FXML
     private void onCreateProperty( ActionEvent event )
     {
-        элемент.атрибут( "Новый параметр", "http://server/namespace" ).setValue( "Значение" );
+        атрибутный.атрибут( "Новый параметр", "http://server/namespace" ).setValue( "Значение" );
         event.consume();
     }
     
@@ -152,7 +119,7 @@ public class TabAttrsController implements Builder<BorderPane>
                 .map( tp -> table.getItems().get( tp.getRow() ) )
                 .collect( Collectors.toList() );
         properties.forEach( p -> p.setValue( null ) );
-        элемент.атрибуты().removeAll( properties );
+        атрибутный.атрибуты().removeAll( properties );
         event.consume();
     }
     
@@ -193,11 +160,11 @@ public class TabAttrsController implements Builder<BorderPane>
         String oldScope = property.getScope();
         Object oldValue = property.getValue();
         String newName = event.getNewValue();
-        ListProperty атрибуты = элемент.атрибуты();
+        ListProperty атрибуты = атрибутный.атрибуты();
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
         property.setValue( null );
-        property = элемент.атрибут( newName, oldScope );
+        property = атрибутный.атрибут( newName, oldScope );
         property.setValue( oldValue ); 
         int newIndex = атрибуты.indexOf( property );
         if( oldIndex != newIndex )
@@ -219,56 +186,62 @@ public class TabAttrsController implements Builder<BorderPane>
         String oldName = property.getName();
         Object oldValue = property.getValue();
         String newScope = event.getNewValue();
-        ListProperty атрибуты = элемент.атрибуты();
+        ListProperty атрибуты = атрибутный.атрибуты();
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
         property.setValue( null );
-        property = элемент.атрибут( oldName, newScope );
+        property = атрибутный.атрибут( oldName, newScope );
         property.setValue( oldValue ); 
         int newIndex = атрибуты.indexOf( property );
         if( oldIndex != newIndex )
            атрибуты.add( oldIndex, атрибуты.remove( newIndex ) );
     }
-    
-    Collection<AttributeAgent> getAgents()
-    {
-        return Arrays.asList( valueAgent );
-    }
 
-    void reset( FxЭлемент элемент )
+    void set( FxАтрибутный<?> атрибутный )
     {
-        this.элемент = элемент;
-        table.itemsProperty().bind( элемент.атрибуты() );
+        if( this.атрибутный != null )
+        {
+            table.itemsProperty().unbind();
+            table.itemsProperty().getValue().clear();
+        }
+        if( атрибутный != null )
+        {
+            table.itemsProperty().bind( атрибутный.атрибуты() );
+        }
+        this.атрибутный = атрибутный;
     }
     
-    private class ValueAgent implements AttributeAgent
+    //<editor-fold defaultstate="collapsed" desc="классы">
+    
+    private static class StringToStringConverter extends StringConverter<String>
     {
-        final List<Runnable> steps = new ArrayList<>();
-        volatile String значение;
-
         @Override
-        public void fromScreen()
+        public String toString( String object )
         {
-            if(true){}
+            return object;
         }
         
         @Override
-        public void toScreen()
+        public String fromString( String string )
         {
+            return string;
         }
-        
-        @Override
-        public void fromStorage()
-        {
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            for( Runnable r : steps ) r.run();
-            steps.clear();
-        }
-        
     }
     
+    private static class ObjectToStringConverter extends StringConverter<Object>
+    {
+        @Override
+        public String toString( Object object )
+        {
+            return DbАтрибутный.toStringValue( object );
+        }
+        
+        @Override
+        public Object fromString( String string )
+        {
+            return string == null || string.trim().isEmpty() ? null : string.toCharArray();
+        }
+    }
+    
+    //</editor-fold>
 }

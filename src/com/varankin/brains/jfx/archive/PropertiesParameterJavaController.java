@@ -68,7 +68,6 @@ public class PropertiesParameterJavaController implements Builder<TabPane>
     protected void initialize()
     {
         agents.addAll( codeController.getAgents() );
-        agents.addAll( elementController.getAgents() );
 //        codeController.classNameProperty().bind( elementController.nameProperty() );
     }
     

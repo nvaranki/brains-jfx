@@ -4,9 +4,7 @@ import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;
 
-import java.util.Arrays;
-import java.util.Collection;
-import javafx.beans.property.ReadOnlyStringProperty;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -23,19 +21,14 @@ public class TabElementController implements Builder<GridPane>
     private static final String RESOURCE_CSS  = "/fxml/archive/TabElement.css";
     private static final String CSS_CLASS = "properties-tab-element";
 
-    private final AttributeAgent pathAgent, nameAgent;
+    static final String RESOURCE_FXML = "/fxml/archive/TabElement.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private FxЭлемент<? extends DbЭлемент> элемент;
     
     @FXML private Label path;
     @FXML private TextField name;
 
-    public TabElementController()
-    {
-        nameAgent = new NameAgent();
-        pathAgent = new PathAgent();
-    }
-    
     /**
      * Создает панель выбора и установки общих параметров.
      * Применяется в конфигурации без FXML.
@@ -71,78 +64,19 @@ public class TabElementController implements Builder<GridPane>
     {
     }
     
-    Collection<AttributeAgent> getAgents()
+    void set( FxЭлемент<?> элемент )
     {
-        return Arrays.asList( pathAgent, nameAgent );
-    }
-
-    ReadOnlyStringProperty nameProperty()
-    {
-        return name.textProperty();
-    }
-
-    void reset( FxЭлемент элемент )
-    {
+        if( this.элемент != null )
+        {
+            name.textProperty().unbindBidirectional( this.элемент.название() );
+            path.textProperty().unbind();
+        }
+        if( элемент != null )
+        {
+            name.textProperty().bindBidirectional( элемент.название() );
+            path.textProperty().bind( элемент.положение() );
+        }
         this.элемент = элемент;
-    }
-    
-    private class PathAgent implements AttributeAgent
-    {
-        volatile String значение;
-
-        @Override
-        public void fromScreen()
-        {
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            path.setText( значение );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = элемент.getSource().положение( "/" );
-            значение = значение.substring( 0, значение.length() - элемент.название().getValue().length() );
-        }
-        
-        @Override
-        public void toStorage()
-        {
-        }
-
-    }
-    
-    private class NameAgent implements AttributeAgent
-    {
-        volatile String значение;
-
-        @Override
-        public void fromScreen()
-        {
-            значение = name.getText();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            name.setText( значение );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = элемент.название().getValue();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            элемент.название().setValue( значение );
-        }
-        
     }
     
 }

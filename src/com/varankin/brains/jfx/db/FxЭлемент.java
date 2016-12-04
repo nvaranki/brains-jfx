@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.db;
 import com.varankin.brains.db.DbЭлемент;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyProperty;
 
 /**
  *
@@ -14,6 +15,7 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
     private final ReadOnlyListProperty<FxЗаметка> ЗАМЕТКИ;
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
     private final Property<String> НАЗВАНИЕ;
+    private final ReadOnlyProperty<String> ПОЛОЖЕНИЕ;
 
     public FxЭлемент( T элемент ) 
     {
@@ -23,6 +25,12 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
             new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
         НАЗВАНИЕ = new FxProperty<>( элемент, "название", () -> элемент.название(), (t) -> элемент.название( t ) );
+        ПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "название", () -> 
+        {
+            String значение = элемент.положение( "/" );
+            значение = значение.substring( 0, значение.length() - элемент.название().length() );
+            return значение;
+        } );
     }
 
     public final ReadOnlyListProperty<FxЗаметка> заметки()
@@ -38,6 +46,11 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
     public final Property<String> название()
     {
         return НАЗВАНИЕ;
+    }
+    
+    public final ReadOnlyProperty<String> положение()
+    {
+        return ПОЛОЖЕНИЕ;
     }
     
     @Override

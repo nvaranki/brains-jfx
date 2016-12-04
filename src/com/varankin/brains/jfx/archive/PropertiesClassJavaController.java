@@ -76,8 +76,6 @@ public final class PropertiesClassJavaController implements Builder<TabPane>
     protected void initialize()
     {
         agents.addAll( classController.getAgents() );
-        agents.addAll( attrsController.getAgents() );
-        agents.addAll( elementController.getAgents() );
     }
 
     @FXML
@@ -91,8 +89,8 @@ public final class PropertiesClassJavaController implements Builder<TabPane>
     {
         this.класс = класс;
         classController.reset( класс );
-        attrsController.reset( класс );
-        elementController.reset( класс );
+        attrsController.set( класс );
+        elementController.set( класс );
         JavaFX.getInstance().execute( new StorageToScreenTask( класс.getSource(), agents ) );
     }
     

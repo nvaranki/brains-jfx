@@ -304,10 +304,9 @@ final class ActionProcessor //TODO RT-37820
             LOGGER.log( "002005006I", SELECTION.size() );
         else
         {
-            if( properties == null ) properties = buildProperties();
-            properties.getScene().getRoot().setUserData( SELECTION.get( 0 ).getValue() );
-            properties.show();
-            properties.toFront();
+            Stage stage = buildProperties( SELECTION.get( 0 ).getValue() );
+            stage.show();
+            stage.toFront();
         }
         event.consume();
     }
@@ -375,18 +374,21 @@ final class ActionProcessor //TODO RT-37820
     
     //</editor-fold>
     
-    private Stage buildProperties()
+    private Stage buildProperties( FxАтрибутный<?> атрибутный )
     {
         BuilderFX<Parent,PropertiesController> builder = new BuilderFX<>();
         builder.init( PropertiesController.class,
                 PropertiesController.RESOURCE_FXML, PropertiesController.RESOURCE_BUNDLE );
         PropertiesController controller = builder.getController();
+        controller.reset( атрибутный );
 
         Stage stage = new Stage();
         stage.initStyle( StageStyle.DECORATED );
         stage.initModality( Modality.NONE );
         stage.initOwner( JavaFX.getInstance().платформа );
         stage.getIcons().add( JavaFX.icon( "icons16x16/properties.png" ).getImage() );
+        stage.titleProperty().bind( controller.titleProperty() );
+        stage.setOnCloseRequest( e -> controller.reset( null ) );
 
         stage.setResizable( true );
         stage.setMinHeight( 350d );
@@ -394,13 +396,7 @@ final class ActionProcessor //TODO RT-37820
         stage.setHeight( 350d ); //TODO save/restore size&pos
         stage.setWidth( 400d );
         stage.setScene( new Scene( builder.getNode() ) );
-        stage.setOnShowing( ( WindowEvent e ) -> controller.reset() );
 
-        stage.titleProperty().bind( controller.titleProperty() );
-//            controller.bindColorProperty( colorProperty );
-//            controller.bindPatternProperty( patternProperty );
-//            controller.bindScaleProperty( new SimpleObjectProperty( 3 ) );
-        controller.reset();
         return stage;
     }
 
