@@ -1,37 +1,34 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.artificial.ПроцессорРасчета.Стратегия;
-import com.varankin.brains.db.DbПроцессор;
+import com.varankin.brains.jfx.db.FxПроцессор;
 import com.varankin.util.LoggerX;
-import java.util.Arrays;
-import java.util.Collection;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
+
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
+import javafx.util.StringConverter;
 
 /**
  * FXML-контроллер панели выбора и установки параметров процессора.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public final class TabProcessorController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabProcessorController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabProcessor.css";
     private static final String CSS_CLASS = "properties-tab-processor";
+    private static final StringToLongConverter CONVERTER_LONG = new StringToLongConverter();
+    private static final StringToIntegerConverter CONVERTER_INTEGER = new StringToIntegerConverter();
+    private static final StringToСтратегияConverter CONVERTER_Стратегия = new StringToСтратегияConverter();
 
-    private final LongProperty pauseProperty, delayProperty;
-    private final IntegerProperty inlineProperty;
-    private final AttributeAgent pauseAgent, restartAgent, strategyAgent;
-    private final AttributeAgent delayAgent, inlineAgent, purgeAgent, collapseAgent;
+    static final String RESOURCE_FXML = "/fxml/archive/TabProcessor.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private DbПроцессор процессор;
+    private FxПроцессор процессор;
     
     @FXML private TextField pause;
     @FXML private TextField delay;
@@ -39,22 +36,8 @@ public final class TabProcessorController implements Builder<GridPane>
     @FXML private CheckBox restart;
     @FXML private CheckBox purge;
     @FXML private CheckBox collapse;
-    @FXML private ComboBox<Стратегия> strategy;
+    @FXML private ChoiceBox<Стратегия> strategy;
 
-    public TabProcessorController()
-    {
-        pauseProperty = new SimpleLongProperty();
-        delayProperty = new SimpleLongProperty();
-        inlineProperty = new SimpleIntegerProperty();
-        pauseAgent = new PauseAgent();
-        restartAgent = new RestartAgent();
-        strategyAgent = new StrategyAgent();
-        delayAgent = new DelayAgent();
-        inlineAgent = new InlineAgent();
-        purgeAgent = new PurgeAgent();
-        collapseAgent = new CollapseAgent();
-    }
-    
     /**
      * Создает панель выбора и установки параметров процессора.
      * Применяется в конфигурации без FXML.
@@ -82,9 +65,8 @@ public final class TabProcessorController implements Builder<GridPane>
         collapse = new CheckBox();
         collapse.setFocusTraversable( true );
         
-        strategy = new ComboBox<>();
+        strategy = new ChoiceBox<>();
         strategy.setFocusTraversable( true );
-        strategy.setEditable( false );
         
         GridPane pane = new GridPane();
         pane.setId( "processor" );
@@ -117,266 +99,109 @@ public final class TabProcessorController implements Builder<GridPane>
     protected void initialize()
     {
         strategy.getItems().addAll( Стратегия.values() );
-        strategy.setVisibleRowCount( Стратегия.values().length );
-        strategy.setCellFactory( ( ListView<Стратегия> lv ) -> new ListCellСтратегия() );
-        strategy.setButtonCell( new ListCellСтратегия() );
-        pauseProperty.bind( Bindings.createLongBinding( () -> convertLong( pause ), pause.textProperty() ) );
-        delayProperty.bind( Bindings.createLongBinding( () -> convertLong( delay ), delay.textProperty() ) );
-        inlineProperty.bind( Bindings.createIntegerBinding( () -> convertInteger( inline ), inline.textProperty() ) );
+        strategy.getItems().add( 0, null );
+        strategy.setConverter( CONVERTER_Стратегия );
     }
     
-    Collection<AttributeAgent> getAgents()
+    void set( FxПроцессор процессор )
     {
-        return Arrays.asList( pauseAgent, restartAgent, strategyAgent, delayAgent, inlineAgent, purgeAgent, collapseAgent );
-    }
-
-    void reset( DbПроцессор процессор )
-    {
+        if( this.процессор != null )
+        {
+            pause.textProperty().unbindBidirectional( this.процессор.пауза() );
+            delay.textProperty().unbindBidirectional( this.процессор.задержка());
+            inline.textProperty().unbindBidirectional( this.процессор.накопление() );
+            restart.selectedProperty().unbindBidirectional( this.процессор.рестарт() );
+            purge.selectedProperty().unbindBidirectional( this.процессор.очистка() );
+            collapse.selectedProperty().unbindBidirectional( this.процессор.сжатие() );
+            strategy.valueProperty().unbindBidirectional( this.процессор.стратегия() );
+        }
+        if( процессор != null )
+        {
+            pause.textProperty().bindBidirectional( процессор.пауза(), CONVERTER_LONG );
+            delay.textProperty().bindBidirectional( процессор.задержка(), CONVERTER_LONG );
+            inline.textProperty().bindBidirectional( процессор.накопление(), CONVERTER_INTEGER );
+            restart.selectedProperty().bindBidirectional( процессор.рестарт() );
+            purge.selectedProperty().bindBidirectional( процессор.очистка() );
+            collapse.selectedProperty().bindBidirectional( процессор.сжатие() );
+            strategy.valueProperty().bindBidirectional( процессор.стратегия() );
+        }
         this.процессор = процессор;
     }
     
-    private static Long convertLong( TextField field )
+    private static class StringToLongConverter extends StringConverter<Long>
     {
-        try
+
+        @Override
+        public String toString( Long object )
         {
-            return Long.valueOf( field.getText() );
+            return Long.toString( object );
         }
-        catch( NumberFormatException | NullPointerException ex )
+
+        @Override
+        public Long fromString( String string )
         {
-            return 0L;
+            try
+            {
+                return Long.valueOf( string );
+            }
+            catch( NumberFormatException e )
+            {
+                LOGGER.getLogger().warning( "Not a long number: " + string );
+                return 0L; //TODO null; for unboxed classes
+            }
         }
+        
     }
     
-    private static Integer convertInteger( TextField field )
+    private static class StringToIntegerConverter extends StringConverter<Integer>
     {
-        try
+
+        @Override
+        public String toString( Integer object )
         {
-            return Integer.valueOf( field.getText() );
+            return Integer.toString( object );
         }
-        catch( NumberFormatException | NullPointerException ex )
+
+        @Override
+        public Integer fromString( String string )
         {
-            return 0;
+            try
+            {
+                return Integer.valueOf( string );
+            }
+            catch( NumberFormatException e )
+            {
+                LOGGER.getLogger().warning( "Not an integer number: " + string );
+                return 0; //TODO null; for unboxed classes
+            }
         }
+        
     }
     
-    private static class ListCellСтратегия extends ListCell<Стратегия>
+    private static class StringToСтратегияConverter extends StringConverter<Стратегия>
     {
+
         @Override
-        public void updateItem( Стратегия item, boolean empty ) 
+        public String toString( Стратегия object )
         {
-            super.updateItem( item, empty );
-            setText( empty ? null : LOGGER.text( "properties.processor.strategy." + item.ordinal() ) );
+            return LOGGER.text( "properties.tab.processor.strategy." 
+                    + ( object != null ? object.ordinal() : "null" ) );
         }
+
+        @Override
+        public Стратегия fromString( String string )
+        {
+            try
+            {
+                return string != null ? Стратегия.valueOf( string ) : null;
+            }
+            catch( IllegalArgumentException e )
+            {
+                LOGGER.getLogger().warning( "Not a Стратегия object: " + string );
+                return null;
+            }
+        }
+        
     }
-    
-    private class PauseAgent implements AttributeAgent
-    {
-        volatile long значение;
 
-        @Override
-        public void fromScreen()
-        {
-            значение = pauseProperty.get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            pause.setText( Long.toString( значение ) );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = процессор.пауза();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.пауза( значение );
-        }
-
-    }
-    
-    private class DelayAgent implements AttributeAgent
-    {
-        volatile long значение;
-
-        @Override
-        public void fromScreen()
-        {
-            значение = delayProperty.get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            delay.setText( Long.toString( значение ) );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = процессор.задержка();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.задержка( значение );
-        }
-
-    }
-    
-    private class InlineAgent implements AttributeAgent
-    {
-        volatile int значение;
-
-        @Override
-        public void fromScreen()
-        {
-            значение = inlineProperty.get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            inline.setText( Integer.toString( значение ) );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = процессор.накопление();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.накопление( значение );
-        }
-
-    }
-    
-    private class RestartAgent implements AttributeAgent
-    {
-        volatile boolean значение;
-
-        @Override
-        public void fromScreen()
-        {
-            значение = restart.selectedProperty().get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            restart.setSelected(значение );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = процессор.рестарт();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.рестарт(значение );
-        }
-
-    }
-    
-    private class PurgeAgent implements AttributeAgent
-    {
-        volatile boolean значение;
-
-        @Override
-        public void fromScreen()
-        {
-            значение = purge.selectedProperty().get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            purge.setSelected( значение );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = процессор.очистка();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.очистка( значение );
-        }
-
-    }
-    
-    private class CollapseAgent implements AttributeAgent
-    {
-        volatile boolean значение;
-
-        @Override
-        public void fromScreen()
-        {
-            значение = collapse.selectedProperty().get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            collapse.setSelected( значение );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            значение = процессор.сжатие();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.сжатие( значение );
-        }
-
-    }
-    
-    private class StrategyAgent implements AttributeAgent
-    {
-        volatile Стратегия стратегия;
-
-        @Override
-        public void fromScreen()
-        {
-            стратегия = strategy.getValue();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            strategy.getSelectionModel().select( стратегия );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            стратегия = процессор.стратегия();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            процессор.стратегия( стратегия );
-        }
-
-    }
-    
 }

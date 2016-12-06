@@ -159,9 +159,15 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxПроцессор value )
     {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxЭлемент)value ) );
+        BuilderFX<? extends Node,TabProcessorController> builder = new BuilderFX<>();
+        builder.init( TabProcessorController.class,
+                TabProcessorController.RESOURCE_FXML, TabProcessorController.RESOURCE_BUNDLE );
+        TabProcessorController controller = builder.getController();
+        controller.set( value );
+        Tab tab = new Tab( LOGGER.text( "properties.tab.processor.title" ), builder.getNode() );
+        tab.setOnCloseRequest( e -> controller.set( null ) );
+        List<Tab> tabs = new ArrayList<>( collectTabs( (FxЭлемент)value ) );
+        tabs.add( 0, tab );
         return tabs;
     }
     
