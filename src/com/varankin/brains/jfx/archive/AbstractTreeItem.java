@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.archive;
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.factory.Составной;
+import com.varankin.brains.jfx.db.FxNameSpace;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxМусор;
 import com.varankin.brains.jfx.db.FxУзел;
@@ -176,6 +177,8 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
             Descr d = new Descr();
             d.name = элемент instanceof FxЭлемент ? 
                     ((FxЭлемент)элемент).название() : 
+                     элемент instanceof FxNameSpace ? 
+                    ((FxNameSpace)элемент).название() : 
                     new SimpleStringProperty( метка( элемент ) );
             d.icon = марка( элемент );
             d.tooltip = подсказка( элемент );

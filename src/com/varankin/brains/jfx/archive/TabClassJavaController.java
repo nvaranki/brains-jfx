@@ -1,24 +1,22 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.NativeJavaClasses;
+import com.varankin.brains.jfx.db.FxКлассJava;
 import com.varankin.util.LoggerX;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
-import com.varankin.brains.db.DbКлассJava;
-import com.varankin.brains.jfx.db.FxКлассJava;
 
 /**
  * FXML-контроллер панели установки параметров класса Java.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2016 Николай Варанкин
  */
 public class TabClassJavaController implements Builder<GridPane>
 {
@@ -26,21 +24,15 @@ public class TabClassJavaController implements Builder<GridPane>
     private static final String RESOURCE_CSS  = "/fxml/archive/TabClassJava.css";
     private static final String CSS_CLASS = "tab-class-java";
 
-    private final AttributeAgent nameAgent, mainAgent, codeAgent;
+    static final String RESOURCE_FXML = "/fxml/archive/TabClassJava.fxml";
+    static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private DbКлассJava класс;
+    private FxКлассJava класс;
     
     @FXML private TextField name;
     @FXML private CheckBox main;
     @FXML private TextArea code;
 
-    public TabClassJavaController()
-    {
-        nameAgent = new NameAgent();
-        mainAgent = new MainAgent();
-        codeAgent = new CodeAgent();
-    }
-    
     /**
      * Создает панель установки параметров класса Java.
      * Применяется в конфигурации без FXML.
@@ -85,109 +77,21 @@ public class TabClassJavaController implements Builder<GridPane>
                 name.textProperty() ) );
     }
     
-    Collection<AttributeAgent> getAgents()
+    void set( FxКлассJava класс )
     {
-        return Arrays.asList( nameAgent, mainAgent, codeAgent );
-    }
-    
-    StringProperty classNameProperty()
-    {
-        return name.textProperty();
-    }
-
-    void reset( FxКлассJava класс )
-    {
-        this.класс = класс.getSource();
-    }
-    
-    private class NameAgent implements AttributeAgent
-    {
-        volatile String текст;
-
-        @Override
-        public void fromScreen()
+        if( this.класс != null )
         {
-            текст = name.getText();
+            name.textProperty().unbindBidirectional( this.класс.название() );
+            code.textProperty().unbindBidirectional( this.класс.код() );
+            main.selectedProperty().unbindBidirectional( this.класс.основной() );
         }
-        
-        @Override
-        public void toScreen()
+        if( класс != null )
         {
-            name.setText( текст );
+            name.textProperty().bindBidirectional( класс.название() );
+            code.textProperty().bindBidirectional( класс.код() );
+            main.selectedProperty().bindBidirectional( класс.основной() );
         }
-        
-        @Override
-        public void fromStorage()
-        {
-            текст = класс.название();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            класс.название( текст );
-        }
-
-    }
-    
-    private class MainAgent implements AttributeAgent
-    {
-        volatile boolean основной;
-
-        @Override
-        public void fromScreen()
-        {
-            основной = main.selectedProperty().get();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            main.setSelected( основной );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            основной = класс.основной();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            класс.основной( основной );
-        }
-
-    }
-    
-    private class CodeAgent implements AttributeAgent
-    {
-        volatile String текст;
-
-        @Override
-        public void fromScreen()
-        {
-            текст = code.getText();
-        }
-        
-        @Override
-        public void toScreen()
-        {
-            code.setText( текст );
-        }
-        
-        @Override
-        public void fromStorage()
-        {
-            текст = класс.код();
-        }
-        
-        @Override
-        public void toStorage()
-        {
-            класс.код( текст );
-        }
-
+        this.класс = класс;
     }
     
     private static final List<String> NATIVE_CLASS_NAMES 
