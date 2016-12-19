@@ -56,5 +56,15 @@ final class FxReadOnlyProperty<T>
     }
     
     //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="ReadOnlyObjectPropertyBase">
+
+    @Override
+    protected void fireValueChangedEvent()
+    {
+        super.fireValueChangedEvent();
+    }
+    
+    //</editor-fold>
     
 }

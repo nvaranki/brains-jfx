@@ -89,9 +89,15 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxИнструкция value )
     {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxАтрибутный)value ) );
+        BuilderFX<? extends Node,TabInstructionController> builder = new BuilderFX<>();
+        builder.init( TabInstructionController.class,
+                TabInstructionController.RESOURCE_FXML, TabInstructionController.RESOURCE_BUNDLE );
+        TabInstructionController controller = builder.getController();
+        controller.set( value );
+        Tab tab = new Tab( LOGGER.text( "properties.tab.instruction.title" ), builder.getNode() );
+        tab.setOnCloseRequest( e -> controller.set( null ) );
+        List<Tab> tabs = new ArrayList<>( /*collectTabs( (FxАтрибутный)value )*/ );
+        tabs.add( 0, tab );
         return tabs;
     }
     
