@@ -4,7 +4,10 @@ import com.varankin.brains.jfx.db.FxИнструкция;
 import com.varankin.util.LoggerX;
 
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -50,7 +53,9 @@ public final class TabInstructionController implements Builder<GridPane>
         
         result = new TextArea();
         result.setId( "result" );
-        result.setPrefColumnCount( 23 );
+        
+        Button refresh = new Button( LOGGER.text( "properties.tab.refresh" ) );
+        refresh.setOnAction( this::refresh );
         
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "properties.tab.instruction.code" ) ), 0, 0 );
@@ -58,7 +63,9 @@ public final class TabInstructionController implements Builder<GridPane>
         pane.add( new Label( LOGGER.text( "properties.tab.instruction.proc" ) ), 0, 1 );
         pane.add( proc, 1, 1 );
         pane.add( new Label( LOGGER.text( "properties.tab.instruction.result" ) ), 0, 2 );
-        pane.add( result, 1, 2 );
+        pane.add( refresh, 1, 2 );
+        pane.add( result, 0, 3, 2, 1 );
+        GridPane.setHalignment( refresh, HPos.RIGHT );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -71,6 +78,12 @@ public final class TabInstructionController implements Builder<GridPane>
     @FXML
     protected void initialize()
     {
+    }
+    
+    @FXML
+    private void refresh( ActionEvent event )
+    {
+        инструкция.пересчитать();
     }
     
     void set( FxИнструкция инструкция )

@@ -125,9 +125,15 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxКонтакт value )
     {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxЭлемент)value ) );
+        BuilderFX<? extends Node,TabPinController> builder = new BuilderFX<>();
+        builder.init( TabPinController.class,
+                TabPinController.RESOURCE_FXML, TabPinController.RESOURCE_BUNDLE );
+        TabPinController controller = builder.getController();
+        controller.set( value );
+        Tab tab = new Tab( LOGGER.text( "properties.tab.pin.title" ), builder.getNode() );
+        tab.setOnCloseRequest( e -> controller.set( null ) );
+        List<Tab> tabs = new ArrayList<>( collectTabs( (FxЭлемент)value ) );
+        tabs.add( 0, tab );
         return tabs;
     }
     
@@ -165,9 +171,15 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxПараметр value )
     {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxЭлемент)value ) );
+        BuilderFX<? extends Node,TabParameterController> builder = new BuilderFX<>();
+        builder.init( TabParameterController.class,
+                TabParameterController.RESOURCE_FXML, TabParameterController.RESOURCE_BUNDLE );
+        TabParameterController controller = builder.getController();
+        controller.set( value );
+        Tab tab = new Tab( LOGGER.text( "properties.tab.parameter.title" ), builder.getNode() );
+        tab.setOnCloseRequest( e -> controller.set( null ) );
+        List<Tab> tabs = new ArrayList<>( collectTabs( (FxЭлемент)value ) );
+        tabs.add( 0, tab );
         return tabs;
     }
     
