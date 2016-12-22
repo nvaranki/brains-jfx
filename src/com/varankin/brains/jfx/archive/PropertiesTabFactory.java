@@ -231,9 +231,15 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxСигнал value )
     {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxЭлемент)value ) );
+        BuilderFX<? extends Node,TabSignalController> builder = new BuilderFX<>();
+        builder.init( TabSignalController.class,
+                TabSignalController.RESOURCE_FXML, TabSignalController.RESOURCE_BUNDLE );
+        TabSignalController controller = builder.getController();
+        controller.set( value );
+        Tab tab = new Tab( LOGGER.text( "properties.tab.signal.title" ), builder.getNode() );
+        tab.setOnCloseRequest( e -> controller.set( null ) );
+        List<Tab> tabs = new ArrayList<>( collectTabs( (FxЭлемент)value ) );
+        tabs.add( 0, tab );
         return tabs;
     }
     
