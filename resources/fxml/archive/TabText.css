@@ -1,9 +1,9 @@
 /*
     Description: Панель ввода и редактирования текста.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2016 Николай Варанкин
  */
 
-.properties-text 
+.properties-tab-text 
 {
     -fx-hgap: 10px;
     -fx-vgap: 10px;

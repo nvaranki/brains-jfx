@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbСоединение;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
@@ -11,24 +10,17 @@ import javafx.beans.property.ReadOnlyListProperty;
 public final class FxСоединение extends FxЭлемент<DbСоединение>
 {
     private final ReadOnlyListProperty<FxКонтакт> КОНТАКТЫ;
-    private final Property<Boolean> МЕСТНОЕ;
 
     public FxСоединение( DbСоединение элемент ) 
     {
         super( элемент );
         КОНТАКТЫ = buildReadOnlyListProperty( элемент, "контакты", 
             new FxList<>( элемент.контакты(), элемент, e -> new FxКонтакт( e ), e -> e.getSource() ) );
-        МЕСТНОЕ = new FxProperty<>( элемент, "местное", () -> элемент.местное(), (t) -> элемент.местное( t ) );
     }
 
     public ReadOnlyListProperty<FxКонтакт> контакты()
     {
         return КОНТАКТЫ;
-    }
-    
-    public Property<Boolean> местное()
-    {
-        return МЕСТНОЕ;
     }
     
     @Override

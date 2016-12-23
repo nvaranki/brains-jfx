@@ -253,10 +253,14 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxТекстовыйБлок value )
     {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxАтрибутный)value ) );
-        return tabs;
+        BuilderFX<? extends Node,TabTextController> builder = new BuilderFX<>();
+        builder.init( TabTextController.class,
+                TabTextController.RESOURCE_FXML, TabTextController.RESOURCE_BUNDLE );
+        TabTextController controller = builder.getController();
+        controller.set( value );
+        Tab tab = new Tab( LOGGER.text( "properties.tab.text.title" ), builder.getNode() );
+        tab.setOnCloseRequest( e -> controller.set( null ) );
+        return Collections.singletonList( tab );
     }
     
     List<Tab> collectTabs( FxТочка value )
