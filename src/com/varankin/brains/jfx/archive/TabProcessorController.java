@@ -23,7 +23,6 @@ public final class TabProcessorController implements Builder<GridPane>
     private static final String CSS_CLASS = "properties-tab-processor";
     private static final StringToLongConverter CONVERTER_LONG = new StringToLongConverter();
     private static final StringToIntegerConverter CONVERTER_INTEGER = new StringToIntegerConverter();
-    private static final StringToСтратегияConverter CONVERTER_Стратегия = new StringToСтратегияConverter();
 
     static final String RESOURCE_FXML = "/fxml/archive/TabProcessor.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
@@ -100,7 +99,8 @@ public final class TabProcessorController implements Builder<GridPane>
     {
         strategy.getItems().addAll( Стратегия.values() );
         strategy.getItems().add( 0, null );
-        strategy.setConverter( CONVERTER_Стратегия );
+        strategy.setConverter( new StringToEnumConverter<>( 
+                Стратегия.values(), "properties.tab.processor.strategy." ) );
     }
     
     void set( FxПроцессор процессор )
@@ -178,30 +178,4 @@ public final class TabProcessorController implements Builder<GridPane>
         
     }
     
-    private static class StringToСтратегияConverter extends StringConverter<Стратегия>
-    {
-
-        @Override
-        public String toString( Стратегия object )
-        {
-            return LOGGER.text( "properties.tab.processor.strategy." 
-                    + ( object != null ? object.ordinal() : "null" ) );
-        }
-
-        @Override
-        public Стратегия fromString( String string )
-        {
-            try
-            {
-                return string != null ? Стратегия.valueOf( string ) : null;
-            }
-            catch( IllegalArgumentException e )
-            {
-                LOGGER.getLogger().warning( "Not a Стратегия object: " + string );
-                return null;
-            }
-        }
-        
-    }
-
 }
