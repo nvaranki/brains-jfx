@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.db;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.Транзакция;
 import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyProperty;
 
 /**
  *
@@ -13,16 +14,18 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     private final ReadOnlyListProperty<FxПакет> ПАКЕТЫ;
     private final ReadOnlyListProperty<FxNameSpace> NAMESPACES;
     private final ReadOnlyListProperty<FxМусор> МУСОР;
+    private final ReadOnlyProperty<String> РАСПОЛОЖЕНИЕ; // скрыть изменяемость
 
-    FxАрхив( DbАрхив архив ) 
+    FxАрхив( DbАрхив элемент ) 
     {
-        super( архив );
-        ПАКЕТЫ = buildReadOnlyListProperty( архив, "пакеты", 
-            new FxList<>( архив.пакеты(), архив, e -> new FxПакет( e ), e -> e.getSource() ) );
-        NAMESPACES = buildReadOnlyListProperty( архив, "namespaces", 
-            new FxList<>( архив.namespaces(), архив, e -> new FxNameSpace( e ), e -> e.getSource() ) );
-        МУСОР = buildReadOnlyListProperty( архив, "мусор", 
-            new FxList<>( архив.мусор(), архив, e -> new FxМусор( e ), e -> e.getSource() ) );
+        super( элемент );
+        ПАКЕТЫ = buildReadOnlyListProperty( элемент, "пакеты", 
+            new FxList<>( элемент.пакеты(), элемент, e -> new FxПакет( e ), e -> e.getSource() ) );
+        NAMESPACES = buildReadOnlyListProperty( элемент, "namespaces", 
+            new FxList<>( элемент.namespaces(), элемент, e -> new FxNameSpace( e ), e -> e.getSource() ) );
+        МУСОР = buildReadOnlyListProperty( элемент, "мусор", 
+            new FxList<>( элемент.мусор(), элемент, e -> new FxМусор( e ), e -> e.getSource() ) );
+        РАСПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "расположение", () -> элемент.расположение() );
     }
 
     public ReadOnlyListProperty<FxПакет> пакеты()
@@ -38,6 +41,11 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     public ReadOnlyListProperty<FxМусор> мусор()
     {
         return МУСОР;
+    }
+    
+    public ReadOnlyProperty<String> расположение()
+    {
+        return РАСПОЛОЖЕНИЕ;
     }
     
     public FxАтрибутный создатьНовыйЭлемент( String название, String uri )

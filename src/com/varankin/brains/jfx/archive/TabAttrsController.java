@@ -159,6 +159,11 @@ public class TabAttrsController implements Builder<BorderPane>
         String oldScope = property.getScope();
         Object oldValue = property.getValue();
         String newName = event.getNewValue();
+        if( newName == null || newName instanceof String && ((String)newName).trim().isEmpty() )
+        {
+            newName = property.getName();
+            LOGGER.log( "002005014S", LOGGER.text( "properties.tab.attrs.col.name" ) );
+        }
         ListProperty атрибуты = атрибутный.атрибуты();
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
@@ -175,6 +180,10 @@ public class TabAttrsController implements Builder<BorderPane>
     {
         FxProperty property = event.getRowValue();
         Object newValue = event.getNewValue();
+        if( newValue instanceof String && ((String)newValue).trim().isEmpty() )
+            newValue = null;
+        if( newValue == null )
+            LOGGER.log( "002005015W", LOGGER.text( "properties.tab.attrs.col.value" ) );
         property.setValue( newValue );
     }
     
@@ -185,6 +194,11 @@ public class TabAttrsController implements Builder<BorderPane>
         String oldName = property.getName();
         Object oldValue = property.getValue();
         String newScope = event.getNewValue();
+        if( newScope == null || newScope instanceof String && ((String)newScope).trim().isEmpty() )
+        {
+            newScope = property.getScope();
+            LOGGER.log( "002005014S", LOGGER.text( "properties.tab.attrs.col.scope" ) );
+        }
         ListProperty атрибуты = атрибутный.атрибуты();
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );

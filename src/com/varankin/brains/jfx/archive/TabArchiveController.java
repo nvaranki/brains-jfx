@@ -4,7 +4,6 @@ import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.util.LoggerX;
 
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -68,7 +67,7 @@ public final class TabArchiveController implements Builder<GridPane>
         }
         if( архив != null )
         {
-            uri.textProperty().bind( new SimpleStringProperty()/*TODO архив.uri()*/ );
+            uri.textProperty().bind( архив.расположение() );
         }
         this.архив = архив;
     }
