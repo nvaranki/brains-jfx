@@ -28,6 +28,7 @@ public class TabClassJavaController implements Builder<GridPane>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private FxКлассJava класс;
+    private IndeterminateHelper mainHelper;
     
     @FXML private TextField name;
     @FXML private CheckBox main;
@@ -47,6 +48,7 @@ public class TabClassJavaController implements Builder<GridPane>
         
         main = new CheckBox();
         main.setFocusTraversable( true );
+        main.setAllowIndeterminate( true );
         
         code = new TextArea();
         code.setFocusTraversable( true );
@@ -84,12 +86,14 @@ public class TabClassJavaController implements Builder<GridPane>
             name.textProperty().unbindBidirectional( this.класс.название() );
             code.textProperty().unbindBidirectional( this.класс.код() );
             main.selectedProperty().unbindBidirectional( this.класс.основной() );
+            mainHelper.removeListeners();
         }
         if( класс != null )
         {
             name.textProperty().bindBidirectional( класс.название() );
             code.textProperty().bindBidirectional( класс.код() );
             main.selectedProperty().bindBidirectional( класс.основной() );
+            mainHelper = new IndeterminateHelper( main.indeterminateProperty(), класс.основной() );
         }
         this.класс = класс;
     }
