@@ -10,12 +10,11 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
-import javafx.util.StringConverter;
 
 /**
  * FXML-контроллер панели выбора и установки параметров сигнала.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class TabSignalController implements Builder<GridPane>
 {
@@ -59,7 +58,7 @@ public final class TabSignalController implements Builder<GridPane>
     {
         priority.getItems().addAll( Приоритет.values() );
         priority.getItems().add( 0, null );
-        priority.setConverter( new StringToПриоритетConverter() );
+        priority.setConverter( new StringToEnumConverter<>( Приоритет.values(), "tab.signal.priority." ) );
     }
     
     void set( FxСигнал сигнал )
@@ -75,29 +74,4 @@ public final class TabSignalController implements Builder<GridPane>
         this.сигнал = сигнал;
     }
     
-    private static class StringToПриоритетConverter extends StringConverter<Приоритет>
-    {
-
-        @Override
-        public String toString( Приоритет object )
-        {
-            return object != null ? LOGGER.text( "tab.signal.priority." + object.ordinal() ) : null;
-        }
-
-        @Override
-        public Приоритет fromString( String string )
-        {
-            try
-            {
-                return string != null ? Приоритет.valueOf( string ) : null;
-            }
-            catch( IllegalArgumentException e )
-            {
-                LOGGER.getLogger().warning( "Not a Приоритет object: " + string );
-                return null;
-            }
-        }
-        
-    }
-
 }

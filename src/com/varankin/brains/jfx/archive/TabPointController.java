@@ -13,20 +13,23 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели выбора и установки параметров точки.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class TabPointController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabPointController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabPoint.css";
     private static final String CSS_CLASS = "properties-tab-point";
-    private static final StringToFloatConverter CONVERTER_LONG = new StringToFloatConverter();
-    private static final StringToIntegerConverter CONVERTER_INTEGER = new StringToIntegerConverter();
+    private static final StringConverter<Float> CONVERTER_LONG 
+            = new ToStringConverter<>( s -> Float.valueOf( s ) );
+    private static final StringConverter<Integer> CONVERTER_INTEGER 
+            = new ToStringConverter<>( s -> Integer.valueOf( s ) );
 
     static final String RESOURCE_FXML = "/fxml/archive/TabPoint.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private FxТочка точка;
+    private IndeterminateHelper sensorHelper;
     
     @FXML private TextField index;
     @FXML private TextField threshold;
@@ -49,6 +52,7 @@ public final class TabPointController implements Builder<GridPane>
         
         sensor = new CheckBox();
         sensor.setFocusTraversable( true );
+        sensor.setAllowIndeterminate( true );
         
         GridPane pane = new GridPane();
         pane.setId( "point" );
@@ -79,64 +83,16 @@ public final class TabPointController implements Builder<GridPane>
             index.textProperty().unbindBidirectional( this.точка.индекс() );
             threshold.textProperty().unbindBidirectional( this.точка.порог() );
             sensor.selectedProperty().unbindBidirectional( this.точка.датчик() );
+            sensorHelper.removeListeners();
         }
         if( точка != null )
         {
             index.textProperty().bindBidirectional( точка.индекс(), CONVERTER_INTEGER );
             threshold.textProperty().bindBidirectional( точка.порог(), CONVERTER_LONG );
             sensor.selectedProperty().bindBidirectional( точка.датчик() );
+            sensorHelper = new IndeterminateHelper( sensor.indeterminateProperty(), точка.датчик() );
         }
         this.точка = точка;
-    }
-    
-    private static class StringToFloatConverter extends StringConverter<Float>
-    {
-
-        @Override
-        public String toString( Float object )
-        {
-            return Float.toString( object );
-        }
-
-        @Override
-        public Float fromString( String string )
-        {
-            try
-            {
-                return Float.valueOf( string );
-            }
-            catch( NumberFormatException e )
-            {
-                LOGGER.getLogger().warning( "Not a long number: " + string );
-                return 0F; //TODO null; for unboxed classes
-            }
-        }
-        
-    }
-    
-    private static class StringToIntegerConverter extends StringConverter<Integer>
-    {
-
-        @Override
-        public String toString( Integer object )
-        {
-            return Integer.toString( object );
-        }
-
-        @Override
-        public Integer fromString( String string )
-        {
-            try
-            {
-                return Integer.valueOf( string );
-            }
-            catch( NumberFormatException e )
-            {
-                LOGGER.getLogger().warning( "Not an integer number: " + string );
-                return 0; //TODO null; for unboxed classes
-            }
-        }
-        
     }
     
 }

@@ -13,7 +13,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров заметки.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class TabNoteController implements Builder<GridPane>
 {

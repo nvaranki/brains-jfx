@@ -14,20 +14,23 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели выбора и установки параметров процессора.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class TabProcessorController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabProcessorController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabProcessor.css";
     private static final String CSS_CLASS = "properties-tab-processor";
-    private static final StringToLongConverter CONVERTER_LONG = new StringToLongConverter();
-    private static final StringToIntegerConverter CONVERTER_INTEGER = new StringToIntegerConverter();
+    private static final StringConverter<Long> CONVERTER_LONG 
+            = new ToStringConverter<>( s -> Long.valueOf( s ) );
+    private static final StringConverter<Integer> CONVERTER_INTEGER 
+            = new ToStringConverter<>( s -> Integer.valueOf( s ) );
 
     static final String RESOURCE_FXML = "/fxml/archive/TabProcessor.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private FxПроцессор процессор;
+    private IndeterminateHelper restartHelper, purgeHelper, collapseHelper;
     
     @FXML private TextField pause;
     @FXML private TextField delay;
@@ -57,12 +60,15 @@ public final class TabProcessorController implements Builder<GridPane>
         
         restart = new CheckBox();
         restart.setFocusTraversable( true );
+        restart.setAllowIndeterminate( true );
         
         purge = new CheckBox();
         purge.setFocusTraversable( true );
+        purge.setAllowIndeterminate( true );
         
         collapse = new CheckBox();
         collapse.setFocusTraversable( true );
+        collapse.setAllowIndeterminate( true );
         
         strategy = new ChoiceBox<>();
         strategy.setFocusTraversable( true );
@@ -114,6 +120,9 @@ public final class TabProcessorController implements Builder<GridPane>
             purge.selectedProperty().unbindBidirectional( this.процессор.очистка() );
             collapse.selectedProperty().unbindBidirectional( this.процессор.сжатие() );
             strategy.valueProperty().unbindBidirectional( this.процессор.стратегия() );
+            restartHelper.removeListeners();
+            purgeHelper.removeListeners();
+            collapseHelper.removeListeners();
         }
         if( процессор != null )
         {
@@ -124,58 +133,11 @@ public final class TabProcessorController implements Builder<GridPane>
             purge.selectedProperty().bindBidirectional( процессор.очистка() );
             collapse.selectedProperty().bindBidirectional( процессор.сжатие() );
             strategy.valueProperty().bindBidirectional( процессор.стратегия() );
+            restartHelper = new IndeterminateHelper( restart.indeterminateProperty(), процессор.рестарт() );
+            purgeHelper = new IndeterminateHelper( purge.indeterminateProperty(), процессор.очистка() );
+            collapseHelper = new IndeterminateHelper( collapse.indeterminateProperty(), процессор.сжатие() );
         }
         this.процессор = процессор;
-    }
-    
-    private static class StringToLongConverter extends StringConverter<Long>
-    {
-
-        @Override
-        public String toString( Long object )
-        {
-            return Long.toString( object );
-        }
-
-        @Override
-        public Long fromString( String string )
-        {
-            try
-            {
-                return Long.valueOf( string );
-            }
-            catch( NumberFormatException e )
-            {
-                LOGGER.getLogger().warning( "Not a long number: " + string );
-                return 0L; //TODO null; for unboxed classes
-            }
-        }
-        
-    }
-    
-    private static class StringToIntegerConverter extends StringConverter<Integer>
-    {
-
-        @Override
-        public String toString( Integer object )
-        {
-            return Integer.toString( object );
-        }
-
-        @Override
-        public Integer fromString( String string )
-        {
-            try
-            {
-                return Integer.valueOf( string );
-            }
-            catch( NumberFormatException e )
-            {
-                LOGGER.getLogger().warning( "Not an integer number: " + string );
-                return 0; //TODO null; for unboxed classes
-            }
-        }
-        
     }
     
 }

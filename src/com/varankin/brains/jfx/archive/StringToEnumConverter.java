@@ -12,19 +12,19 @@ class StringToEnumConverter<T extends Enum<T>> extends StringConverter<T>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( StringToEnumConverter.class );
     
-    private final String pref;
+    private final String prefix;
     private final T[] values;
 
-    StringToEnumConverter( T[] values, String pref )
+    StringToEnumConverter( T[] values, String prefix )
     {
         this.values = values;
-        this.pref = pref;
+        this.prefix = prefix;
     }
 
     @Override
     public String toString( T object )
     {
-        return object != null ? LOGGER.text( pref + ( object != null ? object.ordinal() : "null" ) ) : null;
+        return object != null ? LOGGER.text( prefix + object.ordinal() ) : null;
     }
 
     @Override

@@ -24,12 +24,13 @@ public class TabPinController implements Builder<GridPane>
     private static final LoggerX LOGGER = LoggerX.getLogger( TabPinController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabPin.css";
     private static final String CSS_CLASS = "properties-tab-pin";
+    private static final StringConverter<Integer> CNV_PRIORITY 
+            = new ToStringConverter<>( s -> Integer.valueOf( s ) );
 
     static final String RESOURCE_FXML = "/fxml/archive/TabPin.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private final ChangeListener<Short> listenerСВОЙСТВА;
-    private final StringConverter<Integer> priorityConverter;
     
     private FxКонтакт контакт;
     
@@ -40,20 +41,6 @@ public class TabPinController implements Builder<GridPane>
     public TabPinController()
     {
         listenerСВОЙСТВА = (v,o,n) -> свойства( n );
-        priorityConverter = new StringConverter<Integer>()
-        {
-            @Override
-            public String toString( Integer object )
-            {
-                return object != null ? object.toString() : "";
-            }
-
-            @Override
-            public Integer fromString( String string )
-            {
-                return string == null || string.trim().isEmpty() ? 0 : Integer.valueOf( string );
-            }
-        };
     }
 
     /**
@@ -120,7 +107,7 @@ public class TabPinController implements Builder<GridPane>
         }
         if( контакт != null )
         {
-            priority.textProperty().bindBidirectional( контакт.приоритет(), priorityConverter );
+            priority.textProperty().bindBidirectional( контакт.приоритет(), CNV_PRIORITY );
             контакт.свойства().addListener( listenerСВОЙСТВА );
             свойства( контакт.свойства().getValue() );
         }
