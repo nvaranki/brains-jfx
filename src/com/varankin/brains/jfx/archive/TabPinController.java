@@ -17,7 +17,7 @@ import static com.varankin.brains.db.DbКонтакт.*;
 /**
  * FXML-контроллер панели установки параметров контакта.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public class TabPinController implements Builder<GridPane>
 {
@@ -109,7 +109,8 @@ public class TabPinController implements Builder<GridPane>
         {
             priority.textProperty().bindBidirectional( контакт.приоритет(), CNV_PRIORITY );
             контакт.свойства().addListener( listenerСВОЙСТВА );
-            свойства( контакт.свойства().getValue() );
+            Short value = контакт.свойства().getValue();
+            if( value != null ) свойства( value );
         }
         this.контакт = контакт;
     }
@@ -122,7 +123,8 @@ public class TabPinController implements Builder<GridPane>
     
     private void свойства( short маска, boolean значение )
     {
-        short свойства = контакт.свойства().getValue();
+        Short value = контакт.свойства().getValue();
+        short свойства = value != null ? value : 0;
         свойства &= ~маска;
         свойства |= значение ? маска : НЕТ;
         контакт.свойства().setValue( свойства );
