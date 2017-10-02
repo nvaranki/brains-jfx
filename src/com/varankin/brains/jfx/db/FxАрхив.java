@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.Транзакция;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyProperty;
@@ -51,6 +52,11 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     public FxАтрибутный создатьНовыйЭлемент( String название, String uri )
     {
         return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( название, uri ) );
+    }
+    
+    public FxАтрибутный создатьНовыйЭлемент( DbАтрибутный.Ключ тип )
+    {
+        return создатьНовыйЭлемент( тип.название(), тип.uri() );
     }
     
     public FxNameSpace определитьПространствоИмен( String uri, String префикс )

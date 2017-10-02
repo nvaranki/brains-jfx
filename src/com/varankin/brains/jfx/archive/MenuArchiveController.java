@@ -84,7 +84,7 @@ public final class MenuArchiveController implements Builder<Menu>
     @FXML
     private void onArchiveFromFile( ActionEvent event )
     {
-        ActionProcessor.onArchiveFromFile( event );
+        ActionProcessor.onArchiveFromFile();
         event.consume();
     }
     

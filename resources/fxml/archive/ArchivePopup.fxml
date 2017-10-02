@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Description: Контекстное меню навигатора по архиву.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2017 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -66,6 +66,18 @@
             </graphic>
         </MenuItem>
         <fx:include fx:id="menuNew" source="ArchivePopupNew.fxml" />
+        <MenuItem 
+                onAction="#onActionClose" 
+                text="%archive.action.close" 
+                disable="${controller.disableClose}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/close.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
         <MenuItem 
                 onAction="#onActionProperties" 
                 text="%archive.action.properties" 

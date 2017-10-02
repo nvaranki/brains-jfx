@@ -17,7 +17,7 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер контекстного меню навигатора по архиву. 
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class ArchivePopupController implements Builder<ContextMenu>
 {
@@ -32,7 +32,9 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     private final BooleanProperty disableLoad;
     private final BooleanProperty disablePreview;
     private final BooleanProperty disableEdit;
+    private final BooleanProperty disableMultiply;
     private final BooleanProperty disableRemove;
+    private final BooleanProperty disableClose;
     private final BooleanProperty disableProperties;
     private final BooleanProperty disableImport;
     private final BooleanProperty disableExportXml;
@@ -49,7 +51,9 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         disableLoad = new SimpleBooleanProperty( this, "disableLoad" );
         disablePreview = new SimpleBooleanProperty( this, "disablePreview" );
         disableEdit = new SimpleBooleanProperty( this, "disableEdit" );
+        disableMultiply = new SimpleBooleanProperty( this, "disableMultiply" );
         disableRemove = new SimpleBooleanProperty( this, "disableRemove" );
+        disableClose = new SimpleBooleanProperty( this, "disableClose" );
         disableProperties = new SimpleBooleanProperty( this, "disableProperties" );
         disableImport = new SimpleBooleanProperty( this, "disableImport" );
         disableExportXml = new SimpleBooleanProperty( this, "disableExportXml" );
@@ -57,10 +61,10 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     }
     
     /**
-     * Создает панель навигатора. 
+     * Создает меню. 
      * Применяется в конфигурации без FXML.
      * 
-     * @return панель навигатора. 
+     * @return меню. 
      */
     @Override
     public ContextMenu build()
@@ -80,6 +84,11 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         menuEdit.setOnAction( this::onActionEdit );
         menuEdit.disableProperty().bind( disableEdit );
         
+        MenuItem menuMultiply = new MenuItem(
+                LOGGER.text( "archive.action.multiply" ), icon( "icons16x16/multiply.png" ) );
+        menuMultiply.setOnAction( this::onActionMultiply );
+        menuMultiply.disableProperty().bind( disableMultiply );
+        
         MenuItem menuRemove = new MenuItem(
                 LOGGER.text( "archive.action.remove" ), icon( "icons16x16/remove.png" ) );
         menuRemove.setOnAction( this::onActionRemove );
@@ -88,6 +97,11 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         menuNewController = new ArchivePopupNewController();
         Menu menuNew = menuNewController.build();
         
+        MenuItem menuClose = new MenuItem(
+                LOGGER.text( "archive.action.close" ), icon( "icons16x16/close.png" ) );
+        menuClose.setOnAction( this::onActionClose );
+        menuClose.disableProperty().bind( disableClose );
+
         menuImportController = new MenuImportController();
         Menu menuImport = menuImportController.build();
         menuImport.disableProperty().bind( disableImport );
@@ -114,8 +128,10 @@ public final class ArchivePopupController implements Builder<ContextMenu>
                 new SeparatorMenuItem(),
                 menuPreview,
                 menuEdit,
+                menuMultiply,
                 menuRemove,
                 menuNew,
+                menuClose,
                 menuProperties,
                 new SeparatorMenuItem(),
                 menuImport,
@@ -123,13 +139,6 @@ public final class ArchivePopupController implements Builder<ContextMenu>
                 menuExportPic
         );
         return menu;
-    }
-    
-    @FXML
-    private void onActionNew( ActionEvent event )
-    {
-        processor.onActionNew( event );
-        event.consume();
     }
     
     @FXML
@@ -154,9 +163,23 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     }
     
     @FXML
+    private void onActionMultiply( ActionEvent event )
+    {
+        processor.onActionMultiply( event );
+        event.consume();
+    }
+    
+    @FXML
     private void onActionRemove( ActionEvent event )
     {
         processor.onActionRemove( event );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionClose( ActionEvent event )
+    {
+        processor.onActionClose( event );
         event.consume();
     }
     
@@ -204,19 +227,20 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     void setProcessor( ActionProcessor processor )
     {
         this.processor = processor; // helps for onActionXxx()
+        menuNewController.setProcessor( processor );
         menuImportController.setProcessor( processor );
         
-        disableNew.bind( processor.disableNewProperty() );
+        if( processor == null ) return;
         disableLoad.bind( processor.disableLoadProperty() );
         disablePreview.bind( processor.disablePreviewProperty() );
         disableEdit.bind( processor.disableEditProperty() );
+        disableMultiply.bind( processor.disableMultiplyProperty() );
         disableRemove.bind( processor.disableRemoveProperty() );
+        disableClose.bind( processor.disableCloseProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
         disableImport.bind( processor.disableImportProperty() );
         disableExportXml.bind( processor.disableExportXmlProperty() );
         disableExportPic.bind( processor.disableExportPicProperty() );
-        
-        //menuNewController.selectionProperty().bind( processor.selectionProperty() );
     }
 
 }

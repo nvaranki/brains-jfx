@@ -1,0 +1,61 @@
+/* 
+    Description: Панель выбора и установки параметров дублирования элементов.
+    Author     : (c) 2017 Николай Варанкин
+*/
+
+.multiply 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
+
+.multiply HBox Button
+{
+    -fx-cursor: hand;
+}
+
+.multiply HBox
+{
+    -fx-padding: 0px;
+    -fx-spacing: 10px;
+    -fx-alignment: baseline-right;
+}
+
+.multiply #pane
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+}
+
+.multiply #preview
+{
+    -fx-hgap: 2px;
+    -fx-vgap: 2px;
+    -fx-spacing: 2px;
+    -fx-alignment: top-left;
+    -fx-pref-columns: 5;
+    -fx-pref-rows: 5;
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 5px;
+    -fx-padding: 10px;
+}
+
+.multiply #preview Circle
+{
+    -fx-fill: green;
+}
+
+.multiply #preview #c00
+{
+    -fx-fill: gold;
+    -fx-stroke: green;
+}
+
+.multiply #pane
+{
+    -fx-pref-rows: 5;
+}
+

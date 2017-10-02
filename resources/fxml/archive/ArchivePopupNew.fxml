@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Description: Контекстное меню новых элементов навигатора по архиву.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2017 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -92,6 +92,18 @@
             </graphic>
         </MenuItem>
         <MenuItem 
+                onAction="#onActionNewСенсор" 
+                text="%cell.sensor" 
+                disable="${controller.disableNewСенсор}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/sensor.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
                 onAction="#onActionNewСоединение" 
                 text="%cell.connector" 
                 disable="${controller.disableNewСоединение}" >
@@ -124,6 +136,30 @@
                 <ImageView >
                     <image>
                         <Image url="@/icons16x16/module.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewРасчет" 
+                text="%cell.compute" 
+                disable="${controller.disableNewРасчет}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/compute.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewЛента" 
+                text="%cell.timeline" 
+                disable="${controller.disableNewЛента}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/timeline.png" />
                     </image>
                 </ImageView>
             </graphic>
@@ -166,6 +202,18 @@
             </graphic>
         </MenuItem>
         <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewПараметр" 
+                text="%cell.parameter" 
+                disable="${controller.disableNewПараметр}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/parameter.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
         <MenuItem 
                 onAction="#onActionNewЗаметка" 
                 text="%cell.note" 

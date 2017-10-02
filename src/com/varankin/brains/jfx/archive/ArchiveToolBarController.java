@@ -15,7 +15,7 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер набора инструментов навигатора по архиву.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public class ArchiveToolBarController implements Builder<ToolBar>
 {
@@ -30,6 +30,7 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     private final BooleanProperty disableLoad;
     private final BooleanProperty disablePreview;
     private final BooleanProperty disableEdit;
+    private final BooleanProperty disableMultiply;
     private final BooleanProperty disableRemove;
     private final BooleanProperty disableProperties;
     private final BooleanProperty disableImportFile;
@@ -45,6 +46,7 @@ public class ArchiveToolBarController implements Builder<ToolBar>
         disableLoad = new SimpleBooleanProperty( this, "disableLoad" );
         disablePreview = new SimpleBooleanProperty( this, "disablePreview" );
         disableEdit = new SimpleBooleanProperty( this, "disableEdit" );
+        disableMultiply = new SimpleBooleanProperty( this, "disableMultiply" );
         disableRemove = new SimpleBooleanProperty( this, "disableRemove" );
         disableProperties = new SimpleBooleanProperty( this, "disableProperties" );
         disableImportFile = new SimpleBooleanProperty( this, "disableImportFile" );
@@ -85,6 +87,12 @@ public class ArchiveToolBarController implements Builder<ToolBar>
         buttonEdit.setGraphic( icon( "icons16x16/edit.png" ) );
         buttonEdit.setOnAction( this::onActionEdit );
         buttonEdit.disableProperty().bind( disableEdit );
+        
+        Button buttonMultiply = new Button();
+        buttonMultiply.setTooltip( new Tooltip( LOGGER.text( "archive.action.multiply" ) ) );
+        buttonMultiply.setGraphic( icon( "icons16x16/multiply.png" ) );
+        buttonMultiply.setOnAction( this::onActionMultiply );
+        buttonMultiply.disableProperty().bind( disableMultiply );
         
         Button buttonRemove = new Button();
         buttonRemove.setTooltip( new Tooltip( LOGGER.text( "archive.action.remove" ) ) );
@@ -130,6 +138,7 @@ public class ArchiveToolBarController implements Builder<ToolBar>
                 new Separator( Orientation.HORIZONTAL ),
                 buttonPreview,
                 buttonEdit,
+                buttonMultiply,
                 buttonRemove,
                 buttonNew,
                 buttonProperties,
@@ -155,7 +164,7 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     @FXML
     private void onActionNew( ActionEvent event )
     {
-        processor.onActionNew( event );
+//        processor.onActionNew( event );
         event.consume();
     }
     
@@ -177,6 +186,13 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     private void onActionEdit( ActionEvent event )
     {
         processor.onActionEdit( event );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionMultiply( ActionEvent event )
+    {
+        processor.onActionMultiply( event );
         event.consume();
     }
     
@@ -226,6 +242,7 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     public BooleanProperty disableLoadProperty() { return disableLoad; }
     public BooleanProperty disablePreviewProperty() { return disablePreview; }
     public BooleanProperty disableEditProperty() { return disableEdit; }
+    public BooleanProperty disableMultiplyProperty() { return disableMultiply; }
     public BooleanProperty disableRemoveProperty() { return disableRemove; }
     public BooleanProperty disablePropertiesProperty() { return disableProperties; }
     public BooleanProperty disableImportFileProperty() { return disableImportFile; }
@@ -237,6 +254,7 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     public boolean getDisableLoad() { return disableLoad.get(); }
     public boolean getDisablePreview() { return disablePreview.get(); }
     public boolean getDisableEdit() { return disableEdit.get(); }
+    public boolean getDisableMultiply() { return disableMultiply.get(); }
     public boolean getDisableRemove() { return disableRemove.get(); }
     public boolean getDisableProperties() { return disableProperties.get(); }
     public boolean getDisableImportFile() { return disableImportFile.get(); }
@@ -248,10 +266,11 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     {
         this.processor = processor; // helps for onActionXxx()
         
-        disableNew.bind( processor.disableNewProperty() );
+//        disableNew.bind( processor.disableNewProperty() );
         disableLoad.bind( processor.disableLoadProperty() );
         disablePreview.bind( processor.disablePreviewProperty() );
         disableEdit.bind( processor.disableEditProperty() );
+        disableMultiply.bind( processor.disableMultiplyProperty() );
         disableRemove.bind( processor.disableRemoveProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
         disableImportFile.bind( processor.disableImportProperty() );

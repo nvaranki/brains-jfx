@@ -1,12 +1,8 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.util.LoggerX;
-//import java.util.ResourceBundle;
-import java.util.logging.*;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -15,14 +11,11 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.util.Builder;
 
 import static com.varankin.brains.jfx.JavaFX.icon;
-import static javafx.beans.binding.Bindings.createBooleanBinding;
-
-import com.varankin.brains.db.DbАтрибутный;
 
 /**
  * FXML-контроллер контекстного меню новых элементов навигатора по архиву.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class ArchivePopupNewController implements Builder<Menu>
 {
@@ -33,29 +26,31 @@ public final class ArchivePopupNewController implements Builder<Menu>
     //public static final String RESOURCE_FXML  = "/fxml/archive/ArchivePopupNew.fxml";
     //public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private final ListProperty<DbАтрибутный> selection;
+    private ActionProcessor processor;
     
     @FXML private final BooleanProperty
-        disableNewАрхив, disableNewПакет, 
+        disableNewАрхив, disableNewПакет, disableNewПараметр,
         disableNewПроект, disableNewБиблиотека, disableNewФрагмент, 
-        disableNewСигнал, disableNewСоединение, disableNewКонтакт, 
-        disableNewМодуль, disableNewПоле, disableNewПроцессор, 
+        disableNewСенсор, disableNewСигнал, disableNewСоединение, disableNewКонтакт, 
+        disableNewЛента, disableNewМодуль, disableNewРасчет, disableNewПоле, disableNewПроцессор, 
         disableNewТочка, disableNewЗаметка, disableNewИнструкция, 
         disableNewКлассJava, disableNewТекстовыйБлок, disableNewXmlNameSpace;
 
     public ArchivePopupNewController()
     {
-        selection = new SimpleListProperty<>();
-        
         disableNewАрхив = new SimpleBooleanProperty( this, "disableNewАрхив" );
         disableNewПакет = new SimpleBooleanProperty( this, "disableNewПакет" );
+        disableNewПараметр = new SimpleBooleanProperty( this, "disableNewПараметр" );
         disableNewПроект = new SimpleBooleanProperty( this, "disableNewПроект" );
         disableNewБиблиотека = new SimpleBooleanProperty( this, "disableNewБиблиотека" );
         disableNewФрагмент = new SimpleBooleanProperty( this, "disableNewФрагмент" );
+        disableNewСенсор = new SimpleBooleanProperty( this, "disableNewСенсор" );
         disableNewСигнал = new SimpleBooleanProperty( this, "disableNewСигнал" );
         disableNewСоединение = new SimpleBooleanProperty( this, "disableNewСоединение" );
         disableNewКонтакт = new SimpleBooleanProperty( this, "disableNewКонтакт" );
+        disableNewЛента = new SimpleBooleanProperty( this, "disableNewЛента" );
         disableNewМодуль = new SimpleBooleanProperty( this, "disableNewМодуль" );
+        disableNewРасчет = new SimpleBooleanProperty( this, "disableNewРасчет" );
         disableNewПоле = new SimpleBooleanProperty( this, "disableNewПоле" );
         disableNewПроцессор = new SimpleBooleanProperty( this, "disableNewПроцессор" );
         disableNewТочка = new SimpleBooleanProperty( this, "disableNewТочка" );
@@ -64,31 +59,13 @@ public final class ArchivePopupNewController implements Builder<Menu>
         disableNewКлассJava = new SimpleBooleanProperty( this, "disableNewКлассJava" );
         disableNewТекстовыйБлок = new SimpleBooleanProperty( this, "disableNewТекстовыйБлок" );
         disableNewXmlNameSpace = new SimpleBooleanProperty( this, "disableNewXmlNameSpace" );
-        
-        disableNewАрхив.bind( createBooleanBinding( () -> disableActionNewАрхив(), selection ) );
-        disableNewПакет.bind( createBooleanBinding( () -> disableActionNewПакет(), selection ) );
-        disableNewПроект.bind( createBooleanBinding( () -> disableActionNewПроект(), selection ) );
-        disableNewБиблиотека.bind( createBooleanBinding( () -> disableActionNewБиблиотека(), selection ) );
-        disableNewФрагмент.bind( createBooleanBinding( () -> disableActionNewФрагмент(), selection ) );
-        disableNewСигнал.bind( createBooleanBinding( () -> disableActionNewСигнал(), selection ) );
-        disableNewСоединение.bind( createBooleanBinding( () -> disableActionNewСоединение(), selection ) );
-        disableNewКонтакт.bind( createBooleanBinding( () -> disableActionNewКонтакт(), selection ) );
-        disableNewМодуль.bind( createBooleanBinding( () -> disableActionNewМодуль(), selection ) );
-        disableNewПоле.bind( createBooleanBinding( () -> disableActionNewПоле(), selection ) );
-        disableNewПроцессор.bind( createBooleanBinding( () -> disableActionNewПроцессор(), selection ) );
-        disableNewТочка.bind( createBooleanBinding( () -> disableActionNewТочка(), selection ) );
-        disableNewЗаметка.bind( createBooleanBinding( () -> disableActionNewЗаметка(), selection ) );
-        disableNewИнструкция.bind( createBooleanBinding( () -> disableActionNewИнструкция(), selection ) );
-        disableNewКлассJava.bind( createBooleanBinding( () -> disableActionNewКлассJava(), selection ) );
-        disableNewТекстовыйБлок.bind( createBooleanBinding( () -> disableActionNewТекстовыйБлок(), selection ) );
-        disableNewXmlNameSpace.bind( createBooleanBinding( () -> disableActionNewXmlNameSpace(), selection ) );
     }
 
     /**
-     * Создает панель навигатора. 
+     * Создает меню. 
      * Применяется в конфигурации без FXML.
      * 
-     * @return панель навигатора. 
+     * @return меню. 
      */
     @Override
     public Menu build()
@@ -123,15 +100,30 @@ public final class ArchivePopupNewController implements Builder<Menu>
         menuNewКонтакт.setOnAction( this::onActionNewКонтакт );
         menuNewКонтакт.disableProperty().bind( disableNewКонтакт );
         
+        MenuItem menuNewЛента = new MenuItem(
+                LOGGER.text( "cell.timeline" ), icon( "icons16x16/timeline.png" ) );
+        menuNewЛента.setOnAction( this::onActionNewЛента );
+        menuNewЛента.disableProperty().bind( disableNewЛента );
+        
         MenuItem menuNewМодуль = new MenuItem(
                 LOGGER.text( "cell.module" ), icon( "icons16x16/module.png" ) );
         menuNewМодуль.setOnAction( this::onActionNewМодуль );
         menuNewМодуль.disableProperty().bind( disableNewМодуль );
         
+        MenuItem menuNewРасчет = new MenuItem(
+                LOGGER.text( "cell.compute" ), icon( "icons16x16/compute.png" ) );
+        menuNewРасчет.setOnAction( this::onActionNewРасчет );
+        menuNewРасчет.disableProperty().bind( disableNewРасчет );
+        
         MenuItem menuNewПакет = new MenuItem(
                 LOGGER.text( "cell.package" ), icon( "icons16x16/file-xml.png" ) );
         menuNewПакет.setOnAction( this::onActionNewПакет );
         menuNewПакет.disableProperty().bind( disableNewПакет );
+        
+        MenuItem menuNewПараметр = new MenuItem(
+                LOGGER.text( "cell.parameter" ), icon( "icons16x16/parameter.png" ) );
+        menuNewПараметр.setOnAction( this::onActionNewПараметр );
+        menuNewПараметр.disableProperty().bind( disableNewПараметр );
         
         MenuItem menuNewПоле = new MenuItem(
                 LOGGER.text( "cell.field" ), icon( "icons16x16/field2.png" ) );
@@ -147,6 +139,11 @@ public final class ArchivePopupNewController implements Builder<Menu>
                 LOGGER.text( "cell.processor" ), icon( "icons16x16/processor2.png" ) );
         menuNewПроцессор.setOnAction( this::onActionNewПроцессор );
         menuNewПроцессор.disableProperty().bind( disableNewПроцессор );
+        
+        MenuItem menuNewСенсор = new MenuItem(
+                LOGGER.text( "cell.sensor" ), icon( "icons16x16/sensor.png" ) );
+        menuNewСенсор.setOnAction( this::onActionNewСенсор );
+        menuNewСенсор.disableProperty().bind( disableNewСенсор );
         
         MenuItem menuNewСигнал = new MenuItem(
                 LOGGER.text( "cell.signal" ), icon( "icons16x16/signal.png" ) );
@@ -189,15 +186,19 @@ public final class ArchivePopupNewController implements Builder<Menu>
                 new SeparatorMenuItem(),
                 menuNewФрагмент,
                 menuNewСигнал,
+                menuNewСенсор,
                 menuNewСоединение,
                 menuNewКонтакт,
                 new SeparatorMenuItem(),
                 menuNewМодуль,
                 menuNewПоле,
+                menuNewРасчет,
+                menuNewЛента,
                 menuNewПроцессор,
                 new SeparatorMenuItem(),
                 menuNewТочка,
                 new SeparatorMenuItem(),
+                menuNewПараметр,
                 menuNewЗаметка,
                 menuNewИнструкция,
                 menuNewКлассJava,
@@ -211,128 +212,150 @@ public final class ArchivePopupNewController implements Builder<Menu>
     @FXML
     private void onActionNewАрхив( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0}", "" );
+        processor.onActionNewАрхив();
         event.consume();
     }
     
     @FXML
     private void onActionNewБиблиотека( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewБиблиотека();
         event.consume();
     }
     
     @FXML
     private void onActionNewЗаметка( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewЗаметка();
         event.consume();
     }
     
     @FXML
     private void onActionNewИнструкция( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewИнструкция();
         event.consume();
     }
     
     @FXML
     private void onActionNewКлассJava( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewКлассJava();
         event.consume();
     }
     
     @FXML
     private void onActionNewКонтакт( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewКонтакт();
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewЛента( ActionEvent event )
+    {
+        processor.onActionNewЛента();
         event.consume();
     }
     
     @FXML
     private void onActionNewМодуль( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewМодуль();
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewРасчет( ActionEvent event )
+    {
+        processor.onActionNewРасчет();
         event.consume();
     }
     
     @FXML
     private void onActionNewПакет( ActionEvent event )
     {
-//        Архив архив = JavaFX.getInstance().контекст.архив; //TODO other object types?
-//        JavaFX.getInstance().execute( new СоздатьНовыйПакет(), архив );
-//        Атрибутный value = s.get(0).getValue();
-//        return !( value instanceof Архив || value instanceof Пакет );
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewПакет();
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewПараметр( ActionEvent event )
+    {
+        processor.onActionNewПараметр();
         event.consume();
     }
     
     @FXML
     private void onActionNewПоле( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewПоле();
         event.consume();
     }
     
     @FXML
     private void onActionNewПроект( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewПроект();
         event.consume();
     }
     
     @FXML
     private void onActionNewПроцессор( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewПроцессор();
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionNewСенсор( ActionEvent event )
+    {
+        processor.onActionNewСенсор();
         event.consume();
     }
     
     @FXML
     private void onActionNewСигнал( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewСигнал();
         event.consume();
     }
     
     @FXML
     private void onActionNewСоединение( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewСоединение();
         event.consume();
     }
     
     @FXML
     private void onActionNewТекстовыйБлок( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewТекстовыйБлок();
         event.consume();
     }
     
     @FXML
     private void onActionNewТочка( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewТочка();
         event.consume();
     }
     
     @FXML
     private void onActionNewФрагмент( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewФрагмент();
         event.consume();
     }
     
     @FXML
     private void onActionNewXmlNameSpace( ActionEvent event )
     {
-            LOGGER.log( Level.WARNING, "Unable to create {0} for {1}.", "", "" );
+        processor.onActionNewXmlNameSpace();
         event.consume();
     }
 
-    ListProperty<DbАтрибутный> selectionProperty() { return selection; }
-    
     public BooleanProperty disableNewАрхивProperty() { return disableNewАрхив; }
     public BooleanProperty disableNewПакетProperty() { return disableNewПакет; }
     public BooleanProperty disableNewПроектProperty() { return disableNewПроект; }
@@ -341,6 +364,7 @@ public final class ArchivePopupNewController implements Builder<Menu>
     public BooleanProperty disableNewСигналProperty() { return disableNewСигнал; }
     public BooleanProperty disableNewСоединениеProperty() { return disableNewСоединение; }
     public BooleanProperty disableNewКонтактProperty() { return disableNewКонтакт; }
+    public BooleanProperty disableNewЛентаProperty() { return disableNewЛента; }
     public BooleanProperty disableNewМодульProperty() { return disableNewМодуль; }
     public BooleanProperty disableNewПолеProperty() { return disableNewПоле; }
     public BooleanProperty disableNewПроцессорProperty() { return disableNewПроцессор; }
@@ -359,6 +383,7 @@ public final class ArchivePopupNewController implements Builder<Menu>
     public boolean getDisableNewСигнал() { return disableNewСигнал.get(); }
     public boolean getDisableNewСоединение() { return disableNewСоединение.get(); }
     public boolean getDisableNewКонтакт() { return disableNewКонтакт.get(); }
+    public boolean getDisableNewЛента() { return disableNewЛента.get(); }
     public boolean getDisableNewМодуль() { return disableNewМодуль.get(); }
     public boolean getDisableNewПоле() { return disableNewПоле.get(); }
     public boolean getDisableNewПроцессор() { return disableNewПроцессор.get(); }
@@ -369,89 +394,32 @@ public final class ArchivePopupNewController implements Builder<Menu>
     public boolean getDisableNewТекстовыйБлок() { return disableNewТекстовыйБлок.get(); }
     public boolean getDisableNewXmlNameSpace() { return disableNewXmlNameSpace.get(); }
 
-    private boolean disableActionNewАрхив()
+    void setProcessor( ActionProcessor processor )
     {
-        return false;
+        this.processor = processor;
+        
+        if( processor == null ) return;
+        disableNewАрхив.bind( processor.disableNewАрхивProperty() );
+        disableNewПакет.bind( processor.disableNewПакетProperty() );
+        disableNewПараметр.bind( processor.disableNewПараметрProperty() );
+        disableNewПроект.bind( processor.disableNewПроектProperty() );
+        disableNewБиблиотека.bind( processor.disableNewБиблиотекаProperty() );
+        disableNewФрагмент.bind( processor.disableNewФрагментProperty() );
+        disableNewСенсор.bind( processor.disableNewСенсорProperty() );
+        disableNewСигнал.bind( processor.disableNewСигналProperty() );
+        disableNewСоединение.bind( processor.disableNewСоединениеProperty() );
+        disableNewКонтакт.bind( processor.disableNewКонтактProperty() );
+        disableNewЛента.bind( processor.disableNewЛентаProperty() );
+        disableNewМодуль.bind( processor.disableNewМодульProperty() );
+        disableNewПоле.bind( processor.disableNewПолеProperty() );
+        disableNewПроцессор.bind( processor.disableNewПроцессорProperty() );
+        disableNewРасчет.bind( processor.disableNewРасчетProperty() );
+        disableNewТочка.bind( processor.disableNewТочкаProperty() );
+        disableNewЗаметка.bind( processor.disableNewЗаметкаProperty() );
+        disableNewИнструкция.bind( processor.disableNewИнструкцияProperty() );
+        disableNewКлассJava.bind( processor.disableNewКлассJavaProperty() );
+        disableNewТекстовыйБлок.bind( processor.disableNewТекстовыйБлокProperty() );
+        disableNewXmlNameSpace.bind( processor.disableNewXmlNameSpaceProperty() );
     }
-    
-    private boolean disableActionNewПакет()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewПроект()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewБиблиотека()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewФрагмент()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewСигнал()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewСоединение()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewКонтакт()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewМодуль()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewПоле()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewПроцессор()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewТочка()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewЗаметка()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewИнструкция()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewКлассJava()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewТекстовыйБлок()
-    {
-        return false;
-    }
-    
-    private boolean disableActionNewXmlNameSpace()
-    {
-        return false;
-    }
-    
+
 }
