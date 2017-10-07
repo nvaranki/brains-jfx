@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+    Description: Панель выбора и установки параметров архива.
+    Author     : (c) 2017 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.archive.TabArchiveController" 
+    styleClass="properties-tab-archive"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
     <stylesheets>
         <URL value="@TabArchive.css"/>
     </stylesheets>
-</AnchorPane>
+    
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" ></ColumnConstraints>
+        <ColumnConstraints />
+    </columnConstraints>
+    
+    <children>
+        <Label 
+            text="%archive.location" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="uri"
+            prefColumnCount="32"
+            editable="false"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0" 
+        />
+        <Label 
+            text="%archive.created" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField
+            fx:id="created"
+            prefColumnCount="24"
+            editable="false"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1" 
+        />
+        <Label 
+            text="%archive.changed" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <TextField
+            fx:id="changed"
+            prefColumnCount="24"
+            editable="false"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2" 
+        />
+    </children>
+
+</GridPane>

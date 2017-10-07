@@ -40,9 +40,7 @@ final class PropertiesTabFactory
         controller.set( value );
         Tab tab = new Tab( LOGGER.text( "properties.tab.archive.title" ), builder.getNode() );
         tab.setOnCloseRequest( e -> controller.set( null ) );
-        List<Tab> tabs = new ArrayList<>( collectTabs( (FxАтрибутный)value ) );
-        tabs.add( 0, tab );
-        return tabs;
+        return Collections.<Tab>singletonList( tab );
     }
     
     List<Tab> collectTabs( FxАтрибутный<?> value )
@@ -54,7 +52,7 @@ final class PropertiesTabFactory
         controller.set( value );
         Tab tab = new Tab( LOGGER.text( "properties.tab.attrs.title" ), builder.getNode() );
         tab.setOnCloseRequest( e -> controller.set( null ) );
-        return Collections.singletonList( tab );
+        return Collections.<Tab>singletonList( tab );
     }
     
     List<Tab> collectTabs( FxБиблиотека value )

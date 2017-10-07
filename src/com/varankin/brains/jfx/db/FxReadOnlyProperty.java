@@ -31,6 +31,11 @@ final class FxReadOnlyProperty<T>
         return descriptor.uri;
     }
     
+    public Runnable getFireHandler() 
+    {
+        return () -> fireValueChangedEvent();
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="ObservableObjectValue">
     
     @Override

@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.db;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.Транзакция;
+import java.util.Date;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyProperty;
 
@@ -15,7 +16,8 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     private final ReadOnlyListProperty<FxПакет> ПАКЕТЫ;
     private final ReadOnlyListProperty<FxNameSpace> NAMESPACES;
     private final ReadOnlyListProperty<FxМусор> МУСОР;
-    private final ReadOnlyProperty<String> РАСПОЛОЖЕНИЕ; // скрыть изменяемость
+    private final ReadOnlyProperty<String> РАСПОЛОЖЕНИЕ;
+    private final FxReadOnlyProperty<Date> СОЗДАН, ИЗМЕНЕН;
 
     FxАрхив( DbАрхив элемент ) 
     {
@@ -27,6 +29,9 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         МУСОР = buildReadOnlyListProperty( элемент, "мусор", 
             new FxList<>( элемент.мусор(), элемент, e -> new FxМусор( e ), e -> e.getSource() ) );
         РАСПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "расположение", () -> элемент.расположение() );
+        СОЗДАН = new FxReadOnlyProperty<>( элемент, "создан", () -> элемент.создан() );
+        ИЗМЕНЕН = new FxReadOnlyProperty<>( элемент, "изменен", () -> элемент.изменен() );
+        элемент.обработчик( a -> ИЗМЕНЕН.getFireHandler() );
     }
 
     public ReadOnlyListProperty<FxПакет> пакеты()
@@ -47,6 +52,16 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     public ReadOnlyProperty<String> расположение()
     {
         return РАСПОЛОЖЕНИЕ;
+    }
+    
+    public ReadOnlyProperty<Date> создан()
+    {
+        return СОЗДАН;
+    }
+    
+    public ReadOnlyProperty<Date> изменен()
+    {
+        return ИЗМЕНЕН;
     }
     
     public FxАтрибутный создатьНовыйЭлемент( String название, String uri )
