@@ -138,21 +138,21 @@ public final class ArchiveResourceFactory
             { XML_FRAGMENT,  "fragment",   "fragment.png",    "фрагменты",  },
             { XML_NOTE,      "note",       "properties.png",  "заметки",    },
             { XML_PROCESSOR, "processor",  "processor2.png",  "процессоры", },
-            { XML_PARAMETER, "parameter",  "parameter",       "параметры",  },
-            { XML_JAVA,      "class.java", "JavaIcon.gif",    "классы",     },
+            { XML_PARAMETER, "parameter",  "parameter.png",   "параметры",  },
+            { XML_JAVA,      "class.java", "java.png",        "классы",     },
             { XML_JOINT,     "connector",  "connector.png",   "соединения", },
             { XML_PIN,       "pin",        "pin.png",         "контакты",   },
-            { XML_CONVERTER, "converter",  "converter",       "конвертеры", },
+            { XML_CONVERTER, "converter",  "converter.png",   "конвертеры", },
             { XML_COMPUTE,   "compute",    "function.png",    "расчеты",    },
             { XML_MODULE,    "module",     "module.png",      "модули",     },
-            { XML_TIMELINE,  "timeline",   "timeline",        "ленты",      },
+            { XML_TIMELINE,  "timeline",   "timeline.png",    "ленты",      },
             { XML_FIELD,     "field",      "field2.png",      "поля",       },
             { XML_SENSOR,    "sensor",     "sensor.png",      "сенсоры",    },
             { XML_POINT,     "point",      "point.png",       "точки",      },
-            { PI_ELEMENT,    "instruction","instruction",     "инструкции", },
-            { XML_NS_TEMP,   "namespace",  "namespace",       "namespaces", }, // нет такого типа
+            { PI_ELEMENT,    "instruction","instruction.png", "инструкции", },
+            { XML_NS_TEMP,   "namespace",  "namespace.png",   "namespaces", }, // нет такого типа
             { XML_WB_TEMP,   "waste",      "remove.png",      "мусор",      }, // нет такого типа
-            { XML_CDATA,     "text",       "text",            "тексты",     },
+            { XML_CDATA,     "text",       "text.png",        "тексты",     },
             { XML_UN_TEMP,   "other",      "other",           "прочее",     }, // нет такого типа
             { XML_GRAPHIC,   "graphic",    "preview.png",     "графики",    }, // нет такого типа
             { SVG_ELEMENT_CIRCLE,   "svg."+SVG_ELEMENT_CIRCLE,   "preview.png", "графики", },
