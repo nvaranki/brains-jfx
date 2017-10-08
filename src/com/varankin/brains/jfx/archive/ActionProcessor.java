@@ -64,7 +64,7 @@ final class ActionProcessor //TODO RT-37820
     private static final Predicate<FxАтрибутный> pExportXml = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pImport = i -> i instanceof FxАрхив;
     private static final Predicate<FxАтрибутный> pLoad = i -> i instanceof FxПроект;
-    private static final Predicate<FxАтрибутный> pMultiply = i -> i instanceof FxАтрибутный;
+    private static final Predicate<FxАтрибутный> pMultiply = i -> i instanceof FxАтрибутный && !( i instanceof FxАрхив );
     private static final Predicate<FxАтрибутный> pNewБиблиотека = i -> i instanceof FxПакет || i instanceof FxПроект || i instanceof FxМодуль;
     private static final Predicate<FxАтрибутный> pNewЗаметка = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pNewИнструкция = i -> i instanceof FxГрафика;
