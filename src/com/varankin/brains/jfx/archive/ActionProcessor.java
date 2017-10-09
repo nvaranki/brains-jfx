@@ -84,7 +84,7 @@ final class ActionProcessor //TODO RT-37820
     private static final Predicate<FxАтрибутный> pNewСигнал = i -> i instanceof FxПроект || i instanceof FxМодуль;
     private static final Predicate<FxАтрибутный> pNewСоединение = i -> i instanceof FxФрагмент || i instanceof FxПоле || i instanceof FxМодуль
             || i instanceof FxРасчет || i instanceof FxЛента;
-    private static final Predicate<FxАтрибутный> pNewТекстовыйБлок = i -> i instanceof FxЗаметка || i instanceof FxГрафика;
+    private static final Predicate<FxАтрибутный> pNewТекстовыйБлок = i -> i instanceof FxЗаметка || i instanceof FxГрафика || i instanceof FxПараметр;
     private static final Predicate<FxАтрибутный> pNewТочка = i -> i instanceof FxРасчет || i instanceof FxТочка;
     private static final Predicate<FxАтрибутный> pNewФрагмент = i -> i instanceof FxПроект || i instanceof FxМодуль;
     private static final Predicate<FxАтрибутный> pNewXmlNameSpace = i -> i instanceof FxАрхив;
@@ -176,6 +176,8 @@ final class ActionProcessor //TODO RT-37820
     private static final Фабрика<FxЗаметка,FxТекстовыйБлок> фабрикаЗаметкаТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
     private static final Фабрика<FxГрафика,FxТекстовыйБлок> фабрикаГрафикаТекст
+            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
+    private static final Фабрика<FxПараметр,FxТекстовыйБлок> фабрикаПараметрТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
     private static final Фабрика<FxГрафика,FxИнструкция> фабрикаГрафикаИнструкция
             = e -> (FxИнструкция)e.архив().создатьНовыйЭлемент( Xml.PI_ELEMENT, null );
@@ -390,6 +392,7 @@ final class ActionProcessor //TODO RT-37820
     {
         onActionNew( фабрикаЗаметкаТекст, FxЗаметка.class, e -> e.тексты() );
         onActionNew( фабрикаГрафикаТекст, FxГрафика.class, e -> e.тексты() );
+        onActionNew( фабрикаПараметрТекст, FxПараметр.class, e -> e.тексты() );
     }
 
     void onActionNewТочка() 
@@ -401,6 +404,7 @@ final class ActionProcessor //TODO RT-37820
     void onActionNewФрагмент() 
     {
         onActionNew( фабрикаПроектФрагмент, FxПроект.class, e -> e.фрагменты() );
+        onActionNew( фабрикаМодульФрагмент, FxМодуль.class, e -> e.фрагменты() );
     }
 
     void onActionNewXmlNameSpace() 
