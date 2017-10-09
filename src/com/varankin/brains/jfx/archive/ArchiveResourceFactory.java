@@ -130,8 +130,8 @@ public final class ArchiveResourceFactory
         String[][] ресурсы =
         {
             // тип           RB-название   марка              коллекция
-            { XML_ARHIVE,    "archive",    "archive",         "архивы",     }, // нет такой коллекции
-            { XML_BRAINS,    "package",    "package",         "пакеты",     },
+            { XML_ARHIVE,    "archive",    "archive.png",     "архивы",     }, // нет такой коллекции
+            { XML_BRAINS,    "package",    "package.png",     "пакеты",     },
             { XML_LIBRARY,   "library",    "new-library.png", "библиотеки", },
             { XML_PROJECT,   "project",    "new-project.png", "проекты",    },
             { XML_SIGNAL,    "signal",     "signal.png",      "сигналы",    },
