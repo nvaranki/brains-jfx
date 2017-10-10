@@ -25,15 +25,16 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.ListExpression;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -41,8 +42,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.*;
 
 import static javafx.beans.binding.Bindings.createBooleanBinding;
-import javafx.beans.binding.ListExpression;
-import javafx.event.EventHandler;
 
 /**
  * Действия над элементами архива.
@@ -90,7 +89,7 @@ final class ActionProcessor //TODO RT-37820
     private static final Predicate<FxАтрибутный> pNewXmlNameSpace = i -> i instanceof FxАрхив;
     private static final Predicate<FxАтрибутный> pPreview = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pProperties = i -> i instanceof FxАтрибутный;
-    private static final Predicate<FxАтрибутный> pRemove = i -> i instanceof FxАтрибутный;
+    private static final Predicate<FxАтрибутный> pRemove = i -> i instanceof FxАтрибутный && !( i instanceof FxАрхив );
     
     //</editor-fold>
     
@@ -533,7 +532,18 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionClose( ActionEvent event )
     {
-        LOGGER.log( Level.WARNING, "Not supported yet." );
+        SELECTION.stream()
+                .map( i -> i.getValue() )
+                .filter( e -> e instanceof FxАрхив )
+                .map( e -> (FxАрхив)e )
+                .forEach( a -> 
+                {
+                    JavaFX jfx = JavaFX.getInstance();
+                    // убрать из визуальных форм
+                    jfx.архивы.remove( a );
+                    // закрыть доступ и освободить ресурс
+                    jfx.execute( new TaskCloseArchive( a ) );
+                } );
     }
     
     static void onArchiveFromFile()
