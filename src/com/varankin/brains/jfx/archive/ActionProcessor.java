@@ -142,6 +142,8 @@ final class ActionProcessor //TODO RT-37820
             = e -> (FxПоле)e.архив().создатьНовыйЭлемент( XmlBrains.XML_FIELD, XmlBrains.XMLNS_BRAINS );
     private static final Фабрика<FxПакет,FxПроект> фабрикаПакетПроект
             = e -> (FxПроект)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PROJECT, XmlBrains.XMLNS_BRAINS );
+    private static final Фабрика<FxПакет,FxБиблиотека> фабрикаПакетБиблиотека
+            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlBrains.XML_LIBRARY, XmlBrains.XMLNS_BRAINS );
     private static final Фабрика<FxМодуль,FxПроцессор> фабрикаМодульПроцессор
             = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PROCESSOR, XmlBrains.XMLNS_BRAINS );
     private static final Фабрика<FxБиблиотека,FxПроцессор> фабрикаБиблиотекаПроцессор
@@ -292,6 +294,7 @@ final class ActionProcessor //TODO RT-37820
     void onActionNewБиблиотека() 
     {
         onActionNew( фабрикаМодульБиблиотека, FxМодуль.class, e -> e.библиотеки() );
+        onActionNew( фабрикаПакетБиблиотека,  FxПакет.class,  e -> e.библиотеки() );
         onActionNew( фабрикаПроектБиблиотека, FxПроект.class, e -> e.библиотеки() );
     }
 
