@@ -4,6 +4,8 @@ import com.varankin.brains.db.DbNameSpace;
 import java.util.List;
 import javafx.beans.property.Property;
 
+import static com.varankin.brains.db.DbNameSpace.*;
+
 /**
  *
  * @author Varankine
@@ -17,9 +19,9 @@ public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
     FxNameSpace( DbNameSpace элемент ) 
     {
         super( элемент );
-        ВАРИАНТЫ = new FxProperty<>( элемент, "варианты", () -> элемент.варианты(), (t) -> элемент.варианты( t ) );
-        НАЗВАНИЕ = new FxProperty<>( элемент, "название", () -> элемент.название(), (t) -> элемент.название( t ) );
-        URI      = new FxProperty<>( элемент, "uri",      () -> элемент.uri(),      (t) -> элемент.uri( t ) );
+        ВАРИАНТЫ = new FxProperty<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );
+        НАЗВАНИЕ = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
+        URI      = new FxProperty<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     () -> элемент.uri(),      t -> элемент.uri( t ) );
     }
 
     public Property<List<String>> варианты()

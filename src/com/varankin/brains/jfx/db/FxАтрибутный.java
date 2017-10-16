@@ -1,11 +1,12 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.КороткийКлюч;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.io.xml.XmlBrains;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -14,12 +15,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.ListExpression;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyListWrapper;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import static com.varankin.brains.db.DbАтрибутный.КЛЮЧ_А_ТИП;
 
 /**
  *
@@ -30,13 +33,15 @@ public class FxАтрибутный<T extends DbАтрибутный>
 {
     private final T ЭЛЕМЕНТ;
     private final ListProperty<FxProperty> АТРИБУТЫ;
-    private final ReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
+    private final FxReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
+    private final Map<КороткийКлюч,FxProperty> AM = new HashMap<>();
+    private boolean ami;
 
     public FxАтрибутный( T элемент )
     {
         ЭЛЕМЕНТ = элемент;
         АТРИБУТЫ = new SimpleListProperty<>( FXCollections.observableArrayList() );
-        ТИП = new FxReadOnlyProperty<>( элемент, "тип", null, () -> элемент.тип() );
+        ТИП = new FxReadOnlyProperty<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
     }
     
     public final T getSource()
@@ -49,46 +54,59 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return FxФабрика.getInstance().создать( ЭЛЕМЕНТ.архив() );
     }
     
-    public final ReadOnlyProperty<DbАтрибутный.Ключ> тип()
+    public final FxReadOnlyProperty<DbАтрибутный.Ключ> тип()
     {
         return ТИП;
     }
     
     public final FxProperty атрибут( String название, String uri )
     {
-        return атрибуты().stream()
-            .filter( а -> а.getName().equals( название ) )
-            .findAny().orElseGet( () -> 
-            {
-                String префикс = null;//uri.substring( Math.max( uri.lastIndexOf( '/' ) "New name space";
-                архив().определитьПространствоИмен( uri, префикс );
-                FxProperty p = new FxProperty( ЭЛЕМЕНТ, название, uri, 
+        атрибуты();
+        КороткийКлюч кк = new КороткийКлюч( название, uri );
+        FxProperty p = AM.get( кк );
+        if( p == null )
+        {
+            String префикс = null;//uri.substring( Math.max( uri.lastIndexOf( '/' ) "New name space";
+            архив().определитьПространствоИмен( uri, префикс );
+            p = new FxProperty( ЭЛЕМЕНТ, название, кк, 
                     () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
                     (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) );
-                АТРИБУТЫ.add( p );
-                return p;
-            } );
+            AM.put( кк, p );
+            АТРИБУТЫ.add( p );
+        }
+        return p;
     }
     
     public final ListProperty<FxProperty> атрибуты()
     {
-        if( АТРИБУТЫ.isEmpty() )
+        if( !ami )
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
+                for( FxProperty p : атрибутыBrains().values() )
+                    AM.put( p.ключ(), p );
+                АТРИБУТЫ.addAll( AM.values() );
+
                 for( DbАтрибутный.Ключ ключ : ЭЛЕМЕНТ.ключи() )
                 {
-                    String название = ключ.название();
-                    String uri = ключ.uri();
-                    if( !XmlBrains.XMLNS_BRAINS.equals( uri ) ) //TODO почему не все?
-                        АТРИБУТЫ.add( new FxProperty( ЭЛЕМЕНТ, название, uri, 
-                            () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
-                            (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) ) );
+                    КороткийКлюч кк = new КороткийКлюч( ключ.название(), ключ.uri() );
+                    if( !AM.containsKey( кк ))
+                    {
+                        FxProperty p = new FxProperty( ЭЛЕМЕНТ, кк.NAME, кк, 
+                            () -> ЭЛЕМЕНТ.атрибут( кк.NAME, кк.URI, null ),
+                            t  -> ЭЛЕМЕНТ.определить( кк.NAME, кк.URI, t ) );
+                        AM.put( кк, p );
+                        АТРИБУТЫ.add( p );
+                    }    
                 }
+                ami = true;
                 т.завершить( true );
             }
             catch( Exception e )
             {
-                throw new RuntimeException( "Failure to build list of custom properties on " + ЭЛЕМЕНТ, e );
+                AM.clear();
+                АТРИБУТЫ.clear();
+                ami = false;
+                throw new RuntimeException( "Failure to build list of properties on " + ЭЛЕМЕНТ, e );
             }
         return АТРИБУТЫ;
     }
@@ -101,12 +119,39 @@ public class FxАтрибутный<T extends DbАтрибутный>
     }
     
     /**
+     * @return карта атрибутов элемента: название метода -> атрибут.
+     */
+    private Map<String,FxProperty> атрибутыBrains()
+    {
+        return Arrays.stream( getClass().getMethods() )
+            .filter( m -> !"атрибут".equals( m.getName() ) )
+            .filter( m -> !"атрибуты".equals( m.getName() ) )
+            .filter( m -> !ListExpression.class.isAssignableFrom( m.getReturnType() ) )
+            .filter( m -> Property.class.isAssignableFrom( m.getReturnType() ) )
+            .collect( Collectors.toMap( m -> m.getName(), m ->
+            {
+                try
+                {
+                    m.setAccessible( true ); // проблема с унаследованным public final
+                    return ((FxProperty)m.invoke( FxАтрибутный.this ));
+                }
+                catch( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex )
+                {
+                    Logger.getLogger( getClass().getName() ).log( Level.SEVERE, m.getName(), ex );
+                    return null;
+                }
+            } ) );
+    }
+    
+    
+    /**
      * @return карта коллекций элемента: название метода -> коллекция.
      */
     public Map<String,ObservableList<? extends FxАтрибутный>> коллекции()
     {
         return Arrays.stream( getClass().getMethods() )
-                .filter( XM::isListExpression )
+                .filter( m -> !"атрибуты".equals( m.getName() ) )
+                .filter( m -> ListExpression.class.isAssignableFrom( m.getReturnType() ) )
                 .collect( Collectors.toMap( m -> m.getName(), new XM( this ) ) );
     }
     
@@ -125,8 +170,12 @@ public class FxАтрибутный<T extends DbАтрибутный>
         // создать дубликат по образцу
         FxАтрибутный дубликат = архив.создатьНовыйЭлемент( образец.getSource().тип() );
         // скопировать все атрибуты
-        образец.getSource().ключи().forEach( ключ -> дубликат.getSource().определить( 
-                ключ, образец.getSource().атрибут( ключ, null ) ) );
+        образец.getSource().ключи().forEach( ключ -> 
+        {
+            FxProperty p_to = дубликат.атрибут( ключ.название(), ключ.uri() );
+            FxProperty p_from = образец.атрибут( ключ.название(), ключ.uri() );
+            p_to.setValue( p_from.getValue() );
+        });
         // скопировать все коллекции
         образец.коллекции().values().forEach( коллекция -> коллекция.forEach( 
             e -> дубликат.выполнить( ( о, к ) -> к.add( о ), дублировать( e, архив ) ) ) );
@@ -144,11 +193,6 @@ public class FxАтрибутный<T extends DbАтрибутный>
         XM( FxАтрибутный атрибутный )
         {
             this.атрибутный = атрибутный;
-        }
-        
-        static boolean isListExpression( Method m )
-        {
-            return !"атрибуты".equals( m.getName() ) && ListExpression.class.isAssignableFrom( m.getReturnType() );
         }
         
         @Override

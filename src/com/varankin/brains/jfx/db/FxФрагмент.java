@@ -4,9 +4,9 @@ import com.varankin.brains.db.DbФрагмент;
 import com.varankin.brains.db.DbЭлемент;
 import com.varankin.brains.io.xml.Xml.XLinkShow;
 import com.varankin.brains.io.xml.Xml.XLinkActuate;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyProperty;
+
+import static com.varankin.brains.db.DbФрагмент.*;
 
 /**
  *
@@ -16,11 +16,11 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
 {
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
-    private final Property<String> ПРОЦЕССОР;
-    private final Property<String> ССЫЛКА;
-    private final Property<XLinkShow> ВИД;
-    private final Property<XLinkActuate> РЕАЛИЗАЦИЯ;
-    private final ReadOnlyProperty<FxКоммутируемый> ЭКЗЕМПЛЯР;
+    private final FxProperty<String> ПРОЦЕССОР;
+    private final FxProperty<String> НАЗВАНИЕ, ССЫЛКА;
+    private final FxProperty<XLinkShow> ВИД;
+    private final FxProperty<XLinkActuate> РЕАЛИЗАЦИЯ;
+    private final FxReadOnlyProperty<FxКоммутируемый> ЭКЗЕМПЛЯР;
 
     public FxФрагмент( DbФрагмент элемент ) 
     {
@@ -29,11 +29,12 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
             new FxList<>( элемент.соединения(), элемент, e -> new FxСоединение( e ), e -> e.getSource() ) );
         ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
-        ПРОЦЕССОР = new FxProperty<>( элемент, "процессор", () -> элемент.процессор(), (t) -> элемент.процессор( t ) );
-        ССЫЛКА = new FxProperty<>( элемент, "ссылка", () -> элемент.ссылка(), (t) -> элемент.ссылка( t ) );
-        ВИД = new FxProperty<>( элемент, "вид", () -> элемент.вид(), (t) -> элемент.вид( t ) );
-        РЕАЛИЗАЦИЯ = new FxProperty<>( элемент, "реализация", () -> элемент.реализация(), (t) -> элемент.реализация( t ) );
-        ЭКЗЕМПЛЯР = new FxReadOnlyProperty<>( элемент, "экземпляр", this::коммутируемый );
+        ПРОЦЕССОР  = new FxProperty<>( элемент, "процессор",  КЛЮЧ_А_ПРОЦЕССОР,  () -> элемент.процессор(),  t -> элемент.процессор( t )  );
+        НАЗВАНИЕ   = new FxProperty<>( элемент, "название",   КЛЮЧ_А_НАЗВАНИЕ,   () -> элемент.название(),   t -> элемент.название( t )   );
+        ССЫЛКА     = new FxProperty<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     () -> элемент.ссылка(),     t -> элемент.ссылка( t )     );
+        ВИД        = new FxProperty<>( элемент, "вид",        КЛЮЧ_А_ВИД,        () -> элемент.вид(),        t -> элемент.вид( t )        );
+        РЕАЛИЗАЦИЯ = new FxProperty<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, () -> элемент.реализация(), t -> элемент.реализация( t ) );
+        ЭКЗЕМПЛЯР  = new FxReadOnlyProperty<>( элемент, "экземпляр", КЛЮЧ_А_ЭКЗЕМПЛЯР, this::коммутируемый );
     }
     
     @Override
@@ -47,27 +48,33 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
         return ПАРАМЕТРЫ;
     }
     
-    public Property<String> процессор()
+    @Override
+    public FxProperty<String> название()
+    {
+        return НАЗВАНИЕ;
+    }
+
+    public FxProperty<String> процессор()
     {
         return ПРОЦЕССОР;
     }
 
-    public Property<String> ссылка()
+    public FxProperty<String> ссылка()
     {
         return ССЫЛКА;
     }
 
-    public Property<XLinkShow> вид()
+    public FxProperty<XLinkShow> вид()
     {
         return ВИД;
     }
 
-    public Property<XLinkActuate> реализация()
+    public FxProperty<XLinkActuate> реализация()
     {
         return РЕАЛИЗАЦИЯ;
     }
 
-    public ReadOnlyProperty<FxКоммутируемый> экземпляр()
+    public FxReadOnlyProperty<FxКоммутируемый> экземпляр()
     {
         return ЭКЗЕМПЛЯР;
     }

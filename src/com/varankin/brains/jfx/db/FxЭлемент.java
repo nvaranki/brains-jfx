@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbЭлемент;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyProperty;
+
+import static com.varankin.brains.db.DbЭлемент.*;
 
 /**
  *
@@ -14,8 +14,8 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
 {
     private final ReadOnlyListProperty<FxЗаметка> ЗАМЕТКИ;
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
-    private final Property<String> НАЗВАНИЕ;
-    private final ReadOnlyProperty<String> ПОЛОЖЕНИЕ;
+    private final FxProperty<String> НАЗВАНИЕ;
+    private final FxReadOnlyProperty<String> ПОЛОЖЕНИЕ;
 
     public FxЭлемент( T элемент ) 
     {
@@ -24,8 +24,8 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
             new FxList<>( элемент.заметки(), элемент, e -> new FxЗаметка( e ), e -> e.getSource() ) );
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
             new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
-        НАЗВАНИЕ = new FxProperty<>( элемент, "название", () -> элемент.название(), (t) -> элемент.название( t ) );
-        ПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "положение", () -> 
+        НАЗВАНИЕ  = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
+        ПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "положение", КЛЮЧ_А_ПОЛОЖЕНИЕ, () -> 
         {
             String разделитель = "/";
             String значение = элемент.положение( разделитель ); // "/у0/у1/.../уN/название"
@@ -47,12 +47,12 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
         return ГРАФИКИ;
     }
     
-    public final Property<String> название()
+    public FxProperty<String> название()
     {
         return НАЗВАНИЕ;
     }
     
-    public final ReadOnlyProperty<String> положение()
+    public final FxReadOnlyProperty<String> положение()
     {
         return ПОЛОЖЕНИЕ;
     }

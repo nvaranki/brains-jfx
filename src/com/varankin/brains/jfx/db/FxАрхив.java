@@ -7,6 +7,8 @@ import java.util.Date;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyProperty;
 
+import static com.varankin.brains.db.DbАрхив.*;
+
 /**
  *
  * @author Varankine
@@ -28,9 +30,9 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
             new FxList<>( элемент.namespaces(), элемент, e -> new FxNameSpace( e ), e -> e.getSource() ) );
         МУСОР = buildReadOnlyListProperty( элемент, "мусор", 
             new FxList<>( элемент.мусор(), элемент, e -> new FxМусор( e ), e -> e.getSource() ) );
-        РАСПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "расположение", () -> элемент.расположение() );
-        СОЗДАН = new FxReadOnlyProperty<>( элемент, "создан", () -> элемент.создан() );
-        ИЗМЕНЕН = new FxReadOnlyProperty<>( элемент, "изменен", () -> элемент.изменен() );
+        РАСПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "расположение", КЛЮЧ_А_РАСПОЛОЖЕНИЕ, () -> элемент.расположение() );
+        СОЗДАН       = new FxReadOnlyProperty<>( элемент, "создан",       КЛЮЧ_А_СОЗДАН,       () -> элемент.создан() );
+        ИЗМЕНЕН      = new FxReadOnlyProperty<>( элемент, "изменен",      КЛЮЧ_А_ИЗМЕНЕН,      () -> элемент.изменен() );
         элемент.обработчик( a -> ИЗМЕНЕН.getFireHandler() );
     }
 

@@ -17,7 +17,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер навигатора по архиву. 
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class ArchiveController implements Builder<TitledPane>
 {
@@ -67,7 +67,7 @@ public final class ArchiveController implements Builder<TitledPane>
     protected void initialize()
     {
         tree.getSelectionModel().setSelectionMode( SelectionMode.MULTIPLE );
-        tree.setCellFactory( view -> new ArchiveTreeCell() );
+        tree.setCellFactory( view -> new ArchiveTreeCell( view ) );
         tree.setRoot( new TreeItem<>() );
 
         ObservableList<FxАрхив> архивы = JavaFX.getInstance().архивы;

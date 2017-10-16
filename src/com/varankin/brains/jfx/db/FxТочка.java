@@ -1,8 +1,9 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbТочка;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
+
+import static com.varankin.brains.db.DbТочка.*;
 
 /**
  *
@@ -13,9 +14,9 @@ public final class FxТочка extends FxЭлемент<DbТочка>
     private final ReadOnlyListProperty<FxТочка> ТОЧКИ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final Property<Integer> ИНДЕКС;
-    private final Property<Boolean> ДАТЧИК;
-    private final Property<Float> ПОРОГ;
+    private final FxProperty<Integer> ИНДЕКС;
+    private final FxProperty<Boolean> ДАТЧИК;
+    private final FxProperty<Float> ПОРОГ;
 
     public FxТочка( DbТочка элемент ) 
     {
@@ -26,9 +27,9 @@ public final class FxТочка extends FxЭлемент<DbТочка>
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС = new FxProperty<>( элемент, "индекс", () -> элемент.индекс(), (t) -> элемент.индекс( t ) );
-        ДАТЧИК = new FxProperty<>( элемент, "датчик", () -> элемент.датчик(), (t) -> элемент.датчик( t ) );
-        ПОРОГ = new FxProperty<>( элемент, "порог", () -> элемент.порог(), (t) -> элемент.порог( t ) );
+        ИНДЕКС = new FxProperty<>( элемент, "индекс", КЛЮЧ_А_ИНДЕКС, () -> элемент.индекс(), t -> элемент.индекс( t ) );
+        ДАТЧИК = new FxProperty<>( элемент, "датчик", КЛЮЧ_А_ДАТЧИК, () -> элемент.датчик(), t -> элемент.датчик( t ) );
+        ПОРОГ  = new FxProperty<>( элемент, "порог",  КЛЮЧ_А_ПОРОГ,  () -> элемент.порог(),  t -> элемент.порог( t )  );
     }
 
     public ReadOnlyListProperty<FxТочка> точки()
@@ -46,17 +47,17 @@ public final class FxТочка extends FxЭлемент<DbТочка>
         return КЛАССЫ;
     }
     
-    public Property<Integer> индекс()
+    public FxProperty<Integer> индекс()
     {
         return ИНДЕКС;
     }
     
-    public Property<Boolean> датчик()
+    public FxProperty<Boolean> датчик()
     {
         return ДАТЧИК;
     }
     
-    public Property<Float> порог()
+    public FxProperty<Float> порог()
     {
         return ПОРОГ;
     }

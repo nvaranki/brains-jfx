@@ -1,8 +1,9 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbКонтакт;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
+
+import static com.varankin.brains.db.DbКонтакт.*;
 
 /**
  *
@@ -12,8 +13,8 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final Property<Integer> ПРИОРИТЕТ;
-    private final Property<Short> СВОЙСТВА;
+    private final FxProperty<Integer> ПРИОРИТЕТ;
+    private final FxProperty<Short> СВОЙСТВА;
 
     public FxКонтакт( DbКонтакт элемент ) 
     {
@@ -22,8 +23,8 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ПРИОРИТЕТ = new FxProperty<>( элемент, "приоритет", () -> элемент.приоритет(), (t) -> элемент.приоритет( t ) );
-        СВОЙСТВА = new FxProperty<>( элемент, "свойства", () -> элемент.свойства(), (t) -> элемент.свойства( t ) );
+        ПРИОРИТЕТ = new FxProperty<>( элемент, "приоритет", КЛЮЧ_А_ПРИОРИТЕТ, () -> элемент.приоритет(), t -> элемент.приоритет( t ) );
+        СВОЙСТВА  = new FxProperty<>( элемент, "свойства",  КЛЮЧ_А_СВОЙСТВА,  () -> элемент.свойства(),  t -> элемент.свойства( t )  );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()
@@ -36,12 +37,12 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
         return КЛАССЫ;
     }
     
-    public Property<Integer> приоритет()
+    public FxProperty<Integer> приоритет()
     {
         return ПРИОРИТЕТ;
     }
     
-    public Property<Short> свойства()
+    public FxProperty<Short> свойства()
     {
         return СВОЙСТВА;
     }

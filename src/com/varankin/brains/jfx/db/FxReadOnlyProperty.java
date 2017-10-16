@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.КороткийКлюч;
 import java.util.function.Supplier;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
 
@@ -9,26 +9,27 @@ import javafx.beans.property.ReadOnlyObjectPropertyBase;
  *
  * @author Varankine
  */
-final class FxReadOnlyProperty<T> 
+public final class FxReadOnlyProperty<T> 
         extends ReadOnlyObjectPropertyBase<T>
 {
     private final FxPropertyDescriptor<T> descriptor;
 
-    FxReadOnlyProperty( DbАтрибутный элемент, String название, 
+    FxReadOnlyProperty( DbАтрибутный элемент, String название, КороткийКлюч ключ,
             Supplier<T> supplier )
     {
-        this( элемент, название, XmlBrains.XMLNS_BRAINS, supplier );
+//        this( элемент, название, XmlBrains.XMLNS_BRAINS, supplier );
+        descriptor = new FxPropertyDescriptor<>( элемент, название, ключ, supplier, null );
     }
 
-    FxReadOnlyProperty( DbАтрибутный элемент, String название, String scope, 
-            Supplier<T> supplier )
-    {
-        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, null );
-    }
+//    FxReadOnlyProperty( DbАтрибутный элемент, String название, String scope, 
+//            Supplier<T> supplier )
+//    {
+//        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, null );
+//    }
 
     public String getScope()
     {
-        return descriptor.uri;
+        return descriptor.ключ.URI;
     }
     
     public Runnable getFireHandler() 

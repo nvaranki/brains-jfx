@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.КороткийКлюч;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectPropertyBase;
@@ -19,25 +19,24 @@ public final class FxProperty<T>
     private final FxPropertyDescriptor<T> descriptor;
     private final ChangeListener<T> chl;
 
-    FxProperty( DbАтрибутный элемент, String название, 
-            Supplier<T> supplier, Consumer<T> consumer )
-    {
-        this( элемент, название, XmlBrains.XMLNS_BRAINS, supplier, consumer );
-    }
-
-    FxProperty( DbАтрибутный элемент, String название, String scope, 
+    FxProperty( DbАтрибутный элемент, String название, КороткийКлюч ключ, 
             Supplier<T> supplier, Consumer<T> consumer )
     {
         super( FxPropertyDescriptor.get( элемент, supplier ) );
-        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, consumer );
+        descriptor = new FxPropertyDescriptor<>( элемент, название, ключ, supplier, consumer );
         chl = ( ObservableValue<? extends T> o, T ov, T nv ) -> 
                 FxPropertyDescriptor.set( элемент, consumer, nv );
         addListener( new WeakChangeListener<>( chl ) );
     }
 
+    public КороткийКлюч ключ()
+    {
+        return descriptor.ключ;
+    }
+
     public String getScope()
     {
-        return descriptor.uri;
+        return descriptor.ключ.URI;
     }
     
     //<editor-fold defaultstate="collapsed" desc="ObjectPropertyBase">
@@ -45,7 +44,8 @@ public final class FxProperty<T>
     @Override
     public void bind( ObservableValue<? extends T> newObservable )
     {
-        throw new UnsupportedOperationException();
+        super.bind( newObservable );
+//        throw new UnsupportedOperationException();
     }
     
     //</editor-fold>

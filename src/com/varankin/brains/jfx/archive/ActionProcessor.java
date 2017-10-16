@@ -680,6 +680,33 @@ final class ActionProcessor //TODO RT-37820
     {
         return SELECTION.isEmpty() || !SELECTION.stream().map( ti -> ti.getValue() ).allMatch( p );
     }
+    
+    static boolean disableActionAdd( FxАтрибутный owner, FxАтрибутный child ) 
+    {
+        boolean disable;
+        if( child instanceof FxПакет         ) disable = !pNewПакет.test( owner ); else
+        if( child instanceof FxПараметр      ) disable = !pNewПараметр.test( owner ); else
+        if( child instanceof FxПроект        ) disable = !pNewПроект.test( owner ); else
+        if( child instanceof FxБиблиотека    ) disable = !pNewБиблиотека.test( owner ); else
+        if( child instanceof FxФрагмент      ) disable = !pNewФрагмент.test( owner ); else
+        if( child instanceof FxСенсор        ) disable = !pNewСенсор.test( owner ); else
+        if( child instanceof FxСигнал        ) disable = !pNewСигнал.test( owner ); else
+        if( child instanceof FxСоединение    ) disable = !pNewСоединение.test( owner ); else
+        if( child instanceof FxКонтакт       ) disable = !pNewКонтакт.test( owner ); else
+        if( child instanceof FxЛента         ) disable = !pNewЛента.test( owner ); else
+        if( child instanceof FxМодуль        ) disable = !pNewМодуль.test( owner ); else
+        if( child instanceof FxРасчет        ) disable = !pNewРасчет.test( owner ); else
+        if( child instanceof FxПоле          ) disable = !pNewПоле.test( owner ); else
+        if( child instanceof FxПроцессор     ) disable = !pNewПроцессор.test( owner ); else
+        if( child instanceof FxТочка         ) disable = !pNewТочка.test( owner ); else
+        if( child instanceof FxЗаметка       ) disable = !pNewЗаметка.test( owner ); else
+        if( child instanceof FxИнструкция    ) disable = !pNewИнструкция.test( owner ); else
+        if( child instanceof FxКлассJava     ) disable = !pNewКлассJava.test( owner ); else
+        if( child instanceof FxТекстовыйБлок ) disable = !pNewТекстовыйБлок.test( owner ); else
+        if( child instanceof FxNameSpace     ) disable = !pNewXmlNameSpace.test( owner ); else
+            disable = true;
+        return disable;
+    }
 
     static Stage buildProperties( FxАтрибутный<?> атрибутный )
     {

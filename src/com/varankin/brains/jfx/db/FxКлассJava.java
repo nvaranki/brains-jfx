@@ -3,6 +3,8 @@ package com.varankin.brains.jfx.db;
 import com.varankin.brains.db.DbКлассJava;
 import javafx.beans.property.*;
 
+import static com.varankin.brains.db.DbКлассJava.*;
+
 /**
  *
  * @author Varankine
@@ -18,8 +20,8 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
         super( элемент );
         КОНВЕРТЕРЫ = buildReadOnlyListProperty( элемент, "конвертеры", 
             new FxList<>( элемент.конвертеры(), элемент, e -> new FxКонвертер( e ), e -> e.getSource() ) );
-        ОСНОВНОЙ = new FxProperty<>( элемент, "основной", () -> элемент.основной(), (t) -> элемент.основной( t ) );
-        КОД = new FxProperty<>( элемент, "код", () -> элемент.код(), (t) -> элемент.код( t ) );
+        ОСНОВНОЙ = new FxProperty<>( элемент, "основной", КЛЮЧ_А_ОСНОВНОЙ, () -> элемент.основной(), t -> элемент.основной( t ) );
+        КОД      = new FxProperty<>( элемент, "код",      КЛЮЧ_А_КОД,      () -> элемент.код(),      t -> элемент.код( t )      );
     }
     
     
