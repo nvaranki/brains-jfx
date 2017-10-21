@@ -11,13 +11,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели выбора и установки параметров инструкции.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class TabInstructionController implements Builder<GridPane>
 {
@@ -57,7 +60,20 @@ public final class TabInstructionController implements Builder<GridPane>
         Button refresh = new Button( LOGGER.text( "properties.tab.refresh" ) );
         refresh.setOnAction( this::refresh );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
+        
+        RowConstraints rc0 = new RowConstraints();
+        RowConstraints rc1 = new RowConstraints();
+        RowConstraints rc2 = new RowConstraints();
+        RowConstraints rc3 = new RowConstraints();
+        rc3.setVgrow( Priority.ALWAYS );
+        
         GridPane pane = new GridPane();
+        pane.getColumnConstraints().addAll( cc0, cc1 );
+        pane.getRowConstraints().addAll( rc0, rc1, rc2, rc3 );
         pane.add( new Label( LOGGER.text( "properties.tab.instruction.code" ) ), 0, 0 );
         pane.add( code, 1, 0 );
         pane.add( new Label( LOGGER.text( "properties.tab.instruction.proc" ) ), 0, 1 );

@@ -17,6 +17,7 @@ public final class FxТочка extends FxЭлемент<DbТочка>
     private final FxProperty<Integer> ИНДЕКС;
     private final FxProperty<Boolean> ДАТЧИК;
     private final FxProperty<Float> ПОРОГ;
+    private final FxProperty<String> КОНТАКТ;
 
     public FxТочка( DbТочка элемент ) 
     {
@@ -27,9 +28,10 @@ public final class FxТочка extends FxЭлемент<DbТочка>
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС = new FxProperty<>( элемент, "индекс", КЛЮЧ_А_ИНДЕКС, () -> элемент.индекс(), t -> элемент.индекс( t ) );
-        ДАТЧИК = new FxProperty<>( элемент, "датчик", КЛЮЧ_А_ДАТЧИК, () -> элемент.датчик(), t -> элемент.датчик( t ) );
-        ПОРОГ  = new FxProperty<>( элемент, "порог",  КЛЮЧ_А_ПОРОГ,  () -> элемент.порог(),  t -> элемент.порог( t )  );
+        ИНДЕКС  = new FxProperty<>( элемент, "индекс",  КЛЮЧ_А_ИНДЕКС,  () -> элемент.индекс(),  t -> элемент.индекс( t )  );
+        ДАТЧИК  = new FxProperty<>( элемент, "датчик",  КЛЮЧ_А_ДАТЧИК,  () -> элемент.датчик(),  t -> элемент.датчик( t )  );
+        ПОРОГ   = new FxProperty<>( элемент, "порог",   КЛЮЧ_А_ПОРОГ,   () -> элемент.порог(),   t -> элемент.порог( t )   );
+        КОНТАКТ = new FxProperty<>( элемент, "контакт", КЛЮЧ_А_КОНТАКТ, () -> элемент.контакт(), t -> элемент.контакт( t ) );
     }
 
     public ReadOnlyListProperty<FxТочка> точки()
@@ -60,6 +62,11 @@ public final class FxТочка extends FxЭлемент<DbТочка>
     public FxProperty<Float> порог()
     {
         return ПОРОГ;
+    }
+    
+    public FxProperty<String> контакт()
+    {
+        return КОНТАКТ;
     }
     
     @Override

@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.util.Builder;
 
 /**
@@ -59,9 +60,11 @@ public final class TabArchiveController implements Builder<GridPane>
         
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
         
         GridPane pane = new GridPane();
-        pane.getColumnConstraints().add( cc0 );
+        pane.getColumnConstraints().addAll( cc0, cc1 );
         pane.add( new Label( LOGGER.text( "archive.location" ) ), 0, 0 );
         pane.add( uri, 1, 0 );
         pane.add( new Label( LOGGER.text( "archive.created" ) ), 0, 1 );

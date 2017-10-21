@@ -21,8 +21,8 @@
     </stylesheets>
     
     <columnConstraints>
-        <ColumnConstraints minWidth="90" ></ColumnConstraints>
-        <ColumnConstraints />
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
     
     <children>

@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.db.КороткийКлюч;
+import java.util.Collection;
 import javafx.beans.property.ReadOnlyListProperty;
 
 import static com.varankin.brains.db.DbЭлемент.*;
@@ -12,10 +14,13 @@ import static com.varankin.brains.db.DbЭлемент.*;
  */
 public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
 {
+    static final КороткийКлюч КЛЮЧ_А_ПОЛОЖЕНИЕ = new КороткийКлюч( "положение", null );
+
     private final ReadOnlyListProperty<FxЗаметка> ЗАМЕТКИ;
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
     private final FxProperty<String> НАЗВАНИЕ;
     private final FxReadOnlyProperty<String> ПОЛОЖЕНИЕ;
+    private final FxProperty<Collection<String>> СБОРКИ;
 
     public FxЭлемент( T элемент ) 
     {
@@ -35,6 +40,7 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
             значение = значение.substring( 0, р );
             return значение.isEmpty() ? разделитель : значение;
         } );
+        СБОРКИ  = new FxProperty<>( элемент, "сборки", КЛЮЧ_А_СБОРКИ, () -> элемент.сборки(), t -> элемент.сборки( t ) );
     }
 
     public final ReadOnlyListProperty<FxЗаметка> заметки()
@@ -50,6 +56,11 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
     public FxProperty<String> название()
     {
         return НАЗВАНИЕ;
+    }
+    
+    public FxProperty<Collection<String>> сборки()
+    {
+        return СБОРКИ;
     }
     
     public final FxReadOnlyProperty<String> положение()

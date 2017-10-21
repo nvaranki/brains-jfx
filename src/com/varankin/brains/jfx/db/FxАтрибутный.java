@@ -22,8 +22,6 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import static com.varankin.brains.db.DbАтрибутный.КЛЮЧ_А_ТИП;
-
 /**
  *
  * @author Varankine
@@ -31,6 +29,8 @@ import static com.varankin.brains.db.DbАтрибутный.КЛЮЧ_А_ТИП;
  */
 public class FxАтрибутный<T extends DbАтрибутный>
 {
+    static final КороткийКлюч КЛЮЧ_А_ТИП = new КороткийКлюч( "тип", null );
+
     private final T ЭЛЕМЕНТ;
     private final ListProperty<FxProperty> АТРИБУТЫ;
     private final FxReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
@@ -91,9 +91,9 @@ public class FxАтрибутный<T extends DbАтрибутный>
                     КороткийКлюч кк = new КороткийКлюч( ключ.название(), ключ.uri() );
                     if( !AM.containsKey( кк ))
                     {
-                        FxProperty p = new FxProperty( ЭЛЕМЕНТ, кк.NAME, кк, 
-                            () -> ЭЛЕМЕНТ.атрибут( кк.NAME, кк.URI, null ),
-                            t  -> ЭЛЕМЕНТ.определить( кк.NAME, кк.URI, t ) );
+                        FxProperty p = new FxProperty( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 
+                            () -> ЭЛЕМЕНТ.атрибут(кк.НАЗВАНИЕ, кк.ЗОНА, null ),
+                            t  -> ЭЛЕМЕНТ.определить(кк.НАЗВАНИЕ, кк.ЗОНА, t ) );
                         AM.put( кк, p );
                         АТРИБУТЫ.add( p );
                     }    

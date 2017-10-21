@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbNameSpace;
+import com.varankin.brains.db.КороткийКлюч;
 import java.util.List;
-import javafx.beans.property.Property;
 
 import static com.varankin.brains.db.DbNameSpace.*;
+import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
 
 /**
  *
@@ -12,29 +13,32 @@ import static com.varankin.brains.db.DbNameSpace.*;
  */
 public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
 {
-    private final Property<List<String>> ВАРИАНТЫ;
-    private final Property<String> НАЗВАНИЕ;
-    private final Property<String> URI;
+    static final КороткийКлюч КЛЮЧ_А_НАЗВАНИЕ  = new КороткийКлюч( "название",  XMLNS_BRAINS );
+
+    private final FxReadOnlyProperty<List<String>> ВАРИАНТЫ;
+    private final FxProperty<String> НАЗВАНИЕ;
+    private final FxProperty<String> URI;
 
     FxNameSpace( DbNameSpace элемент ) 
     {
         super( элемент );
-        ВАРИАНТЫ = new FxProperty<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );
+        //ВАРИАНТЫ = new FxProperty<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );
+        ВАРИАНТЫ = new FxReadOnlyProperty<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты() );
         НАЗВАНИЕ = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
-        URI      = new FxProperty<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     () -> элемент.uri(),      t -> элемент.uri( t ) );
+        URI      = new FxProperty<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     () -> элемент.uri(),      t -> элемент.uri( t )      );
     }
 
-    public Property<List<String>> варианты()
+    public FxReadOnlyProperty<List<String>> варианты()
     {
         return ВАРИАНТЫ;
     }
     
-    public Property<String> название()
+    public FxProperty<String> название()
     {
         return НАЗВАНИЕ;
     }
     
-    public Property<String> uri()
+    public FxProperty<String> uri()
     {
         return URI;
     }

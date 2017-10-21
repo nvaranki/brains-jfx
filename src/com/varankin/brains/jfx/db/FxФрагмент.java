@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbФрагмент;
 import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.db.КороткийКлюч;
 import com.varankin.brains.io.xml.Xml.XLinkShow;
 import com.varankin.brains.io.xml.Xml.XLinkActuate;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -14,6 +15,8 @@ import static com.varankin.brains.db.DbФрагмент.*;
  */
 public final class FxФрагмент extends FxЭлемент<DbФрагмент> implements FxКоммутируемый
 {
+    static final КороткийКлюч КЛЮЧ_А_ЭКЗЕМПЛЯР = new КороткийКлюч( "экземпляр", null );
+
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final FxProperty<String> ПРОЦЕССОР;

@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbИнструкция;
+import com.varankin.brains.db.КороткийКлюч;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ChangeListener;
@@ -14,6 +15,8 @@ import static com.varankin.brains.db.DbИнструкция.*;
  */
 public final class FxИнструкция extends FxАтрибутный<DbИнструкция>
 {
+    static final КороткийКлюч КЛЮЧ_А_ВЫПОЛНИТЬ = new КороткийКлюч( "выполнить", null );
+
     private final Property<String> КОД;
     private final Property<String> ПРОЦЕССОР;
     private final FxReadOnlyProperty<String> ВЫПОЛНИТЬ;
@@ -23,7 +26,7 @@ public final class FxИнструкция extends FxАтрибутный<DbИн�
     public FxИнструкция( DbИнструкция элемент ) 
     {
         super( элемент );
-        КОД       = new FxProperty<>(         элемент, "код",       КЛЮЧ_А_КОД,       () -> элемент.код(),       t -> элемент.код( t ) );
+        КОД       = new FxProperty<>(         элемент, "код",       КЛЮЧ_А_КОД,       () -> элемент.код(),       t -> элемент.код( t )       );
         ПРОЦЕССОР = new FxProperty<>(         элемент, "процессор", КЛЮЧ_А_ПРОЦЕССОР, () -> элемент.процессор(), t -> элемент.процессор( t ) );
         ВЫПОЛНИТЬ = new FxReadOnlyProperty<>( элемент, "выполнить", КЛЮЧ_А_ВЫПОЛНИТЬ, () -> элемент.выполнить() );
         CL_КОД = (v,o,n) -> пересчитать();

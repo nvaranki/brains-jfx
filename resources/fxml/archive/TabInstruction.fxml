@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- 
+    Description: Панель выбора и установки параметров инструкции.
+    Author     : (c) 2017 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,8 +10,71 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabInstructionController" 
+    styleClass="properties-tab-instruction"
+    >
+    
     <stylesheets>
         <URL value="@TabInstruction.css"/>
     </stylesheets>
-</AnchorPane>
+  
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+        
+    <children>
+        <Label 
+            text="%properties.tab.instruction.code" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField 
+            fx:id="code"
+            prefColumnCount="6"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0" 
+        />
+        <Label 
+            text="%properties.tab.instruction.proc" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField 
+            fx:id="proc"
+            prefColumnCount="23"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1" 
+        />
+        <Label 
+            text="%properties.tab.instruction.result" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <Button 
+            text="%properties.tab.refresh" 
+            onAction="#refresh"
+            GridPane.halignment="RIGHT"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2" 
+        />
+        <TextArea
+            fx:id="result"
+            focusTraversable="true"      
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="3"  
+            GridPane.columnSpan="2" 
+            GridPane.rowSpan="1"  
+        />
+    </children>
+  
+</GridPane>

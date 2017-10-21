@@ -4,16 +4,20 @@ import com.varankin.brains.jfx.db.FxNameSpace;
 import com.varankin.util.LoggerX;
 
 import java.util.ResourceBundle;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели выбора и установки параметров объекта пространства имен XML.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public final class TabNameSpaceController implements Builder<GridPane>
 {
@@ -28,6 +32,7 @@ public final class TabNameSpaceController implements Builder<GridPane>
     
     @FXML private TextField prefix;
     @FXML private TextField uri;
+    @FXML private ListView<String> variants;
 
     /**
      * Создает панель выбора и установки параметров объекта пространства имен XML.
@@ -42,15 +47,33 @@ public final class TabNameSpaceController implements Builder<GridPane>
         prefix.setId( "prefix" );
         prefix.setPrefColumnCount( 6 );
         
+        variants = new ListView<>();
+        variants.setId( "variants" );
+        variants.setEditable( false );
+        
         uri = new TextField();
         uri.setId( "uri" );
         uri.setPrefColumnCount( 24 );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
+        
+        RowConstraints rc0 = new RowConstraints();
+        RowConstraints rc1 = new RowConstraints();
+        RowConstraints rc2 = new RowConstraints();
+        rc2.setMaxHeight( 100 );
+        
         GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "properties.ns.prefix" ) ), 0, 0 );
-        pane.add( prefix, 1, 0 );
-        pane.add( new Label( LOGGER.text( "properties.ns.uri" ) ), 0, 1 );
-        pane.add( uri, 1, 1 );
+        pane.getColumnConstraints().addAll( cc0, cc1 );
+        pane.getRowConstraints().addAll( rc0, rc1, rc2 );
+        pane.add( new Label( LOGGER.text( "properties.ns.uri" ) ), 0, 0 );
+        pane.add( uri, 1, 0 );
+        pane.add( new Label( LOGGER.text( "properties.ns.prefix" ) ), 0, 1 );
+        pane.add( prefix, 1, 1 );
+        pane.add( new Label( LOGGER.text( "properties.ns.variants" ) ), 0, 2 );
+        pane.add( variants, 1, 2 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -63,6 +86,8 @@ public final class TabNameSpaceController implements Builder<GridPane>
     @FXML
     protected void initialize()
     {
+        variants.getSelectionModel().setSelectionMode( SelectionMode.SINGLE ); //TODO
+        variants.setItems( FXCollections.observableArrayList() ); //TODO
     }
     
     void set( FxNameSpace xmlNameSpace )
@@ -71,11 +96,15 @@ public final class TabNameSpaceController implements Builder<GridPane>
         {
             prefix.textProperty().unbindBidirectional( this.xmlNameSpace.название() );
             uri.textProperty().unbindBidirectional( this.xmlNameSpace.uri() );
+            variants.itemsProperty().unbind();
         }
         if( xmlNameSpace != null )
         {
             prefix.textProperty().bindBidirectional( xmlNameSpace.название() );
             uri.textProperty().bindBidirectional( xmlNameSpace.uri() );
+            variants.itemsProperty().bind( Bindings.createObjectBinding( 
+                    () -> FXCollections.observableArrayList( xmlNameSpace.варианты().getValue() ), 
+                    xmlNameSpace.варианты(), xmlNameSpace.название() ) );//getValue().setAll( c ); //TODO
         }
         this.xmlNameSpace = xmlNameSpace;
     }

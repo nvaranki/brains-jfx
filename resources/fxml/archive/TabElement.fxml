@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     Description: Панель выбора и установки общих параметров.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2017 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -15,34 +15,45 @@
     fx:controller="com.varankin.brains.jfx.archive.TabElementController" 
     fx:id="element"
     styleClass="properties-tab-element"
->
+    >
     
     <stylesheets>
         <URL value="@TabElement.css"/>
     </stylesheets>
   
-  <children>
-    <Label 
-        text="%properties.element.path" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="0" 
-    />
-    <Label 
-        fx:id="path"
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="0" 
-    />
-    <Label 
-        text="%properties.element.name" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="1" 
-    />
-    <TextField
-        fx:id="name"
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="1"  
-        focusTraversable="true"      
-    />
-  </children>
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints maxHeight="100" />
+    </rowConstraints>
+        
+    <children>
+        <Label 
+            text="%properties.element.path" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <Label 
+            fx:id="path"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0" 
+        />
+        <Label 
+            text="%properties.element.name" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField
+            fx:id="name"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            focusTraversable="true"      
+        />
+    </children>
   
 </GridPane>

@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbЗаметка;
+import com.varankin.brains.db.КороткийКлюч;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyProperty;
 
 import static com.varankin.brains.db.DbЗаметка.*;
 
@@ -12,8 +12,11 @@ import static com.varankin.brains.db.DbЗаметка.*;
  */
 public final class FxЗаметка extends FxУзел<DbЗаметка>
 {
+    static final КороткийКлюч КЛЮЧ_А_ТЕКСТ = new КороткийКлюч( "текст", null );
+
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
-    private final ReadOnlyProperty<String> ТЕКСТ;
+    private final FxReadOnlyProperty<String> ТЕКСТ;
+    private final FxProperty<Long> ГЛУБИНА;
 
     public FxЗаметка( DbЗаметка элемент )
     {
@@ -21,6 +24,7 @@ public final class FxЗаметка extends FxУзел<DbЗаметка>
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
             new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
         ТЕКСТ = new FxReadOnlyProperty<>( элемент, "текст", КЛЮЧ_А_ТЕКСТ, () -> элемент.текст( "\n" ) );
+        ГЛУБИНА = new FxProperty<>( элемент, "глубина", КЛЮЧ_А_ГЛУБИНА, () -> элемент.глубина(), t -> элемент.глубина( t ) );
     }
 
     public ReadOnlyListProperty<FxГрафика> графики()
@@ -28,9 +32,14 @@ public final class FxЗаметка extends FxУзел<DbЗаметка>
         return ГРАФИКИ;
     }
     
-    public ReadOnlyProperty<String> текст()
+    public FxReadOnlyProperty<String> текст()
     {
         return ТЕКСТ;
+    }
+
+    public FxProperty<Long> глубина()
+    {
+        return ГЛУБИНА;
     }
 
     @Override

@@ -36,7 +36,7 @@ public final class FxProperty<T>
 
     public String getScope()
     {
-        return descriptor.ключ.URI;
+        return descriptor.ключ.ЗОНА;
     }
     
     //<editor-fold defaultstate="collapsed" desc="ObjectPropertyBase">

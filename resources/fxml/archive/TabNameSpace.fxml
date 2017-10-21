@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     Description: Панель выбора и установки параметров объекта пространства имен XML.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2017 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -11,39 +11,61 @@
 <?import javafx.scene.layout.*?>
 
 <GridPane 
-    fx:controller="com.varankin.brains.jfx.archive.PropertiesXmlNameSpaceController" 
+    fx:controller="com.varankin.brains.jfx.archive.TabNameSpaceController" 
     styleClass="properties-xml-ns"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
     
     <stylesheets>
-        <URL value="@PropertiesXmlNameSpace.css"/>
+        <URL value="@TabNameSpace.css"/>
     </stylesheets>
     
-  <children>
-    <Label 
-        text="%properties.ns.prefix" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="0" 
-    />
-    <TextField 
-        fx:id="prefix"
-        prefColumnCount="6"
-        focusTraversable="true"   
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="0" 
-    />   
-    <Label 
-        text="%properties.ns.uri" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="1" 
-    />
-    <TextField 
-        fx:id="uri"
-        prefColumnCount="24"  
-        focusTraversable="true"   
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="1" 
-    />   
-  </children>
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints maxHeight="100" />
+    </rowConstraints>
+        
+    <children>
+        <Label 
+            text="%properties.ns.prefix" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField 
+            fx:id="prefix"
+            prefColumnCount="6"
+            focusTraversable="true"   
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1" 
+        />   
+        <Label 
+            text="%properties.ns.uri" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField 
+            fx:id="uri"
+            prefColumnCount="24"  
+            focusTraversable="true"   
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0" 
+        />   
+        <Label 
+            text="%properties.ns.variants" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <TextField 
+            fx:id="variants"
+            focusTraversable="false"   
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2" 
+        />   
+    </children>
   
 </GridPane>

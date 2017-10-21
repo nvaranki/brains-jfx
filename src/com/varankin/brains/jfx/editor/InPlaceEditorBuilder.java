@@ -7,7 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.io.xml.XmlBrains;
 
+import static com.varankin.brains.db.DbАтрибутный.*;
 /**
  *
  * @author Николай
@@ -17,13 +19,13 @@ public interface InPlaceEditorBuilder
 
     public static double asDouble( DbАтрибутный элемент, String атрибут, double нет )
     {
-        Double v = элемент.атрибут( атрибут, нет );
+        Double v = toDoubleValue( элемент.атрибут( атрибут, XmlBrains.XMLNS_BRAINS, нет ) );
         return v != null ? v : нет;
     }
 
     public static String asString( DbАтрибутный элемент, String атрибут, String нет )
     {
-        String v = элемент.атрибут( атрибут, нет );
+        String v = toStringValue( элемент.атрибут( атрибут, XmlBrains.XMLNS_BRAINS, нет ) );
         return v != null ? v : нет;
     }
 

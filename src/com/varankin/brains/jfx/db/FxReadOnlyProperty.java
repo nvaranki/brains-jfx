@@ -29,7 +29,7 @@ public final class FxReadOnlyProperty<T>
 
     public String getScope()
     {
-        return descriptor.ключ.URI;
+        return descriptor.ключ.ЗОНА;
     }
     
     public Runnable getFireHandler() 

@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbКлассJava;
+import com.varankin.brains.db.КороткийКлюч;
 import javafx.beans.property.*;
 
 import static com.varankin.brains.db.DbКлассJava.*;
@@ -11,6 +12,8 @@ import static com.varankin.brains.db.DbКлассJava.*;
  */
 public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 {
+    static final КороткийКлюч КЛЮЧ_А_КОД = new КороткийКлюч( "код", null );
+
     private final ReadOnlyListProperty<FxКонвертер> КОНВЕРТЕРЫ;
     private final Property<Boolean> ОСНОВНОЙ;
     private final Property<String> КОД;

@@ -15,6 +15,8 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
     private final FxProperty<Integer> ПРИОРИТЕТ;
     private final FxProperty<Short> СВОЙСТВА;
+    private final FxProperty<String> СИГНАЛ;
+    private final FxProperty<String> ТОЧКА;
 
     public FxКонтакт( DbКонтакт элемент ) 
     {
@@ -25,6 +27,8 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
         ПРИОРИТЕТ = new FxProperty<>( элемент, "приоритет", КЛЮЧ_А_ПРИОРИТЕТ, () -> элемент.приоритет(), t -> элемент.приоритет( t ) );
         СВОЙСТВА  = new FxProperty<>( элемент, "свойства",  КЛЮЧ_А_СВОЙСТВА,  () -> элемент.свойства(),  t -> элемент.свойства( t )  );
+        СИГНАЛ    = new FxProperty<>( элемент, "сигнал",    КЛЮЧ_А_СИГНАЛ,    () -> элемент.сигнал(),    t -> элемент.сигнал( t )    );
+        ТОЧКА     = new FxProperty<>( элемент, "точка",     КЛЮЧ_А_ТОЧКА,     () -> элемент.точка(),     t -> элемент.точка( t )    );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()
@@ -45,6 +49,16 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
     public FxProperty<Short> свойства()
     {
         return СВОЙСТВА;
+    }
+
+    public FxProperty<String> сигнал()
+    {
+        return СИГНАЛ;
+    }
+
+    public FxProperty<String> точка()
+    {
+        return ТОЧКА;
     }
 
     @Override

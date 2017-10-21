@@ -11,7 +11,7 @@ import javafx.scene.control.TextFormatter;
  * 
  * @author &copy; 2017 Николай Варанкин
  */
-abstract class AbstractFilter 
+public abstract class AbstractFilter 
         implements UnaryOperator<TextFormatter.Change> 
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( AbstractFilter.class );
@@ -19,7 +19,7 @@ abstract class AbstractFilter
     private final Pattern pattern;
     private final String msgkey;
 
-    AbstractFilter( Pattern pattern, String msgkey ) 
+    public AbstractFilter( Pattern pattern, String msgkey ) 
     {
         this.pattern = pattern;
         this.msgkey = msgkey;

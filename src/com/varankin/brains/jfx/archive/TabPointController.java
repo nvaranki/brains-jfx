@@ -31,7 +31,7 @@ public final class TabPointController implements Builder<GridPane>
     private FxТочка точка;
     private IndeterminateHelper sensorHelper;
     
-    @FXML private TextField index;
+    @FXML private TextField index, pin;
     @FXML private TextField threshold;
     @FXML private CheckBox sensor;
 
@@ -54,6 +54,10 @@ public final class TabPointController implements Builder<GridPane>
         sensor.setFocusTraversable( true );
         sensor.setAllowIndeterminate( true );
         
+        pin = new TextField();
+        pin.setId( "pin" );
+        pin.setFocusTraversable( true );
+        
         GridPane pane = new GridPane();
         pane.setId( "point" );
         pane.add( new Label( LOGGER.text( "tab.point.index" ) ), 0, 0 );
@@ -62,6 +66,8 @@ public final class TabPointController implements Builder<GridPane>
         pane.add( threshold, 1, 1 );
         pane.add( new Label( LOGGER.text( "tab.point.sensor" ) ), 0, 2 );
         pane.add( sensor, 1, 2 );
+        pane.add( new Label( LOGGER.text( "tab.point.pin" ) ), 0, 3 );
+        pane.add( pin, 1, 3 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -84,6 +90,7 @@ public final class TabPointController implements Builder<GridPane>
             threshold.textProperty().unbindBidirectional( this.точка.порог() );
             sensor.selectedProperty().unbindBidirectional( this.точка.датчик() );
             sensorHelper.removeListeners();
+            pin.textProperty().unbindBidirectional( this.точка.контакт() );
         }
         if( точка != null )
         {
@@ -91,6 +98,8 @@ public final class TabPointController implements Builder<GridPane>
             threshold.textProperty().bindBidirectional( точка.порог(), CONVERTER_LONG );
             sensor.selectedProperty().bindBidirectional( точка.датчик() );
             sensorHelper = new IndeterminateHelper( sensor.indeterminateProperty(), точка.датчик() );
+            pin.textProperty().bindBidirectional( точка.контакт() );
+            pin.setEditable( true ); //TODO check with owner
         }
         this.точка = точка;
     }

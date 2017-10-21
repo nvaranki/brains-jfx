@@ -7,7 +7,7 @@ import javafx.util.StringConverter;
 /**
  * Реализация {@linkplain StringConverter конвертера} для {@link Integer}.
  * 
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public class IntegerConverter extends StringConverter<Integer>
 {
@@ -26,7 +26,7 @@ public class IntegerConverter extends StringConverter<Integer>
     @Override
     public String toString( Integer value )
     {
-        return value != null ? value.toString() : null;
+        return value != null ? value.toString() : null; //TODO null fails in javafx.​scene.​control.TextFormatter
     }
 
     @Override

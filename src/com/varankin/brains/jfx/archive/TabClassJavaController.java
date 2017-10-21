@@ -7,16 +7,22 @@ import com.varankin.util.LoggerX;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер панели установки параметров класса Java.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public class TabClassJavaController implements Builder<GridPane>
 {
@@ -44,24 +50,43 @@ public class TabClassJavaController implements Builder<GridPane>
     public GridPane build()
     {
         name = new TextField();
+        name.setId( "name" );
         name.setFocusTraversable( true );
         
         main = new CheckBox();
+        main.setId( "main" );
         main.setFocusTraversable( true );
         main.setAllowIndeterminate( true );
         
         code = new TextArea();
+        code.setId( "code" );
         code.setFocusTraversable( true );
-        code.setPrefColumnCount( 40 );
-        code.setPrefRowCount( 15 );
+        
+        Button compile = new Button( LOGGER.text( "properties.tab.compile" ) );
+        compile.setOnAction( this::compile );
+        
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
+        
+        RowConstraints rc0 = new RowConstraints();
+        RowConstraints rc1 = new RowConstraints();
+        RowConstraints rc2 = new RowConstraints();
+        RowConstraints rc3 = new RowConstraints();
+        rc3.setVgrow( Priority.ALWAYS );
         
         GridPane pane = new GridPane();
+        pane.getColumnConstraints().addAll( cc0, cc1 );
+        pane.getRowConstraints().addAll( rc0, rc1, rc2, rc3 );
         pane.add( new Label( LOGGER.text( "tab.class.name" ) ), 0, 0 );
         pane.add( name, 1, 0 );
         pane.add( new Label( LOGGER.text( "tab.class.main" ) ), 0, 1 );
         pane.add( main, 1, 1 );
         pane.add( new Label( LOGGER.text( "tab.class.code" ) ), 0, 2 );
+        pane.add( compile, 1, 2 );
         pane.add( code, 0, 3, 2, 1 );
+        GridPane.setHalignment( compile, HPos.RIGHT );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -77,6 +102,13 @@ public class TabClassJavaController implements Builder<GridPane>
         code.disableProperty().bind( Bindings.createBooleanBinding( 
                 () -> name.getText() != null && isNativeClass( name.getText().trim() ),
                 name.textProperty() ) );
+    }
+    
+    @FXML
+    private void compile( ActionEvent event )
+    {
+        LOGGER.log( Level.WARNING, "Not implemented" );
+        //TODO NOT IMPL.
     }
     
     void set( FxКлассJava класс )

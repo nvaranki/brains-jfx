@@ -34,7 +34,7 @@ public class TabPinController implements Builder<GridPane>
     
     private FxКонтакт контакт;
     
-    @FXML private TextField priority;
+    @FXML private TextField priority, signal, point;
     @FXML private CheckBox receiver;
     @FXML private CheckBox trasmitter;
 
@@ -52,7 +52,12 @@ public class TabPinController implements Builder<GridPane>
     @Override
     public GridPane build()
     {
+        signal = new TextField();
+        signal.setId( "signal" );
+        signal.setFocusTraversable( true );
+        
         priority = new TextField();
+        priority.setId( "priority" );
         priority.setFocusTraversable( true );
         
         receiver = new CheckBox();
@@ -65,13 +70,21 @@ public class TabPinController implements Builder<GridPane>
         trasmitter.setFocusTraversable( true );
         trasmitter.setOnAction( this::onTrasmitterChanged );
         
+        point = new TextField();
+        point.setId( "point" );
+        point.setFocusTraversable( true );
+        
         GridPane pane = new GridPane();
-        pane.add( new Label( LOGGER.text( "tab.pin.priority" ) ), 0, 0 );
-        pane.add( priority, 1, 0 );
-        pane.add( new Label( LOGGER.text( "tab.pin.receiver" ) ), 0, 1 );
-        pane.add( receiver, 1, 1 );
-        pane.add( new Label( LOGGER.text( "tab.pin.trasmitter" ) ), 0, 2 );
-        pane.add( trasmitter, 1, 2 );
+        pane.add( new Label( LOGGER.text( "tab.pin.signal" ) ), 0, 0 );
+        pane.add( signal, 1, 0 );
+        pane.add( new Label( LOGGER.text( "tab.pin.priority" ) ), 0, 1 );
+        pane.add( priority, 1, 1 );
+        pane.add( new Label( LOGGER.text( "tab.pin.receiver" ) ), 0, 2 );
+        pane.add( receiver, 1, 2 );
+        pane.add( new Label( LOGGER.text( "tab.pin.trasmitter" ) ), 0, 3 );
+        pane.add( trasmitter, 1, 3 );
+        pane.add( new Label( LOGGER.text( "tab.pin.point" ) ), 0, 4 );
+        pane.add( point, 1, 4 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -102,15 +115,20 @@ public class TabPinController implements Builder<GridPane>
     {
         if( this.контакт != null )
         {
+            signal.textProperty().unbindBidirectional( this.контакт.сигнал() );
             priority.textProperty().unbindBidirectional( this.контакт.приоритет() );
             this.контакт.свойства().removeListener( listenerСВОЙСТВА );
+            point.textProperty().unbindBidirectional( this.контакт.точка() );
         }
         if( контакт != null )
         {
+            signal.textProperty().bindBidirectional( контакт.сигнал() );
             priority.textProperty().bindBidirectional( контакт.приоритет(), CNV_PRIORITY );
             контакт.свойства().addListener( listenerСВОЙСТВА );
             Short value = контакт.свойства().getValue();
             if( value != null ) свойства( value );
+            point.textProperty().bindBidirectional( контакт.точка() );
+            point.setEditable( true ); //TODO filter out owner
         }
         this.контакт = контакт;
     }

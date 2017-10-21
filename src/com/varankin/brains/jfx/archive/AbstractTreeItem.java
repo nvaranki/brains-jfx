@@ -2,6 +2,7 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbЗаметка;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.FxNameSpace;
 import com.varankin.brains.jfx.db.FxАтрибутный;
@@ -147,6 +148,20 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         return позиция;
     }
 
+    @Deprecated //TODO временно здесь
+    static int сравнитьПоИндексу( DbЗаметка заметка1, DbЗаметка заметка2 )
+    {
+        Long глубина1 = заметка1.глубина();
+        Long глубина2 = заметка2.глубина();
+        long значение1 = глубина1 != null ? глубина1 : 0L; //TODO Integer.MAX_VALUE;
+        long значение2 = глубина2 != null ? глубина2 : 0L; //TODO Integer.MAX_VALUE;
+        long расстояние = значение1 - значение2;
+        return 
+                расстояние < 0L ? (int)Math.max( Integer.MIN_VALUE, расстояние ) :
+                расстояние > 0L ? (int)Math.min( расстояние, Integer.MAX_VALUE ) :
+                0;
+    }
+    
     @Override
     public final String toString()
     {

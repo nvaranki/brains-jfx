@@ -20,6 +20,18 @@
         <URL value="@TabClassJava.css"/>
     </stylesheets>
     
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+        
     <children>
         <CheckBox 
             text="%tab.class.name" 
@@ -46,6 +58,13 @@
         <Label 
             text="%tab.class.code" 
             GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <Button 
+            text="%properties.tab.compile" 
+            onAction="#compile"
+            GridPane.halignment="RIGHT"
+            GridPane.columnIndex="1" 
             GridPane.rowIndex="2" 
         />
         <TextArea
