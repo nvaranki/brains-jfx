@@ -1,14 +1,20 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.db.*;
+import com.varankin.brains.jfx.IntegerFilter;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxКонтакт;
 import com.varankin.util.LoggerX;
-
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
 
@@ -74,7 +80,13 @@ public class TabPinController implements Builder<GridPane>
         point.setId( "point" );
         point.setFocusTraversable( true );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
+        
         GridPane pane = new GridPane();
+        pane.getColumnConstraints().addAll( cc0, cc1 );
         pane.add( new Label( LOGGER.text( "tab.pin.signal" ) ), 0, 0 );
         pane.add( signal, 1, 0 );
         pane.add( new Label( LOGGER.text( "tab.pin.priority" ) ), 0, 1 );
@@ -97,6 +109,7 @@ public class TabPinController implements Builder<GridPane>
     @FXML
     protected void initialize()
     {
+        priority.setTextFormatter( new TextFormatter<>( CNV_PRIORITY, null, new IntegerFilter() ) );
     }
     
     @FXML
@@ -116,19 +129,21 @@ public class TabPinController implements Builder<GridPane>
         if( this.контакт != null )
         {
             signal.textProperty().unbindBidirectional( this.контакт.сигнал() );
-            priority.textProperty().unbindBidirectional( this.контакт.приоритет() );
+            ((TextFormatter<Integer>)priority.getTextFormatter()).valueProperty()
+                    .unbindBidirectional( this.контакт.приоритет() );
             this.контакт.свойства().removeListener( listenerСВОЙСТВА );
             point.textProperty().unbindBidirectional( this.контакт.точка() );
         }
         if( контакт != null )
         {
             signal.textProperty().bindBidirectional( контакт.сигнал() );
-            priority.textProperty().bindBidirectional( контакт.приоритет(), CNV_PRIORITY );
+            ((TextFormatter<Integer>)priority.getTextFormatter()).valueProperty()
+                    .bindBidirectional( контакт.приоритет() );
             контакт.свойства().addListener( listenerСВОЙСТВА );
             Short value = контакт.свойства().getValue();
             if( value != null ) свойства( value );
             point.textProperty().bindBidirectional( контакт.точка() );
-            point.setEditable( true ); //TODO filter out owner
+            JavaFX.getInstance().execute( new TaskDisable( контакт ) );
         }
         this.контакт = контакт;
     }
@@ -146,6 +161,78 @@ public class TabPinController implements Builder<GridPane>
         свойства &= ~маска;
         свойства |= значение ? маска : НЕТ;
         контакт.свойства().setValue( свойства );
+    }
+    
+    private class TaskDisable extends Task<Boolean[]>
+    {
+        final FxКонтакт контакт;
+        
+        TaskDisable( FxКонтакт контакт )
+        {
+            this.контакт = контакт;
+        }
+
+        @Override
+        protected Boolean[] call() throws Exception
+        {
+            DbАтрибутный архив = контакт.архив().getSource();
+            try( final Транзакция т = архив.транзакция() )
+            {
+                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+                DbАтрибутный предок = контакт.getSource().предок().предок();
+                Boolean[] значение = new Boolean[]
+                {
+                    предок instanceof DbФрагмент,
+                    предок instanceof DbЛента,
+                    предок instanceof DbМодуль,
+                    предок instanceof DbПоле,
+                    предок instanceof DbРасчет
+                };
+                т.завершить( true );
+                return значение;
+            }
+        }
+        
+        @Override
+        protected void failed() 
+        { 
+            Throwable exception = this.getException();
+            if( exception != null )
+                LOGGER.getLogger().log( Level.SEVERE, "TaskDisable failed:", exception );
+            else
+                LOGGER.getLogger().log( Level.SEVERE, "TaskDisable failed" );
+        }
+        
+        @Override
+        protected void succeeded() 
+        { 
+            Boolean[] значение = getValue();
+            if( значение[0] ) // DbФрагмент
+            {
+                receiver.setDisable( true );
+                trasmitter.setDisable( true );
+                point.setDisable( true );
+            }
+            if( значение[1] ) // DbЛента
+            {
+                signal.setDisable( true );
+                priority.setDisable( true );
+                point.setDisable( true );
+            }
+            if( значение[2] ) // DbМодуль
+            {
+                point.setDisable( true );
+            }
+            if( значение[3] ) // DbПоле
+            {
+                point.setDisable( true );
+            }
+            if( значение[4] ) // DbРасчет
+            {
+                signal.setDisable( true );
+                priority.setDisable( true );
+            }
+        }    
     }
     
 }

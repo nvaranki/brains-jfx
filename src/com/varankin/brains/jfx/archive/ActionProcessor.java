@@ -663,11 +663,9 @@ final class ActionProcessor //TODO RT-37820
     {
         if( SELECTION.isEmpty() )
             LOGGER.log( "002005005I" );
-        else if( SELECTION.size() > 1 )
-            LOGGER.log( "002005006I", SELECTION.size() );
-        else
+        else for( TreeItem<FxАтрибутный> selected : SELECTION )
         {
-            Stage stage = buildProperties( SELECTION.get( 0 ).getValue() );
+            Stage stage = buildProperties( selected.getValue() );
             stage.show();
             stage.toFront();
         }

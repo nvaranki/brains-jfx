@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,7 +28,7 @@ import static javafx.beans.binding.Bindings.*;
 /**
  * FXML-контроллер панели дополнительных параметров.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public class TabAttrsController implements Builder<BorderPane>
 {
@@ -118,7 +119,7 @@ public class TabAttrsController implements Builder<BorderPane>
                 .map( tp -> table.getItems().get( tp.getRow() ) )
                 .collect( Collectors.toList() );
         properties.forEach( p -> p.setValue( null ) );
-        атрибутный.атрибуты().removeAll( properties );
+        атрибутный.атрибутыПрочие().removeAll( properties );
         event.consume();
     }
     
@@ -164,7 +165,7 @@ public class TabAttrsController implements Builder<BorderPane>
             newName = property.getName();
             LOGGER.log( "002005014S", LOGGER.text( "properties.tab.attrs.col.name" ) );
         }
-        ListProperty атрибуты = атрибутный.атрибуты();
+        ListProperty атрибуты = атрибутный.атрибутыПрочие();
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
         property.setValue( null );
@@ -199,7 +200,7 @@ public class TabAttrsController implements Builder<BorderPane>
             newScope = property.getScope();
             LOGGER.log( "002005014S", LOGGER.text( "properties.tab.attrs.col.scope" ) );
         }
-        ListProperty атрибуты = атрибутный.атрибуты();
+        ListProperty атрибуты = атрибутный.атрибутыПрочие();
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
         property.setValue( null );
@@ -215,11 +216,11 @@ public class TabAttrsController implements Builder<BorderPane>
         if( this.атрибутный != null )
         {
             table.itemsProperty().unbind();
-            table.itemsProperty().getValue().clear();
+            table.itemsProperty().setValue( FXCollections.emptyObservableList() ); // DO NOT .getValue().clear()
         }
         if( атрибутный != null )
         {
-            table.itemsProperty().bind( атрибутный.атрибуты() );
+            table.itemsProperty().bind( атрибутный.атрибутыПрочие() );
         }
         this.атрибутный = атрибутный;
     }

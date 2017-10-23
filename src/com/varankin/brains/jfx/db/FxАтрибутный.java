@@ -6,6 +6,7 @@ import com.varankin.brains.db.Транзакция;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +33,19 @@ public class FxАтрибутный<T extends DbАтрибутный>
     static final КороткийКлюч КЛЮЧ_А_ТИП = new КороткийКлюч( "тип", null );
 
     private final T ЭЛЕМЕНТ;
-    private final ListProperty<FxProperty> АТРИБУТЫ;
+    private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
+    private final ListProperty<FxProperty> АТРИБУТЫ_ПРОЧИЕ;
+    private final ReadOnlyListWrapper<FxProperty> АТРИБУТЫ_ОСНОВНЫЕ;
     private final FxReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
     private final Map<КороткийКлюч,FxProperty> AM = new HashMap<>();
-    private boolean ami;
+    private boolean ami, abi, ci;
 
     public FxАтрибутный( T элемент )
     {
         ЭЛЕМЕНТ = элемент;
-        АТРИБУТЫ = new SimpleListProperty<>( FXCollections.observableArrayList() );
+        КОЛЛЕКЦИИ = new HashMap<>();
+        АТРИБУТЫ_ПРОЧИЕ = new SimpleListProperty<>( FXCollections.observableArrayList() );
+        АТРИБУТЫ_ОСНОВНЫЕ = new ReadOnlyListWrapper<>( FXCollections.observableArrayList() );
         ТИП = new FxReadOnlyProperty<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
     }
     
@@ -61,8 +66,16 @@ public class FxАтрибутный<T extends DbАтрибутный>
     
     public final FxProperty атрибут( String название, String uri )
     {
-        атрибуты();
-        КороткийКлюч кк = new КороткийКлюч( название, uri );
+        return атрибут( new КороткийКлюч( название, uri ) );
+    }
+    
+    public final FxProperty атрибут( КороткийКлюч кк )
+    {
+        атрибутыОсновные();
+        атрибутыПрочие();
+
+        String название = кк.НАЗВАНИЕ;
+        String uri = кк.ЗОНА;
         FxProperty p = AM.get( кк );
         if( p == null )
         {
@@ -72,30 +85,52 @@ public class FxАтрибутный<T extends DbАтрибутный>
                     () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
                     (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) );
             AM.put( кк, p );
-            АТРИБУТЫ.add( p );
+            АТРИБУТЫ_ПРОЧИЕ.add( p );
         }
         return p;
     }
     
-    public final ListProperty<FxProperty> атрибуты()
+    public final ReadOnlyListProperty<FxProperty> атрибутыОсновные()
     {
+        if(!abi)
+        {
+            try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
+            {
+                АТРИБУТЫ_ОСНОВНЫЕ.clear();
+                for( FxProperty p : извлечьАтрибутыBrains().values() )
+                    AM.put( p.ключ(), p );
+                АТРИБУТЫ_ОСНОВНЫЕ.addAll( AM.values() );
+                abi = true;
+                т.завершить( true );
+            }
+            catch( Exception e )
+            {
+                АТРИБУТЫ_ОСНОВНЫЕ.clear();
+                abi = false;
+                throw new RuntimeException( "Failure to build list of primary properties on " + ЭЛЕМЕНТ, e );
+            }
+        }
+        return АТРИБУТЫ_ОСНОВНЫЕ.getReadOnlyProperty();
+    }
+    
+    public final ListProperty<FxProperty> атрибутыПрочие()
+    {
+        атрибутыОсновные();
+
         if( !ami )
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
-                for( FxProperty p : атрибутыBrains().values() )
-                    AM.put( p.ключ(), p );
-                АТРИБУТЫ.addAll( AM.values() );
-
+                АТРИБУТЫ_ПРОЧИЕ.clear();
                 for( DbАтрибутный.Ключ ключ : ЭЛЕМЕНТ.ключи() )
                 {
                     КороткийКлюч кк = new КороткийКлюч( ключ.название(), ключ.uri() );
                     if( !AM.containsKey( кк ))
                     {
                         FxProperty p = new FxProperty( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 
-                            () -> ЭЛЕМЕНТ.атрибут(кк.НАЗВАНИЕ, кк.ЗОНА, null ),
-                            t  -> ЭЛЕМЕНТ.определить(кк.НАЗВАНИЕ, кк.ЗОНА, t ) );
+                            () -> ЭЛЕМЕНТ.атрибут( кк.НАЗВАНИЕ, кк.ЗОНА, null ),
+                            t  -> ЭЛЕМЕНТ.определить( кк.НАЗВАНИЕ, кк.ЗОНА, t ) );
                         AM.put( кк, p );
-                        АТРИБУТЫ.add( p );
+                        АТРИБУТЫ_ПРОЧИЕ.add( p );
                     }    
                 }
                 ami = true;
@@ -103,12 +138,11 @@ public class FxАтрибутный<T extends DbАтрибутный>
             }
             catch( Exception e )
             {
-                AM.clear();
-                АТРИБУТЫ.clear();
+                АТРИБУТЫ_ПРОЧИЕ.clear();
                 ami = false;
-                throw new RuntimeException( "Failure to build list of properties on " + ЭЛЕМЕНТ, e );
+                throw new RuntimeException( "Failure to build list of foreign properties on " + ЭЛЕМЕНТ, e );
             }
-        return АТРИБУТЫ;
+        return АТРИБУТЫ_ПРОЧИЕ;
     }
     
     protected static <E,X> ReadOnlyListProperty<E> buildReadOnlyListProperty( 
@@ -121,11 +155,12 @@ public class FxАтрибутный<T extends DbАтрибутный>
     /**
      * @return карта атрибутов элемента: название метода -> атрибут.
      */
-    private Map<String,FxProperty> атрибутыBrains()
+    private Map<String,FxProperty> извлечьАтрибутыBrains()
     {
         return Arrays.stream( getClass().getMethods() )
             .filter( m -> !"атрибут".equals( m.getName() ) )
-            .filter( m -> !"атрибуты".equals( m.getName() ) )
+            .filter( m -> !"атрибутыОсновные".equals( m.getName() ) )
+            .filter( m -> !"атрибутыПрочие".equals( m.getName() ) )
             .filter( m -> !ListExpression.class.isAssignableFrom( m.getReturnType() ) )
             .filter( m -> Property.class.isAssignableFrom( m.getReturnType() ) )
             .collect( Collectors.toMap( m -> m.getName(), m ->
@@ -149,10 +184,17 @@ public class FxАтрибутный<T extends DbАтрибутный>
      */
     public Map<String,ObservableList<? extends FxАтрибутный>> коллекции()
     {
-        return Arrays.stream( getClass().getMethods() )
-                .filter( m -> !"атрибуты".equals( m.getName() ) )
+        if( !ci )
+        {
+            КОЛЛЕКЦИИ.putAll( Arrays.stream( getClass().getMethods() )
+                .filter( m -> !"атрибут".equals( m.getName() ) )
+                .filter( m -> !"атрибутыОсновные".equals( m.getName() ) )
+                .filter( m -> !"атрибутыПрочие".equals( m.getName() ) )
                 .filter( m -> ListExpression.class.isAssignableFrom( m.getReturnType() ) )
-                .collect( Collectors.toMap( m -> m.getName(), new XM( this ) ) );
+                .collect( Collectors.toMap( m -> m.getName(), new XM( this ) ) ) );
+            ci = true;
+        }
+        return Collections.unmodifiableMap( КОЛЛЕКЦИИ );
     }
     
     /**

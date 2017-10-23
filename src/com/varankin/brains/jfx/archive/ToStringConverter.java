@@ -6,7 +6,7 @@ import javafx.util.StringConverter;
 /**
  *
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 class ToStringConverter<T> extends StringConverter<T>
 {
@@ -21,7 +21,7 @@ class ToStringConverter<T> extends StringConverter<T>
     @Override
     public String toString( T object )
     {
-        return object != null ? object.toString() : null;
+        return object != null ? object.toString() : "";
     }
 
     @Override

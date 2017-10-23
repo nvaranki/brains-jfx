@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- 
+    Description: Панель выбора и установки параметров контакта.
+    Author     : (c) 2017 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,8 +10,79 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabPinController" 
+    styleClass="properties-tab-pin"
+    >
+    
     <stylesheets>
         <URL value="@TabPin.css"/>
     </stylesheets>
-</AnchorPane>
+  
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <children>
+        <Label 
+            text="%tab.pin.signal" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="signal"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%tab.pin.priority" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField
+            fx:id="priority"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%tab.pin.receiver" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <TextField
+            fx:id="receiver"
+            focusTraversable="true"  
+            onAction="#onReceiverChanged"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2"  
+        />
+        <Label 
+            text="%tab.pin.trasmitter" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="3" 
+        />
+        <TextField
+            fx:id="trasmitter"
+            focusTraversable="true"      
+            onAction="#onTrasmitterChanged"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="3"  
+        />
+        <Label 
+            text="%tab.pin.point" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="4" 
+        />
+        <TextField
+            fx:id="point"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="4"  
+            focusTraversable="true"      
+        />
+    </children>
+  
+</GridPane>

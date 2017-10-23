@@ -2,10 +2,7 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
-import javafx.collections.MapChangeListener;
-import javafx.collections.WeakMapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -13,13 +10,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.util.Builder;
 
 /**
  * FXML-контроллер диалога свойств элемента архива.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2017 Николай Варанкин
  */
 public class PropertiesController implements Builder<Parent>
 {
@@ -32,12 +28,8 @@ public class PropertiesController implements Builder<Parent>
     
     private final ReadOnlyStringWrapper titleProperty;
     
-    private BooleanBinding changedBinding;
-    
     @FXML private TabPane pane;
-    @FXML private Pane properties;
     @FXML private Button buttonOK, buttonApply;
-    @FXML private TabAttrsController tabAttrsController;
 
     public PropertiesController()
     {
@@ -53,8 +45,6 @@ public class PropertiesController implements Builder<Parent>
     @Override
     public TabPane build()
     {
-        tabAttrsController = new TabAttrsController();
-        
         buttonOK = new Button( LOGGER.text( "button.ok" ) );
         buttonOK.setId( "buttonOK" );
         buttonOK.setDefaultButton( true );
@@ -82,13 +72,10 @@ public class PropertiesController implements Builder<Parent>
         
         return pane;
     }
-    private PaneChanger paneChanger;
 
     @FXML
     protected void initialize()
     {
-        paneChanger = new PaneChanger( pane );
-        pane.getProperties().addListener( new WeakMapChangeListener<>( paneChanger ) );
     }
     
     @FXML
@@ -123,99 +110,6 @@ public class PropertiesController implements Builder<Parent>
             pane.getTabs().setAll( new PropertiesTabFactory().collectTabs( value ) ); // Object!!!
         else
             pane.getTabs().forEach( t -> t.getOnCloseRequest().handle( null ) );
-        
-/*        
-        if( value instanceof FxNameSpace )
-        {
-
-            PropertiesXmlNameSpaceController controller = new PropertiesXmlNameSpaceController();
-            pane.setCenter( controller.build() );
-            titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.namespace" ) ) );
-            buttonApply.setOnAction( controller::onActionApply );
-            controller.reset( ((FxNameSpace)value).getSource() );
-        }
-        else if( value instanceof FxПроцессор )
-        {
-            PropertiesProcessorController controller = new PropertiesProcessorController();
-            pane.setCenter( controller.build() );
-            titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.processor" ) ) );
-            buttonApply.setOnAction( controller::onActionApply );
-            controller.reset( (FxПроцессор)value );
-        }
-        else if( value instanceof FxКлассJava )
-        {
-            PropertiesClassJavaController controller = new PropertiesClassJavaController();
-            pane.setCenter( controller.build() );
-            titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.class.java" ) ) );
-            buttonApply.setOnAction( controller::onActionApply );
-            controller.reset( (FxКлассJava)value );
-        }
-        else if( value instanceof FxКонвертер )
-        {
-            PropertiesConverterController controller = new PropertiesConverterController();
-            pane.setCenter( controller.build() );
-            titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.converter" ) ) );
-            buttonApply.setOnAction( controller::onActionApply );
-            controller.reset( ((FxКонвертер)value).getSource() );
-        }
-//                else if( value instanceof DbСкаляр )
-//                {
-//                    PropertiesScalarController controller = new PropertiesScalarController();
-//                    pane.setCenter( controller.build() );
-//                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.scalar" ) ) );
-//                    buttonApply.setOnAction( controller::onActionApply );
-//                    controller.reset( (DbСкаляр)value );
-//                }
-//                else if( value instanceof DbМассив )
-//                {
-//                    PropertiesArrayController controller = new PropertiesArrayController();
-//                    pane.setCenter( controller.build() );
-//                    titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.array" ) ) );
-//                    buttonApply.setOnAction( controller::onActionApply );
-//                    controller.reset( (DbМассив)value );
-//                }
-        else if( value instanceof FxТекстовыйБлок )
-        {
-            TextController controller = new TextController();
-            pane.setCenter( controller.build() );
-            titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.text" ) ) );
-            buttonApply.setOnAction( controller::onActionApply );
-            controller.reset( ((FxТекстовыйБлок)value).getSource() );
-        }
-        else if( value instanceof FxЭлемент )
-        {
-            PropertiesElementController controller = new PropertiesElementController();
-            pane.setCenter( controller.build() );
-            titleProperty.setValue( LOGGER.text( "properties.title", LOGGER.text( "cell.element" ) ) );
-            buttonApply.setOnAction( controller::onActionApply );
-            controller.reset( (FxЭлемент<? extends DbЭлемент>)value );
-        }
-        else
-        {
-            pane.setCenter( null );
-            titleProperty.setValue( LOGGER.text( "properties.title", "" ) );
-            buttonApply.setOnAction( null );
-        }
-*/
-    }
-    
-    private class PaneChanger implements MapChangeListener<Object,Object>
-    {
-        final TabPane pane;
-
-        PaneChanger( TabPane pane )
-        {
-            this.pane = pane;
-        }
-        
-        @Override
-        public void onChanged( MapChangeListener.Change<? extends Object, ? extends Object> change )
-        {
-            if( change.wasAdded() )
-            {
-                Object value = change.getValueAdded();
-            }
-        }
     }
     
 }
