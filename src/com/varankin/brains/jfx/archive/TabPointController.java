@@ -1,12 +1,20 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.DbТочка;
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxТочка;
 import com.varankin.util.LoggerX;
 
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
 
@@ -45,12 +53,15 @@ public final class TabPointController implements Builder<GridPane>
     public GridPane build()
     {
         index = new TextField();
+        index.setId( "index" );
         index.setFocusTraversable( true );
         
         threshold = new TextField();
+        threshold.setId( "threshold" );
         threshold.setFocusTraversable( true );
         
         sensor = new CheckBox();
+        sensor.setId( "sensor" );
         sensor.setFocusTraversable( true );
         sensor.setAllowIndeterminate( true );
         
@@ -58,8 +69,13 @@ public final class TabPointController implements Builder<GridPane>
         pin.setId( "pin" );
         pin.setFocusTraversable( true );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
+        
         GridPane pane = new GridPane();
-        pane.setId( "point" );
+        pane.getColumnConstraints().addAll( cc0, cc1 );
         pane.add( new Label( LOGGER.text( "tab.point.index" ) ), 0, 0 );
         pane.add( index, 1, 0 );
         pane.add( new Label( LOGGER.text( "tab.point.threshold" ) ), 0, 1 );
@@ -99,9 +115,56 @@ public final class TabPointController implements Builder<GridPane>
             sensor.selectedProperty().bindBidirectional( точка.датчик() );
             sensorHelper = new IndeterminateHelper( sensor.indeterminateProperty(), точка.датчик() );
             pin.textProperty().bindBidirectional( точка.контакт() );
-            pin.setEditable( true ); //TODO check with owner
+            JavaFX.getInstance().execute( new TaskDisable( точка ) );
         }
         this.точка = точка;
+    }
+    
+    private class TaskDisable extends Task<Boolean[]>
+    {
+        final FxТочка точка;
+        
+        TaskDisable( FxТочка точка )
+        {
+            this.точка = точка;
+        }
+
+        @Override
+        protected Boolean[] call() throws Exception
+        {
+            DbАтрибутный архив = точка.архив().getSource();
+            try( final Транзакция т = архив.транзакция() )
+            {
+                т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, архив );
+                DbАтрибутный предок = точка.getSource().предок();
+                Boolean[] значение = new Boolean[]
+                {
+                    предок instanceof DbТочка, // не корень
+                    точка.getSource().точки().isEmpty() // лист
+                };
+                т.завершить( true );
+                return значение;
+            }
+        }
+        
+        @Override
+        protected void failed() 
+        { 
+            Throwable exception = this.getException();
+            if( exception != null )
+                LOGGER.getLogger().log( Level.SEVERE, "TaskDisable failed:", exception );
+            else
+                LOGGER.getLogger().log( Level.SEVERE, "TaskDisable failed" );
+        }
+        
+        @Override
+        protected void succeeded() 
+        { 
+            Boolean[] значение = getValue();
+            index.setDisable( !значение[0] ); // корень
+            pin.setDisable( значение[0] & !значение[1] ); // промежуточный, т.е. не корень и не лист
+            sensor.setDisable( !значение[0] | значение[1] ); // корень или лист
+        }    
     }
     
 }
