@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     Description: Панель выбора и установки параметров процессора.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2017 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -20,41 +20,45 @@
         <URL value="@TabProcessor.css"/>
     </stylesheets>
   
-  <children>
-    <Label 
-        text="%properties.processor.pause" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="0" 
-    />
-    <TextField
-        fx:id="pause"
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="0"  
-        focusTraversable="true"      
-    />
-    <Label 
-        text="%properties.processor.restart" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="1" 
-    />
-    <CheckBox
-        fx:id="restart"
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="1"  
-        focusTraversable="true"      
-    />
-    <Label 
-        text="%properties.processor.strategy" 
-        GridPane.columnIndex="0" 
-        GridPane.rowIndex="2" 
-    />
-    <ComboBox
-        fx:id="strategy"
-        GridPane.columnIndex="1" 
-        GridPane.rowIndex="2"  
-        focusTraversable="true"
-        editable="false"       
-    />
-  </children>
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+    </columnConstraints>
+
+    <children>
+        <Label 
+            text="%properties.processor.pause" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="pause"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%properties.processor.restart" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <CheckBox
+            fx:id="restart"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%properties.processor.strategy" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <ComboBox
+            fx:id="strategy"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2"  
+            focusTraversable="true"
+            editable="false"       
+        />
+    </children>
   
 </GridPane>

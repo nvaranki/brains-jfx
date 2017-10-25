@@ -27,11 +27,11 @@ public final class FxReadOnlyProperty<T>
 //        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, null );
 //    }
 
-    public String getScope()
+    public КороткийКлюч ключ()
     {
-        return descriptor.ключ.ЗОНА;
+        return descriptor.ключ;
     }
-    
+
     public Runnable getFireHandler() 
     {
         return () -> fireValueChangedEvent();

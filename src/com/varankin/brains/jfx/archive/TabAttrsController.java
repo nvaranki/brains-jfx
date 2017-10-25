@@ -138,7 +138,7 @@ public class TabAttrsController implements Builder<BorderPane>
     @FXML
     private ObservableValue<String> scopeCellValueFactory( TableColumn.CellDataFeatures<FxProperty, String> cdf )
     {
-        return createStringBinding( () -> cdf.getValue().getScope(), cdf.getValue() );
+        return createStringBinding( () -> cdf.getValue().ключ().ЗОНА, cdf.getValue() );
     }
     
     @FXML
@@ -157,7 +157,7 @@ public class TabAttrsController implements Builder<BorderPane>
     private void onCommitName( TableColumn.CellEditEvent<FxProperty,String> event )
     {
         FxProperty property = event.getRowValue();
-        String oldScope = property.getScope();
+        String oldScope = property.ключ().ЗОНА;
         Object oldValue = property.getValue();
         String newName = event.getNewValue();
         if( newName == null || newName instanceof String && ((String)newName).trim().isEmpty() )
@@ -197,7 +197,7 @@ public class TabAttrsController implements Builder<BorderPane>
         String newScope = event.getNewValue();
         if( newScope == null || newScope instanceof String && ((String)newScope).trim().isEmpty() )
         {
-            newScope = property.getScope();
+            newScope = property.ключ().ЗОНА;
             LOGGER.log( "002005014S", LOGGER.text( "properties.tab.attrs.col.scope" ) );
         }
         ListProperty атрибуты = атрибутный.атрибутыПрочие();

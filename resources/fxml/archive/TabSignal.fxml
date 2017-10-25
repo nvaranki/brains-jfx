@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- 
+    Description: Панель выбора и установки параметров сигнала.
+    Author     : (c) 2017 Николай Варанкин
+-->
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -7,8 +10,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabSignalController" 
+    styleClass="properties-tab-signal"
+    >
+    
     <stylesheets>
         <URL value="@TabSignal.css"/>
     </stylesheets>
-</AnchorPane>
+  
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+    </columnConstraints>
+
+    <children>
+        <Label 
+            text="%tab.signal.priority" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <ChoiceBox 
+            fx:id="priority"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0" 
+        />
+    </children>
+  
+</GridPane>

@@ -34,11 +34,6 @@ public final class FxProperty<T>
         return descriptor.ключ;
     }
 
-    public String getScope()
-    {
-        return descriptor.ключ.ЗОНА;
-    }
-    
     //<editor-fold defaultstate="collapsed" desc="ObjectPropertyBase">
     
     @Override

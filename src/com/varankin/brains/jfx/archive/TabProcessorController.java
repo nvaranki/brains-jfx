@@ -7,6 +7,7 @@ import com.varankin.util.LoggerX;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
@@ -73,7 +74,11 @@ public final class TabProcessorController implements Builder<GridPane>
         strategy = new ChoiceBox<>();
         strategy.setFocusTraversable( true );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+
         GridPane pane = new GridPane();
+        pane.getColumnConstraints().addAll( cc0 );
         pane.setId( "processor" );
         pane.add( new Label( LOGGER.text( "properties.processor.pause" ) ), 0, 0 );
         pane.add( new Label( LOGGER.text( "properties.processor.pause.ms" ) ), 2, 0 );

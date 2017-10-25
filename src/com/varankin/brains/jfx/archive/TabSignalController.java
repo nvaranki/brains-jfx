@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
 
@@ -41,7 +42,11 @@ public final class TabSignalController implements Builder<GridPane>
         priority = new ChoiceBox<>();
         priority.setId( "priority" );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+
         GridPane pane = new GridPane();
+        pane.getColumnConstraints().addAll( cc0 );
         pane.add( new Label( LOGGER.text( "tab.signal.priority" ) ), 0, 0 );
         pane.add( priority, 1, 0 );
         

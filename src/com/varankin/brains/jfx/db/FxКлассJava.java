@@ -15,8 +15,8 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
     static final КороткийКлюч КЛЮЧ_А_КОД = new КороткийКлюч( "код", null );
 
     private final ReadOnlyListProperty<FxКонвертер> КОНВЕРТЕРЫ;
-    private final Property<Boolean> ОСНОВНОЙ;
-    private final Property<String> КОД;
+    private final FxProperty<Boolean> ОСНОВНОЙ;
+    private final FxProperty<String> КОД;
 
     public FxКлассJava( DbКлассJava элемент ) 
     {
@@ -33,12 +33,12 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
         return КОНВЕРТЕРЫ;
     }
     
-    public Property<Boolean> основной()
+    public FxProperty<Boolean> основной()
     {
         return ОСНОВНОЙ;
     }
     
-    public Property<String> код()
+    public FxProperty<String> код()
     {
         return КОД;
     }

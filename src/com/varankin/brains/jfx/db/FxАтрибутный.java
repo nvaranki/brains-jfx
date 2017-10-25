@@ -15,11 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.ListExpression;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyListWrapper;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,7 +31,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
     private final T ЭЛЕМЕНТ;
     private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
     private final ListProperty<FxProperty> АТРИБУТЫ_ПРОЧИЕ;
-    private final ReadOnlyListWrapper<FxProperty> АТРИБУТЫ_ОСНОВНЫЕ;
+    private final ReadOnlyListWrapper<ReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
     private final FxReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
     private final Map<КороткийКлюч,FxProperty> AM = new HashMap<>();
     private boolean ami, abi, ci;
@@ -90,16 +86,26 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return p;
     }
     
-    public final ReadOnlyListProperty<FxProperty> атрибутыОсновные()
+    public final ReadOnlyListProperty<ReadOnlyProperty> атрибутыОсновные()
     {
         if(!abi)
         {
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
                 АТРИБУТЫ_ОСНОВНЫЕ.clear();
-                for( FxProperty p : извлечьАтрибутыBrains().values() )
-                    AM.put( p.ключ(), p );
-                АТРИБУТЫ_ОСНОВНЫЕ.addAll( AM.values() );
+                for( ReadOnlyProperty p : извлечьАтрибутыBrains().values() )
+                    if( p instanceof FxProperty )
+                    {
+                        AM.put( ((FxProperty)p).ключ(), null );
+                        АТРИБУТЫ_ОСНОВНЫЕ.add( (FxProperty)p );
+                    }
+                    else if( p instanceof FxReadOnlyProperty )
+                    {
+                        AM.put( ((FxReadOnlyProperty)p).ключ(), null );
+                        АТРИБУТЫ_ОСНОВНЫЕ.add( (FxReadOnlyProperty)p );
+                    }
+                    else
+                        throw new ClassCastException( p.getClass().getName() );
                 abi = true;
                 т.завершить( true );
             }
@@ -155,22 +161,23 @@ public class FxАтрибутный<T extends DbАтрибутный>
     /**
      * @return карта атрибутов элемента: название метода -> атрибут.
      */
-    private Map<String,FxProperty> извлечьАтрибутыBrains()
+    private Map<String,ReadOnlyProperty> извлечьАтрибутыBrains()
     {
         return Arrays.stream( getClass().getMethods() )
+            .filter( m -> ReadOnlyProperty.class.isAssignableFrom( m.getReturnType() ) ) // Property тоже
             .filter( m -> !"атрибут".equals( m.getName() ) )
             .filter( m -> !"атрибутыОсновные".equals( m.getName() ) )
             .filter( m -> !"атрибутыПрочие".equals( m.getName() ) )
             .filter( m -> !ListExpression.class.isAssignableFrom( m.getReturnType() ) )
-            .filter( m -> Property.class.isAssignableFrom( m.getReturnType() ) )
             .collect( Collectors.toMap( m -> m.getName(), m ->
             {
                 try
                 {
                     m.setAccessible( true ); // проблема с унаследованным public final
-                    return ((FxProperty)m.invoke( FxАтрибутный.this ));
+                    return ((ReadOnlyProperty)m.invoke( FxАтрибутный.this ));
                 }
-                catch( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex )
+                catch( SecurityException | IllegalAccessException 
+                    | IllegalArgumentException | InvocationTargetException ex )
                 {
                     Logger.getLogger( getClass().getName() ).log( Level.SEVERE, m.getName(), ex );
                     return null;
@@ -187,10 +194,10 @@ public class FxАтрибутный<T extends DbАтрибутный>
         if( !ci )
         {
             КОЛЛЕКЦИИ.putAll( Arrays.stream( getClass().getMethods() )
+                .filter( m -> ListExpression.class.isAssignableFrom( m.getReturnType() ) )
                 .filter( m -> !"атрибут".equals( m.getName() ) )
                 .filter( m -> !"атрибутыОсновные".equals( m.getName() ) )
                 .filter( m -> !"атрибутыПрочие".equals( m.getName() ) )
-                .filter( m -> ListExpression.class.isAssignableFrom( m.getReturnType() ) )
                 .collect( Collectors.toMap( m -> m.getName(), new XM( this ) ) ) );
             ci = true;
         }

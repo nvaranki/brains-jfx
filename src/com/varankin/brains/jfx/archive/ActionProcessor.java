@@ -60,7 +60,7 @@ final class ActionProcessor //TODO RT-37820
     private static final Predicate<FxАтрибутный> pClose = i -> i instanceof FxАрхив;
     private static final Predicate<FxАтрибутный> pEdit = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pExportPic = i -> i instanceof FxЭлемент;
-    private static final Predicate<FxАтрибутный> pExportXml = i -> i instanceof FxЭлемент;
+    private static final Predicate<FxАтрибутный> pExportXml = i -> i instanceof FxПакет || i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pImport = i -> i instanceof FxАрхив;
     private static final Predicate<FxАтрибутный> pLoad = i -> i instanceof FxПроект;
     private static final Predicate<FxАтрибутный> pMultiply = i -> i instanceof FxАтрибутный && !( i instanceof FxАрхив );
@@ -610,16 +610,18 @@ final class ActionProcessor //TODO RT-37820
     
     void onActionExportXml( ActionEvent event )
     {
-        List<DbЭлемент> list = SELECTION.stream()
+        List<DbУзел> list = SELECTION.stream()
                 .map( i -> i.getValue() )
-                .filter( i -> i instanceof FxЭлемент )
-                .map( i -> (DbЭлемент)((FxЭлемент)i).getSource() )
+                .filter( pExportXml )
+                .map( i -> i.getSource() )
+                .filter( i -> i instanceof DbУзел )
+                .map( i -> (DbУзел)i )
                 .collect( Collectors.toList() );
         if( list.size() != 1 )
             LOGGER.log( Level.SEVERE, "Cannot save {0} elements into single file.", list.size() );
         else
         {
-            DbЭлемент элемент = list.get( 0 );
+            DbУзел элемент = list.get( 0 );
             JavaFX jfx = JavaFX.getInstance();
             if( fileProviderExportXml == null ) 
             {
