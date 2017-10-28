@@ -7,6 +7,7 @@ import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.FxNameSpace;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxМусор;
+import com.varankin.brains.jfx.db.FxПакет;
 import com.varankin.brains.jfx.db.FxУзел;
 import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.characteristic.Изменение;
@@ -21,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -180,7 +182,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
 
         class Descr
         {
-            Property<String> name;
+            ObservableValue<String> name;
             Node icon;
             Tooltip tooltip;
         }
@@ -188,13 +190,23 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         @Override
         protected Descr call() throws Exception
         {
-            FxАтрибутный элемент = AbstractTreeItem.this.getValue();
+            FxАтрибутный<?> элемент = AbstractTreeItem.this.getValue();
+            String метка = метка( элемент.тип().getValue() ); // нельзя в StringBinding!
             Descr d = new Descr();
-            d.name = элемент instanceof FxЭлемент ? 
-                    ((FxЭлемент)элемент).название() : 
+            Property<String> fxp = 
+                    элемент instanceof FxЭлемент ? 
+                    ((FxЭлемент<?>)элемент).название() : 
                      элемент instanceof FxNameSpace ? 
                     ((FxNameSpace)элемент).название() : 
-                    new SimpleStringProperty( метка( элемент ) );
+                     элемент instanceof FxПакет ? 
+                    ((FxПакет)элемент).название() : 
+                    new SimpleStringProperty( метка );
+            d.name = Bindings.createStringBinding( () -> 
+            {
+                // замена пустого названия на название типа
+                String название = fxp.getValue();
+                return название == null || название.trim().isEmpty() ? метка : название;
+            }, fxp );
             d.icon = марка( элемент );
             d.tooltip = подсказка( элемент );
             return d;
