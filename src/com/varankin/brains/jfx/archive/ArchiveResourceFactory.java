@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.jfx.db.FxАтрибутный;
+import com.varankin.brains.jfx.db.*;
 import com.varankin.characteristic.Именованный;
 import java.util.*;
 import java.util.logging.Logger;
@@ -116,11 +116,11 @@ public final class ArchiveResourceFactory
     private static String тип( FxАтрибутный<?> элемент, Map<String,String> карта )
     {
         String тип = элемент.тип().getValue().название();
-        if( элемент instanceof DbNameSpace )
+        if( элемент instanceof FxNameSpace )
             тип = XML_NS_TEMP;
-        else if( элемент instanceof DbМусор )
+        else if( элемент instanceof FxМусор )
             тип = XML_WB_TEMP;
-        else if( элемент instanceof DbГрафика )
+        else if( элемент instanceof FxГрафика )
             тип = XML_GRAPHIC;
         return карта.containsKey( тип ) ? тип : XML_UN_TEMP;
     }
