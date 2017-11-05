@@ -2,12 +2,28 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.db.Транзакция.Блокировка;
 import java.util.function.Supplier;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
+import javafx.concurrent.Task;
 
 /**
- *
- * @author Varankine
+ * Свойство {@linkplain FxАтрибутный атрибутного узла базы данных} без возможности изменения. 
+ * Процесс получения значения свойства происходит в рамках отдельной 
+ * {@linkplain Транзакция транзакции}, с {@linkplain Блокировка блокировкой} 
+ * по чтению.<\p>
+ * 
+ * <p>Свойство выполняет операцию получения значения в рамках текущей
+ * {@linkplain Thread нити выполнения}. Свойство применяет прямой вызов методов  
+ * {@linkplain FxАтрибутный объекта}. Оно не использует отдельную {@linkplain Task задачу} 
+ * для этой цели, так как предполагается, что свойство участвует в групповой операции, 
+ * которая выполняется в отдельной задаче. А конкурирующие блокировки групповой и данной 
+ * операции могут привести к конфликту доступа.</p>
+ *  
+ * @author &copy; 2017 Николай Варанкин
+ * 
+ * @param <T> тип значения свойства.
  */
 public final class FxReadOnlyProperty<T> 
         extends ReadOnlyObjectPropertyBase<T>
@@ -17,15 +33,8 @@ public final class FxReadOnlyProperty<T>
     FxReadOnlyProperty( DbАтрибутный элемент, String название, КороткийКлюч ключ,
             Supplier<T> supplier )
     {
-//        this( элемент, название, XmlBrains.XMLNS_BRAINS, supplier );
         descriptor = new FxPropertyDescriptor<>( элемент, название, ключ, supplier, null );
     }
-
-//    FxReadOnlyProperty( DbАтрибутный элемент, String название, String scope, 
-//            Supplier<T> supplier )
-//    {
-//        descriptor = new FxPropertyDescriptor<>( элемент, название, scope, supplier, null );
-//    }
 
     public КороткийКлюч ключ()
     {
@@ -39,11 +48,20 @@ public final class FxReadOnlyProperty<T>
     
     //<editor-fold defaultstate="collapsed" desc="ObservableObjectValue">
     
+    /**
+     * Возвращает значения свойства. Применяется прямой вызов методов  
+     * {@linkplain FxАтрибутный объекта} в рамках отдельной 
+     * {@linkplain Транзакция транзакции}. Так как момент фактического 
+     * изменения значения в базе данных незвестен, это исключает 
+     * кэширование полученного значения. 
+     * 
+     * @return значения свойства.
+     */
     @Override
     public T get()
     {
         return FxPropertyDescriptor.get( descriptor.bean, descriptor.supplier );
-    }
+    } 
     
     //</editor-fold>
     

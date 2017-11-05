@@ -2,16 +2,33 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.КороткийКлюч;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
+import javafx.concurrent.Task;
 
 /**
+ * Свойство {@linkplain FxАтрибутный атрибутного узла базы данных} с возможностью изменения. 
  *
- * @author Varankine
+ * <p>Процесс получения значения свойства использует последнее установленное значение. 
+ * Процесс установки значения свойства происходит в рамках отдельной 
+ * {@linkplain Транзакция транзакции}, с {@linkplain Блокировка блокировкой} 
+ * по записи. </p>
+ * 
+ * <p>Свойство выполняет операции установки и получения значения в рамках текущей
+ * {@linkplain Thread нити выполнения}. Свойство применяет прямой вызов методов  
+ * {@linkplain FxАтрибутный объекта}. Оно не использует отдельную {@linkplain Task задачу} 
+ * для этой цели, так как предполагается, что свойство участвует в групповой операции, 
+ * которая выполняется в отдельной задаче. А конкурирующие блокировки групповой и данной 
+ * операции могут привести к конфликту доступа.</p>
+ *  
+ * @author &copy; 2017 Николай Варанкин
+ * 
+ * @param <T> тип значения свойства.
  */
 public final class FxProperty<T> 
         extends ObjectPropertyBase<T>
@@ -25,9 +42,16 @@ public final class FxProperty<T>
         super( FxPropertyDescriptor.get( элемент, supplier ) );
         descriptor = new FxPropertyDescriptor<>( элемент, название, ключ, supplier, consumer );
         chl = ( ObservableValue<? extends T> o, T ov, T nv ) -> 
-                FxPropertyDescriptor.set( элемент, consumer, nv );
-        addListener( new WeakChangeListener<>( chl ) );
-    }
+        {
+            // установить запрошенное значение
+            FxPropertyDescriptor.set( элемент, consumer, nv );
+            // получить фактически установленное значение (допустимо String="5" -> Long=5L и т.п.)
+            T t = FxPropertyDescriptor.get( элемент, supplier );
+            if( !Objects.equals( nv, t ) )
+                set( t );
+        };
+            addListener( new WeakChangeListener<>( chl ) );
+        }
 
     public КороткийКлюч ключ()
     {
@@ -40,7 +64,6 @@ public final class FxProperty<T>
     public void bind( ObservableValue<? extends T> newObservable )
     {
         super.bind( newObservable );
-//        throw new UnsupportedOperationException();
     }
     
     //</editor-fold>
