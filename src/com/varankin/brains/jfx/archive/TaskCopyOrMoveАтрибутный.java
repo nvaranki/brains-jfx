@@ -62,7 +62,7 @@ final class TaskCopyOrMoveАтрибутный extends Task<Void>
     @Override
     protected void failed()
     {
-        Текст словарь = JavaFX.getInstance().словарь( TaskCreateАтрибутный.class );
+//        Текст словарь = JavaFX.getInstance().словарь( TaskCreateАтрибутный.class );
 //        ReadOnlyProperty<DbАтрибутный.Ключ> тип = владелец.тип();
         String msg = "failed";//TODO словарь.текст( "failure", тип.getValue().название() );
         Throwable exception = this.getException();

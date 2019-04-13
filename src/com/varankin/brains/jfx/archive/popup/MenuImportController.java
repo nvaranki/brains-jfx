@@ -1,13 +1,13 @@
-package com.varankin.brains.jfx.archive;
+package com.varankin.brains.jfx.archive.popup;
 
 import com.varankin.brains.jfx.archive.action.ActionProcessor;
-import com.varankin.brains.jfx.history.LocalNeo4jProvider;
-import com.varankin.brains.jfx.history.RemoteNeo4jProvider;
-import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.io.container.Provider;
+import com.varankin.brains.jfx.history.LocalInputStreamProvider;
+import com.varankin.brains.jfx.history.RemoteInputStreamProvider;
 import com.varankin.util.LoggerX;
 
+import java.io.InputStream;
 import java.util.ResourceBundle;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
@@ -21,19 +21,21 @@ import javafx.util.Builder;
 import static com.varankin.brains.jfx.JavaFX.icon;
 
 /**
- * FXML-контроллер меню открытия архива, с историей.
+ * FXML-контроллер меню импорта пакета в архив, с историей.
  * 
  * @author &copy; 2016 Николай Варанкин
  */
-public final class MenuArchiveController implements Builder<Menu>
+public final class MenuImportController implements Builder<Menu>
 {
-    private static final LoggerX LOGGER = LoggerX.getLogger( MenuArchiveController.class );
+    private static final LoggerX LOGGER = LoggerX.getLogger( MenuImportController.class );
     private static final String ICON_NET  = "icons16x16/load-internet.png";
     private static final String ICON_FILE = "icons16x16/file-xml.png";
     
-    public static final String RESOURCE_FXML  = "/fxml/archive/PopupArchive.fxml";
+    public static final String RESOURCE_FXML  = "/fxml/archive/MenuImport.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
+    private ActionProcessor processor;
+    
     @FXML private Menu menu;
 
     /**
@@ -45,18 +47,18 @@ public final class MenuArchiveController implements Builder<Menu>
     @Override
     public Menu build()
     {
-        MenuItem menuArchiveFile = new MenuItem(
-                LOGGER.text( "menu.archive.file" ), 
+        MenuItem menuImportFile = new MenuItem(
+                LOGGER.text( "menu.import.file" ), 
                 icon( ICON_FILE ) );
-        menuArchiveFile.setOnAction( this::onArchiveFromFile );
+        menuImportFile.setOnAction( this::onActionImportFile );
         
-        MenuItem menuArchiveNet = new MenuItem(
-                LOGGER.text( "menu.archive.network" ), 
+        MenuItem menuImportNet = new MenuItem(
+                LOGGER.text( "menu.import.network" ), 
                 icon( ICON_NET ) );
-        menuArchiveNet.setOnAction( this::onArchiveFromNet );
+        menuImportNet.setOnAction( this::onActionImportNet );
         
-        menu = new Menu( LOGGER.text( "menu.archive" ) );
-        menu.getItems().addAll( menuArchiveFile, menuArchiveNet );
+        menu = new Menu( LOGGER.text( "menu.import" ) );
+        menu.getItems().addAll( menuImportFile, menuImportNet );
 
         initialize();
         
@@ -68,44 +70,44 @@ public final class MenuArchiveController implements Builder<Menu>
     {
         JavaFX jfx = JavaFX.getInstance();
         ObservableList<MenuItem> items = menu.getItems();
-        for( int i = 1; i <= jfx.history.historyArchiveSize; i++ )
+        for( int i = 1; i <= jfx.history.historyXmlSize; i++ )
         {
             MenuItem item = new MenuItem();
             item.setUserData( i );
-            item.setOnAction( (e) -> onArchiveFromHistory( (Integer)item.getUserData(), e ) );
+            item.setOnAction( (e) -> onImportFromHistory( (Integer)item.getUserData(), e ) );
             item.setMnemonicParsing( false );
             //item.setAccelerator( KeyCombination.valueOf( "Ctrl+" + Integer.toString( i ) ) );
-            onInvalidatedHistory( item, jfx.history.archive );
-            jfx.history.archive.addListener( (o) -> onInvalidatedHistory( item, o ) );
+            onInvalidatedHistory( item, jfx.history.xml );
+            jfx.history.xml.addListener( (o) -> onInvalidatedHistory( item, o ) );
             if( i == 1 ) items.add( new SeparatorMenuItem() );
             items.add( item );
         }
     }
     
     @FXML
-    private void onArchiveFromFile( ActionEvent event )
+    private void onActionImportFile( ActionEvent event )
     {
-        ActionProcessor.onArchiveFromFile();
+        processor.onPackageFromFile( event );
         event.consume();
     }
     
     @FXML
-    private void onArchiveFromNet( ActionEvent event )
+    private void onActionImportNet( ActionEvent event )
     {
-        ActionProcessor.onArchiveFromNet( event );
+        processor.onPackageFromNet( event );
         event.consume();
     }
     
-    private void onArchiveFromHistory( int позиция, ActionEvent event )
+    private void onImportFromHistory( int позиция, ActionEvent event )
     {
-        ActionProcessor.onArchiveFromHistory( позиция, event );
+        processor.onPackageFromHistory( позиция, event );
         event.consume();
     }
     
     private void onInvalidatedHistory( MenuItem menuItem, Observable observable )
     {
         int позиция = (Integer)menuItem.getUserData();
-        Provider<DbАрхив> элемент = JavaFX.getInstance().history.archive.get( позиция );
+        Provider<InputStream> элемент = JavaFX.getInstance().history.xml.get( позиция );
         
         menuItem.disableProperty().setValue( элемент == null );
         
@@ -113,10 +115,15 @@ public final class MenuArchiveController implements Builder<Menu>
         menuItem.textProperty().setValue( Integer.toString( позиция ) + ' ' + название );
         
         String path = 
-                элемент instanceof LocalNeo4jProvider ? ICON_FILE :
-                элемент instanceof RemoteNeo4jProvider ? ICON_NET :
+                элемент instanceof LocalInputStreamProvider ? ICON_FILE :
+                элемент instanceof RemoteInputStreamProvider ? ICON_NET :
                 null;
         menuItem.graphicProperty().setValue( icon( path ) );
+    }
+
+    void setProcessor( ActionProcessor processor )
+    {
+        this.processor = processor;
     }
 
 }

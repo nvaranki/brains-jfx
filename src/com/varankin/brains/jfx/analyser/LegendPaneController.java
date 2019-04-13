@@ -349,6 +349,12 @@ public final class LegendPaneController implements Builder<Pane>
         {
             return lv.size();
         }
+
+        @Override
+        public int getViewIndex(int i) 
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
         
     }
     

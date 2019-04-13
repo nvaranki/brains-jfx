@@ -1,5 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
+import com.varankin.brains.jfx.archive.action.ActionProcessor;
+import com.varankin.brains.jfx.archive.popup.ArchivePopupController;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.brains.jfx.db.FxАтрибутный;
