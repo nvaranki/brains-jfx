@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Фабрика генераторов текста в формате XML для произвольного элемента.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxФабрика implements Фабрика<DbАтрибутный,FxАтрибутный>
 {

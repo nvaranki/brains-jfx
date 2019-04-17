@@ -5,7 +5,7 @@ import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxМусор extends FxАтрибутный<DbМусор>
 {
