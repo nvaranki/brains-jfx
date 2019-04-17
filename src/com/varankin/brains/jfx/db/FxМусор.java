@@ -15,7 +15,7 @@ public final class FxМусор extends FxАтрибутный<DbМусор>
     {
         super( мусор );
         МУСОР = buildReadOnlyListProperty( мусор, "мусор", 
-            new FxList<>( мусор.мусор(), мусор, e -> new FxАтрибутный( e ), e -> e.getSource() ) );
+            new FxList<>( мусор.мусор(), мусор, e -> FxФабрика.getInstance().создать( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxАтрибутный> мусор()

@@ -67,6 +67,7 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         if( элемент instanceof DbКлассJava     ) p = new FxКлассJava( (DbКлассJava)элемент ); else
         if( элемент instanceof DbКонвертер     ) p = new FxКонвертер( (DbКонвертер)элемент ); else
         if( элемент instanceof DbЛента         ) p = new FxЛента( (DbЛента)элемент ); else
+        if( элемент instanceof DbМусор         ) p = new FxМусор( (DbМусор)элемент ); else
 //        if( элемент instanceof DbЭлемент       ) p = new FxЭлемент( (DbЭлемент)элемент ); else
         if( элемент instanceof DbГрафика       ) p = new FxГрафика( (DbГрафика)элемент ); else
         if( элемент instanceof DbЗаметка       ) p = new FxЗаметка( (DbЗаметка)элемент ); else
