@@ -3,6 +3,7 @@ package com.varankin.brains.jfx.db;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.КороткийКлюч;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.characteristic.Изменение;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.binding.ListExpression;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -21,7 +23,7 @@ import javafx.collections.ObservableList;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  * @param <T>
  */
 public class FxАтрибутный<T extends DbАтрибутный>
@@ -151,11 +153,28 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return АТРИБУТЫ_ПРОЧИЕ;
     }
     
-    protected static <E,X> ReadOnlyListProperty<E> buildReadOnlyListProperty( 
-            Object элемент, String название, List<E> list )
+    static <X extends DbАтрибутный, E extends FxАтрибутный<X>> 
+    ReadOnlyListProperty<E> buildReadOnlyListProperty( 
+            Object элемент, String название, FxList<X,E> list )
     {
-        return new ReadOnlyListWrapper<>( элемент, название, 
-            FXCollections.observableList( list ) ).getReadOnlyProperty();
+        ReadOnlyListProperty<E> property = new ReadOnlyListWrapper<>( элемент, название, 
+                FXCollections.observableList( list ) ).getReadOnlyProperty();
+        list.наблюдатели().add( c -> обновить( property, c ) );
+        return property;
+    }
+
+    private static <X extends DbАтрибутный,E extends FxАтрибутный<X>> 
+    void обновить( ReadOnlyListProperty<E> property, Изменение<X> изменение ) 
+    {
+        Platform.runLater( () ->
+        {
+            if( изменение.ПРЕЖНЕЕ != null )
+                property.removeIf( a -> a.getSource().equals( изменение.ПРЕЖНЕЕ ) );
+            if( изменение.АКТУАЛЬНОЕ != null && property.stream()
+                    .map( FxАтрибутный::getSource )
+                    .noneMatch( a -> a.equals( изменение.АКТУАЛЬНОЕ ) ) )
+                property.add( (E) FxФабрика.getInstance().создать( изменение.АКТУАЛЬНОЕ ) );
+        } );
     }
     
     /**

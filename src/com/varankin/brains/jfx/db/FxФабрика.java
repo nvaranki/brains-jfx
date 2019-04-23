@@ -43,9 +43,14 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         return new FxNameSpace( элемент );
     }
     
-    @SuppressWarnings("Confusing indentation")
     @Override
     public FxАтрибутный создать( DbАтрибутный элемент )
+    {
+        return создатьПоЭлементу( элемент );
+    }
+    
+    @SuppressWarnings("Confusing indentation")
+    public <T extends DbАтрибутный> FxАтрибутный<T> создатьПоЭлементу( T элемент )
     {
         FxАтрибутный p;
         if( элемент == null ) throw new NullPointerException(); else 

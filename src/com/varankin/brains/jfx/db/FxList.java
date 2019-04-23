@@ -1,32 +1,40 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.characteristic.Наблюдатель;
 import java.util.AbstractList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
-final class FxList<E extends FxАтрибутный<?>, X extends DbАтрибутный> extends AbstractList<E>
+final class FxList<X extends DbАтрибутный, E extends FxАтрибутный<X>> extends AbstractList<E>
 {
     private final DbАтрибутный owner;
-    private final Collection<X> source;
+    private final Коллекция<X> source;
     private final Function<E, X> extractant;
     private final Function<X, E> wrapper;
     private List<E> image;
 
-    FxList( Collection<X> source, DbАтрибутный owner, Function<X, E> wrapper, Function<E, X> extractant )
+    FxList( Коллекция<X> source, DbАтрибутный owner, Function<X, E> wrapper, Function<E, X> extractant )
     {
         this.source = source;
         this.owner = owner;
         this.extractant = extractant;
         this.wrapper = wrapper;
+    }
+    
+    Collection<Наблюдатель<X>> наблюдатели()
+    {
+        return source.наблюдатели();
     }
     
     private List<E> loadFromSource()
@@ -97,7 +105,16 @@ final class FxList<E extends FxАтрибутный<?>, X extends DbАтрибу
     public void add( int index, E e )
     {
         if( image == null ) image = loadFromSource();
-        if( addToSource( e ) )
+        // некоторые операции могут обновлять непосредственно 
+        // Коллекции, поэтому в процессе обработки их событий
+        // к добавлению в этот список предъявляется объекты 
+        // FxАтрибутный, для которых вложенный объект DbАтрибутный
+        // уже представлен в Коллекции; дополнительная проверка 
+        // выяснит необходимость включения объекта FxАтрибутный 
+        // в данный список
+        if( addToSource( e ) || image.stream()
+                .map( FxАтрибутный::getSource )
+                .noneMatch( a -> Objects.equals( a, e.getSource() ) ) )
             image.add( index, e );
     }
 

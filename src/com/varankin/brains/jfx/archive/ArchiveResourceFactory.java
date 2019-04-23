@@ -16,7 +16,7 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
 /**
  * Фабрика ресурсов для навигатора по проектам.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class ArchiveResourceFactory
 {
@@ -24,7 +24,6 @@ public final class ArchiveResourceFactory
     private static final Logger LOGGER = Logger.getLogger( ArchiveResourceFactory.class.getName(), RB_BASE_NAME );
     private static final ResourceBundle RB = LOGGER.getResourceBundle();
     private static final String XML_NS_TEMP = "#NS";
-    private static final String XML_WB_TEMP = "#WB";
     private static final String XML_UN_TEMP = "#OTHER";
     private static final String XML_GRAPHIC = "#GRAPHIC";
     private static final Map<String,String> ключМаркиКоллекции, ключМеткиКоллекции, 
@@ -106,8 +105,6 @@ public final class ArchiveResourceFactory
         String тип = элемент.тип().название();
         if( элемент instanceof DbNameSpace )
             тип = XML_NS_TEMP;
-        else if( элемент instanceof DbМусор )
-            тип = XML_WB_TEMP;
         else if( элемент instanceof DbГрафика )
             тип = XML_GRAPHIC;
         return карта.containsKey( тип ) ? тип : XML_UN_TEMP;
@@ -118,8 +115,6 @@ public final class ArchiveResourceFactory
         String тип = элемент.тип().getValue().название();
         if( элемент instanceof FxNameSpace )
             тип = XML_NS_TEMP;
-        else if( элемент instanceof FxМусор )
-            тип = XML_WB_TEMP;
         else if( элемент instanceof FxГрафика )
             тип = XML_GRAPHIC;
         return карта.containsKey( тип ) ? тип : XML_UN_TEMP;
@@ -151,7 +146,7 @@ public final class ArchiveResourceFactory
             { XML_POINT,     "point",      "point.png",       "точки",      },
             { PI_ELEMENT,    "instruction","instruction.png", "инструкции", },
             { XML_NS_TEMP,   "namespace",  "namespace.png",   "namespaces", }, // нет такого типа
-            { XML_WB_TEMP,   "waste",      "remove.png",      "мусор",      }, // нет такого типа
+            { XML_BASKET,    "waste",      "remove.png",      "мусор",      },
             { XML_CDATA,     "text",       "text.png",        "тексты",     },
             { XML_UN_TEMP,   "other",      "other",           "прочее",     }, // нет такого типа
             { XML_GRAPHIC,   "graphic",    "preview.png",     "графики",    }, // нет такого типа
