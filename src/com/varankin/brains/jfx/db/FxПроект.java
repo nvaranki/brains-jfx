@@ -2,11 +2,10 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbПроект;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.collections.FXCollections;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxПроект extends FxЭлемент<DbПроект>
 {
@@ -25,8 +24,7 @@ public final class FxПроект extends FxЭлемент<DbПроект>
         ФРАГМЕНТЫ = buildReadOnlyListProperty( проект, "фрагменты", 
             new FxList<>( проект.фрагменты(), проект, e -> new FxФрагмент( e ), e -> e.getSource() ) );
         СИГНАЛЫ = buildReadOnlyListProperty( проект, "сигналы", 
-            FXCollections.observableList( new FxList<>( проект.сигналы(), проект, 
-                e -> new FxСигнал( e ), e -> e.getSource() ) ) );
+            new FxList<>( проект.сигналы(), проект, e -> new FxСигнал( e ), e -> e.getSource() ) );
     }
 
     public ReadOnlyListProperty<FxБиблиотека> библиотеки()
