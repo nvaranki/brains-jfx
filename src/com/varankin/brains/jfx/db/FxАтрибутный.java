@@ -29,12 +29,14 @@ import javafx.collections.ObservableList;
 public class FxАтрибутный<T extends DbАтрибутный>
 {
     static final КороткийКлюч КЛЮЧ_А_ТИП = new КороткийКлюч( "тип", null );
+    static final КороткийКлюч КЛЮЧ_А_ВОССТАНОВИМЫЙ = new КороткийКлюч( "восстановимый", null );
 
     private final T ЭЛЕМЕНТ;
     private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
     private final ListProperty<FxProperty> АТРИБУТЫ_ПРОЧИЕ;
     private final ReadOnlyListWrapper<ReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
     private final FxReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
+    private final FxReadOnlyProperty<Boolean> ВОССТАНОВИМЫЙ;
     private final Map<КороткийКлюч,FxProperty> AM = new HashMap<>();
     private boolean ami, abi, ci;
 
@@ -45,6 +47,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         АТРИБУТЫ_ПРОЧИЕ = new SimpleListProperty<>( FXCollections.observableArrayList() );
         АТРИБУТЫ_ОСНОВНЫЕ = new ReadOnlyListWrapper<>( FXCollections.observableArrayList() );
         ТИП = new FxReadOnlyProperty<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
+        ВОССТАНОВИМЫЙ = new FxReadOnlyProperty<>( элемент, "восстановимый", 
+                КЛЮЧ_А_ВОССТАНОВИМЫЙ, () -> элемент.восстановимый() );
     }
     
     public final T getSource()
@@ -60,6 +64,11 @@ public class FxАтрибутный<T extends DbАтрибутный>
     public final FxReadOnlyProperty<DbАтрибутный.Ключ> тип()
     {
         return ТИП;
+    }
+    
+    public final FxReadOnlyProperty<Boolean> восстановимый()
+    {
+        return ВОССТАНОВИМЫЙ;
     }
     
     public final FxProperty атрибут( String название, String uri )

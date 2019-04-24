@@ -94,6 +94,8 @@ public final class ActionProcessor //TODO RT-37820
     private static final Predicate<FxАтрибутный> pPreview = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pProperties = i -> i instanceof FxАтрибутный;
     private static final Predicate<FxАтрибутный> pRemove = i -> i instanceof FxАтрибутный && !( i instanceof FxАрхив );
+    private static final Predicate<FxАтрибутный> pRestore = i -> i instanceof FxАтрибутный 
+                                                    && ((FxАтрибутный)i).восстановимый().getValue() == Boolean.TRUE;
     
     //</editor-fold>
     
@@ -202,7 +204,7 @@ public final class ActionProcessor //TODO RT-37820
         disableNewСоединение, disableNewТекстовыйБлок, disableNewТочка, 
         disableNewФрагмент, disableNewXmlNameSpace,             
         disableLoad, disablePreview, disableEdit, disableMultiply, 
-        disableRemove, disableClose, disableProperties, 
+        disableRemove, disableRestore, disableClose, disableProperties, 
         disableImport, disableExportXml, disableExportPic;
     
     public ActionProcessor( ObservableList<TreeItem<FxАтрибутный>> selection )
@@ -235,6 +237,7 @@ public final class ActionProcessor //TODO RT-37820
         disablePreview          = createBooleanBinding( () -> disableAction( pPreview ), selection );
         disableEdit             = createBooleanBinding( () -> disableAction( pEdit ), selection );
         disableRemove           = createBooleanBinding( () -> disableAction( pRemove ), selection );
+        disableRestore          = createBooleanBinding( () -> disableAction( pRestore ), selection );
         disableClose            = createBooleanBinding( () -> disableAction( pClose ), selection );
         disableProperties       = createBooleanBinding( () -> disableAction( pProperties ), selection );
         disableImport           = createBooleanBinding( () -> disableAction( pImport ), selection );
@@ -268,6 +271,7 @@ public final class ActionProcessor //TODO RT-37820
     public BooleanBinding disableEditProperty() { return disableEdit; }
     public BooleanBinding disableMultiplyProperty() { return disableMultiply; }
     public BooleanBinding disableRemoveProperty() { return disableRemove; }
+    public BooleanBinding disableRestoreProperty() { return disableRestore; }
     public BooleanBinding disableCloseProperty() { return disableClose; }
     public BooleanBinding disablePropertiesProperty() { return disableProperties; }
     public BooleanBinding disableImportProperty() { return disableImport; }
@@ -535,6 +539,13 @@ public final class ActionProcessor //TODO RT-37820
         //TODO confirmation dialog
         SELECTION.stream().forEach( 
             i -> JavaFX.getInstance().execute( new DeleteTreeItemTask( i ) ) );
+    }
+    
+    public void onActionRestore( ActionEvent event )
+    {
+        //TODO confirmation dialog
+        SELECTION.stream().forEach( 
+            i -> JavaFX.getInstance().execute( new RestoreTreeItemTask( i ) ) );
     }
     
     public void onActionClose( ActionEvent event )

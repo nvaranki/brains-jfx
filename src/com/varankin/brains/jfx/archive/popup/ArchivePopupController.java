@@ -18,7 +18,7 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер контекстного меню навигатора по архиву. 
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class ArchivePopupController implements Builder<ContextMenu>
 {
@@ -35,6 +35,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     private final BooleanProperty disableEdit;
     private final BooleanProperty disableMultiply;
     private final BooleanProperty disableRemove;
+    private final BooleanProperty disableRestore;
     private final BooleanProperty disableClose;
     private final BooleanProperty disableProperties;
     private final BooleanProperty disableImport;
@@ -54,6 +55,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         disableEdit = new SimpleBooleanProperty( this, "disableEdit" );
         disableMultiply = new SimpleBooleanProperty( this, "disableMultiply" );
         disableRemove = new SimpleBooleanProperty( this, "disableRemove" );
+        disableRestore = new SimpleBooleanProperty( this, "disableRestore" );
         disableClose = new SimpleBooleanProperty( this, "disableClose" );
         disableProperties = new SimpleBooleanProperty( this, "disableProperties" );
         disableImport = new SimpleBooleanProperty( this, "disableImport" );
@@ -95,6 +97,11 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         menuRemove.setOnAction( this::onActionRemove );
         menuRemove.disableProperty().bind( disableRemove );
 
+        MenuItem menuRestore = new MenuItem(
+                LOGGER.text( "archive.action.restore" ), icon( "icons16x16/restore.png" ) );
+        menuRestore.setOnAction( this::onActionRestore );
+        menuRestore.disableProperty().bind( disableRestore );
+
         menuNewController = new ArchivePopupNewController();
         Menu menuNew = menuNewController.build();
         
@@ -131,6 +138,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
                 menuEdit,
                 menuMultiply,
                 menuRemove,
+                menuRestore,
                 menuNew,
                 menuClose,
                 menuProperties,
@@ -178,6 +186,13 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     }
     
     @FXML
+    private void onActionRestore( ActionEvent event )
+    {
+        processor.onActionRestore( event );
+        event.consume();
+    }
+    
+    @FXML
     private void onActionClose( ActionEvent event )
     {
         processor.onActionClose( event );
@@ -210,6 +225,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     public BooleanProperty disablePreviewProperty() { return disablePreview; }
     public BooleanProperty disableEditProperty() { return disableEdit; }
     public BooleanProperty disableRemoveProperty() { return disableRemove; }
+    public BooleanProperty disableRestoreProperty() { return disableRestore; }
     public BooleanProperty disablePropertiesProperty() { return disableProperties; }
     public BooleanProperty disableImportProperty() { return disableImport; }
     public BooleanProperty disableExportXmlProperty() { return disableExportXml; }
@@ -220,6 +236,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     public boolean getDisablePreview() { return disablePreview.get(); }
     public boolean getDisableEdit() { return disableEdit.get(); }
     public boolean getDisableRemove() { return disableRemove.get(); }
+    public boolean getDisableRestore() { return disableRestore.get(); }
     public boolean getDisableProperties() { return disableProperties.get(); }
     public boolean getDisableImport() { return disableImport.get(); }
     public boolean getDisableExportXml() { return disableExportXml.get(); }
@@ -237,6 +254,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         disableEdit.bind( processor.disableEditProperty() );
         disableMultiply.bind( processor.disableMultiplyProperty() );
         disableRemove.bind( processor.disableRemoveProperty() );
+        disableRestore.bind( processor.disableRestoreProperty() );
         disableClose.bind( processor.disableCloseProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
         disableImport.bind( processor.disableImportProperty() );
