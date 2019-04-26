@@ -1,15 +1,18 @@
 package com.varankin.brains.jfx.db;
 
+import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.КороткийКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.characteristic.Изменение;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -24,7 +27,7 @@ import javafx.collections.ObservableList;
 /**
  *
  * @author &copy; 2019 Николай Варанкин
- * @param <T>
+ * @param <T> тип вложенного элемента.
  */
 public class FxАтрибутный<T extends DbАтрибутный>
 {
@@ -258,6 +261,68 @@ public class FxАтрибутный<T extends DbАтрибутный>
             e -> дубликат.выполнить( ( о, к ) -> к.add( о ), дублировать( e, архив ) ) ) );
         // вернуть свободный (невложенный!) дубликат
         return дубликат;
+    }
+
+    /**
+     * Выполняет поиск экземпляра объекта в цепочке владельцев
+     * от архива до этого элемента. Возвращенный экземпляр 
+     * присутствует в коллекции. Для данного объекта это не 
+     * обязательно.
+     * 
+     * @param владельцы владельцы (архив не включен).
+     * @param поСвязи   {@code true} если данный объект должен быть
+     *          привязан к владельцу по какой-либо связи вхождения.
+     * @return экземпляр этого объекта.
+     * @exception IllegalStateException если цепочка владельцев не соответствует базе данных.
+     */
+    FxАтрибутный<?> предок( Deque<DbАтрибутный> владельцы, boolean поСвязи ) 
+    {
+        // поиск кандидата по цепочке владельцев
+        FxАтрибутный<?> кандидат = архив();
+        while( !владельцы.isEmpty() )
+        {
+            DbАтрибутный предок = владельцы.poll();
+            кандидат = кандидат.коллекции().values().stream()
+                .flatMap( c -> c.stream() )
+                .filter( e -> e.getSource().equals( предок ) )
+                .findAny()
+                .orElse( null );
+            if( кандидат == null )
+                throw new IllegalStateException( "Fx-предок не найден по Db-предку" );
+        }
+        // проверка поиска
+        FxАтрибутный t = кандидат.коллекции().values().stream()
+            .flatMap( c -> c.stream() )
+            .filter( e -> e.getSource().equals( getSource() ) )
+            .findAny()
+            .orElse( поСвязи ? (FxАтрибутный) null : this ); // null при возврате == этот объект
+        if( t != null )
+            return кандидат;
+        else
+            throw new IllegalStateException( "Fx-объект не соответствует объекту поиска предка" );
+    }
+
+    /**
+     * Выполняет поиск экземпляра объекта в цепочке владельцев
+     * от архива до этого элемента. Возвращенный экземпляр 
+     * присутствует в коллекции. Для данного объекта это не 
+     * обязательно.
+     * 
+     * @param поСвязи {@code true} если данный объект должен быть
+     *          привязан к владельцу по какой-либо связи вхождения.
+     * @return экземпляр этого объекта из коллекции или {@code null} если цепочка 
+     *          владельцев разорвана (предок удален из базы данных).
+     * @exception IllegalStateException если цепочка владельцев не соответствует базе данных.
+     */
+    public FxАтрибутный<?> предок( boolean поСвязи ) 
+    {
+        LinkedList<DbАтрибутный> владельцы = new LinkedList<>(); // цепочка предков между архивом и элементом 
+        for( DbАтрибутный предок = ЭЛЕМЕНТ.предок( поСвязи ); предок != null; предок = предок.предок() )
+            if( предок instanceof DbАрхив )
+                return предок( владельцы, поСвязи );
+            else
+                владельцы.add( 0, предок );
+        return null; // цепочка владельцев разорвана (предок удален из БД)
     }
 
     /**

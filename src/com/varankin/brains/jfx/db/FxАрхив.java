@@ -3,15 +3,18 @@ package com.varankin.brains.jfx.db;
 import com.varankin.brains.db.DbАрхив;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.io.xml.XmlBrains;
+
 import java.util.Date;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.collections.ObservableList;
 
 import static com.varankin.brains.db.DbАрхив.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxАрхив extends FxАтрибутный<DbАрхив>
 {
@@ -76,6 +79,58 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         return создатьНовыйЭлемент( тип.название(), тип.uri() );
     }
     
+    /**
+     * Безвозвратно удаляет объект из базы данных.
+     * 
+     * @param объект удаляемый объект.
+     * @return {@code true} если объект был удален.
+     */
+    public boolean удалить( FxАтрибутный<? extends DbАтрибутный> объект ) 
+    {
+        объект.getSource().удалить();
+        return true;
+    }
+    
+    /**
+     * Переносит объект в {@linkplain FxМусор мусорную корзину}.
+     * 
+     * @param объект переносимый объект.
+     * @return {@code true} если объект был перемещен.
+     */
+    public boolean утилизировать( FxАтрибутный<? extends DbАтрибутный> объект ) 
+    {
+        if( МУСОР.isEmpty() )
+            МУСОР.add( (FxМусор) создатьНовыйЭлемент( 
+                    XmlBrains.XML_BASKET, XmlBrains.XMLNS_BRAINS ) );
+        boolean утилизировано = false;
+        for( FxМусор корзина : МУСОР )
+            if( !утилизировано )
+                утилизировано = корзина.мусор().add( объект );
+        return утилизировано;
+    }
+    
+    private static final FxОператор<Boolean> ОПЕРАТОР_ВЛОЖИТЬ = new FxОператор<Boolean>()
+    {
+        @Override
+        public <T> Boolean выполнить( T объект, ObservableList<T> коллекция )
+        {
+            return коллекция.add( объект );
+        }
+    };
+    
+    /**
+     * Возвращает объект из {@linkplain FxМусор мусорной корзины}
+     * в коллекцию прежнего владельца.
+     * 
+     * @param объект переносимый объект.
+     * @return {@code true} если объект был перемещен.
+     */
+    public boolean вернуть( FxАтрибутный<? extends DbАтрибутный> объект ) 
+    {
+        FxАтрибутный<?> предок = объект.предок( false );
+        return предок.выполнить( ОПЕРАТОР_ВЛОЖИТЬ, объект );
+    }
+
     public FxNameSpace определитьПространствоИмен( String uri, String префикс )
     {
         return NAMESPACES.stream()
@@ -113,5 +168,5 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
             throw new NullPointerException();
         return результат;
     }
-    
+
 }

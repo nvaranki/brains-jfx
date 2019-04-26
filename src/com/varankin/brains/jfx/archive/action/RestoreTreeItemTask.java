@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.archive.action;
 
+import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxОператор;
+
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
@@ -18,7 +20,9 @@ class RestoreTreeItemTask extends TransactionalChildParentTask
         @Override
         public <T> Boolean выполнить( T объект, ObservableList<T> коллекция )
         {
-            return false;//TODO NOT IMPL. коллекция.restore( объект );
+            FxАтрибутный<? extends DbАтрибутный> a = (FxАтрибутный<?>)объект;
+            boolean удален = a.восстановимый().getValue() && коллекция.remove( объект );
+            return удален && a.архив().вернуть( a );
         }
     };
 
