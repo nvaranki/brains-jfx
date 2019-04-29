@@ -17,7 +17,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров архива.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class TabArchiveController implements Builder<GridPane>
 {
@@ -32,7 +32,7 @@ public final class TabArchiveController implements Builder<GridPane>
     
     private FxАрхив архив;
     
-    @FXML private TextField uri, created, changed;
+    @FXML private TextField name, uri, created, changed;
 
     /**
      * Создает панель выбора и установки параметров архива.
@@ -43,6 +43,11 @@ public final class TabArchiveController implements Builder<GridPane>
     @Override
     public GridPane build()
     {
+        name = new TextField();
+        name.setId( "name" );
+        name.setPrefColumnCount( 32 );
+        name.setEditable( true );
+        
         uri = new TextField();
         uri.setId( "uri" );
         uri.setPrefColumnCount( 32 );
@@ -65,12 +70,14 @@ public final class TabArchiveController implements Builder<GridPane>
         
         GridPane pane = new GridPane();
         pane.getColumnConstraints().addAll( cc0, cc1 );
-        pane.add( new Label( LOGGER.text( "archive.location" ) ), 0, 0 );
-        pane.add( uri, 1, 0 );
-        pane.add( new Label( LOGGER.text( "archive.created" ) ), 0, 1 );
-        pane.add( created, 1, 1 );
-        pane.add( new Label( LOGGER.text( "archive.changed" ) ), 0, 2 );
-        pane.add( changed, 1, 2 );
+        pane.add( new Label( LOGGER.text( "archive.name" ) ), 0, 0 );
+        pane.add( name, 1, 0 );
+        pane.add( new Label( LOGGER.text( "archive.location" ) ), 0, 1 );
+        pane.add( uri, 1, 1 );
+        pane.add( new Label( LOGGER.text( "archive.created" ) ), 0, 2 );
+        pane.add( created, 1, 2 );
+        pane.add( new Label( LOGGER.text( "archive.changed" ) ), 0, 3 );
+        pane.add( changed, 1, 3 );
         
         pane.getStyleClass().add( CSS_CLASS );
         pane.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -89,11 +96,15 @@ public final class TabArchiveController implements Builder<GridPane>
     {
         if( this.архив != null )
         {
+            name.textProperty().unbindBidirectional( this.архив.название() );
             uri.textProperty().unbind();
             created.textProperty().unbind();
+            changed.textProperty().unbind();
         }
         if( архив != null )
         {
+            name.textProperty().bindBidirectional( архив.название() );
+            name.setFocusTraversable( true );
             uri.textProperty().bind( архив.расположение() );
             created.textProperty().bind( Bindings.createStringBinding( () -> 
                 { 

@@ -11,6 +11,7 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.ObservableList;
 
 import static com.varankin.brains.db.DbАрхив.*;
+import static com.varankin.brains.db.DbЭлемент.КЛЮЧ_А_НАЗВАНИЕ;
 
 /**
  *
@@ -18,6 +19,7 @@ import static com.varankin.brains.db.DbАрхив.*;
  */
 public final class FxАрхив extends FxАтрибутный<DbАрхив>
 {
+    private final FxProperty<String> НАЗВАНИЕ;
     private final ReadOnlyListProperty<FxПакет> ПАКЕТЫ;
     private final ReadOnlyListProperty<FxNameSpace> NAMESPACES;
     private final ReadOnlyListProperty<FxМусор> МУСОР;
@@ -27,6 +29,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     FxАрхив( DbАрхив элемент ) 
     {
         super( элемент );
+        НАЗВАНИЕ  = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
         ПАКЕТЫ = buildReadOnlyListProperty( элемент, "пакеты", 
             new FxList<>( элемент.пакеты(), элемент, e -> new FxПакет( e ), e -> e.getSource() ) );
         NAMESPACES = buildReadOnlyListProperty( элемент, "namespaces", 
@@ -39,6 +42,11 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         элемент.обработчик( a -> ИЗМЕНЕН.getFireHandler() );
     }
 
+    public FxProperty<String> название()
+    {
+        return НАЗВАНИЕ;
+    }
+    
     public ReadOnlyListProperty<FxПакет> пакеты()
     {
         return ПАКЕТЫ;

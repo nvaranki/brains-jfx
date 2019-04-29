@@ -4,11 +4,7 @@ import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbЗаметка;
 import com.varankin.brains.factory.Составной;
-import com.varankin.brains.jfx.db.FxNameSpace;
-import com.varankin.brains.jfx.db.FxАтрибутный;
-import com.varankin.brains.jfx.db.FxМусор;
-import com.varankin.brains.jfx.db.FxПакет;
-import com.varankin.brains.jfx.db.FxУзел;
+import com.varankin.brains.jfx.db.*;
 import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
@@ -45,7 +41,7 @@ import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
  * Выполняется отложенное построение структуры дерева, только на один уровень,
  * для экономии ресурсов и времени. 
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
 {
@@ -200,6 +196,8 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
                     ((FxNameSpace)элемент).название() : 
                      элемент instanceof FxПакет ? 
                     ((FxПакет)элемент).название() : 
+                    элемент instanceof FxАрхив ? 
+                    ((FxАрхив)элемент).название() : 
                     new SimpleStringProperty( метка );
             d.name = Bindings.createStringBinding( () -> 
             {
