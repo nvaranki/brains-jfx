@@ -7,16 +7,16 @@ import static com.varankin.brains.db.DbКонтакт.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxКонтакт extends FxЭлемент<DbКонтакт>
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final FxProperty<Integer> ПРИОРИТЕТ;
-    private final FxProperty<Short> СВОЙСТВА;
-    private final FxProperty<String> СИГНАЛ;
-    private final FxProperty<String> ТОЧКА;
+    private final FxPropertyImpl<Integer> ПРИОРИТЕТ;
+    private final FxPropertyImpl<Short> СВОЙСТВА;
+    private final FxPropertyImpl<String> СИГНАЛ;
+    private final FxPropertyImpl<String> ТОЧКА;
 
     public FxКонтакт( DbКонтакт элемент ) 
     {
@@ -25,10 +25,10 @@ public final class FxКонтакт extends FxЭлемент<DbКонтакт>
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ПРИОРИТЕТ = new FxProperty<>( элемент, "приоритет", КЛЮЧ_А_ПРИОРИТЕТ, () -> элемент.приоритет(), t -> элемент.приоритет( t ) );
-        СВОЙСТВА  = new FxProperty<>( элемент, "свойства",  КЛЮЧ_А_СВОЙСТВА,  () -> элемент.свойства(),  t -> элемент.свойства( t )  );
-        СИГНАЛ    = new FxProperty<>( элемент, "сигнал",    КЛЮЧ_А_СИГНАЛ,    () -> элемент.сигнал(),    t -> элемент.сигнал( t )    );
-        ТОЧКА     = new FxProperty<>( элемент, "точка",     КЛЮЧ_А_ТОЧКА,     () -> элемент.точка(),     t -> элемент.точка( t )    );
+        ПРИОРИТЕТ = new FxPropertyImpl<>( элемент, "приоритет", КЛЮЧ_А_ПРИОРИТЕТ, () -> элемент.приоритет(), t -> элемент.приоритет( t ) );
+        СВОЙСТВА  = new FxPropertyImpl<>( элемент, "свойства",  КЛЮЧ_А_СВОЙСТВА,  () -> элемент.свойства(),  t -> элемент.свойства( t )  );
+        СИГНАЛ    = new FxPropertyImpl<>( элемент, "сигнал",    КЛЮЧ_А_СИГНАЛ,    () -> элемент.сигнал(),    t -> элемент.сигнал( t )    );
+        ТОЧКА     = new FxPropertyImpl<>( элемент, "точка",     КЛЮЧ_А_ТОЧКА,     () -> элемент.точка(),     t -> элемент.точка( t )    );
     }
 
     public ReadOnlyListProperty<FxПараметр> параметры()

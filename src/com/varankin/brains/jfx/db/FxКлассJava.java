@@ -8,23 +8,23 @@ import static com.varankin.brains.db.DbКлассJava.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 {
     static final КороткийКлюч КЛЮЧ_А_КОД = new КороткийКлюч( "код", null );
 
     private final ReadOnlyListProperty<FxКонвертер> КОНВЕРТЕРЫ;
-    private final FxProperty<Boolean> ОСНОВНОЙ;
-    private final FxProperty<String> КОД;
+    private final FxPropertyImpl<Boolean> ОСНОВНОЙ;
+    private final FxPropertyImpl<String> КОД;
 
     public FxКлассJava( DbКлассJava элемент ) 
     {
         super( элемент );
         КОНВЕРТЕРЫ = buildReadOnlyListProperty( элемент, "конвертеры", 
             new FxList<>( элемент.конвертеры(), элемент, e -> new FxКонвертер( e ), e -> e.getSource() ) );
-        ОСНОВНОЙ = new FxProperty<>( элемент, "основной", КЛЮЧ_А_ОСНОВНОЙ, () -> элемент.основной(), t -> элемент.основной( t ) );
-        КОД      = new FxProperty<>( элемент, "код",      КЛЮЧ_А_КОД,      () -> элемент.код(),      t -> элемент.код( t )      );
+        ОСНОВНОЙ = new FxPropertyImpl<>( элемент, "основной", КЛЮЧ_А_ОСНОВНОЙ, () -> элемент.основной(), t -> элемент.основной( t ) );
+        КОД      = new FxPropertyImpl<>( элемент, "код",      КЛЮЧ_А_КОД,      () -> элемент.код(),      t -> элемент.код( t )      );
     }
     
     

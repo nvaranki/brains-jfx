@@ -9,23 +9,23 @@ import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
 {
     static final КороткийКлюч КЛЮЧ_А_НАЗВАНИЕ  = new КороткийКлюч( "название",  XMLNS_BRAINS );
 
-    private final FxReadOnlyProperty<List<String>> ВАРИАНТЫ;
-    private final FxProperty<String> НАЗВАНИЕ;
-    private final FxProperty<String> URI;
+    private final FxReadOnlyPropertyImpl<List<String>> ВАРИАНТЫ;
+    private final FxPropertyImpl<String> НАЗВАНИЕ;
+    private final FxPropertyImpl<String> URI;
 
     FxNameSpace( DbNameSpace элемент ) 
     {
         super( элемент );
-        //ВАРИАНТЫ = new FxProperty<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );
-        ВАРИАНТЫ = new FxReadOnlyProperty<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты() );
-        НАЗВАНИЕ = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
-        URI      = new FxProperty<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     () -> элемент.uri(),      t -> элемент.uri( t )      );
+        //ВАРИАНТЫ = new FxPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );
+        ВАРИАНТЫ = new FxReadOnlyPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты() );
+        НАЗВАНИЕ = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
+        URI      = new FxPropertyImpl<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     () -> элемент.uri(),      t -> элемент.uri( t )      );
     }
 
     public FxReadOnlyProperty<List<String>> варианты()

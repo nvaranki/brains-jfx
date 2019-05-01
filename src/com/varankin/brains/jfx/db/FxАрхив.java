@@ -7,7 +7,6 @@ import com.varankin.brains.io.xml.XmlBrains;
 
 import java.util.Date;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.ObservableList;
 
 import static com.varankin.brains.db.DbАрхив.*;
@@ -19,34 +18,29 @@ import static com.varankin.brains.db.DbЭлемент.КЛЮЧ_А_НАЗВАНИ
  */
 public final class FxАрхив extends FxАтрибутный<DbАрхив>
 {
-    private final FxProperty<String> НАЗВАНИЕ;
     private final ReadOnlyListProperty<FxПакет> ПАКЕТЫ;
     private final ReadOnlyListProperty<FxNameSpace> NAMESPACES;
     private final ReadOnlyListProperty<FxМусор> МУСОР;
-    private final ReadOnlyProperty<String> РАСПОЛОЖЕНИЕ;
-    private final FxReadOnlyProperty<Date> СОЗДАН, ИЗМЕНЕН;
+    private final FxReadOnlyPropertyImpl<String> РАСПОЛОЖЕНИЕ;
+    private final FxReadOnlyPropertyImpl<Date> СОЗДАН, ИЗМЕНЕН;
+    private final FxPropertyImpl<String> НАЗВАНИЕ;
 
     FxАрхив( DbАрхив элемент ) 
     {
         super( элемент );
-        НАЗВАНИЕ  = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
         ПАКЕТЫ = buildReadOnlyListProperty( элемент, "пакеты", 
             new FxList<>( элемент.пакеты(), элемент, e -> new FxПакет( e ), e -> e.getSource() ) );
         NAMESPACES = buildReadOnlyListProperty( элемент, "namespaces", 
             new FxList<>( элемент.namespaces(), элемент, e -> new FxNameSpace( e ), e -> e.getSource() ) );
         МУСОР = buildReadOnlyListProperty( элемент, "мусор", 
             new FxList<>( элемент.мусор(), элемент, e -> new FxМусор( e ), e -> e.getSource() ) );
-        РАСПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "расположение", КЛЮЧ_А_РАСПОЛОЖЕНИЕ, () -> элемент.расположение() );
-        СОЗДАН       = new FxReadOnlyProperty<>( элемент, "создан",       КЛЮЧ_А_СОЗДАН,       () -> элемент.создан()       );
-        ИЗМЕНЕН      = new FxReadOnlyProperty<>( элемент, "изменен",      КЛЮЧ_А_ИЗМЕНЕН,      () -> элемент.изменен()      );
+        РАСПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "расположение", КЛЮЧ_А_РАСПОЛОЖЕНИЕ, () -> элемент.расположение() );
+        СОЗДАН       = new FxReadOnlyPropertyImpl<>( элемент, "создан",       КЛЮЧ_А_СОЗДАН,       () -> элемент.создан()       );
+        ИЗМЕНЕН      = new FxReadOnlyPropertyImpl<>( элемент, "изменен",      КЛЮЧ_А_ИЗМЕНЕН,      () -> элемент.изменен()      );
+        НАЗВАНИЕ     = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
         элемент.обработчик( a -> ИЗМЕНЕН.getFireHandler() );
     }
 
-    public FxProperty<String> название()
-    {
-        return НАЗВАНИЕ;
-    }
-    
     public ReadOnlyListProperty<FxПакет> пакеты()
     {
         return ПАКЕТЫ;
@@ -62,17 +56,22 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         return МУСОР;
     }
     
-    public ReadOnlyProperty<String> расположение()
+    public FxProperty<String> название()
+    {
+        return НАЗВАНИЕ;
+    }
+    
+    public FxReadOnlyProperty<String> расположение()
     {
         return РАСПОЛОЖЕНИЕ;
     }
     
-    public ReadOnlyProperty<Date> создан()
+    public FxReadOnlyProperty<Date> создан()
     {
         return СОЗДАН;
     }
     
-    public ReadOnlyProperty<Date> изменен()
+    public FxReadOnlyProperty<Date> изменен()
     {
         return ИЗМЕНЕН;
     }

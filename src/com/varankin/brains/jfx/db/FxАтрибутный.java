@@ -37,11 +37,11 @@ public class FxАтрибутный<T extends DbАтрибутный>
     private final T ЭЛЕМЕНТ;
     private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
     private final ListProperty<FxProperty> АТРИБУТЫ_ПРОЧИЕ;
-    private final ReadOnlyListWrapper<ReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
-    private final FxReadOnlyProperty<DbАтрибутный.Ключ> ТИП;
-    private final FxReadOnlyProperty<Boolean> ВОССТАНОВИМЫЙ;
-    private final Map<КороткийКлюч,FxProperty> AM = new HashMap<>();
-    private boolean ami, abi, ci;
+    private final ReadOnlyListWrapper<FxReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
+    private final FxReadOnlyPropertyImpl<DbАтрибутный.Ключ> ТИП;
+    private final FxReadOnlyPropertyImpl<Boolean> ВОССТАНОВИМЫЙ;
+    private final Map<КороткийКлюч,FxReadOnlyProperty> AM = new HashMap<>();
+    private boolean атрибутыПрочиеЗагружены, атрибутыОсновныеЗагружены, ci;
 
     public FxАтрибутный( T элемент )
     {
@@ -49,8 +49,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         КОЛЛЕКЦИИ = new HashMap<>();
         АТРИБУТЫ_ПРОЧИЕ = new SimpleListProperty<>( FXCollections.observableArrayList() );
         АТРИБУТЫ_ОСНОВНЫЕ = new ReadOnlyListWrapper<>( FXCollections.observableArrayList() );
-        ТИП = new FxReadOnlyProperty<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
-        ВОССТАНОВИМЫЙ = new FxReadOnlyProperty<>( элемент, "восстановимый", 
+        ТИП = new FxReadOnlyPropertyImpl<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
+        ВОССТАНОВИМЫЙ = new FxReadOnlyPropertyImpl<>( элемент, "восстановимый", 
                 КЛЮЧ_А_ВОССТАНОВИМЫЙ, () -> элемент.восстановимый() );
     }
     
@@ -74,59 +74,63 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return ВОССТАНОВИМЫЙ;
     }
     
-    public final FxProperty атрибут( String название, String uri )
+    public final <E,T extends FxReadOnlyProperty<E>> 
+    T атрибут( String название, String uri, Class<T> type )
     {
-        return атрибут( new КороткийКлюч( название, uri ) );
+        return атрибут( new КороткийКлюч( название, uri ), type );
     }
     
-    public final FxProperty атрибут( КороткийКлюч кк )
+    public final <E,T extends FxReadOnlyProperty<E>> 
+    T атрибут( КороткийКлюч кк, Class<T> type )
+    {
+        FxReadOnlyProperty a = атрибут( кк );
+        if( type.isInstance( a ))
+            return type.cast( a );
+        else
+            throw new ClassCastException( type.getName() );
+    }
+    
+    private FxReadOnlyProperty атрибут( КороткийКлюч кк )
     {
         атрибутыОсновные();
         атрибутыПрочие();
 
         String название = кк.НАЗВАНИЕ;
         String uri = кк.ЗОНА;
-        FxProperty p = AM.get( кк );
+        FxReadOnlyProperty p = AM.get( кк );
         if( p == null )
         {
             String префикс = null;//uri.substring( Math.max( uri.lastIndexOf( '/' ) "New name space";
             архив().определитьПространствоИмен( uri, префикс );
-            p = new FxProperty( ЭЛЕМЕНТ, название, кк, 
+            FxPropertyImpl np = new FxPropertyImpl( ЭЛЕМЕНТ, название, кк, 
                     () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
                     (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) );
-            AM.put( кк, p );
-            АТРИБУТЫ_ПРОЧИЕ.add( p );
+            AM.put( кк, np );
+            АТРИБУТЫ_ПРОЧИЕ.add( np );
+            p = np;
         }
         return p;
     }
     
-    public final ReadOnlyListProperty<ReadOnlyProperty> атрибутыОсновные()
+    public final ReadOnlyListProperty<FxReadOnlyProperty> атрибутыОсновные()
     {
-        if(!abi)
+        if( !атрибутыОсновныеЗагружены )
         {
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
                 АТРИБУТЫ_ОСНОВНЫЕ.clear();
-                for( ReadOnlyProperty p : извлечьАтрибутыBrains().values() )
-                    if( p instanceof FxProperty )
-                    {
-                        AM.put( ((FxProperty)p).ключ(), null );
-                        АТРИБУТЫ_ОСНОВНЫЕ.add( (FxProperty)p );
-                    }
-                    else if( p instanceof FxReadOnlyProperty )
-                    {
-                        AM.put( ((FxReadOnlyProperty)p).ключ(), null );
-                        АТРИБУТЫ_ОСНОВНЫЕ.add( (FxReadOnlyProperty)p );
-                    }
-                    else
-                        throw new ClassCastException( p.getClass().getName() );
-                abi = true;
+                for( FxReadOnlyProperty p : извлечьАтрибутыBrains().values() )
+                {
+                    AM.put( p.ключ(), p );
+                    АТРИБУТЫ_ОСНОВНЫЕ.add( p );
+                }
+                атрибутыОсновныеЗагружены = true;
                 т.завершить( true );
             }
             catch( Exception e )
             {
                 АТРИБУТЫ_ОСНОВНЫЕ.clear();
-                abi = false;
+                атрибутыОсновныеЗагружены = false;
                 throw new RuntimeException( "Failure to build list of primary properties on " + ЭЛЕМЕНТ, e );
             }
         }
@@ -137,7 +141,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
     {
         атрибутыОсновные();
 
-        if( !ami )
+        if( !атрибутыПрочиеЗагружены )
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
                 АТРИБУТЫ_ПРОЧИЕ.clear();
@@ -146,20 +150,20 @@ public class FxАтрибутный<T extends DbАтрибутный>
                     КороткийКлюч кк = new КороткийКлюч( ключ.название(), ключ.uri() );
                     if( !AM.containsKey( кк ))
                     {
-                        FxProperty p = new FxProperty( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 
-                            () -> ЭЛЕМЕНТ.атрибут( кк.НАЗВАНИЕ, кк.ЗОНА, null ),
-                            t  -> ЭЛЕМЕНТ.определить( кк.НАЗВАНИЕ, кк.ЗОНА, t ) );
+                        FxPropertyImpl p = new FxPropertyImpl( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 
+                            () -> ЭЛЕМЕНТ.атрибут( кк, null ),
+                            t  -> ЭЛЕМЕНТ.определить( кк, t ) );
                         AM.put( кк, p );
                         АТРИБУТЫ_ПРОЧИЕ.add( p );
                     }    
                 }
-                ami = true;
+                атрибутыПрочиеЗагружены = true;
                 т.завершить( true );
             }
             catch( Exception e )
             {
                 АТРИБУТЫ_ПРОЧИЕ.clear();
-                ami = false;
+                атрибутыПрочиеЗагружены = false;
                 throw new RuntimeException( "Failure to build list of foreign properties on " + ЭЛЕМЕНТ, e );
             }
         return АТРИБУТЫ_ПРОЧИЕ;
@@ -192,10 +196,10 @@ public class FxАтрибутный<T extends DbАтрибутный>
     /**
      * @return карта атрибутов элемента: название метода -> атрибут.
      */
-    private Map<String,ReadOnlyProperty> извлечьАтрибутыBrains()
+    private Map<String,FxReadOnlyProperty> извлечьАтрибутыBrains()
     {
         return Arrays.stream( getClass().getMethods() )
-            .filter( m -> ReadOnlyProperty.class.isAssignableFrom( m.getReturnType() ) ) // Property тоже
+            .filter( m -> FxReadOnlyProperty.class.isAssignableFrom( m.getReturnType() ) ) // FxProperty тоже
             .filter( m -> !"атрибут".equals( m.getName() ) )
             .filter( m -> !"атрибутыОсновные".equals( m.getName() ) )
             .filter( m -> !"атрибутыПрочие".equals( m.getName() ) )
@@ -205,7 +209,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
                 try
                 {
                     m.setAccessible( true ); // проблема с унаследованным public final
-                    return ((ReadOnlyProperty)m.invoke( FxАтрибутный.this ));
+                    return ((FxReadOnlyProperty)m.invoke( FxАтрибутный.this ));
                 }
                 catch( SecurityException | IllegalAccessException 
                     | IllegalArgumentException | InvocationTargetException ex )
@@ -248,17 +252,18 @@ public class FxАтрибутный<T extends DbАтрибутный>
     public static FxАтрибутный<?> дублировать( FxАтрибутный<?> образец, FxАрхив архив )
     {
         // создать дубликат по образцу
-        FxАтрибутный дубликат = архив.создатьНовыйЭлемент( образец.getSource().тип() );
+        FxАтрибутный<?> дубликат = архив.создатьНовыйЭлемент( образец.getSource().тип() );
         // скопировать все атрибуты
         образец.getSource().ключи().forEach( ключ -> 
         {
-            FxProperty p_to = дубликат.атрибут( ключ.название(), ключ.uri() );
-            FxProperty p_from = образец.атрибут( ключ.название(), ключ.uri() );
-            p_to.setValue( p_from.getValue() );
+            FxProperty копия   = дубликат.атрибут( ключ.название(), ключ.uri(), FxProperty.class );
+            FxProperty оригинал = образец.атрибут( ключ.название(), ключ.uri(), FxProperty.class );
+            копия.setValue( оригинал.getValue() );
         });
         // скопировать все коллекции
+        FxОператор оператор = ( о, к ) -> к.add( о );
         образец.коллекции().values().forEach( коллекция -> коллекция.forEach( 
-            e -> дубликат.выполнить( ( о, к ) -> к.add( о ), дублировать( e, архив ) ) ) );
+            e -> дубликат.выполнить( оператор, дублировать( e, архив ) ) ) );
         // вернуть свободный (невложенный!) дубликат
         return дубликат;
     }

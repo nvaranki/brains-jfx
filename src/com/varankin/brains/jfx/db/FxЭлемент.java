@@ -9,7 +9,7 @@ import static com.varankin.brains.db.DbЭлемент.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  * @param <T>
  */
 public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
@@ -18,9 +18,9 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
 
     private final ReadOnlyListProperty<FxЗаметка> ЗАМЕТКИ;
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
-    private final FxProperty<String> НАЗВАНИЕ;
-    private final FxReadOnlyProperty<String> ПОЛОЖЕНИЕ;
-    private final FxProperty<Collection<String>> СБОРКИ;
+    private final FxPropertyImpl<String> НАЗВАНИЕ;
+    private final FxReadOnlyPropertyImpl<String> ПОЛОЖЕНИЕ;
+    private final FxPropertyImpl<Collection<String>> СБОРКИ;
 
     public FxЭлемент( T элемент ) 
     {
@@ -29,8 +29,8 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
             new FxList<>( элемент.заметки(), элемент, e -> new FxЗаметка( e ), e -> e.getSource() ) );
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
             new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
-        НАЗВАНИЕ  = new FxProperty<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
-        ПОЛОЖЕНИЕ = new FxReadOnlyProperty<>( элемент, "положение", КЛЮЧ_А_ПОЛОЖЕНИЕ, () -> 
+        НАЗВАНИЕ  = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
+        ПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "положение", КЛЮЧ_А_ПОЛОЖЕНИЕ, () -> 
         {
             String разделитель = "/";
             String значение = элемент.положение( разделитель ); // "/у0/у1/.../уN/название"
@@ -40,7 +40,7 @@ public class FxЭлемент<T extends DbЭлемент> extends FxУзел<T>
             значение = значение.substring( 0, р );
             return значение.isEmpty() ? разделитель : значение;
         } );
-        СБОРКИ  = new FxProperty<>( элемент, "сборки", КЛЮЧ_А_СБОРКИ, () -> элемент.сборки(), t -> элемент.сборки( t ) );
+        СБОРКИ  = new FxPropertyImpl<>( элемент, "сборки", КЛЮЧ_А_СБОРКИ, () -> элемент.сборки(), t -> элемент.сборки( t ) );
     }
 
     public final ReadOnlyListProperty<FxЗаметка> заметки()

@@ -5,7 +5,6 @@ import com.varankin.brains.db.DbГрафика;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.paint.Color;
 
@@ -13,7 +12,7 @@ import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxГрафика extends FxУзел<DbГрафика>
 {
@@ -31,9 +30,9 @@ public final class FxГрафика extends FxУзел<DbГрафика>
         return ГРАФИКИ;
     }
     
-    public final Property атрибут( String название )
+    public final FxProperty атрибут( String название )
     {
-        return super.атрибут( название, XMLNS_SVG );
+        return super.атрибут( название, XMLNS_SVG, FxProperty.class );
     }
 
     public double toSvgDouble( String атрибут, double нет )

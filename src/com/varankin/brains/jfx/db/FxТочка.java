@@ -7,17 +7,18 @@ import static com.varankin.brains.db.DbТочка.*;
 
 /**
  *
- * @author Varankine
+ *  
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxТочка extends FxЭлемент<DbТочка>
 {
     private final ReadOnlyListProperty<FxТочка> ТОЧКИ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final FxProperty<Integer> ИНДЕКС;
-    private final FxProperty<Boolean> ДАТЧИК;
-    private final FxProperty<Float> ПОРОГ;
-    private final FxProperty<String> КОНТАКТ;
+    private final FxPropertyImpl<Integer> ИНДЕКС;
+    private final FxPropertyImpl<Boolean> ДАТЧИК;
+    private final FxPropertyImpl<Float> ПОРОГ;
+    private final FxPropertyImpl<String> КОНТАКТ;
 
     public FxТочка( DbТочка элемент ) 
     {
@@ -28,10 +29,10 @@ public final class FxТочка extends FxЭлемент<DbТочка>
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС  = new FxProperty<>( элемент, "индекс",  КЛЮЧ_А_ИНДЕКС,  () -> элемент.индекс(),  t -> элемент.индекс( t )  );
-        ДАТЧИК  = new FxProperty<>( элемент, "датчик",  КЛЮЧ_А_ДАТЧИК,  () -> элемент.датчик(),  t -> элемент.датчик( t )  );
-        ПОРОГ   = new FxProperty<>( элемент, "порог",   КЛЮЧ_А_ПОРОГ,   () -> элемент.порог(),   t -> элемент.порог( t )   );
-        КОНТАКТ = new FxProperty<>( элемент, "контакт", КЛЮЧ_А_КОНТАКТ, () -> элемент.контакт(), t -> элемент.контакт( t ) );
+        ИНДЕКС  = new FxPropertyImpl<>( элемент, "индекс",  КЛЮЧ_А_ИНДЕКС,  () -> элемент.индекс(),  t -> элемент.индекс( t )  );
+        ДАТЧИК  = new FxPropertyImpl<>( элемент, "датчик",  КЛЮЧ_А_ДАТЧИК,  () -> элемент.датчик(),  t -> элемент.датчик( t )  );
+        ПОРОГ   = new FxPropertyImpl<>( элемент, "порог",   КЛЮЧ_А_ПОРОГ,   () -> элемент.порог(),   t -> элемент.порог( t )   );
+        КОНТАКТ = new FxPropertyImpl<>( элемент, "контакт", КЛЮЧ_А_КОНТАКТ, () -> элемент.контакт(), t -> элемент.контакт( t ) );
     }
 
     public ReadOnlyListProperty<FxТочка> точки()

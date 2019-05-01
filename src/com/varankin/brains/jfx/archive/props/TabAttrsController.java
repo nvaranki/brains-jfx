@@ -1,12 +1,11 @@
 package com.varankin.brains.jfx.archive.props;
 
 import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.jfx.db.FxProperty;
 import com.varankin.brains.jfx.db.FxАтрибутный;
+import com.varankin.brains.jfx.db.FxProperty;
 import com.varankin.util.LoggerX;
-import java.util.ArrayList;
-import java.util.LinkedList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -31,7 +30,7 @@ import static javafx.beans.binding.Bindings.*;
 /**
  * FXML-контроллер панели дополнительных параметров.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 public class TabAttrsController implements Builder<BorderPane>
 {
@@ -111,7 +110,7 @@ public class TabAttrsController implements Builder<BorderPane>
     @FXML
     private void onCreateProperty( ActionEvent event )
     {
-        атрибутный.атрибут( "Новый параметр", "http://server/namespace" ).setValue( "Значение" );
+        атрибутный.атрибут( "Новый параметр", "http://server/namespace", FxProperty.class ).setValue( "Значение" );
         event.consume();
     }
     
@@ -179,7 +178,7 @@ public class TabAttrsController implements Builder<BorderPane>
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
         property.setValue( null );
-        property = атрибутный.атрибут( newName, oldScope );
+        property = атрибутный.атрибут( newName, oldScope, FxProperty.class );
         property.setValue( oldValue ); 
         int newIndex = атрибуты.indexOf( property );
         if( oldIndex != newIndex )
@@ -214,7 +213,7 @@ public class TabAttrsController implements Builder<BorderPane>
         int oldIndex = атрибуты.indexOf( property );
         атрибуты.remove( property );
         property.setValue( null );
-        property = атрибутный.атрибут( oldName, newScope );
+        property = атрибутный.атрибут( oldName, newScope, FxProperty.class );
         property.setValue( oldValue ); 
         int newIndex = атрибуты.indexOf( property );
         if( oldIndex != newIndex )

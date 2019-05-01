@@ -7,13 +7,13 @@ import static com.varankin.brains.db.DbПараметр.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxПараметр extends FxЭлемент<DbПараметр>
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
-    private final FxProperty<String> ИНДЕКС;
+    private final FxPropertyImpl<String> ИНДЕКС;
 
     public FxПараметр( DbПараметр элемент ) 
     {
@@ -22,7 +22,7 @@ public final class FxПараметр extends FxЭлемент<DbПарамет�
             new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ИНДЕКС = new FxProperty<>( элемент, "индекс", КЛЮЧ_А_ИНДЕКС, () -> элемент.индекс(), (t) -> элемент.индекс( t ) );
+        ИНДЕКС = new FxPropertyImpl<>( элемент, "индекс", КЛЮЧ_А_ИНДЕКС, () -> элемент.индекс(), (t) -> элемент.индекс( t ) );
     }
     
     public ReadOnlyListProperty<FxПараметр> параметры()

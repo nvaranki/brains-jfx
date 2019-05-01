@@ -6,16 +6,16 @@ import static com.varankin.brains.db.DbТекстовыйБлок.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxТекстовыйБлок extends FxАтрибутный<DbТекстовыйБлок>
 {
-    private final FxProperty<String> ТЕКСТ;
+    private final FxPropertyImpl<String> ТЕКСТ;
 
     public FxТекстовыйБлок( DbТекстовыйБлок элемент ) 
     {
         super( элемент );
-        ТЕКСТ = new FxProperty<>( элемент, "текст" , КЛЮЧ_А_ТЕКСТ, () -> элемент.текст(), (t) -> элемент.текст( t ) );
+        ТЕКСТ = new FxPropertyImpl<>( элемент, "текст" , КЛЮЧ_А_ТЕКСТ, () -> элемент.текст(), (t) -> элемент.текст( t ) );
     }
 
     public FxProperty<String> текст()

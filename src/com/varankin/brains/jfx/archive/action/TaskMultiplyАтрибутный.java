@@ -61,7 +61,7 @@ class TaskMultiplyАтрибутный extends Task<Void>
                         if( схема.x.смещение != 0 | схема.y.смещение != 0 )
                         {
                             // добавить смещение к последовательности трансформаций
-                            FxProperty атрибут = дубликат.атрибут( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG ); 
+                            FxProperty атрибут = дубликат.атрибут( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, FxProperty.class ); 
                             String value = DbАтрибутный.toStringValue( атрибут.getValue() );
                             value = value == null ? "" : value + " ";
                             атрибут.setValue( String.format( "%stranslate(%d,%d)", value, dx, dy ) ); //TODO optimize transformations

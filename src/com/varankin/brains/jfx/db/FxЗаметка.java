@@ -8,23 +8,23 @@ import static com.varankin.brains.db.DbЗаметка.*;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class FxЗаметка extends FxУзел<DbЗаметка>
 {
     static final КороткийКлюч КЛЮЧ_А_ТЕКСТ = new КороткийКлюч( "текст", null );
 
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
-    private final FxReadOnlyProperty<String> ТЕКСТ;
-    private final FxProperty<Long> ГЛУБИНА;
+    private final FxReadOnlyPropertyImpl<String> ТЕКСТ;
+    private final FxPropertyImpl<Long> ГЛУБИНА;
 
     public FxЗаметка( DbЗаметка элемент )
     {
         super( элемент );
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
             new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
-        ТЕКСТ = new FxReadOnlyProperty<>( элемент, "текст", КЛЮЧ_А_ТЕКСТ, () -> элемент.текст( "\n" ) );
-        ГЛУБИНА = new FxProperty<>( элемент, "глубина", КЛЮЧ_А_ГЛУБИНА, () -> элемент.глубина(), t -> элемент.глубина( t ) );
+        ТЕКСТ = new FxReadOnlyPropertyImpl<>( элемент, "текст", КЛЮЧ_А_ТЕКСТ, () -> элемент.текст( "\n" ) );
+        ГЛУБИНА = new FxPropertyImpl<>( элемент, "глубина", КЛЮЧ_А_ГЛУБИНА, () -> элемент.глубина(), t -> элемент.глубина( t ) );
     }
 
     public ReadOnlyListProperty<FxГрафика> графики()
