@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -295,12 +296,13 @@ public class FxАтрибутный<T extends DbАтрибутный>
             if( кандидат == null )
                 throw new IllegalStateException( "Fx-предок не найден по Db-предку" );
         }
+        Supplier<FxАтрибутный> t_get = () -> поСвязи ? null : FxАтрибутный.this; // null при возврате == этот объект
         // проверка поиска
         FxАтрибутный t = кандидат.коллекции().values().stream()
             .flatMap( c -> c.stream() )
             .filter( e -> e.getSource().equals( getSource() ) )
             .findAny()
-            .orElse( поСвязи ? (FxАтрибутный) null : this ); // null при возврате == этот объект
+            .orElseGet( (Supplier)t_get );
         if( t != null )
             return кандидат;
         else
