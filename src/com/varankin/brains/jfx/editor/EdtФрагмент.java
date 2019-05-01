@@ -140,8 +140,8 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     {
         if( path.isEmpty() ) return false;
         позиция( path.poll() );
-        ЭЛЕМЕНТ.атрибут( Xml.XLINK_SHOW, Xml.XMLNS_XLINK ).setValue( "other" );
-        ЭЛЕМЕНТ.атрибут( Xml.XLINK_HREF, Xml.XMLNS_XLINK ).setValue( "Ссылка фрагмента" );
+        ЭЛЕМЕНТ.вид().setValue( Xml.XLinkShow.OTHER );
+        ЭЛЕМЕНТ.ссылка().setValue( "Ссылка фрагмента" );
         ЭЛЕМЕНТ.графики().add( название( "Новый фрагмент", "../@xlink:" + Xml.XLINK_TITLE ) );
         return path.isEmpty();
     }

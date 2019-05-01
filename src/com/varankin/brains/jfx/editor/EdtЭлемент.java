@@ -4,6 +4,7 @@ import com.varankin.brains.db.*;
 import com.varankin.brains.io.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.db.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,8 +42,8 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     {
         if( path.isEmpty() ) return false;
         int[] s = path.peek();
-        ЭЛЕМЕНТ.атрибут( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG )
-                .setValue( String.format( "translate(%d,%d)", s[0], s[1] ) );
+        FxProperty атрибут = ЭЛЕМЕНТ.атрибут( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, FxProperty.class );
+        атрибут.setValue( String.format( "translate(%d,%d)", s[0], s[1] ) );
         return true;
     }
     
@@ -78,8 +79,8 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     
     void позиция( int[] xy )
     {
-        ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG )
-                .setValue( String.format( "translate(%d,%d)", xy[0], xy[1] ) );
+        FxProperty атрибут = ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, FxProperty.class );
+        атрибут.setValue( String.format( "translate(%d,%d)", xy[0], xy[1] ) );
     }
     
     /**

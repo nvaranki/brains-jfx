@@ -1,20 +1,21 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.jfx.db.FxReadOnlyProperty;
+import com.varankin.brains.jfx.db.FxАтрибутный;
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
+import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.jfx.db.FxАтрибутный;
-import java.util.Collections;
-import java.util.Queue;
 import javafx.scene.transform.Transform;
-
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 /**
  *
@@ -47,8 +48,8 @@ abstract class EdtАтрибутный<D extends DbАтрибутный, T exten
     
     private List<Transform> getTransformList()
     {
-        return toTransforms( DbАтрибутный.toStringValue( ЭЛЕМЕНТ.атрибут( 
-                SVG_ATTR_TRANSFORM, XMLNS_SVG ).getValue() ) );
+        FxReadOnlyProperty атрибут = ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, FxReadOnlyProperty.class );
+        return toTransforms( DbАтрибутный.toStringValue( атрибут.getValue() ) );
     }
 
     protected Node createMarker( double s2 )

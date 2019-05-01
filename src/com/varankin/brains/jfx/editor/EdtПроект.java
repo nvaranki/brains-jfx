@@ -2,15 +2,15 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.*;
 import com.varankin.brains.jfx.db.*;
+import static com.varankin.brains.db.DbАтрибутный.*;
+import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.io.xml.XmlSvg.*;
+
 import java.util.Queue;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
-
-import static com.varankin.brains.db.DbАтрибутный.*;
-import static com.varankin.brains.io.xml.XmlBrains.*;
-import static com.varankin.brains.io.xml.XmlSvg.*;
 
 /**
  *
@@ -51,11 +51,12 @@ class EdtПроект extends EdtЭлемент<DbПроект,FxПроект>
 
     private Node createBounds()
     {
-        double w, h;
-        Double атрибутWidth  = toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_WIDTH,  XMLNS_SVG ).getValue() );
-        Double атрибутHeight = toDoubleValue( ЭЛЕМЕНТ.атрибут( SVG_ATTR_HEIGHT, XMLNS_SVG ).getValue() );
-        w = атрибутWidth  != null ? атрибутWidth  : 200d; 
-        h = атрибутHeight != null ? атрибутHeight : 100d;
+        FxProperty атрибутWidth = ЭЛЕМЕНТ.атрибут( SVG_ATTR_WIDTH,  XMLNS_SVG, FxProperty.class );
+        FxProperty атрибутHeight = ЭЛЕМЕНТ.атрибут( SVG_ATTR_HEIGHT, XMLNS_SVG, FxProperty.class );
+        Double svgWidth  = toDoubleValue( атрибутWidth.getValue() );
+        Double svgHeight = toDoubleValue( атрибутHeight.getValue() );
+        double w = svgWidth  != null ? svgWidth  : 200d; 
+        double h = svgHeight != null ? svgHeight : 100d;
         Polygon countor = new Polygon( 0d, 0d, w, 0d, w, h, 0d, h );
         countor.setFill( null );
         countor.setStroke( Color.GRAY );
