@@ -2,11 +2,11 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.КороткийКлюч;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
@@ -43,18 +43,22 @@ public final class FxPropertyImpl<T>
     {
         super( FxPropertyDescriptor.get( элемент, supplier ) );
         descriptor = new FxPropertyDescriptor<>( элемент, название, ключ, supplier, consumer );
-        chl = ( ObservableValue<? extends T> o, T ov, T nv ) -> 
-        {
-            // установить запрошенное значение
-            FxPropertyDescriptor.set( элемент, consumer, nv );
-            // получить фактически установленное значение (допустимо String="5" -> Long=5L и т.п.)
-            T t = FxPropertyDescriptor.get( элемент, supplier );
-            if( !Objects.equals( nv, t ) )
-                set( t );
-        };
-            addListener( new WeakChangeListener<>( chl ) );
-        }
+        chl = this::onValueChange;
+        addListener( new WeakChangeListener<>( chl ) );
+    }
+    
+    private void onValueChange( ObservableValue<? extends T> o, T ov, T nv )
+    {
+        // установить запрошенное значение
+        FxPropertyDescriptor.set( descriptor.bean, descriptor.consumer, nv );
+        // получить фактически установленное значение (допустимо String="5" -> Long=5L и т.п.)
+        T t = FxPropertyDescriptor.get( descriptor.bean, descriptor.supplier );
+        // переустановить на актуальное значение, при необходимости
+        if( !Objects.deepEquals( nv, t ) ) // Objects.equals(a,b) compares arrays as Object's, so use deepEquals
+            set( t );
+    };
 
+    @Override
     public КороткийКлюч ключ()
     {
         return descriptor.ключ;
