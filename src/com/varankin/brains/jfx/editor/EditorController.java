@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -117,6 +118,7 @@ public final class EditorController implements Builder<Parent>
         buttonDelete.setOnAction( this::onDeleteMode );
         
         itemsAdd = new ChoiceBox<>();
+        itemsAdd.setMinWidth( 120 );
 
         ToggleGroup group = new ToggleGroup();
         buttonBase.setToggleGroup(group);
@@ -124,13 +126,6 @@ public final class EditorController implements Builder<Parent>
         buttonAdd.setToggleGroup(group);
         buttonDelete.setToggleGroup(group);
         buttonSelect.setSelected( true );
-        
-        posX = new Label( "0" );
-        posY = new Label( "0" );
-        HBox pos = new HBox( new Label( " X: " ), posX, new Label( " Y: " ), posY );
-        pos.setAlignment( Pos.CENTER_RIGHT );
-        pos.setFillHeight( true );
-        HBox.setHgrow( pos, Priority.ALWAYS );
         
         snap = new TextField( "1" );
         snap.setPrefColumnCount( 4 );
@@ -150,7 +145,19 @@ public final class EditorController implements Builder<Parent>
         snapFormatter.valueProperty().bindBidirectional( snapProperty );
         snap.setTextFormatter( snapFormatter );
         
-        ToolBar toolBar = new ToolBar( buttonBase, buttonSelect, itemsAdd, buttonAdd, buttonDelete, snap, pos );
+        posX = new Label( "0" );
+        posY = new Label( "0" );
+        HBox pos = new HBox( snap, new Label( " X: " ), posX, new Label( " Y: " ), posY );
+        pos.setAlignment( Pos.CENTER_RIGHT );
+        pos.setFillHeight( true );
+        posX.setMinWidth( 40 );
+        posY.setMinWidth( 40 );
+        HBox.setHgrow( pos, Priority.ALWAYS );
+        
+        ToolBar toolBar = new ToolBar( 
+                buttonBase, buttonSelect, 
+                new Separator( Orientation.VERTICAL ), 
+                buttonAdd, itemsAdd, new Button("Color"), buttonDelete, pos );
         
         zero = new Group();
         
@@ -383,7 +390,27 @@ public final class EditorController implements Builder<Parent>
     {
         updateMousePosition( e );
         LOGGER.getLogger().info( "selection at "+xProperty.get()+","+yProperty.get() );
+        board.getChildren().forEach( c -> {
+            boolean touch = touch( c, e.getX(), e.getY() );
+        } );
         e.consume();
+    }
+    
+    private boolean touch( Node n, double x, double y )
+    {
+        boolean touched = false;
+        if( n instanceof Group )
+            for( Node c : ((Group)n).getChildren() )
+                touched |= touch( c, x, y );
+        else
+        {
+            int snap = snapProperty.get();
+            touched = n.intersects( x - snap/2, y - snap/2, snap, snap );
+            if( touched )
+                LOGGER.getLogger().log( Level.INFO, "touch of {0}={1}", 
+                        new Object[]{n.getClass().getSimpleName(), n.getUserData()} );
+        }
+        return touched;
     }
         
     private void onAdd( MouseEvent e )
