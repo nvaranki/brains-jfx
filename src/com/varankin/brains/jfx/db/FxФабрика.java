@@ -80,7 +80,7 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
 //        if( элемент instanceof DbУзел          ) p = new FxУзел( (DbУзел)элемент ); else
         if( элемент instanceof DbИнструкция    ) p = new FxИнструкция( (DbИнструкция)элемент ); else
         if( элемент instanceof DbТекстовыйБлок ) p = new FxТекстовыйБлок( (DbТекстовыйБлок)элемент ); else
-        throw new UnsupportedOperationException();//p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
+        throw new ClassCastException( элемент.getClass().getName() );//p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
 //                                                 p = new FxАтрибутный( (DbАтрибутный)элемент );
 //                content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
         return p;
