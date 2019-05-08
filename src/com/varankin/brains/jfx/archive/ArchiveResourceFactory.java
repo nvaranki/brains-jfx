@@ -152,6 +152,7 @@ public final class ArchiveResourceFactory
             { XML_GRAPHIC,   "graphic",    "preview.png",     "графики",    }, // нет такого типа
             { SVG_ELEMENT_CIRCLE,   "svg."+SVG_ELEMENT_CIRCLE,   "preview.png", "графики", },
             { SVG_ELEMENT_ELLIPSE,  "svg."+SVG_ELEMENT_ELLIPSE,  "preview.png", "графики", },
+            { SVG_ELEMENT_A,        "svg."+SVG_ELEMENT_A,        "preview.png", "графики", },
             { SVG_ELEMENT_G,        "svg."+SVG_ELEMENT_G,        "preview.png", "графики", },
             { SVG_ELEMENT_LINE,     "svg."+SVG_ELEMENT_LINE,     "preview.png", "графики", },
             { SVG_ELEMENT_POLYGON,  "svg."+SVG_ELEMENT_POLYGON,  "preview.png", "графики", },
