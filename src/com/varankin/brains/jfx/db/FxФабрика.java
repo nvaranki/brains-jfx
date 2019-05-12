@@ -73,11 +73,10 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         if( элемент instanceof DbКонвертер     ) p = new FxКонвертер( (DbКонвертер)элемент ); else
         if( элемент instanceof DbЛента         ) p = new FxЛента( (DbЛента)элемент ); else
         if( элемент instanceof DbМусор         ) p = new FxМусор( (DbМусор)элемент ); else
-//        if( элемент instanceof DbЭлемент       ) p = new FxЭлемент( (DbЭлемент)элемент ); else
+        if( элемент instanceof DbЭлемент       ) p = new FxЭлемент( (DbЭлемент)элемент ); else
+        if( элемент instanceof DbNameSpace     ) p = new FxNameSpace( (DbNameSpace)элемент ); else
         if( элемент instanceof DbГрафика       ) p = new FxГрафика( (DbГрафика)элемент ); else
         if( элемент instanceof DbЗаметка       ) p = new FxЗаметка( (DbЗаметка)элемент ); else
-//        if( элемент instanceof DbНеизвестный   ) p = new FxНеизвестный( (DbНеизвестный)элемент ); else
-//        if( элемент instanceof DbУзел          ) p = new FxУзел( (DbУзел)элемент ); else
         if( элемент instanceof DbИнструкция    ) p = new FxИнструкция( (DbИнструкция)элемент ); else
         if( элемент instanceof DbТекстовыйБлок ) p = new FxТекстовыйБлок( (DbТекстовыйБлок)элемент ); else
         throw new ClassCastException( элемент.getClass().getName() );//p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
