@@ -7,10 +7,13 @@ import com.varankin.brains.appl.УправлениеПроцессом;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Проект;
 import com.varankin.brains.artificial.Элемент;
+import com.varankin.brains.factory.Вложенный;
 import com.varankin.brains.jfx.ApplicationActionWorker;
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.JavaFX;
+
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.ListProperty;
@@ -27,13 +30,14 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 /**
  * Основа FXML-контроллера для набора инструментов навигатора по проектам.
  * 
- * @author &copy; 2015 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 abstract class AbstractActionController 
 {
     private static final Logger LOGGER = Logger.getLogger(
             AbstractActionController.class.getName(),
             AbstractActionController.class.getPackage().getName() + ".text" );
+    private static final Predicate<Элемент> ФИЛЬТР_ПРОЦЕСС = i -> Вложенный.процесс( i ) != null;
 
     private final ListProperty<Элемент>  selection;
     private final ReadOnlyBooleanWrapper disableStart;
@@ -78,8 +82,8 @@ abstract class AbstractActionController
         Действие<List<Процесс>> действие = new ДействияПоПорядку( ДействияПоПорядку.Приоритет.КОНТЕКСТ, 
                 new УправлениеПроцессом( JavaFX.getInstance().контекст, команда ) );
         List<Процесс> ceлектор = selection.stream()
-            .filter(  ( Элемент i ) -> i instanceof Процесс )
-            .map( ( Элемент i ) -> (Процесс)i )
+            .map( Вложенный::процесс )
+            .filter( i -> i != null )
             .collect( Collectors.toList() );
         new ApplicationActionWorker<>( действие, ceлектор ).execute( JavaFX.getInstance() );
     }
@@ -174,20 +178,17 @@ abstract class AbstractActionController
     
     private boolean enableActionStart() 
     {
-        return !selection.isEmpty() && selection.stream()
-                .allMatch( ( Элемент i ) -> i instanceof Процесс );
+        return !selection.isEmpty() && selection.stream().allMatch( ФИЛЬТР_ПРОЦЕСС );
     }
 
     private boolean enableActionPause() 
     {
-        return !selection.isEmpty() && selection.stream()
-                .allMatch( ( Элемент i ) -> i instanceof Процесс );
+        return !selection.isEmpty() && selection.stream().allMatch( ФИЛЬТР_ПРОЦЕСС );
     }
 
     private boolean enableActionStop() 
     {
-        return !selection.isEmpty() && selection.stream()
-                .allMatch( ( Элемент i ) -> i instanceof Процесс );
+        return !selection.isEmpty() && selection.stream().allMatch( ФИЛЬТР_ПРОЦЕСС );
     }
 
     private boolean enableActionRemove() 

@@ -3,14 +3,14 @@ package com.varankin.brains.jfx.browser;
 import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Элемент;
-
-import static com.varankin.brains.factory.observable.НаблюдаемыеСвойства.СОСТОЯНИЕ;
-
+import com.varankin.brains.factory.observable.НаблюдаемыеСвойства;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.characteristic.Наблюдаемый;
 import com.varankin.characteristic.Наблюдатель;
 import com.varankin.characteristic.Свойственный;
+import com.varankin.characteristic.Свойство;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,7 +30,7 @@ import javafx.scene.control.TreeItem;
  * предопределенный текст, который применяется для отображения 
  * справа от марки в узле дерева.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 final class DelayedNamedTreeItem extends TreeItem<Элемент>
 {
@@ -43,6 +43,10 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
         метка = фабрикаНазваний.метка( (Object)элемент );
         Consumer<Процесс.Состояние> заливка = с -> фабрикаКартинок.setBgColor( getGraphic(), с );
         наблюдателиСостояния( элемент ).forEach( c -> c.add( new Маляр( заливка ) ) );
+        состояния( элемент ).map( i -> i.значение() )
+                .filter( i -> i instanceof Процесс.Состояние )
+                .map( i -> (Процесс.Состояние)i )
+                .forEach( i -> заливка.accept( i ) ); // обозначить текущее значение
         expandedProperty().addListener( (v, o, n) -> 
         { 
             // отложенное построение структуры дерева, только на один уровень
@@ -140,11 +144,17 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
                 .map( ТИП_НАБЛЮДАЕМЫЙ.andThen( ЭКСТРАКТОР_НАБЛЮДАТЕЛИ ) );
     }
     
+    private static Stream<Свойство<?>> состояния( Элемент элемент )
+    {
+        return (Stream)Collections.singleton( элемент ).stream()
+                .filter( ФИЛЬТР_СВОЙСТВЕННЫЙ )
+                .map( ТИП_СВОЙСТВЕННЫЙ.andThen( Свойственный::свойства )
+                        .andThen( э -> э.свойство( НаблюдаемыеСвойства.СОСТОЯНИЕ ) ) )
+                .filter(  э -> э != null );
+    }
     private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостояния( Элемент элемент )
     {
-        return Collections.singleton( элемент ).stream()
-                .filter( ФИЛЬТР_ПРОЦЕСС.and( ФИЛЬТР_СВОЙСТВЕННЫЙ ) )
-                .map( ТИП_СВОЙСТВЕННЫЙ.andThen( Свойственный::свойства ).andThen( э -> э.свойство( СОСТОЯНИЕ ) ) )
+        return состояния( элемент )
                 .filter( ФИЛЬТР_НАБЛЮДАЕМЫЙ )
                 .map( ТИП_НАБЛЮДАЕМЫЙ.andThen( ЭКСТРАКТОР_НАБЛЮДАТЕЛИ ) );
     }
@@ -160,7 +170,6 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
     private final static Predicate<Object> ФИЛЬТР_ЭЛЕМЕНТ = o -> o instanceof Элемент;
     private final static Predicate<Object> ФИЛЬТР_СОСТАВНОЙ = o -> o instanceof Составной;
     private final static Predicate<Object> ФИЛЬТР_НАБЛЮДАЕМЫЙ = o -> o instanceof Наблюдаемый;
-    private final static Predicate<Object> ФИЛЬТР_ПРОЦЕСС = o -> o instanceof Процесс;
     private final static Predicate<Object> ФИЛЬТР_СВОЙСТВЕННЫЙ = o -> o instanceof Свойственный;
     
     private final static Function<Object,Элемент>      ТИП_ЭЛЕМЕНТ = o -> (Элемент)o;

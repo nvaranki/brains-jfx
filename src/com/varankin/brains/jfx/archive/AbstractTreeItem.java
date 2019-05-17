@@ -63,8 +63,8 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         this.пд = this::onExpandedChanged;
         expandedProperty().addListener( пд ); // PopulateTask удалит пд
         создатьВременныеПотомки(); // временно, до раскрытия узла 
-        if( !( value instanceof FxУзел | value instanceof FxМусор ) )
-            this.setExpanded( true ); // снимет лишние отметки о раскрываемости узла
+//        if( !( value instanceof FxУзел | value instanceof FxМусор ) )
+//            this.setExpanded( true ); // снимет лишние отметки о раскрываемости узла
     }
     
     //<editor-fold defaultstate="collapsed" desc="методы">

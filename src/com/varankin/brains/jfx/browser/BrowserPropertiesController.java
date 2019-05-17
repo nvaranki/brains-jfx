@@ -23,23 +23,22 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.WindowEvent;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
 
 import static com.varankin.brains.factory.observable.НаблюдаемыеСвойства.*;
+import javafx.geometry.Insets;
+import javafx.scene.paint.Color;
 
 /**
  * FXML-контроллер свойств элемента. 
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 public final class BrowserPropertiesController implements Builder<Parent>
 {
@@ -72,7 +71,6 @@ public final class BrowserPropertiesController implements Builder<Parent>
 
     @FXML private BorderPane pane;
     @FXML private VBox panel;
-//    @FXML private Pane properties;
     @FXML private Button buttonOK, buttonApply;
 
     public BrowserPropertiesController() 
@@ -107,7 +105,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
         buttonBar.getChildren().addAll( buttonOK, buttonCancel, buttonApply );
 
         panel = new VBox();
-        panel.setSpacing( 0d );
+        panel.setId( "list" );
         
         pane = new BorderPane();
         pane.setId( "pane" );
@@ -125,7 +123,6 @@ public final class BrowserPropertiesController implements Builder<Parent>
     @FXML
     protected void initialize()
     {
-        //pane.
     }
     
     @FXML
@@ -178,8 +175,8 @@ public final class BrowserPropertiesController implements Builder<Parent>
         return LOGGER.getResourceBundle().getString( ключ );
     }
 
-    void reset(Элемент элемент) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    void reset( Элемент элемент ) 
+    {
     }
 
     void populate( WindowEvent event )
@@ -197,6 +194,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
             {
                 Свойственный.Каталог каталог = ((Свойственный)элемент).свойства();
                 List<Свойство<?>> перечень = new ArrayList<>( каталог.перечень() );
+                перечень.remove( каталог.свойство( ПРОЦЕСС ) ); // неинформативный
                 List<String> pks = Arrays.asList( НАЗВАНИЕ, ТИП, ЗНАЧЕНИЕ, ВХОД, ПРИНЯТО, ВЫХОД, ПЕРЕДАНО );
                 Function<Integer,Integer> nm = (i) -> i < 0 ? 100000 : i;
                 Comparator<Свойство<?>> sorter1 = ( s1, s2 ) -> nm.apply( pks.indexOf( каталог.ключ( s1 ) )) 
@@ -205,6 +203,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
                 перечень.sort( sorter1.thenComparing( sorter2 ) );
                 for( Свойство<?> e : перечень )
                     panel.getChildren().add( строка( e, каталог.класс( e ), каталог.ключ( e ) ) );
+                panel.setMinHeight( 30 * перечень.size() ); //TODO TEMP
             }
             //TODO
         }
@@ -251,15 +250,8 @@ public final class BrowserPropertiesController implements Builder<Parent>
         dyn.setSelected( наблюдаемое );
         
         HBox панель = new HBox();
+        панель.getStyleClass().setAll( "line" );
         панель.getChildren().addAll( название, node, dyn );
-//        название.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
-//        node.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
-//        dyn.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
-//        панель.setBorder( new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, BorderStroke.THIN )));
-////        Insets insets = панель.paddingProperty().getValue();
-//        панель.setPadding( new Insets( 0,0,0,0 ));//insets.getTop(), insets.getRight(), 0d, insets.getLeft() ) );
-//        панель.setAlignment( Pos.TOP_RIGHT );//spacingProperty().setValue( new Insets( 0,0,0,0 ));//insets.getTop(), insets.getRight(), 0d, insets.getLeft() ) );
-//        панель.setPrefHeight( 35 );
         return панель;
     }
     

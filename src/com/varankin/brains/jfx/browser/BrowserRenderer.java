@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 /**
  *
  *
- * @author &copy; 2013 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 class BrowserRenderer 
 {
@@ -24,6 +24,7 @@ class BrowserRenderer
     static
     {
         ФОН = new HashMap<>();
+        ФОН.put( Процесс.Состояние.ОСТАНОВ, Color.LIGHTSALMON );
         ФОН.put( Процесс.Состояние.РАБОТА, Color.LIGHTGREEN );
         ФОН.put( Процесс.Состояние.ПАУЗА, Color.YELLOW );
     }

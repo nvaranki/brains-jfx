@@ -1,11 +1,23 @@
 /* 
     Description: Панель диалога свойств элемента.
-    Author     : (c) 2015 Николай Варанкин
+    Author     : (c) 2019 Николай Варанкин
 */
 
 .browser-properties HBox Button
 {
     -fx-cursor: hand;
+}
+
+.browser-properties #list
+{
+    -fx-padding: 10px 10px 0px 10px;
+    -fx-spacing: 10px;
+}
+
+.browser-properties .line
+{
+    -fx-padding:  0px;
+    -fx-spacing: 10px;
 }
 
 .browser-properties HBox
