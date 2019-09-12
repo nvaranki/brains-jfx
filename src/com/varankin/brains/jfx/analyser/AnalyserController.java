@@ -154,7 +154,7 @@ public final class AnalyserController implements Builder<Node>
         tpc.resetColorPicker();
         
         ValueRulerPropertiesPaneController vpc = controller.valueRulerController();
-        vpc.valueMinProperty().setValue( -1f );
+        vpc.valueMinProperty().setValue(  0f );
         vpc.valueMaxProperty().setValue( +1f );
         vpc.textColorProperty().setValue( Color.BLACK );
         vpc.tickColorProperty().setValue( Color.BLACK );
