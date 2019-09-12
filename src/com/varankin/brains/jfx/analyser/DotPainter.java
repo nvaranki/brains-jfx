@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
  * Менеджер рисования отметок в графической зоне. 
  * Отметки рисуются блоками, по мере поступления в очередь.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2019 Николай Варанкин
  */
 class DotPainter
 {
@@ -128,6 +128,7 @@ class DotPainter
      */
     protected void paint( Dot dot )
     {
+        if( Float.isNaN( dot.v )) return;
         int x = timeConvertorProperty.get().timeToImage( dot.t );
         int y = valueConvertorProperty.get().valueToImage( dot.v );
         paint( x, y, colorProperty.get(), patternProperty.get(), writer, width, height );
