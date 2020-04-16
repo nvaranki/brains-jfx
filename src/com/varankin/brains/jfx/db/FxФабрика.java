@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Фабрика генераторов текста в формате XML для произвольного элемента.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class FxФабрика implements Фабрика<DbАтрибутный,FxАтрибутный>
 {
@@ -70,7 +70,6 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         if( элемент instanceof DbФрагмент      ) p = new FxФрагмент( (DbФрагмент)элемент ); else
         if( элемент instanceof DbПакет         ) p = new FxПакет( (DbПакет)элемент ); else
         if( элемент instanceof DbКлассJava     ) p = new FxКлассJava( (DbКлассJava)элемент ); else
-        if( элемент instanceof DbКонвертер     ) p = new FxКонвертер( (DbКонвертер)элемент ); else
         if( элемент instanceof DbЛента         ) p = new FxЛента( (DbЛента)элемент ); else
         if( элемент instanceof DbМусор         ) p = new FxМусор( (DbМусор)элемент ); else
         if( элемент instanceof DbЭлемент       ) p = new FxЭлемент( (DbЭлемент)элемент ); else

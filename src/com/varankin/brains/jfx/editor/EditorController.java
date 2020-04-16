@@ -50,7 +50,7 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели редактора. 
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class EditorController implements Builder<Parent>
 {
@@ -487,7 +487,6 @@ public final class EditorController implements Builder<Parent>
     {
         limit = new HashMap<>();
         limit.put( XmlBrains.XML_COMPUTE, 1 );
-        limit.put( XmlBrains.XML_CONVERTER, 1 );
         limit.put( XmlBrains.XML_FIELD, 1 );
         limit.put( XmlBrains.XML_FRAGMENT, 1 );
         limit.put( XmlBrains.XML_JAVA, 1 );

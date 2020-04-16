@@ -16,7 +16,7 @@ import static com.varankin.brains.io.xml.XmlSvg.*;
 /**
  * Фабрика ресурсов для навигатора по проектам.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class ArchiveResourceFactory
 {
@@ -137,7 +137,6 @@ public final class ArchiveResourceFactory
             { XML_JAVA,      "class.java", "java.png",        "классы",     },
             { XML_JOINT,     "connector",  "connector.png",   "соединения", },
             { XML_PIN,       "pin",        "pin.png",         "контакты",   },
-            { XML_CONVERTER, "converter",  "converter.png",   "конвертеры", },
             { XML_COMPUTE,   "compute",    "function.png",    "расчеты",    },
             { XML_MODULE,    "module",     "module.png",      "модули",     },
             { XML_TIMELINE,  "timeline",   "timeline.png",    "ленты",      },

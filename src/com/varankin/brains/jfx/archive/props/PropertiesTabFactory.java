@@ -11,7 +11,7 @@ import javafx.scene.control.Tab;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2020 Николай Варанкин
  */
 final class PropertiesTabFactory
 {
@@ -110,14 +110,6 @@ final class PropertiesTabFactory
         tab.setOnCloseRequest( e -> controller.set( null ) );
         List<Tab> tabs = new ArrayList<>( collectTabs( (FxЭлемент)value ) );
         tabs.add( 0, tab );
-        return tabs;
-    }
-    
-    List<Tab> collectTabs( FxКонвертер value )
-    {
-        List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxЭлемент)value ) );
         return tabs;
     }
     
@@ -327,7 +319,6 @@ final class PropertiesTabFactory
         if( value instanceof FxЗаметка       ) tabs = collectTabs( (FxЗаметка)value ); else
         if( value instanceof FxИнструкция    ) tabs = collectTabs( (FxИнструкция)value ); else
         if( value instanceof FxКлассJava     ) tabs = collectTabs( (FxКлассJava)value ); else
-        if( value instanceof FxКонвертер     ) tabs = collectTabs( (FxКонвертер)value ); else
         if( value instanceof FxКонтакт       ) tabs = collectTabs( (FxКонтакт)value ); else
         if( value instanceof FxЛента         ) tabs = collectTabs( (FxЛента)value ); else
         if( value instanceof FxМодуль        ) tabs = collectTabs( (FxМодуль)value ); else
