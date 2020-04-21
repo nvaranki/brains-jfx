@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbФрагмент;
 import com.varankin.brains.db.DbЭлемент;
-import com.varankin.brains.db.КороткийКлюч;
 import com.varankin.brains.io.xml.Xml.XLinkShow;
 import com.varankin.brains.io.xml.Xml.XLinkActuate;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -11,12 +10,12 @@ import static com.varankin.brains.db.DbФрагмент.*;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
-public final class FxФрагмент extends FxЭлемент<DbФрагмент> implements FxКоммутируемый
+public final class FxФрагмент 
+        extends FxЭлемент<DbФрагмент> 
+        implements FxКоммутируемый, FxТиповой<FxКоммутируемый>
 {
-    static final КороткийКлюч КЛЮЧ_А_ЭКЗЕМПЛЯР = new КороткийКлюч( "экземпляр", null );
-
     private final ReadOnlyListProperty<FxСоединение> СОЕДИНЕНИЯ;
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final FxPropertyImpl<String> ПРОЦЕССОР;
@@ -36,7 +35,7 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
         ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     () -> элемент.ссылка(),     t -> элемент.ссылка( t )     );
         ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        () -> элемент.вид(),        t -> элемент.вид( t )        );
         РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, () -> элемент.реализация(), t -> элемент.реализация( t ) );
-        ЭКЗЕМПЛЯР  = new FxReadOnlyPropertyImpl<>( элемент, "экземпляр", КЛЮЧ_А_ЭКЗЕМПЛЯР, this::коммутируемый );
+        ЭКЗЕМПЛЯР  = new FxReadOnlyPropertyImpl<>( элемент, "экземпляр", FxТиповой.КЛЮЧ_А_ЭКЗЕМПЛЯР, this::коммутируемый );
     }
     
     @Override
@@ -55,21 +54,25 @@ public final class FxФрагмент extends FxЭлемент<DbФрагмен�
         return ПРОЦЕССОР;
     }
 
+    @Override
     public FxProperty<String> ссылка()
     {
         return ССЫЛКА;
     }
 
+    @Override
     public FxProperty<XLinkShow> вид()
     {
         return ВИД;
     }
 
+    @Override
     public FxProperty<XLinkActuate> реализация()
     {
         return РЕАЛИЗАЦИЯ;
     }
 
+    @Override
     public FxReadOnlyProperty<FxКоммутируемый> экземпляр()
     {
         return ЭКЗЕМПЛЯР;

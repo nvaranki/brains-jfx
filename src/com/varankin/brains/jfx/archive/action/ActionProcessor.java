@@ -50,7 +50,7 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 /**
  * Действия над элементами архива.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class ActionProcessor //TODO RT-37820
 {
@@ -322,7 +322,6 @@ public final class ActionProcessor //TODO RT-37820
         onActionNew( фабрикаБиблиотекаКлассJava, FxБиблиотека.class, e -> e.классы() );
         onActionNew( фабрикаПараметрКлассJava, FxПараметр.class, e -> e.классы() );
         onActionNew( фабрикаПроцессорКлассJava, FxПроцессор.class, e -> e.классы() );
-        onActionNew( фабрикаСигналКлассJava, FxСигнал.class, e -> e.классы() );
         onActionNew( фабрикаТочкаКлассJava, FxТочка.class, e -> e.классы() );
     }
 
@@ -357,7 +356,6 @@ public final class ActionProcessor //TODO RT-37820
         onActionNew( фабрикаПроцессорПараметр, FxПроцессор.class, e -> e.параметры() );
         onActionNew( фабрикаТочкаПараметр, FxТочка.class, e -> e.параметры() );
         onActionNew( фабрикаФрагментПараметр, FxФрагмент.class, e -> e.параметры() );
-        onActionNew( фабрикаСигналПараметр, FxСигнал.class, e -> e.параметры() );
         onActionNew( фабрикаПараметрПараметр, FxПараметр.class, e -> e.параметры() );
     }
 
