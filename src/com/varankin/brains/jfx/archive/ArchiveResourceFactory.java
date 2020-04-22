@@ -68,7 +68,7 @@ public final class ArchiveResourceFactory
     static String метка( FxАтрибутный элемент )
     {
         if( элемент.getSource() instanceof Именованный )
-            try( Транзакция т = элемент.getSource().транзакция() )
+            try( final Транзакция т = элемент.getSource().транзакция() )
             {
                 String текст = ((Именованный)элемент.getSource()).название();
                 т.завершить( true );

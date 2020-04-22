@@ -20,7 +20,7 @@ import static com.varankin.filter.НЕ.не;
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 class WebViewLoaderTask extends Task<String>
 {
@@ -42,7 +42,7 @@ class WebViewLoaderTask extends Task<String>
     @Override
     protected String call() throws Exception
     {
-        try( Транзакция т = элемент.транзакция() )
+        try( final Транзакция т = элемент.транзакция() )
         {
             т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.архив() );
             название = элемент.название();

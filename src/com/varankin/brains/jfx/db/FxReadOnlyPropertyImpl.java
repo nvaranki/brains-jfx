@@ -2,17 +2,14 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.КороткийКлюч;
-import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.db.Транзакция.Блокировка;
 import java.util.function.Supplier;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.concurrent.Task;
 
 /**
  * Свойство {@linkplain FxАтрибутный атрибутного узла базы данных} без возможности изменения. 
  * Процесс получения значения свойства происходит в рамках отдельной 
- * {@linkplain Транзакция транзакции}, с {@linkplain Блокировка блокировкой} 
+ * транзакции, с {@linkplain Блокировка блокировкой} 
  * по чтению.<\p>
  * 
  * <p>Свойство выполняет операцию получения значения в рамках текущей
@@ -22,7 +19,7 @@ import javafx.concurrent.Task;
  * которая выполняется в отдельной задаче. А конкурирующие блокировки групповой и данной 
  * операции могут привести к конфликту доступа.</p>
  *  
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  * 
  * @param <T> тип значения свойства.
  */
