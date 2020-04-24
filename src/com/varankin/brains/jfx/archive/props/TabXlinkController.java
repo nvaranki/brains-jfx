@@ -11,7 +11,9 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.util.Builder;
 
 /**
@@ -56,8 +58,14 @@ public final class TabXlinkController implements Builder<GridPane>
         actuate = new ChoiceBox<>();
         actuate.setFocusTraversable( true );
         
+        ColumnConstraints cc0 = new ColumnConstraints();
+        cc0.setMinWidth( 90 );
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow( Priority.ALWAYS );
+        
         GridPane pane = new GridPane();
         pane.setId( "xlink" );
+        pane.getColumnConstraints().addAll( cc0, cc1 );
         pane.add( new Label( LOGGER.text( "tab.fragment.href" ) ), 0, 0 );
         pane.add( href, 1, 0 );
         pane.add( new Label( LOGGER.text( "properties.tab.instruction.result" ) ), 0, 1 );
@@ -120,7 +128,7 @@ public final class TabXlinkController implements Builder<GridPane>
                 if( типовой instanceof FxЭлемент )
                 {
                     FxЭлемент<?> element = (FxЭлемент<?>)типовой;
-                    s = element.положение().getValue() + element.тип().getValue().название();
+                    s = element.положение().getValue();
                 }
             }
             path.setText( s );
