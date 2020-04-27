@@ -5,7 +5,6 @@ import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbЗаметка;
 import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.*;
-import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
 
@@ -18,9 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -41,7 +38,7 @@ import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
  * Выполняется отложенное построение структуры дерева, только на один уровень,
  * для экономии ресурсов и времени. 
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
 {
@@ -187,24 +184,8 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         protected Descr call() throws Exception
         {
             FxАтрибутный<?> элемент = AbstractTreeItem.this.getValue();
-            String метка = метка( элемент.тип().getValue() ); // нельзя в StringBinding!
             Descr d = new Descr();
-            Property<String> fxp = 
-                    элемент instanceof FxЭлемент ? 
-                    ((FxЭлемент<?>)элемент).название() : 
-                     элемент instanceof FxNameSpace ? 
-                    ((FxNameSpace)элемент).название() : 
-                     элемент instanceof FxПакет ? 
-                    ((FxПакет)элемент).название() : 
-                    элемент instanceof FxАрхив ? 
-                    ((FxАрхив)элемент).название() : 
-                    new SimpleStringProperty( метка );
-            d.name = Bindings.createStringBinding( () -> 
-            {
-                // замена пустого названия на название типа
-                String название = fxp.getValue();
-                return название == null || название.trim().isEmpty() ? метка : название;
-            }, fxp );
+            d.name = меткаУниверсальная( элемент );
             d.icon = марка( элемент );
             d.tooltip = подсказка( элемент );
             return d;

@@ -12,6 +12,10 @@ import javafx.scene.control.Tooltip;
 import static com.varankin.brains.io.xml.Xml.*;
 import static com.varankin.brains.io.xml.XmlBrains.*;
 import static com.varankin.brains.io.xml.XmlSvg.*;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Фабрика ресурсов для навигатора по проектам.
@@ -86,6 +90,32 @@ public final class ArchiveResourceFactory
     {
         String ключ = ключМеткиКоллекции.get( тип );
         return RB.containsKey( ключ ) ? RB.getString( ключ ) : тип;
+    }
+    
+    static StringBinding меткаУниверсальная( FxАтрибутный<?> элемент )
+    {
+        String метка = метка( элемент.тип().getValue() ); // нельзя в StringBinding!
+        Property<String> fxp = название( элемент, метка );
+        return Bindings.createStringBinding( () -> 
+            {
+                // замена пустого названия на название типа
+                String название = fxp.getValue();
+                return название == null || название.trim().isEmpty() ? метка : название;
+            }, fxp );
+    }
+    
+    public static Property<String> название( FxАтрибутный<?> элемент, String замена )
+    {
+        return 
+                элемент instanceof FxЭлемент ? 
+                ((FxЭлемент<?>)элемент).название() : 
+                 элемент instanceof FxNameSpace ? 
+                ((FxNameSpace)элемент).название() : 
+                 элемент instanceof FxПакет ? 
+                ((FxПакет)элемент).название() : 
+                элемент instanceof FxАрхив ? 
+                ((FxАрхив)элемент).название() : 
+                new SimpleStringProperty( замена );
     }
 
     static Tooltip подсказка( DbАтрибутный элемент )

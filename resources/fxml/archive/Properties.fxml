@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane
-    fx:controller="com.varankin.brains.jfx.archive.PropertiesController"
+    fx:controller="com.varankin.brains.jfx.archive.props.PropertiesController"
     fx:id="pane" 
     styleClass="properties"
     xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">

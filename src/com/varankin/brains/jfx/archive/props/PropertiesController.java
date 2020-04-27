@@ -1,7 +1,10 @@
 package com.varankin.brains.jfx.archive.props;
 
+import com.varankin.brains.jfx.db.*;
 import com.varankin.util.LoggerX;
+
 import java.util.ResourceBundle;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,10 +15,12 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Builder;
 
+import com.varankin.brains.jfx.archive.ArchiveResourceFactory;
+
 /**
  * FXML-контроллер диалога свойств элемента архива.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public class PropertiesController implements Builder<Parent>
 {
@@ -104,12 +109,27 @@ public class PropertiesController implements Builder<Parent>
         return titleProperty.getReadOnlyProperty();
     }
     
-    public void reset( Object value )
+    public void reset( FxАтрибутный<?> value )
     {
         if( value != null )
-            pane.getTabs().setAll( new PropertiesTabFactory().collectTabs( value ) ); // Object!!!
+        {
+            pane.getTabs().setAll( new PropertiesTabFactory().collectTabList( value ) );
+            String тип = ArchiveResourceFactory.метка( value.тип().getValue() );
+            Property<String> название = ArchiveResourceFactory.название( value, "" );
+            titleProperty.bind( Bindings.createStringBinding( () ->
+            {
+                return String.format(
+                    RESOURCE_BUNDLE.getString( "properties.title" ),
+                    тип, название.getValue() );
+            }, 
+                    название ) );
+        }
         else
+        {
             pane.getTabs().forEach( t -> t.getOnCloseRequest().handle( null ) );
+            titleProperty.unbind();
+            titleProperty.setValue( null );
+        }
     }
     
 }

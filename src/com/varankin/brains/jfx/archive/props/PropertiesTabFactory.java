@@ -323,7 +323,7 @@ final class PropertiesTabFactory
         return tabs;
     }
     
-    List<Tab> collectTabs( Object value )
+    List<Tab> collectTabList( FxАтрибутный<?> value )
     {
         List<Tab> tabs;
         if( value instanceof FxNameSpace     ) tabs = collectTabs( (FxNameSpace)value ); else
