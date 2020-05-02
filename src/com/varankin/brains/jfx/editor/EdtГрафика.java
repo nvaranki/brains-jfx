@@ -5,13 +5,15 @@ import com.varankin.brains.jfx.db.*;
 import java.util.List;
 import java.util.Queue;
 import javafx.scene.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
 import static com.varankin.brains.io.xml.XmlSvg.*;
+import javafx.scene.transform.Translate;
 
 /**
  *
- * @author Николай
+ * @author &copy; 2020 Николай Варанкин
  */
 class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
 {
@@ -118,6 +120,36 @@ class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
                     s = ЭЛЕМЕНТ.toSvgString( SVG_ATTR_FILL, null );
                     if( s != null ) ellipse.setFill( toSvgColor( s ) );
                     group.getChildren().add( ellipse );
+                    break;
+                    
+                case SVG_ELEMENT_SYMBOL:
+                    group.setVisible( false );
+                    break;
+                    
+                case SVG_ELEMENT_USE:
+                    FxГрафика экземпляр = ЭЛЕМЕНТ.экземпляр().getValue();
+                    if( экземпляр != null )
+                    {
+                        Node use = EdtФабрика.getInstance().создать( экземпляр ).загрузить( false );
+                        use.setVisible( true ); // see above for SVG_ELEMENT_USE
+                        use.getTransforms().add( new Translate( 
+                                ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_X, 0d ), 
+                                ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_Y, 0d ) ));
+                        group.getChildren().add( use );
+                    }
+                    else if( ЭЛЕМЕНТ.ссылка().getValue() != null )
+                    {
+                        Rectangle use = new Rectangle();
+                        use.setX( ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_X, 0d ) - 2d );
+                        use.setY( ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_Y, 0d ) - 2d );
+                        use.setWidth( 4d );
+                        use.setHeight( 4d );
+                        use.setFill( Color.CYAN );
+                        use.setStroke( Color.BLUEVIOLET );
+                        use.setStrokeType( StrokeType.OUTSIDE );
+                        use.setStrokeWidth( 1d );
+                        group.getChildren().add( use );
+                    }
                     break;
                     
                 default:

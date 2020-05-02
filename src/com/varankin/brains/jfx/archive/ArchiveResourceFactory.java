@@ -187,7 +187,9 @@ public final class ArchiveResourceFactory
             { SVG_ELEMENT_POLYGON,  "svg."+SVG_ELEMENT_POLYGON,  "preview.png", "графики", },
             { SVG_ELEMENT_POLYLINE, "svg."+SVG_ELEMENT_POLYLINE, "preview.png", "графики", },
             { SVG_ELEMENT_RECT,     "svg."+SVG_ELEMENT_RECT,     "preview.png", "графики", },
+            { SVG_ELEMENT_SYMBOL,   "svg."+SVG_ELEMENT_SYMBOL,   "preview.png", "графики", },
             { SVG_ELEMENT_TEXT,     "svg."+SVG_ELEMENT_TEXT,     "preview.png", "графики", },
+            { SVG_ELEMENT_USE,      "svg."+SVG_ELEMENT_USE,      "preview.png", "графики", },
         };
 
         ключМеткиЭлемента = new HashMap<>();

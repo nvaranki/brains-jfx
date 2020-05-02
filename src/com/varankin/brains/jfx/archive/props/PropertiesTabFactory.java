@@ -1,5 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
+import static com.varankin.brains.io.xml.XmlSvg.SVG_ELEMENT_USE;
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.util.LoggerX;
@@ -66,8 +67,9 @@ final class PropertiesTabFactory
     List<Tab> collectTabs( FxГрафика value )
     {
         List<Tab> tabs = new ArrayList<>();
-        //TODO
-        tabs.addAll( collectTabs( (FxУзел)value ) );
+        tabs.addAll( SVG_ELEMENT_USE.equals( value.тип().getValue().название() ) ?
+                collectTabs( (FxТиповой)value ) :
+                collectTabs( (FxУзел)value ) );
         return tabs;
     }
     
@@ -283,7 +285,10 @@ final class PropertiesTabFactory
     
     List<Tab> collectTabs( FxТиповой value )
     {
-        List<Tab> tabs = new ArrayList<>( collectTabs( (FxЭлемент)value ) );
+        List<Tab> tabs = new ArrayList<>( 
+                value instanceof FxЭлемент ? collectTabs( (FxЭлемент)value ) :
+                value instanceof FxУзел    ? collectTabs( (FxУзел)value ) :
+                                             collectTabs( (FxАтрибутный)value ) );
         BuilderFX<? extends Node,TabXlinkController> builder = new BuilderFX<>();
         builder.init( TabXlinkController.class,
                 TabXlinkController.RESOURCE_FXML, TabXlinkController.RESOURCE_BUNDLE );

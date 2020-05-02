@@ -2,8 +2,8 @@ package com.varankin.brains.jfx.archive.props;
 
 import com.varankin.brains.io.xml.Xml.XLinkShow;
 import com.varankin.brains.io.xml.Xml.XLinkActuate;
+import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxТиповой;
-import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;
 
 import java.util.ResourceBundle;
@@ -125,9 +125,9 @@ public final class TabXlinkController implements Builder<GridPane>
             if( образец != null )
             {
                 Object типовой = образец.экземпляр().getValue();
-                if( типовой instanceof FxЭлемент )
+                if( типовой instanceof FxАтрибутный )
                 {
-                    FxЭлемент<?> element = (FxЭлемент<?>)типовой;
+                    FxАтрибутный<?> element = (FxАтрибутный<?>)типовой;
                     s = element.положение().getValue();
                 }
             }

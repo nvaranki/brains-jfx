@@ -2,27 +2,70 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbГрафика;
+import com.varankin.brains.io.xml.Xml;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.paint.Color;
 
+import static com.varankin.brains.db.Типовой.КЛЮЧ_А_ВИД;
+import static com.varankin.brains.db.Типовой.КЛЮЧ_А_РЕАЛИЗАЦИЯ;
+import static com.varankin.brains.db.Типовой.КЛЮЧ_А_ССЫЛКА;
 import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.brains.jfx.db.FxТиповой.КЛЮЧ_А_ЭКЗЕМПЛЯР;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
-public final class FxГрафика extends FxУзел<DbГрафика>
+public final class FxГрафика extends FxУзел<DbГрафика> implements FxТиповой<FxГрафика>
 {
+    private final FxPropertyImpl<String> ССЫЛКА;
+    private final FxPropertyImpl<Xml.XLinkShow> ВИД;
+    private final FxPropertyImpl<Xml.XLinkActuate> РЕАЛИЗАЦИЯ;
+    private final FxReadOnlyPropertyImpl<FxГрафика> ЭКЗЕМПЛЯР;
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
 
-    public FxГрафика( DbГрафика графика )
+    public FxГрафика( DbГрафика элемент )
     {
-        super( графика );
-        ГРАФИКИ = buildReadOnlyListProperty( графика, "графики", 
-            new FxList<>( графика.графики(), графика, e -> new FxГрафика( e ), e -> e.getSource() ) );
+        super( элемент );
+        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     () -> элемент.ссылка(),     t -> элемент.ссылка( t )     );
+        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        () -> элемент.вид(),        t -> элемент.вид( t )        );
+        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, () -> элемент.реализация(), t -> элемент.реализация( t ) );
+        ЭКЗЕМПЛЯР  = new FxReadOnlyPropertyImpl<>( элемент, "экземпляр", КЛЮЧ_А_ЭКЗЕМПЛЯР, this::типовой );
+        ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
+            new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
+    }
+
+    private FxГрафика типовой()
+    {
+        DbГрафика экземпляр = getSource().экземпляр();
+        return экземпляр != null ? FxФабрика.getInstance().создать( экземпляр ) : null;
+    }
+
+    @Override
+    public FxProperty<String> ссылка()
+    {
+        return ССЫЛКА;
+    }
+
+    @Override
+    public FxProperty<Xml.XLinkShow> вид()
+    {
+        return ВИД;
+    }
+
+    @Override
+    public FxProperty<Xml.XLinkActuate> реализация()
+    {
+        return РЕАЛИЗАЦИЯ;
+    }
+
+    @Override
+    public FxReadOnlyProperty<FxГрафика> экземпляр()
+    {
+        return ЭКЗЕМПЛЯР;
     }
 
     public ReadOnlyListProperty<FxГрафика> графики()

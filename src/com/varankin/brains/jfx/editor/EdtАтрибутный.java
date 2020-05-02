@@ -19,7 +19,7 @@ import javafx.scene.transform.Transform;
 
 /**
  *
- * @author Николай
+ * @author &copy; 2020 Николай Варанкин
  */
 abstract class EdtАтрибутный<D extends DbАтрибутный, T extends FxАтрибутный<D>> 
         implements NodeBuilder
@@ -41,6 +41,7 @@ abstract class EdtАтрибутный<D extends DbАтрибутный, T exten
     <T extends Node> T загрузить( T node, boolean основной )
     {
         node.setUserData( ЭЛЕМЕНТ );
+        node.setManaged( false );
         if( !основной ) 
             node.getTransforms().addAll( getTransformList() );
         return node;

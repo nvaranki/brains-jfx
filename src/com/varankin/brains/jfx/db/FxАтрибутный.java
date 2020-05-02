@@ -27,13 +27,14 @@ import javafx.collections.ObservableList;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  * @param <T> тип вложенного элемента.
  */
 public class FxАтрибутный<T extends DbАтрибутный>
 {
     static final КороткийКлюч КЛЮЧ_А_ТИП = new КороткийКлюч( "тип", null );
     static final КороткийКлюч КЛЮЧ_А_ВОССТАНОВИМЫЙ = new КороткийКлюч( "восстановимый", null );
+    static final КороткийКлюч КЛЮЧ_А_ПОЛОЖЕНИЕ = new КороткийКлюч( "положение", null );
 
     private final T ЭЛЕМЕНТ;
     private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
@@ -41,6 +42,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
     private final ReadOnlyListWrapper<FxReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
     private final FxReadOnlyPropertyImpl<DbАтрибутный.Ключ> ТИП;
     private final FxReadOnlyPropertyImpl<Boolean> ВОССТАНОВИМЫЙ;
+    private final FxReadOnlyPropertyImpl<String> ПОЛОЖЕНИЕ;
     private final Map<КороткийКлюч,FxReadOnlyProperty> AM = new HashMap<>();
     private boolean атрибутыПрочиеЗагружены, атрибутыОсновныеЗагружены, ci;
 
@@ -53,6 +55,12 @@ public class FxАтрибутный<T extends DbАтрибутный>
         ТИП = new FxReadOnlyPropertyImpl<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
         ВОССТАНОВИМЫЙ = new FxReadOnlyPropertyImpl<>( элемент, "восстановимый", 
                 КЛЮЧ_А_ВОССТАНОВИМЫЙ, () -> элемент.восстановимый() );
+        ПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "положение", КЛЮЧ_А_ПОЛОЖЕНИЕ, () -> 
+        {
+            String разделитель = "/";
+            String значение = элемент.положение( разделитель ); // "/у0/у1/.../уN/название"
+            return значение.isEmpty() ? разделитель : значение;
+        } );
     }
     
     public final T getSource()
@@ -73,6 +81,11 @@ public class FxАтрибутный<T extends DbАтрибутный>
     public final FxReadOnlyProperty<Boolean> восстановимый()
     {
         return ВОССТАНОВИМЫЙ;
+    }
+    
+    public final FxReadOnlyProperty<String> положение()
+    {
+        return ПОЛОЖЕНИЕ;
     }
     
     public final <E,T extends FxReadOnlyProperty<E>> 
