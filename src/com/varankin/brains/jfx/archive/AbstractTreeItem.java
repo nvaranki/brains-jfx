@@ -1,9 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.db.DbАтрибутный;
 import com.varankin.brains.db.DbЗаметка;
-import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
@@ -32,6 +30,7 @@ import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
 
 import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
+import java.util.Arrays;
 
 /**
  * Основа модификации класса {@link TreeItem} для навигатора по проектам. 
@@ -343,9 +342,48 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
         }
     }
     
-    protected static final Comparator<TreeItem<FxАтрибутный>> TREE_ITEM_COMPARATOR = 
-            Comparator.comparing( (TreeItem<FxАтрибутный> ti) -> ti.getValue() instanceof Составной ? -1 : +1 )
-            .thenComparing( ti -> ФабрикаНазваний.индекс( ti.getValue() ) )
+    public static final List<Class> КЛАССЫ = Arrays.asList
+    (
+        FxАрхив        .class,
+        FxПакет        .class,
+        FxNameSpace    .class,
+        FxБиблиотека   .class,
+        FxПроект       .class,
+            
+        FxМодуль       .class,
+        FxРасчет       .class,
+        FxПоле         .class,
+        FxЛента        .class,
+        
+        FxСоединение   .class,
+        FxКонтакт      .class,
+        FxТочка        .class,
+        FxФрагмент     .class,
+        FxПроцессор    .class,
+        FxПараметр     .class,
+        FxКлассJava    .class,
+        FxТекстовыйБлок.class,
+        FxСенсор       .class,
+        FxСигнал       .class,
+        
+        FxИнструкция   .class,
+        FxЗаметка      .class,
+        FxГрафика      .class,
+        
+        FxЭлемент      .class,
+        
+        FxМусор        .class
+    );
+    
+    protected static final Comparator<FxАтрибутный> FXA_COMPARATOR_CLASS = Comparator
+            .comparing( a -> a != null ? КЛАССЫ.indexOf( a.getClass() ) : Integer.MAX_VALUE );
+    
+    protected static final Comparator<FxАтрибутный> FXA_COMPARATOR_NAME = Comparator
+            .comparing( a -> a instanceof FxЭлемент ? ((FxЭлемент<?>)a).название().getValue() : "" );
+    
+    protected static final Comparator<TreeItem<FxАтрибутный>> TREE_ITEM_COMPARATOR = Comparator
+            .comparing( TreeItem<FxАтрибутный>::getValue, 
+                    FXA_COMPARATOR_CLASS.thenComparing( FXA_COMPARATOR_NAME ) )
             .thenComparing( TreeItem::toString );
 
     //</editor-fold>
