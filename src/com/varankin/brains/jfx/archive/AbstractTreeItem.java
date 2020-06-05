@@ -379,12 +379,17 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
             .comparing( a -> a != null ? КЛАССЫ.indexOf( a.getClass() ) : Integer.MAX_VALUE );
     
     protected static final Comparator<FxАтрибутный> FXA_COMPARATOR_NAME = Comparator
-            .comparing( a -> a instanceof FxЭлемент ? ((FxЭлемент<?>)a).название().getValue() : "" );
+            .comparing( a -> 
+                    a instanceof FxЭлемент ?   nn(((FxЭлемент<?>)a).название().getValue(), "" ) : 
+                    a instanceof FxNameSpace ? nn(((FxNameSpace )a).название().getValue(), "" ) : 
+                    a instanceof FxПакет   ?   nn(((FxПакет     )a).название().getValue(), "" ) : "" );
     
     protected static final Comparator<TreeItem<FxАтрибутный>> TREE_ITEM_COMPARATOR = Comparator
             .comparing( TreeItem<FxАтрибутный>::getValue, 
                     FXA_COMPARATOR_CLASS.thenComparing( FXA_COMPARATOR_NAME ) )
             .thenComparing( TreeItem::toString );
+
+    static <T> T nn( T t, T v ) { return t != null ? t : v; }
 
     //</editor-fold>
     
