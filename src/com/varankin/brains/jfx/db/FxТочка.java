@@ -25,7 +25,7 @@ public final class FxТочка
     private final FxReadOnlyPropertyImpl<FxТочка> ЭКЗЕМПЛЯР;
     private final FxPropertyImpl<Integer> ИНДЕКС;
     private final FxPropertyImpl<Boolean> ДАТЧИК;
-    private final FxPropertyImpl<Float> ПОРОГ;
+    @Deprecated private final FxPropertyImpl<Float> ПОРОГ;
     private final FxPropertyImpl<String> КОНТАКТ;
 
     public FxТочка( DbТочка элемент ) 
@@ -96,6 +96,7 @@ public final class FxТочка
         return ДАТЧИК;
     }
     
+    @Deprecated 
     public FxProperty<Float> порог()
     {
         return ПОРОГ;
