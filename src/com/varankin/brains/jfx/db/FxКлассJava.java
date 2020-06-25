@@ -13,20 +13,20 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 {
     static final КороткийКлюч КЛЮЧ_А_КОД = new КороткийКлюч( "код", null );
 
-    private final FxPropertyImpl<Boolean> ОСНОВНОЙ;
+    private final FxPropertyImpl<Назначение> НАЗНАЧЕНИЕ;
     private final FxPropertyImpl<String> КОД;
 
     public FxКлассJava( DbКлассJava элемент ) 
     {
         super( элемент );
-        ОСНОВНОЙ = new FxPropertyImpl<>( элемент, "основной", КЛЮЧ_А_ОСНОВНОЙ, () -> элемент.основной(), t -> элемент.основной( t ) );
-        КОД      = new FxPropertyImpl<>( элемент, "код",      КЛЮЧ_А_КОД,      () -> элемент.код(),      t -> элемент.код( t )      );
+        НАЗНАЧЕНИЕ = new FxPropertyImpl<>( элемент, "назначение", КЛЮЧ_А_НАЗНАЧЕНИЕ, () -> элемент.назначение(), t -> элемент.назначение( t ) );
+        КОД        = new FxPropertyImpl<>( элемент, "код",        КЛЮЧ_А_КОД,        () -> элемент.код(),        t -> элемент.код( t )        );
     }
     
     
-    public FxProperty<Boolean> основной()
+    public FxProperty<Назначение> назначение()
     {
-        return ОСНОВНОЙ;
+        return НАЗНАЧЕНИЕ;
     }
     
     public FxProperty<String> код()
