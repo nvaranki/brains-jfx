@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     Description: Панель установки параметров класса Java.
-    Author     : (c) 2014 Николай Варанкин
+    Author     : (c) 2020 Николай Варанкин
 -->
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -12,7 +12,7 @@
 
 <GridPane 
     xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
-    fx:controller="com.varankin.brains.jfx.archive.TabClassJavaController" 
+    fx:controller="com.varankin.brains.jfx.archive.props.TabClassJavaController" 
     styleClass="tab-class-java"
     >
     
@@ -45,12 +45,12 @@
             GridPane.rowIndex="0"  
         />
         <Label 
-            text="%tab.class.main" 
+            text="%tab.class.purpose" 
             GridPane.columnIndex="0" 
             GridPane.rowIndex="1" 
         />
-        <CheckBox
-            fx:id="main"
+        <ChoiceBox
+            fx:id="purpose"
             focusTraversable="true"      
             GridPane.columnIndex="1" 
             GridPane.rowIndex="1"  
@@ -61,6 +61,7 @@
             GridPane.rowIndex="2" 
         />
         <Button 
+            fx:id="compile"
             text="%properties.tab.compile" 
             onAction="#compile"
             GridPane.halignment="RIGHT"

@@ -1,6 +1,7 @@
 package com.varankin.brains.jfx.archive.props;
 
 import com.varankin.brains.appl.NativeJavaClasses;
+import com.varankin.brains.db.DbКлассJava.Назначение;
 import com.varankin.brains.jfx.db.FxКлассJava;
 import com.varankin.util.LoggerX;
 
@@ -22,7 +23,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели установки параметров класса Java.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public class TabClassJavaController implements Builder<GridPane>
 {
@@ -34,11 +35,11 @@ public class TabClassJavaController implements Builder<GridPane>
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
     private FxКлассJava класс;
-    private IndeterminateHelper mainHelper;
     
     @FXML private TextField name;
-    @FXML private CheckBox main;
+    @FXML private ChoiceBox<Назначение> purpose;
     @FXML private TextArea code;
+    @FXML private Button compile;
 
     /**
      * Создает панель установки параметров класса Java.
@@ -53,16 +54,15 @@ public class TabClassJavaController implements Builder<GridPane>
         name.setId( "name" );
         name.setFocusTraversable( true );
         
-        main = new CheckBox();
-        main.setId( "main" );
-        main.setFocusTraversable( true );
-        main.setAllowIndeterminate( true );
+        purpose = new ChoiceBox<>();
+        purpose.setId( "purpose" );
+        purpose.setFocusTraversable( true );
         
         code = new TextArea();
         code.setId( "code" );
         code.setFocusTraversable( true );
         
-        Button compile = new Button( LOGGER.text( "properties.tab.compile" ) );
+        compile = new Button( LOGGER.text( "properties.tab.compile" ) );
         compile.setOnAction( this::compile );
         
         ColumnConstraints cc0 = new ColumnConstraints();
@@ -81,8 +81,8 @@ public class TabClassJavaController implements Builder<GridPane>
         pane.getRowConstraints().addAll( rc0, rc1, rc2, rc3 );
         pane.add( new Label( LOGGER.text( "tab.class.name" ) ), 0, 0 );
         pane.add( name, 1, 0 );
-        pane.add( new Label( LOGGER.text( "tab.class.main" ) ), 0, 1 );
-        pane.add( main, 1, 1 );
+        pane.add( new Label( LOGGER.text( "tab.class.purpose" ) ), 0, 1 );
+        pane.add( purpose, 1, 1 );
         pane.add( new Label( LOGGER.text( "tab.class.code" ) ), 0, 2 );
         pane.add( compile, 1, 2 );
         pane.add( code, 0, 3, 2, 1 );
@@ -102,6 +102,12 @@ public class TabClassJavaController implements Builder<GridPane>
         code.disableProperty().bind( Bindings.createBooleanBinding( 
                 () -> name.getText() != null && isNativeClass( name.getText().trim() ),
                 name.textProperty() ) );
+        purpose.getItems().addAll( Назначение.values() );
+        purpose.getItems().add( 0, null );
+        purpose.setConverter( new StringToEnumConverter<>( 
+                Назначение.values(), "properties.tab.class.purpose." ) );
+        purpose.disableProperty().bind( code.disableProperty() );
+        compile.disableProperty().bind( code.disableProperty() );
     }
     
     @FXML
@@ -117,15 +123,13 @@ public class TabClassJavaController implements Builder<GridPane>
         {
             name.textProperty().unbindBidirectional( this.класс.название() );
             code.textProperty().unbindBidirectional( this.класс.код() );
-            main.selectedProperty().unbindBidirectional( this.класс.основной() );
-            mainHelper.removeListeners();
+            purpose.valueProperty().unbindBidirectional( this.класс.назначение() );
         }
         if( класс != null )
         {
             name.textProperty().bindBidirectional( класс.название() );
             code.textProperty().bindBidirectional( класс.код() );
-            main.selectedProperty().bindBidirectional( класс.основной() );
-            mainHelper = new IndeterminateHelper( main.indeterminateProperty(), класс.основной() );
+            purpose.valueProperty().bindBidirectional( класс.назначение() );
         }
         this.класс = класс;
     }
