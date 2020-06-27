@@ -7,13 +7,14 @@ import static com.varankin.brains.db.DbПараметр.*;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class FxПараметр extends FxЭлемент<DbПараметр>
 {
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
     private final FxPropertyImpl<String> ИНДЕКС;
+    private final FxPropertyImpl<Integer> ПРИОРИТЕТ;
 
     public FxПараметр( DbПараметр элемент ) 
     {
@@ -23,6 +24,7 @@ public final class FxПараметр extends FxЭлемент<DbПарамет�
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
             new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
         ИНДЕКС = new FxPropertyImpl<>( элемент, "индекс", КЛЮЧ_А_ИНДЕКС, () -> элемент.индекс(), (t) -> элемент.индекс( t ) );
+        ПРИОРИТЕТ = new FxPropertyImpl<>( элемент, "приоритет", КЛЮЧ_А_ПРИОРИТЕТ, () -> элемент.приоритет(), (t) -> элемент.приоритет( t ) );
     }
     
     public ReadOnlyListProperty<FxПараметр> параметры()
@@ -38,6 +40,11 @@ public final class FxПараметр extends FxЭлемент<DbПарамет�
     public FxProperty<String> индекс()
     {
         return ИНДЕКС;
+    }
+
+    public FxProperty<Integer> приоритет()
+    {
+        return ПРИОРИТЕТ;
     }
 
     @Override

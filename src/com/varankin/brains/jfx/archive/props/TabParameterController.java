@@ -19,17 +19,20 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Builder;
+import javafx.util.StringConverter;
 
 /**
  * FXML-контроллер панели выбора и установки параметра.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class TabParameterController implements Builder<GridPane>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TabParameterController.class );
     private static final String RESOURCE_CSS  = "/fxml/archive/TabParameter.css";
     private static final String CSS_CLASS = "properties-tab-parameter";
+    private static final StringConverter<Integer> CONVERTER_INTEGER 
+            = new ToStringConverter<>( s -> Integer.valueOf( s ) );
 
     static final String RESOURCE_FXML = "/fxml/archive/TabParameter.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
@@ -39,6 +42,7 @@ public final class TabParameterController implements Builder<GridPane>
     private FxПараметр параметр;
     
     @FXML private TextField index;
+    @FXML private TextField priority;
     @FXML private TextArea preview;
 
     /**
@@ -53,6 +57,9 @@ public final class TabParameterController implements Builder<GridPane>
         index = new TextField();
         index.setId( "index" );
         
+        priority = new TextField();
+        priority.setId( "priority" );
+        
         preview = new TextArea();
         preview.setId( "preview" );
         preview.setEditable( false );
@@ -63,9 +70,11 @@ public final class TabParameterController implements Builder<GridPane>
         GridPane pane = new GridPane();
         pane.add( new Label( LOGGER.text( "tab.parameter.index" ) ), 0, 0 );
         pane.add( index, 1, 0 );
-        pane.add( new Label( LOGGER.text( "tab.parameter.preview" ) ), 0, 1 );
-        pane.add( refresh, 1, 1 );
-        pane.add( preview, 0, 2, 2, 1 );
+        pane.add( new Label( LOGGER.text( "tab.parameter.priority" ) ), 0, 1 );
+        pane.add( priority, 1, 1 );
+        pane.add( new Label( LOGGER.text( "tab.parameter.preview" ) ), 0, 2 );
+        pane.add( refresh, 1, 2 );
+        pane.add( preview, 0, 3, 2, 1 );
         GridPane.setHalignment( refresh, HPos.RIGHT );
         
         pane.getStyleClass().add( CSS_CLASS );
@@ -105,11 +114,13 @@ public final class TabParameterController implements Builder<GridPane>
         {
             index.textProperty().removeListener( CL_INDEX );
             index.textProperty().unbindBidirectional( this.параметр.индекс() );
+            priority.textProperty().unbindBidirectional( this.параметр.приоритет() );
         }
         if( параметр != null )
         {
             index.textProperty().addListener( CL_INDEX );
             index.textProperty().bindBidirectional( параметр.индекс() );
+            priority.textProperty().bindBidirectional( параметр.приоритет(), CONVERTER_INTEGER );
         }
         this.параметр = параметр;
     }
