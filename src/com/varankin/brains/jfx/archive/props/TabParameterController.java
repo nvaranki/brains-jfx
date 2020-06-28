@@ -132,8 +132,7 @@ public final class TabParameterController implements Builder<GridPane>
         if( индекс != null )
             sb.append( индекс ).append( " -> " );
         if( элемент.параметры().isEmpty() )
-            for( DbТекстовыйБлок блок : элемент.тексты() )
-                sb.append( блок.текст() );
+            sb.append( DbТекстовыйБлок.текст( элемент.тексты(), "\n" ) );
         else
         {
             sb.append( "{" );
