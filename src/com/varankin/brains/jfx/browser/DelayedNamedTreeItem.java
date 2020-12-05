@@ -8,7 +8,7 @@ import com.varankin.brains.factory.Составной;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.characteristic.Наблюдаемый;
 import com.varankin.characteristic.Наблюдатель;
-import com.varankin.characteristic.Свойственный;
+import com.varankin.characteristic.Полисвойственный;
 import com.varankin.characteristic.Свойство;
 
 import java.util.Collection;
@@ -148,7 +148,7 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
     {
         return (Stream)Collections.singleton( элемент ).stream()
                 .filter( ФИЛЬТР_СВОЙСТВЕННЫЙ )
-                .map( ТИП_СВОЙСТВЕННЫЙ.andThen( Свойственный::свойства )
+                .map( ТИП_СВОЙСТВЕННЫЙ.andThen( Полисвойственный::свойства )
                         .andThen( э -> э.свойство( НаблюдаемыеСвойства.СОСТОЯНИЕ ) ) )
                 .filter(  э -> э != null );
     }
@@ -170,12 +170,12 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
     private final static Predicate<Object> ФИЛЬТР_ЭЛЕМЕНТ = o -> o instanceof Элемент;
     private final static Predicate<Object> ФИЛЬТР_СОСТАВНОЙ = o -> o instanceof Составной;
     private final static Predicate<Object> ФИЛЬТР_НАБЛЮДАЕМЫЙ = o -> o instanceof Наблюдаемый;
-    private final static Predicate<Object> ФИЛЬТР_СВОЙСТВЕННЫЙ = o -> o instanceof Свойственный;
+    private final static Predicate<Object> ФИЛЬТР_СВОЙСТВЕННЫЙ = o -> o instanceof Полисвойственный;
     
     private final static Function<Object,Элемент>      ТИП_ЭЛЕМЕНТ = o -> (Элемент)o;
     private final static Function<Object,Составной>    ТИП_СОСТАВНОЙ = o -> (Составной)o;
     private final static Function<Object,Наблюдаемый>  ТИП_НАБЛЮДАЕМЫЙ = o -> (Наблюдаемый)o;
-    private final static Function<Object,Свойственный> ТИП_СВОЙСТВЕННЫЙ = o -> (Свойственный)o;
+    private final static Function<Object,Полисвойственный> ТИП_СВОЙСТВЕННЫЙ = o -> (Полисвойственный)o;
     
     private final static Function<Составной,Stream<Collection<?>>> ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ
             = э -> э.состав().stream();

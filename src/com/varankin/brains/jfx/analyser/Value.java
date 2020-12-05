@@ -50,7 +50,7 @@ final class Value
     
     private Наблюдатель наблюдатель;
 
-    Value( Свойственный свойственный, String метка )
+    Value( Полисвойственный свойственный, String метка )
     {
         Collection<String> м = new LinkedHashSet<>();
         м.add( метка );
@@ -120,9 +120,9 @@ final class Value
         return patternProperty;
     }
     
-    private static List<RatedObservable> collect( Свойственный свойственный )
+    private static List<RatedObservable> collect( Полисвойственный свойственный )
     {
-        Свойственный.Каталог каталог = свойственный.свойства();
+        КаталогСвойств каталог = свойственный.свойства();
         return каталог.перечень().stream()
                 .filter( p -> p instanceof НаблюдаемоеСвойство ).map( p -> (НаблюдаемоеСвойство)p )
                 .map( p -> new RatedObservable( p, каталог, RESOURCE_BUNDLE ) )

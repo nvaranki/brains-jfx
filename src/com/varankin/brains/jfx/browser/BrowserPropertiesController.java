@@ -190,9 +190,9 @@ public final class BrowserPropertiesController implements Builder<Parent>
                 название = ((Именованный)элемент).название();
             title.setValue( String.format( RESOURCE_BUNDLE.getString( "properties.title" ), 
                     ФН.метка( элемент ), название ) );
-            if( элемент instanceof Свойственный )
+            if( элемент instanceof Полисвойственный )
             {
-                Свойственный.Каталог каталог = ((Свойственный)элемент).свойства();
+                КаталогСвойств каталог = ((Полисвойственный)элемент).свойства();
                 List<Свойство<?>> перечень = new ArrayList<>( каталог.перечень() );
                 перечень.remove( каталог.свойство( ПРОЦЕСС ) ); // неинформативный
                 List<String> pks = Arrays.asList( НАЗВАНИЕ, ТИП, ЗНАЧЕНИЕ, ВХОД, ПРИНЯТО, ВЫХОД, ПЕРЕДАНО );

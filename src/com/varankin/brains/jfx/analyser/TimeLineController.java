@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.browser.BrowserTreeCell;
-import com.varankin.characteristic.Свойственный;
+import com.varankin.characteristic.Полисвойственный;
 import com.varankin.util.LoggerX;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -154,7 +154,7 @@ public final class TimeLineController implements Builder<Pane>
     protected void onDragOver( DragEvent event )
     {
         Object gs = event.getGestureSource();
-        if( gs instanceof Node && ((Node)gs).getUserData() instanceof Свойственный )
+        if( gs instanceof Node && ((Node)gs).getUserData() instanceof Полисвойственный )
             event.acceptTransferModes( TransferMode.LINK );
         else 
             event.acceptTransferModes( TransferMode.NONE );
@@ -169,8 +169,8 @@ public final class TimeLineController implements Builder<Pane>
         {
             BrowserTreeCell btc = (BrowserTreeCell)gs;
             Object userData = btc.getUserData();
-            if( userData instanceof Свойственный )
-                Platform.runLater( () -> showValueOptions( new Value( (Свойственный)userData, btc.getText() ) ) );
+            if( userData instanceof Полисвойственный )
+                Platform.runLater( () -> showValueOptions( new Value( (Полисвойственный)userData, btc.getText() ) ) );
             event.setDropCompleted( true );
         }            
         else
