@@ -1,0 +1,10 @@
+/build/
+/build.idea/
+/dist/
+/gradle/
+/nbproject/build-impl.xml
+/nbproject/genfiles.properties
+/nbproject/private/
+/.idea/
+/.gradle/
+*.class
