@@ -38,9 +38,9 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         return new FxГрафика( элемент );
     }
     
-    public FxNameSpace создать( DbNameSpace элемент )
+    public FxЗона создать( DbЗона элемент )
     {
-        return new FxNameSpace( элемент );
+        return new FxЗона( элемент );
     }
     
     @Override
@@ -72,7 +72,7 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         if( элемент instanceof DbКлассJava     ) p = new FxКлассJava( (DbКлассJava)элемент ); else
         if( элемент instanceof DbМусор         ) p = new FxМусор( (DbМусор)элемент ); else
         if( элемент instanceof DbЭлемент       ) p = new FxЭлемент( (DbЭлемент)элемент ); else
-        if( элемент instanceof DbNameSpace     ) p = new FxNameSpace( (DbNameSpace)элемент ); else
+        if( элемент instanceof DbЗона          ) p = new FxЗона( (DbЗона)элемент ); else
         if( элемент instanceof DbГрафика       ) p = new FxГрафика( (DbГрафика)элемент ); else
         if( элемент instanceof DbЗаметка       ) p = new FxЗаметка( (DbЗаметка)элемент ); else
         if( элемент instanceof DbИнструкция    ) p = new FxИнструкция( (DbИнструкция)элемент ); else

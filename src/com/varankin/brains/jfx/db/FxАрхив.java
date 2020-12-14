@@ -19,7 +19,7 @@ import static com.varankin.brains.db.DbЭлемент.КЛЮЧ_А_НАЗВАНИ
 public final class FxАрхив extends FxАтрибутный<DbАрхив>
 {
     private final ReadOnlyListProperty<FxПакет> ПАКЕТЫ;
-    private final ReadOnlyListProperty<FxNameSpace> NAMESPACES;
+    private final ReadOnlyListProperty<FxЗона> NAMESPACES;
     private final ReadOnlyListProperty<FxМусор> МУСОР;
     private final FxReadOnlyPropertyImpl<String> РАСПОЛОЖЕНИЕ;
     private final FxReadOnlyPropertyImpl<Date> СОЗДАН, ИЗМЕНЕН;
@@ -31,7 +31,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         ПАКЕТЫ = buildReadOnlyListProperty( элемент, "пакеты", 
             new FxList<>( элемент.пакеты(), элемент, e -> new FxПакет( e ), e -> e.getSource() ) );
         NAMESPACES = buildReadOnlyListProperty( элемент, "namespaces", 
-            new FxList<>( элемент.namespaces(), элемент, e -> new FxNameSpace( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.namespaces(), элемент, e -> new FxЗона( e ), e -> e.getSource() ) );
         МУСОР = buildReadOnlyListProperty( элемент, "мусор", 
             new FxList<>( элемент.мусор(), элемент, e -> new FxМусор( e ), e -> e.getSource() ) );
         РАСПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "расположение", КЛЮЧ_А_РАСПОЛОЖЕНИЕ, () -> элемент.расположение() );
@@ -46,7 +46,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         return ПАКЕТЫ;
     }
     
-    public ReadOnlyListProperty<FxNameSpace> namespaces()
+    public ReadOnlyListProperty<FxЗона> namespaces()
     {
         return NAMESPACES;
     }
@@ -138,7 +138,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         return предок.выполнить( ОПЕРАТОР_ВЛОЖИТЬ, объект );
     }
 
-    public FxNameSpace определитьПространствоИмен( String uri, String префикс )
+    public FxЗона определитьПространствоИмен( String uri, String префикс )
     {
         return NAMESPACES.stream()
             .filter( ns -> ns.uri().getValue().equalsIgnoreCase( uri ) )
@@ -146,7 +146,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
             {
                 try( final Транзакция транзакция = getSource().транзакция() )
                 {
-                    FxNameSpace ns = FxФабрика.getInstance().создать( 
+                    FxЗона ns = FxФабрика.getInstance().создать( 
                         getSource().определитьПространствоИмен( uri, префикс ) );
                     транзакция.завершить( NAMESPACES.add( ns ) );
                     return ns;
@@ -166,9 +166,9 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
             результат = оператор.выполнить( (FxПакет)узел, пакеты() );
         else if( узел instanceof FxМусор )
             результат = оператор.выполнить( (FxМусор)узел, мусор() );
-        else if( узел instanceof FxNameSpace )
+        else if( узел instanceof FxЗона )
             //TODO TransactionFailureException: Transaction rolled back even if marked as successful
-            результат = оператор.выполнить( (FxNameSpace)узел, namespaces() );
+            результат = оператор.выполнить( (FxЗона)узел, namespaces() );
         else if( узел != null )
             throw new ClassCastException( узел.getClass().getName() );
         else 

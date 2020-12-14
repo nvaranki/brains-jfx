@@ -1,17 +1,17 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbNameSpace;
 import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.DbЗона;
 import java.util.List;
 
-import static com.varankin.brains.db.DbNameSpace.*;
+import static com.varankin.brains.db.DbЗона.*;
 import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
-public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
+public final class FxЗона extends FxАтрибутный<DbЗона>
 {
     static final КороткийКлюч КЛЮЧ_А_НАЗВАНИЕ  = new КороткийКлюч( "название",  XMLNS_BRAINS );
 
@@ -19,7 +19,7 @@ public final class FxNameSpace extends FxАтрибутный<DbNameSpace>
     private final FxPropertyImpl<String> НАЗВАНИЕ;
     private final FxPropertyImpl<String> URI;
 
-    FxNameSpace( DbNameSpace элемент ) 
+    FxЗона( DbЗона элемент ) 
     {
         super( элемент );
         //ВАРИАНТЫ = new FxPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );

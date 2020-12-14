@@ -346,7 +346,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
     (
         FxАрхив        .class,
         FxПакет        .class,
-        FxNameSpace    .class,
+        FxЗона         .class,
         FxБиблиотека   .class,
         FxПроект       .class,
             
@@ -381,7 +381,7 @@ abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
     protected static final Comparator<FxАтрибутный> FXA_COMPARATOR_NAME = Comparator
             .comparing( a -> 
                     a instanceof FxЭлемент ?   nn(((FxЭлемент<?>)a).название().getValue(), "" ) : 
-                    a instanceof FxNameSpace ? nn(((FxNameSpace )a).название().getValue(), "" ) : 
+                    a instanceof FxЗона    ?   nn(((FxЗона      )a).название().getValue(), "" ) : 
                     a instanceof FxПакет   ?   nn(((FxПакет     )a).название().getValue(), "" ) : "" );
     
     protected static final Comparator<TreeItem<FxАтрибутный>> TREE_ITEM_COMPARATOR = Comparator

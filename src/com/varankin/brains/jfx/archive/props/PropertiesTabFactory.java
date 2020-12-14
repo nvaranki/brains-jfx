@@ -18,7 +18,7 @@ final class PropertiesTabFactory
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( PropertiesTabFactory.class );
 
-    List<Tab> collectTabs( FxNameSpace value )
+    List<Tab> collectTabs( FxЗона value )
     {
         BuilderFX<? extends Node,TabNameSpaceController> builder = new BuilderFX<>();
         builder.init( TabNameSpaceController.class,
@@ -331,7 +331,7 @@ final class PropertiesTabFactory
     List<Tab> collectTabList( FxАтрибутный<?> value )
     {
         List<Tab> tabs;
-        if( value instanceof FxNameSpace     ) tabs = collectTabs( (FxNameSpace)value ); else
+        if( value instanceof FxЗона          ) tabs = collectTabs( (FxЗона)value ); else
         if( value instanceof FxАрхив         ) tabs = collectTabs( (FxАрхив)value ); else
         if( value instanceof FxБиблиотека    ) tabs = collectTabs( (FxБиблиотека)value ); else
         if( value instanceof FxГрафика       ) tabs = collectTabs( (FxГрафика)value ); else

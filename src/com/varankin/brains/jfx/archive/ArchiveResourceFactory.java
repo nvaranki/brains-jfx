@@ -109,8 +109,8 @@ public final class ArchiveResourceFactory
         return 
                 элемент instanceof FxЭлемент ? 
                 ((FxЭлемент<?>)элемент).название() : 
-                 элемент instanceof FxNameSpace ? 
-                ((FxNameSpace)элемент).название() : 
+                 элемент instanceof FxЗона ? 
+                ((FxЗона)элемент).название() : 
                  элемент instanceof FxПакет ? 
                 ((FxПакет)элемент).название() : 
                 элемент instanceof FxАрхив ? 
@@ -133,7 +133,7 @@ public final class ArchiveResourceFactory
     private static String тип( DbАтрибутный элемент, Map<String,String> карта )
     {
         String тип = элемент.тип().название();
-        if( элемент instanceof DbNameSpace )
+        if( элемент instanceof DbЗона )
             тип = XML_NS_TEMP;
         else if( элемент instanceof DbГрафика )
             тип = XML_GRAPHIC;
@@ -143,7 +143,7 @@ public final class ArchiveResourceFactory
     private static String тип( FxАтрибутный<?> элемент, Map<String,String> карта )
     {
         String тип = элемент.тип().getValue().название();
-        if( элемент instanceof FxNameSpace )
+        if( элемент instanceof FxЗона )
             тип = XML_NS_TEMP;
         else if( элемент instanceof FxГрафика )
             тип = XML_GRAPHIC;

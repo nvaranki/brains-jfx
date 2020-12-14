@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.jfx.db.FxNameSpace;
+import com.varankin.brains.jfx.db.FxЗона;
 import com.varankin.util.LoggerX;
 
 import java.util.ResourceBundle;
@@ -28,7 +28,7 @@ public final class TabNameSpaceController implements Builder<GridPane>
     static final String RESOURCE_FXML = "/fxml/archive/TabNameSpace.fxml";
     static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
-    private FxNameSpace xmlNameSpace;
+    private FxЗона xmlNameSpace;
     
     @FXML private TextField prefix;
     @FXML private TextField uri;
@@ -90,7 +90,7 @@ public final class TabNameSpaceController implements Builder<GridPane>
         variants.setItems( FXCollections.observableArrayList() ); //TODO
     }
     
-    void set( FxNameSpace xmlNameSpace )
+    void set( FxЗона xmlNameSpace )
     {
         if( this.xmlNameSpace != null )
         {

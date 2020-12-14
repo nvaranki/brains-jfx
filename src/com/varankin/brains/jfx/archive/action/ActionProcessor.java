@@ -104,7 +104,7 @@ public final class ActionProcessor //TODO RT-37820
     // фабрики создания дочерних элементов
     private static final Фабрика<FxАрхив,FxПакет> фабрикаАрхивПакет
             = архив -> (FxПакет)архив.создатьНовыйЭлемент( XmlBrains.XML_BRAINS, XmlBrains.XMLNS_BRAINS );
-    private static final Фабрика<FxАрхив,FxNameSpace> фабрикаАрхивNameSpace
+    private static final Фабрика<FxАрхив,FxЗона> фабрикаАрхивNameSpace
             = архив -> архив.определитьПространствоИмен( "протокол://сервер/путь", "префикс" );
     private static final Фабрика<FxМодуль,FxБиблиотека> фабрикаМодульБиблиотека
             = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlBrains.XML_LIBRARY, XmlBrains.XMLNS_BRAINS );
@@ -716,7 +716,7 @@ public final class ActionProcessor //TODO RT-37820
         if( child instanceof FxИнструкция    ) disable = !pNewИнструкция.test( owner ); else
         if( child instanceof FxКлассJava     ) disable = !pNewКлассJava.test( owner ); else
         if( child instanceof FxТекстовыйБлок ) disable = !pNewТекстовыйБлок.test( owner ); else
-        if( child instanceof FxNameSpace     ) disable = !pNewXmlNameSpace.test( owner ); else
+        if( child instanceof FxЗона          ) disable = !pNewXmlNameSpace.test( owner ); else
             disable = true;
         return disable;
     }
