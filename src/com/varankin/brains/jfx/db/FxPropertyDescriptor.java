@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -9,17 +9,17 @@ import java.util.function.Supplier;
 /**
  * Контейнер свойств для {@link FxProperty} и {@link FxReadOnlyProperty}.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 final class FxPropertyDescriptor<T>
 {
     final DbАтрибутный bean;
     final String name;
-    final КороткийКлюч ключ;
+    final ЗонныйКлюч ключ;
     final Supplier<T> supplier;
     final Consumer<T> consumer;
     
-    FxPropertyDescriptor( DbАтрибутный bean, String name, КороткийКлюч ключ, 
+    FxPropertyDescriptor( DbАтрибутный bean, String name, ЗонныйКлюч ключ, 
             Supplier<T> supplier, Consumer<T> consumer )
     {
         this.bean = bean;

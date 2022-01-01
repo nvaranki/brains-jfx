@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbУзел;
+import com.varankin.brains.db.type.DbУзел;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2021 Николай Варанкин
  * @param <T>
  */
 public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
@@ -18,11 +18,11 @@ public class FxУзел<T extends DbУзел> extends FxАтрибутный<T>
     {
         super( элемент );
         ИНСТРУКЦИИ = buildReadOnlyListProperty( элемент, "инструкции", 
-            new FxList<>( элемент.инструкции(), элемент, e -> new FxИнструкция( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.инструкции(), элемент, FxИнструкция::new, FxАтрибутный::getSource ) );
         ТЕКСТЫ = buildReadOnlyListProperty( элемент, "тексты", 
-            new FxList<>( элемент.тексты(), элемент, e -> new FxТекстовыйБлок( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.тексты(), элемент, FxТекстовыйБлок::new, FxАтрибутный::getSource ) );
         ПРОЧЕЕ = buildReadOnlyListProperty( элемент, "прочее", 
-            new FxList<>( элемент.прочее(), элемент, e -> new FxАтрибутный<>( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.прочее(), элемент, FxАтрибутный::new, FxАтрибутный::getSource ) );
     }
     
     public final ReadOnlyListProperty<FxИнструкция> инструкции()

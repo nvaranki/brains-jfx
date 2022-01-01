@@ -1,14 +1,14 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.*;
+import com.varankin.brains.db.type.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Фабрика генераторов текста в формате XML для произвольного элемента.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxФабрика implements Фабрика<DbАтрибутный,FxАтрибутный>
 {

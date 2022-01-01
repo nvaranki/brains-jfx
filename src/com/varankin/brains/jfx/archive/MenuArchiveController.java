@@ -3,7 +3,7 @@ package com.varankin.brains.jfx.archive;
 import com.varankin.brains.jfx.archive.action.ActionProcessor;
 import com.varankin.brains.jfx.history.LocalNeo4jProvider;
 import com.varankin.brains.jfx.history.RemoteNeo4jProvider;
-import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.io.container.Provider;
 import com.varankin.util.LoggerX;
@@ -23,7 +23,7 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер меню открытия архива, с историей.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class MenuArchiveController implements Builder<Menu>
 {

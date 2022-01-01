@@ -1,7 +1,8 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbПроцессор;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.type.DbПроцессор;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Queue;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.db.xml.XmlBrains.*;
 
 /**
  *
@@ -35,9 +36,9 @@ class EdtПроцессор extends EdtЭлемент<DbПроцессор,FxП�
     }
     
     @Override
-    public List<DbАтрибутный.Ключ> компоненты()
+    public List<МаркированныйЗонныйКлюч> компоненты()
     {
-        List<DbАтрибутный.Ключ> list = new ArrayList<>( super.компоненты() );
+        List<МаркированныйЗонныйКлюч> list = new ArrayList<>( super.компоненты() );
         list.add( 0, new КлючImpl( XML_PARAMETER, XMLNS_BRAINS, null ) );
         list.add( 1, new КлючImpl( XML_JAVA, XMLNS_BRAINS, null ) );
         return list;

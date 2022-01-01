@@ -1,19 +1,20 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.КороткийКлюч;
-import com.varankin.brains.db.DbЗона;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
+import com.varankin.brains.db.type.DbЗона;
+
 import java.util.List;
 
-import static com.varankin.brains.db.DbЗона.*;
-import static com.varankin.brains.io.xml.XmlBrains.XMLNS_BRAINS;
+import static com.varankin.brains.db.xml.type.XmlЗона.*;
+import static com.varankin.brains.db.xml.XmlBrains.XMLNS_BRAINS;
 
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxЗона extends FxАтрибутный<DbЗона>
 {
-    static final КороткийКлюч КЛЮЧ_А_НАЗВАНИЕ  = new КороткийКлюч( "название",  XMLNS_BRAINS );
+    static final ЗонныйКлюч КЛЮЧ_А_НАЗВАНИЕ  = new ЗонныйКлюч( "название",  XMLNS_BRAINS );
 
     private final FxReadOnlyPropertyImpl<List<String>> ВАРИАНТЫ;
     private final FxPropertyImpl<String> НАЗВАНИЕ;
@@ -22,10 +23,10 @@ public final class FxЗона extends FxАтрибутный<DbЗона>
     FxЗона( DbЗона элемент ) 
     {
         super( элемент );
-        //ВАРИАНТЫ = new FxPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты(), t -> элемент.варианты( t ) );
-        ВАРИАНТЫ = new FxReadOnlyPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, () -> элемент.варианты() );
-        НАЗВАНИЕ = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
-        URI      = new FxPropertyImpl<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     () -> элемент.uri(),      t -> элемент.uri( t )      );
+        //ВАРИАНТЫ = new FxPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, элемент::варианты, элемент::варианты );
+        ВАРИАНТЫ = new FxReadOnlyPropertyImpl<>( элемент, "варианты", КЛЮЧ_А_ВАРИАНТЫ, элемент::варианты );
+        НАЗВАНИЕ = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, элемент::название, элемент::название );
+        URI      = new FxPropertyImpl<>( элемент, "uri",      КЛЮЧ_А_ЗОНА,     элемент::uri,      элемент::uri      );
     }
 
     public FxReadOnlyProperty<List<String>> варианты()

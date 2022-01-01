@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.DbСигнал.Приоритет;
+import com.varankin.brains.db.type.DbСигнал.Приоритет;
 import com.varankin.brains.jfx.db.FxСигнал;
 import com.varankin.util.LoggerX;
 
@@ -15,7 +15,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров сигнала.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class TabSignalController implements Builder<GridPane>
 {

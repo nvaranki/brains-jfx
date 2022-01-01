@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbЛента;
+import com.varankin.brains.db.type.DbЛента;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxЛента extends FxЭлемент<DbЛента> implements FxКоммутируемый
 {
@@ -15,7 +15,7 @@ public final class FxЛента extends FxЭлемент<DbЛента> implement
     {
         super( лента );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( лента, "соединения", 
-            new FxList<>( лента.соединения(), лента, e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( лента.соединения(), лента, FxСоединение::new, FxАтрибутный::getSource ) );
     }
 
     @Override

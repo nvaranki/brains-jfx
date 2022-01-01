@@ -1,9 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbФрагмент;
+import com.varankin.brains.db.type.DbФрагмент;
+import com.varankin.brains.db.xml.XLinkShow;
 import com.varankin.brains.db.КлючImpl;
-import com.varankin.brains.io.xml.Xml;
+import com.varankin.brains.db.xml.XLink;
 import com.varankin.brains.jfx.db.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +21,7 @@ import javafx.scene.*;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 
-import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.db.xml.XmlBrains.*;
 import static com.varankin.brains.io.xml.XmlSvg.*;
 
 /**
@@ -140,9 +142,9 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     {
         if( path.isEmpty() ) return false;
         позиция( path.poll() );
-        ЭЛЕМЕНТ.вид().setValue( Xml.XLinkShow.OTHER );
+        ЭЛЕМЕНТ.вид().setValue( XLinkShow.OTHER );
         ЭЛЕМЕНТ.ссылка().setValue( "Ссылка фрагмента" );
-        ЭЛЕМЕНТ.графики().add( название( "Новый фрагмент", "../@xlink:" + Xml.XLINK_TITLE ) );
+        ЭЛЕМЕНТ.графики().add( название( "Новый фрагмент", "../@xlink:" + XLink.XLINK_TITLE ) );
         return path.isEmpty();
     }
 

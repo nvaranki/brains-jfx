@@ -1,17 +1,18 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.artificial.ПроцессорРасчета;
-import com.varankin.brains.db.DbПроцессор;
-import com.varankin.brains.db.DbЭлемент;
-import com.varankin.brains.io.xml.Xml;
+import com.varankin.brains.db.type.DbПроцессор;
+import com.varankin.brains.db.type.DbПроцессор.Стратегия;
+import com.varankin.brains.db.type.DbЭлемент;
+import com.varankin.brains.db.xml.XLinkActuate;
+import com.varankin.brains.db.xml.XLinkShow;
 
 import javafx.beans.property.ReadOnlyListProperty;
 
-import static com.varankin.brains.db.DbПроцессор.*;
+import static com.varankin.brains.db.xml.type.XmlПроцессор.*;
 
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxПроцессор 
         extends FxЭлемент<DbПроцессор> 
@@ -20,8 +21,8 @@ public final class FxПроцессор
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
     private final FxPropertyImpl<String> ССЫЛКА;
-    private final FxPropertyImpl<Xml.XLinkShow> ВИД;
-    private final FxPropertyImpl<Xml.XLinkActuate> РЕАЛИЗАЦИЯ;
+    private final FxPropertyImpl<XLinkShow> ВИД;
+    private final FxPropertyImpl<XLinkActuate> РЕАЛИЗАЦИЯ;
     private final FxReadOnlyPropertyImpl<FxПроцессор> ЭКЗЕМПЛЯР;
     private final FxPropertyImpl<Long> ЗАДЕРЖКА;
     private final FxPropertyImpl<Integer> НАКОПЛЕНИЕ;
@@ -29,25 +30,25 @@ public final class FxПроцессор
     private final FxPropertyImpl<Boolean> РЕСТАРТ;
     private final FxPropertyImpl<Boolean> СЖАТИЕ;
     private final FxPropertyImpl<Boolean> ОЧИСТКА;
-    private final FxPropertyImpl<ПроцессорРасчета.Стратегия> СТРАТЕГИЯ;
+    private final FxPropertyImpl<Стратегия> СТРАТЕГИЯ;
 
     public FxПроцессор( DbПроцессор элемент ) 
     {
         super( элемент );
         ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
-            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.параметры(), элемент, FxПараметр::new, FxАтрибутный::getSource ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
-            new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     () -> элемент.ссылка(),     t -> элемент.ссылка( t )     );
-        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        () -> элемент.вид(),        t -> элемент.вид( t )        );
-        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, () -> элемент.реализация(), t -> элемент.реализация( t ) );
-        ЗАДЕРЖКА   = new FxPropertyImpl<>( элемент, "задержка",   КЛЮЧ_А_ЗАДЕРЖКА,   () -> элемент.задержка(),   t -> элемент.задержка( t )   );
-        НАКОПЛЕНИЕ = new FxPropertyImpl<>( элемент, "накопление", КЛЮЧ_А_НАКОПЛЕНИЕ, () -> элемент.накопление(), t -> элемент.накопление( t ) );
-        ПАУЗА      = new FxPropertyImpl<>( элемент, "пауза",      КЛЮЧ_А_ПАУЗА,      () -> элемент.пауза(),      t -> элемент.пауза( t )      );
-        РЕСТАРТ    = new FxPropertyImpl<>( элемент, "рестарт",    КЛЮЧ_А_РЕСТАРТ,    () -> элемент.рестарт(),    t -> элемент.рестарт( t )    );
-        СЖАТИЕ     = new FxPropertyImpl<>( элемент, "сжатие",     КЛЮЧ_А_СЖАТИЕ,     () -> элемент.сжатие(),     t -> элемент.сжатие( t )     );
-        ОЧИСТКА    = new FxPropertyImpl<>( элемент, "очистка",    КЛЮЧ_А_ОЧИСТКА,    () -> элемент.очистка(),    t -> элемент.очистка( t )    );
-        СТРАТЕГИЯ  = new FxPropertyImpl<>( элемент, "стратегия",  КЛЮЧ_А_СТРАТЕГИЯ,  () -> элемент.стратегия(),  t -> элемент.стратегия( t )  );
+            new FxList<>( элемент.классы(), элемент, FxКлассJava::new, FxАтрибутный::getSource ) );
+        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     элемент::ссылка,     элемент::ссылка     );
+        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        элемент::вид,        элемент::вид        );
+        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, элемент::реализация, элемент::реализация );
+        ЗАДЕРЖКА   = new FxPropertyImpl<>( элемент, "задержка",   КЛЮЧ_А_ЗАДЕРЖКА,   элемент::задержка,   элемент::задержка   );
+        НАКОПЛЕНИЕ = new FxPropertyImpl<>( элемент, "накопление", КЛЮЧ_А_НАКОПЛЕНИЕ, элемент::накопление, элемент::накопление );
+        ПАУЗА      = new FxPropertyImpl<>( элемент, "пауза",      КЛЮЧ_А_ПАУЗА,      элемент::пауза,      элемент::пауза      );
+        РЕСТАРТ    = new FxPropertyImpl<>( элемент, "рестарт",    КЛЮЧ_А_РЕСТАРТ,    элемент::рестарт,    элемент::рестарт    );
+        СЖАТИЕ     = new FxPropertyImpl<>( элемент, "сжатие",     КЛЮЧ_А_СЖАТИЕ,     элемент::сжатие,     элемент::сжатие     );
+        ОЧИСТКА    = new FxPropertyImpl<>( элемент, "очистка",    КЛЮЧ_А_ОЧИСТКА,    элемент::очистка,    элемент::очистка    );
+        СТРАТЕГИЯ  = new FxPropertyImpl<>( элемент, "стратегия",  КЛЮЧ_А_СТРАТЕГИЯ,  элемент::стратегия,  элемент::стратегия  );
         ЭКЗЕМПЛЯР  = new FxReadOnlyPropertyImpl<>( элемент, "экземпляр", КЛЮЧ_А_ЭКЗЕМПЛЯР, this::типовой );
     }
 
@@ -68,13 +69,13 @@ public final class FxПроцессор
     }
 
     @Override
-    public FxProperty<Xml.XLinkShow> вид()
+    public FxProperty<XLinkShow> вид()
     {
         return ВИД;
     }
 
     @Override
-    public FxProperty<Xml.XLinkActuate> реализация()
+    public FxProperty<XLinkActuate> реализация()
     {
         return РЕАЛИЗАЦИЯ;
     }
@@ -115,7 +116,7 @@ public final class FxПроцессор
         return ОЧИСТКА;
     }
     
-    public FxProperty<ПроцессорРасчета.Стратегия> стратегия()
+    public FxProperty<Стратегия> стратегия()
     {
         return СТРАТЕГИЯ;
     }

@@ -1,16 +1,16 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbФрагмент;
-import com.varankin.brains.db.DbЭлемент;
-import com.varankin.brains.io.xml.Xml.XLinkShow;
-import com.varankin.brains.io.xml.Xml.XLinkActuate;
+import com.varankin.brains.db.type.DbФрагмент;
+import com.varankin.brains.db.type.DbЭлемент;
+import com.varankin.brains.db.xml.XLinkShow;
+import com.varankin.brains.db.xml.XLinkActuate;
 import javafx.beans.property.ReadOnlyListProperty;
 
-import static com.varankin.brains.db.DbФрагмент.*;
+import static com.varankin.brains.db.xml.type.XmlФрагмент.*;
 
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxФрагмент 
         extends FxЭлемент<DbФрагмент> 
@@ -28,13 +28,13 @@ public final class FxФрагмент
     {
         super( элемент );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( элемент, "соединения", 
-            new FxList<>( элемент.соединения(), элемент, e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.соединения(), элемент, e -> new FxСоединение( e ), FxАтрибутный::getSource ) );
         ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
-            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
-        ПРОЦЕССОР  = new FxPropertyImpl<>( элемент, "процессор",  КЛЮЧ_А_ПРОЦЕССОР,  () -> элемент.процессор(),  t -> элемент.процессор( t )  );
-        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     () -> элемент.ссылка(),     t -> элемент.ссылка( t )     );
-        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        () -> элемент.вид(),        t -> элемент.вид( t )        );
-        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, () -> элемент.реализация(), t -> элемент.реализация( t ) );
+            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), FxАтрибутный::getSource ) );
+        ПРОЦЕССОР  = new FxPropertyImpl<>( элемент, "процессор",  КЛЮЧ_А_ПРОЦЕССОР,  элемент::процессор,  элемент::процессор  );
+        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     элемент::ссылка,     элемент::ссылка     );
+        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        элемент::вид,        элемент::вид        );
+        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, элемент::реализация, элемент::реализация );
         ЭКЗЕМПЛЯР  = new FxReadOnlyPropertyImpl<>( элемент, "экземпляр", FxТиповой.КЛЮЧ_А_ЭКЗЕМПЛЯР, this::коммутируемый );
     }
     

@@ -258,7 +258,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
     /**
      * Создает агент по обновлению изменяемого значения, при необходимости.
      * 
-     * @param bn контейнер значения.
+     * @param hb контейнер значения.
      * @return агент по обновлению или {@code null}.
      */
     private Runnable агент( HBox hb )

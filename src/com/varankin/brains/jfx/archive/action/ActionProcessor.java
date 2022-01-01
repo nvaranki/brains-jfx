@@ -10,9 +10,13 @@ import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.appl.ЭкспортироватьXml;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.*;
-import com.varankin.brains.io.xml.Xml;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.type.DbАрхив;
+import com.varankin.brains.db.type.DbУзел;
+import com.varankin.brains.db.type.DbЭлемент;
+import com.varankin.brains.db.type.DbПроект;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.Xml;
+import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.archive.ArchiveTask;
 import com.varankin.brains.jfx.archive.props.PropertiesController;
@@ -50,7 +54,7 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 /**
  * Действия над элементами архива.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class ActionProcessor //TODO RT-37820
 {

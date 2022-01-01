@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbСоединение;
+import com.varankin.brains.db.type.DbСоединение;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxСоединение extends FxЭлемент<DbСоединение>
 {
@@ -15,7 +15,7 @@ public final class FxСоединение extends FxЭлемент<DbСоеди�
     {
         super( элемент );
         КОНТАКТЫ = buildReadOnlyListProperty( элемент, "контакты", 
-            new FxList<>( элемент.контакты(), элемент, e -> new FxКонтакт( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.контакты(), элемент, FxКонтакт::new, FxАтрибутный::getSource ) );
     }
 
     public ReadOnlyListProperty<FxКонтакт> контакты()

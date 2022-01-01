@@ -1,16 +1,14 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.db.type.DbАтрибутный;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.util.Builder;
-import com.varankin.brains.db.DbАтрибутный;
 
 /**
  * FXML-контроллер панели выбора и установки параметров.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 @Deprecated
 public interface IPropertiesController<A extends DbАтрибутный> 

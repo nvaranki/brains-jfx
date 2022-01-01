@@ -1,13 +1,13 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbПакет;
+import com.varankin.brains.db.type.DbПакет;
 import javafx.beans.property.ReadOnlyListProperty;
 
-import static com.varankin.brains.db.DbПакет.*;
+import static com.varankin.brains.db.xml.type.XmlПакет.*;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxПакет extends FxУзел<DbПакет>
 {
@@ -20,11 +20,11 @@ public final class FxПакет extends FxУзел<DbПакет>
     {
         super( элемент );
         ПРОЕКТЫ = buildReadOnlyListProperty( элемент, "проекты", 
-            new FxList<>( элемент.проекты(), элемент, e -> new FxПроект( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.проекты(), элемент, FxПроект::new, FxАтрибутный::getSource ) );
         БИБЛИОТЕКИ = buildReadOnlyListProperty( элемент, "библиотеки", 
-            new FxList<>( элемент.библиотеки(), элемент, e -> new FxБиблиотека( e ), e -> e.getSource() ) );
-        ВЕРСИЯ   = new FxReadOnlyPropertyImpl<>( элемент, "версия", КЛЮЧ_А_ВЕРСИЯ, () -> элемент.версия() );
-        НАЗВАНИЕ = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
+            new FxList<>( элемент.библиотеки(), элемент, FxБиблиотека::new, FxАтрибутный::getSource ) );
+        ВЕРСИЯ   = new FxReadOnlyPropertyImpl<>( элемент, "версия", КЛЮЧ_А_ВЕРСИЯ, элемент::версия );
+        НАЗВАНИЕ = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, элемент::название, элемент::название );
     }
 
     public ReadOnlyListProperty<FxПроект> проекты()

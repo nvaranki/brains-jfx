@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbЗаметка;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.type.DbЗаметка;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.characteristic.Изменение;
 import com.varankin.characteristic.Наблюдатель;
@@ -37,7 +37,7 @@ import java.util.Arrays;
  * Выполняется отложенное построение структуры дерева, только на один уровень,
  * для экономии ресурсов и времени. 
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 abstract class AbstractTreeItem extends TreeItem<FxАтрибутный>
 {

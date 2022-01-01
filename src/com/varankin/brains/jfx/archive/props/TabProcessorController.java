@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.artificial.ПроцессорРасчета.Стратегия;
+import com.varankin.brains.db.type.DbПроцессор.Стратегия;
 import com.varankin.brains.jfx.db.FxПроцессор;
 import com.varankin.util.LoggerX;
 
@@ -15,7 +15,7 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели выбора и установки параметров процессора.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class TabProcessorController implements Builder<GridPane>
 {

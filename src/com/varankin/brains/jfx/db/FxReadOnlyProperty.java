@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import javafx.beans.property.ReadOnlyProperty;
 
 /**
@@ -11,6 +11,6 @@ import javafx.beans.property.ReadOnlyProperty;
  */
 public interface FxReadOnlyProperty<T> extends ReadOnlyProperty<T>
 {
-    КороткийКлюч ключ();
+    ЗонныйКлюч ключ();
     Runnable getFireHandler();
 }

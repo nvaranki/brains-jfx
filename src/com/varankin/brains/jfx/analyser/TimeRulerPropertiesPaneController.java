@@ -23,7 +23,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров оси времени.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public class TimeRulerPropertiesPaneController implements Builder<Node>
 {
@@ -176,6 +176,7 @@ public class TimeRulerPropertiesPaneController implements Builder<Node>
     /**
      * @deprecated RT-34098
      */
+    @Deprecated
     void resetColorPicker()
     {
         textColor.fireEvent( new ActionEvent() );

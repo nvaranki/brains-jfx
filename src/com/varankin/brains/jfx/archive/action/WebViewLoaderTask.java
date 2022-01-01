@@ -1,5 +1,7 @@
 package com.varankin.brains.jfx.archive.action;
 
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.appl.Отображаемый;
 import com.varankin.brains.db.*;
 import com.varankin.brains.db.export.svg.SvgФабрика;
@@ -20,7 +22,7 @@ import static com.varankin.filter.НЕ.не;
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 class WebViewLoaderTask extends Task<String>
 {

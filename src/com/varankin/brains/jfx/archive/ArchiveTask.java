@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.brains.jfx.db.FxФабрика;
@@ -12,7 +12,7 @@ import javafx.concurrent.Task;
 /**
  * {@linkplain Task Задача} получения доступа к архиву.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class ArchiveTask extends Task<FxАрхив>
 {

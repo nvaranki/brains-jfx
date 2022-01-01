@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки общих параметров.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public class TabElementController implements Builder<GridPane>
 {

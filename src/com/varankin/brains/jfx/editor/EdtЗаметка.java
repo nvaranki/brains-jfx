@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbЗаметка;
+import com.varankin.brains.db.type.DbЗаметка;
 import com.varankin.brains.jfx.db.*;
 import java.util.List;
 import java.util.Queue;

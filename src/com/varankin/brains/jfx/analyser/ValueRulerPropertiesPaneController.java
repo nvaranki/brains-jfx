@@ -19,7 +19,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров оси значений.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class ValueRulerPropertiesPaneController implements Builder<Node>
 {
@@ -152,6 +152,7 @@ public final class ValueRulerPropertiesPaneController implements Builder<Node>
     /**
      * @deprecated RT-34098
      */
+    @Deprecated
     void resetColorPicker()
     {
         textColor.fireEvent( new ActionEvent() );

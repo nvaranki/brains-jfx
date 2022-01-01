@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbУзел;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.type.DbУзел;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.КлючImpl;
-import com.varankin.brains.io.xml.Xml;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.xml.Xml;
+import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
 abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extends EdtАтрибутный<D,T>
 {
     private ListChangeListener<FxАтрибутный> составитель;
-    protected final List<DbАтрибутный.Ключ> компоненты;
+    protected final List<МаркированныйЗонныйКлюч> компоненты;
     
     EdtУзел( T элемент )
     {
@@ -76,7 +77,7 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     }
     
     @Override
-    public List<DbАтрибутный.Ключ> компоненты()
+    public List<МаркированныйЗонныйКлюч> компоненты()
     {
         return компоненты;
     }

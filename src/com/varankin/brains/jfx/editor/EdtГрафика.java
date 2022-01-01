@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbГрафика;
+import com.varankin.brains.db.type.DbГрафика;
 import com.varankin.brains.jfx.db.*;
 import java.util.List;
 import java.util.Queue;
@@ -13,7 +13,7 @@ import javafx.scene.transform.Translate;
 
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
 {

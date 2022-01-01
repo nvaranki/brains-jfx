@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbРасчет;
+import com.varankin.brains.db.type.DbРасчет;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxРасчет extends FxЭлемент<DbРасчет> implements FxКоммутируемый
 {
@@ -16,9 +16,9 @@ public final class FxРасчет extends FxЭлемент<DbРасчет> imple
     {
         super( расчет );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( расчет, "соединения", 
-            new FxList<>( расчет.соединения(), расчет, e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( расчет.соединения(), расчет, FxСоединение::new, FxАтрибутный::getSource ) );
         ТОЧКИ = buildReadOnlyListProperty( расчет, "точки", 
-            new FxList<>( расчет.точки(), расчет, e -> new FxТочка( e ), e -> e.getSource() ) );
+            new FxList<>( расчет.точки(), расчет, FxТочка::new, FxАтрибутный::getSource ) );
     }
 
     @Override

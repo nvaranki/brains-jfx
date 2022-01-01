@@ -1,8 +1,9 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbАрхив;
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.type.DbАрхив;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.characteristic.Изменение;
 
@@ -26,24 +27,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- *
- * @author &copy; 2020 Николай Варанкин
  * @param <T> тип вложенного элемента.
+ *
+ * @author &copy; 2021 Николай Варанкин
  */
 public class FxАтрибутный<T extends DbАтрибутный>
 {
-    static final КороткийКлюч КЛЮЧ_А_ТИП = new КороткийКлюч( "тип", null );
-    static final КороткийКлюч КЛЮЧ_А_ВОССТАНОВИМЫЙ = new КороткийКлюч( "восстановимый", null );
-    static final КороткийКлюч КЛЮЧ_А_ПОЛОЖЕНИЕ = new КороткийКлюч( "положение", null );
+    static final ЗонныйКлюч КЛЮЧ_А_ТИП = new ЗонныйКлюч( "тип", null );
+    static final ЗонныйКлюч КЛЮЧ_А_ВОССТАНОВИМЫЙ = new ЗонныйКлюч( "восстановимый", null );
+    static final ЗонныйКлюч КЛЮЧ_А_ПОЛОЖЕНИЕ = new ЗонныйКлюч( "положение", null );
 
     private final T ЭЛЕМЕНТ;
     private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
     private final ListProperty<FxProperty> АТРИБУТЫ_ПРОЧИЕ;
     private final ReadOnlyListWrapper<FxReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
-    private final FxReadOnlyPropertyImpl<DbАтрибутный.Ключ> ТИП;
+    private final FxReadOnlyPropertyImpl<МаркированныйЗонныйКлюч> ТИП;
     private final FxReadOnlyPropertyImpl<Boolean> ВОССТАНОВИМЫЙ;
     private final FxReadOnlyPropertyImpl<String> ПОЛОЖЕНИЕ;
-    private final Map<КороткийКлюч,FxReadOnlyProperty> AM = new HashMap<>();
+    private final Map<ЗонныйКлюч,FxReadOnlyProperty> AM = new HashMap<>();
     private boolean атрибутыПрочиеЗагружены, атрибутыОсновныеЗагружены, ci;
 
     public FxАтрибутный( T элемент )
@@ -52,9 +53,9 @@ public class FxАтрибутный<T extends DbАтрибутный>
         КОЛЛЕКЦИИ = new HashMap<>();
         АТРИБУТЫ_ПРОЧИЕ = new SimpleListProperty<>( FXCollections.observableArrayList() );
         АТРИБУТЫ_ОСНОВНЫЕ = new ReadOnlyListWrapper<>( FXCollections.observableArrayList() );
-        ТИП = new FxReadOnlyPropertyImpl<>( элемент, "тип", КЛЮЧ_А_ТИП, () -> элемент.тип() );
+        ТИП = new FxReadOnlyPropertyImpl<>( элемент, "тип", КЛЮЧ_А_ТИП, элемент::тип );
         ВОССТАНОВИМЫЙ = new FxReadOnlyPropertyImpl<>( элемент, "восстановимый", 
-                КЛЮЧ_А_ВОССТАНОВИМЫЙ, () -> элемент.восстановимый() );
+                КЛЮЧ_А_ВОССТАНОВИМЫЙ, элемент::восстановимый );
         ПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "положение", КЛЮЧ_А_ПОЛОЖЕНИЕ, () -> 
         {
             String разделитель = "/";
@@ -73,7 +74,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return FxФабрика.getInstance().создать( ЭЛЕМЕНТ.архив() );
     }
     
-    public final FxReadOnlyProperty<DbАтрибутный.Ключ> тип()
+    public final FxReadOnlyProperty<МаркированныйЗонныйКлюч> тип()
     {
         return ТИП;
     }
@@ -91,11 +92,11 @@ public class FxАтрибутный<T extends DbАтрибутный>
     public final <E,T extends FxReadOnlyProperty<E>> 
     T атрибут( String название, String uri, Class<T> type )
     {
-        return атрибут( new КороткийКлюч( название, uri ), type );
+        return атрибут(new ЗонныйКлюч( название, uri ), type );
     }
     
     public final <E,T extends FxReadOnlyProperty<E>> 
-    T атрибут( КороткийКлюч кк, Class<T> type )
+    T атрибут( ЗонныйКлюч кк, Class<T> type )
     {
         FxReadOnlyProperty a = атрибут( кк );
         if( type.isInstance( a ))
@@ -104,7 +105,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
             throw new ClassCastException( type.getName() );
     }
     
-    private FxReadOnlyProperty атрибут( КороткийКлюч кк )
+    private FxReadOnlyProperty атрибут( ЗонныйКлюч кк )
     {
         атрибутыОсновные();
         атрибутыПрочие();
@@ -159,9 +160,9 @@ public class FxАтрибутный<T extends DbАтрибутный>
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
                 АТРИБУТЫ_ПРОЧИЕ.clear();
-                for( DbАтрибутный.Ключ ключ : ЭЛЕМЕНТ.ключи() )
+                for( МаркированныйЗонныйКлюч ключ : ЭЛЕМЕНТ.ключи() )
                 {
-                    КороткийКлюч кк = new КороткийКлюч( ключ.название(), ключ.uri() );
+                    ЗонныйКлюч кк = new ЗонныйКлюч( ключ.название(), ключ.uri() );
                     if( !AM.containsKey( кк ))
                     {
                         FxPropertyImpl p = new FxPropertyImpl( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 

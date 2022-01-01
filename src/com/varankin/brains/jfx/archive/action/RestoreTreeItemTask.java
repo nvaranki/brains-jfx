@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.action;
 
-import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxОператор;
 
@@ -11,7 +11,7 @@ import javafx.scene.control.TreeItem;
 /**
  * {@linkplain Task Задача} удаления элемента из архива.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 class RestoreTreeItemTask extends TransactionalChildParentTask
 {

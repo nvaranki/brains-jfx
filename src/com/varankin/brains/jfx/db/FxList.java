@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.Коллекция;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.characteristic.Наблюдатель;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 final class FxList<X extends DbАтрибутный, E extends FxАтрибутный<X>> extends AbstractList<E>
 {

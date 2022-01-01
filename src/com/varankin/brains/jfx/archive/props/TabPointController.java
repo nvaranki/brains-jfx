@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.DbТочка;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.type.DbТочка;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxТочка;
@@ -21,7 +21,7 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели выбора и установки параметров точки.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class TabPointController implements Builder<GridPane>
 {

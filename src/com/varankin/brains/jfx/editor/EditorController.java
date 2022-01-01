@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbАтрибутный.Ключ;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxЭлемент;
@@ -11,18 +11,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -42,6 +47,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.util.Builder;
@@ -70,7 +76,7 @@ public final class EditorController implements Builder<Parent>
     @FXML private Label posY;
     @FXML private Group zero;
     @FXML private ContextMenu popup;
-    @FXML private ChoiceBox<Ключ> itemsAdd;
+    @FXML private ChoiceBox<МаркированныйЗонныйКлюч> itemsAdd;
     @FXML private ToggleButton buttonBase;
     @FXML private ToggleButton buttonSelect;
     @FXML private ToggleButton buttonAdd;
@@ -81,6 +87,7 @@ public final class EditorController implements Builder<Parent>
     private final IntegerProperty snapProperty;
     private final IntegerProperty xProperty = new SimpleIntegerProperty();
     private final IntegerProperty yProperty = new SimpleIntegerProperty();
+    private final ObservableList<Node> selection = FXCollections.observableArrayList();
     private int offsetX, offsetY;
     private final LinkedList<int[]> clicks;
     private Node content;
@@ -91,6 +98,7 @@ public final class EditorController implements Builder<Parent>
         snapProperty = new SimpleIntegerProperty( 1 );
         offsetX = offsetY = 50;
         clicks = new LinkedList<>();
+        selection.addListener( this::onSelectionChanged );
     }
 
     /**
@@ -166,6 +174,9 @@ public final class EditorController implements Builder<Parent>
         
         stackPane = new StackPane( grid, board = new BorderPane( progress ) );
         stackPane.setBackground( new Background( new BackgroundFill( Color.WHITE, null, null ) ) );
+        stackPane.setOnDragOver( this::onDragOver );
+        stackPane.setOnDragDropped( this::onDragDropped );
+
         board.setCursor( Cursor.CROSSHAIR );
         
         ScrollPane scrollPane = new ScrollPane( stackPane );
@@ -213,6 +224,7 @@ public final class EditorController implements Builder<Parent>
         int a = 3;
         pline = new Polyline( +d-a, -a, +d, 0, +d-a, +a ); pline.setStroke( paint ); children.add( pline );
         pline = new Polyline( -a, +d-a, 0, +d, +a, +d-a ); pline.setStroke( paint ); children.add( pline );
+        onSelectMode( new ActionEvent() );
     }
 
     @FXML
@@ -310,11 +322,9 @@ public final class EditorController implements Builder<Parent>
 //                content.setContextMenu( popup );
                 pane.setUserData( элемент ); 
                 content.setOnDragDetected( e -> onDragDetected( e, content ) );
-                stackPane.setOnDragOver( this::onDragOver );
-                stackPane.setOnDragDropped( this::onDragDropped );
-                if( content instanceof Group )
-                    ((Group)content).getChildren().forEach( 
-                            n -> n.onMouseClickedProperty().bind( onMouseClickedProperty ) );
+//                if( content instanceof Group )
+//                    ((Group)content).getChildren().forEach( 
+//                            n -> n.onMouseClickedProperty().bind( onMouseClickedProperty ) );
             } );
         }
         catch( Exception ex )
@@ -333,6 +343,69 @@ public final class EditorController implements Builder<Parent>
         yProperty.set( (int)Math.round( event.getY() / snap ) * snap - offsetY );
     }
     
+    private boolean touch( Node n, double x, double y, Consumer<Node> action )
+    {
+        boolean touched;
+        if( n instanceof Group )
+        {
+            touched = false; // enforce selection by enclosure
+            for( Node c : ((Group)n).getChildren() )
+            {
+                Point2D pc = c.parentToLocal( x, y );
+                boolean t = touch( c, pc.getX(), pc.getY(), null );
+                if( t && action != null ) action.accept( c );
+                if( t ) LOGGER.getLogger().log( Level.INFO, "touch of {0}={1}", 
+                        new Object[]{c.getClass().getSimpleName(), c.getUserData()} );
+                touched |= t;
+            }
+        }
+        else
+        {
+            int sv = snapProperty.get();
+            touched = n.intersects( x - sv/2, y - sv/2, sv, sv );
+            if( touched && action != null ) action.accept( n );
+            if( touched ) LOGGER.getLogger().log( Level.INFO, "touch of {0}={1}", 
+                    new Object[]{n.getClass().getSimpleName(), n.getUserData()} );
+        }
+        return touched;
+    }
+    
+    private void onSelectionChanged( ListChangeListener.Change<? extends Node> c ) 
+    {
+        while( c.next() ) 
+        {
+            if( c.wasPermutated() ) 
+            {
+                     for (int i = c.getFrom(); i < c.getTo(); ++i) {
+                          //permutate
+                     }
+            } 
+            else if( c.wasUpdated() ) 
+            {
+                          //update item
+            } 
+            else 
+            {
+                for( Node n : c.getRemoved() ) 
+                {
+                    board.getChildren().removeAll( board.getChildren().stream()
+                            .filter( i -> i.getUserData() == n )
+                            .collect( Collectors.toList() ) );
+                }
+                for( Node n : c.getAddedSubList() ) 
+                {
+                    Bounds boundsInParent = n.getBoundsInParent();
+                    Rectangle r = new Rectangle( boundsInParent.getWidth(), boundsInParent.getHeight(), Color.YELLOW );
+                    r.setX( offsetX + boundsInParent.getMinX() );
+                    r.setY( offsetY + boundsInParent.getMinY() );
+                    r.setOpacity( 0.5 );
+                    r.setUserData( n );
+                    board.getChildren().add( r );
+                }
+            }
+        }
+    }
+        
     private void onBase( MouseEvent e )
     {
         updateMousePosition( e );
@@ -389,30 +462,26 @@ public final class EditorController implements Builder<Parent>
     private void onSelect( MouseEvent e )
     {
         updateMousePosition( e );
-        LOGGER.getLogger().info( "selection at "+xProperty.get()+","+yProperty.get() );
-        board.getChildren().forEach( c -> {
-            boolean touch = touch( c, e.getX(), e.getY() );
-        } );
-        e.consume();
+        LOGGER.getLogger().info( "pick to select at "+xProperty.get()+","+yProperty.get() );
+        
+        //TODO fix X Y properly based on e.getSource()
+        double xc = e.getX() - offsetX;
+        double yc = e.getY() - offsetY;
+        
+        boolean fresh = !e.isControlDown();
+        if( fresh ) selection.clear();
+        Consumer<Node> action = n -> 
+        {
+            if( fresh ) selection.add( n );
+            else if( selection.contains( n ) ) selection.remove( n );
+            else selection.add( n );
+        };
+        
+        boolean touched = touch( content, xc, yc, action );
+        LOGGER.getLogger().log( Level.INFO, "Finally {0} objects are selected.", selection.size() );
+        if( touched ) e.consume();
     }
     
-    private boolean touch( Node n, double x, double y )
-    {
-        boolean touched = false;
-        if( n instanceof Group )
-            for( Node c : ((Group)n).getChildren() )
-                touched |= touch( c, x, y );
-        else
-        {
-            int snap = snapProperty.get();
-            touched = n.intersects( x - snap/2, y - snap/2, snap, snap );
-            if( touched )
-                LOGGER.getLogger().log( Level.INFO, "touch of {0}={1}", 
-                        new Object[]{n.getClass().getSimpleName(), n.getUserData()} );
-        }
-        return touched;
-    }
-        
     private void onAdd( MouseEvent e )
     {
         updateMousePosition( e );
@@ -421,7 +490,7 @@ public final class EditorController implements Builder<Parent>
             {
                 int[] xy = new int[]{ xProperty.get(), yProperty.get() };
                 clicks.add( xy );
-                Ключ ключ = itemsAdd.getValue();
+                МаркированныйЗонныйКлюч ключ = itemsAdd.getValue();
                 Integer goal = limit.get( ключ.название() );
                 if( goal != null && clicks.size() == goal || e.isControlDown() )
                 {
@@ -460,25 +529,23 @@ public final class EditorController implements Builder<Parent>
     
     private void onDelete( MouseEvent e )
     {
-        if( e.getSource() == board )
+        if( e.getSource() == board && MouseButton.PRIMARY == e.getButton() )
         {
             updateMousePosition( e );
-            EventTarget target = e.getTarget();
-            for( Node node = target instanceof Node ? (Node)target : null; 
-                    node != null & node != content; node = node.getParent() )
+            LOGGER.getLogger().info( "pick to delete at "+xProperty.get()+","+yProperty.get() );
+        
+            //TODO fix X Y properly based on e.getSource()
+            double xc = e.getX() - offsetX;
+            double yc = e.getY() - offsetY;
+            
+            Consumer<Node> action = n -> 
             {
-                Object userData = node.getUserData();
-                if( userData != null )
-                {
-                    if( MouseButton.PRIMARY == e.getButton() )
-                    {
-                        LOGGER.getLogger().info( "deletion at "+xProperty.get()+","+yProperty.get()+" for "+userData+"" );
-                        JavaFX.getInstance().execute( new DeleteTask( node ) );
-                    }
-                    break;
-                }
-            }
-            e.consume();
+                LOGGER.getLogger().info( "deletion of "+n.getUserData() );
+                JavaFX.getInstance().execute( new DeleteTask( n ) );
+            };
+
+            boolean touched = touch( content, xc, yc, action );
+            if( touched ) e.consume();
         }
     }
     

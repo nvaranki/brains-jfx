@@ -20,7 +20,7 @@ import javafx.util.Builder;
 /**
  * Панель выбора и установки параметров рисования графика.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class GraphPropertiesPaneController implements Builder<Node>
 {
@@ -183,6 +183,7 @@ public final class GraphPropertiesPaneController implements Builder<Node>
     /**
      * @deprecated RT-34098
      */
+    @Deprecated
     void resetColorPicker()
     {
         borderColor.fireEvent( new ActionEvent() );

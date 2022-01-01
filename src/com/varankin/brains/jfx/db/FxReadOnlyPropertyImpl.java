@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import java.util.function.Supplier;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
 import javafx.concurrent.Task;
@@ -19,7 +19,7 @@ import javafx.concurrent.Task;
  * которая выполняется в отдельной задаче. А конкурирующие блокировки групповой и данной 
  * операции могут привести к конфликту доступа.</p>
  *  
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  * 
  * @param <T> тип значения свойства.
  */
@@ -29,14 +29,14 @@ public final class FxReadOnlyPropertyImpl<T>
 {
     private final FxPropertyDescriptor<T> descriptor;
 
-    FxReadOnlyPropertyImpl( DbАтрибутный элемент, String название, КороткийКлюч ключ,
+    FxReadOnlyPropertyImpl( DbАтрибутный элемент, String название, ЗонныйКлюч ключ,
             Supplier<T> supplier )
     {
         descriptor = new FxPropertyDescriptor<>( элемент, название, ключ, supplier, null );
     }
 
     @Override
-    public КороткийКлюч ключ()
+    public ЗонныйКлюч ключ()
     {
         return descriptor.ключ;
     }

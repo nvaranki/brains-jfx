@@ -1,18 +1,16 @@
 package com.varankin.brains.jfx.archive;
 
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxОператор;
 import com.varankin.util.LoggerX;
-import com.varankin.util.Текст;
 import java.util.logging.Level;
 import javafx.concurrent.Task;
 
 /**
  * Задача копирования или перемеения элемента в другую коллекцию.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 final class TaskCopyOrMoveАтрибутный extends Task<Void>
 {

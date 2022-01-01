@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbПоле;
+import com.varankin.brains.db.type.DbПоле;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxПоле extends FxЭлемент<DbПоле> implements FxКоммутируемый
 {
@@ -16,9 +16,9 @@ public final class FxПоле extends FxЭлемент<DbПоле> implements Fx
     {
         super( поле );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( поле, "соединения", 
-            new FxList<>( поле.соединения(), поле, e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( поле.соединения(), поле, FxСоединение::new, FxАтрибутный::getSource ) );
         СЕНСОРЫ = buildReadOnlyListProperty( поле, "сенсоры", 
-            new FxList<>( поле.сенсоры(), поле, e -> new FxСенсор( e ), e -> e.getSource() ) );
+            new FxList<>( поле.сенсоры(), поле, FxСенсор::new, FxАтрибутный::getSource ) );
     }
 
     @Override

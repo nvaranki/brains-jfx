@@ -1,17 +1,18 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbКлассJava;
-import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.type.DbКлассJava;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
+import static com.varankin.brains.db.type.DbКлассJava.*;
 
-import static com.varankin.brains.db.DbКлассJava.*;
+import static com.varankin.brains.db.xml.type.XmlКлассJava.*;
 
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 {
-    static final КороткийКлюч КЛЮЧ_А_КОД = new КороткийКлюч( "код", null );
+    static final ЗонныйКлюч КЛЮЧ_А_КОД = new ЗонныйКлюч( "код", null );
 
     private final FxPropertyImpl<Назначение> НАЗНАЧЕНИЕ;
     private final FxPropertyImpl<String> КОД;
@@ -19,8 +20,8 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
     public FxКлассJava( DbКлассJava элемент ) 
     {
         super( элемент );
-        НАЗНАЧЕНИЕ = new FxPropertyImpl<>( элемент, "назначение", КЛЮЧ_А_НАЗНАЧЕНИЕ, () -> элемент.назначение(), t -> элемент.назначение( t ) );
-        КОД        = new FxPropertyImpl<>( элемент, "код",        КЛЮЧ_А_КОД,        () -> элемент.код(),        t -> элемент.код( t )        );
+        НАЗНАЧЕНИЕ = new FxPropertyImpl<>( элемент, "назначение", КЛЮЧ_А_НАЗНАЧЕНИЕ, элемент::назначение, элемент::назначение );
+        КОД        = new FxPropertyImpl<>( элемент, "код",        КЛЮЧ_А_КОД,        элемент::код,        элемент::код        );
     }
     
     

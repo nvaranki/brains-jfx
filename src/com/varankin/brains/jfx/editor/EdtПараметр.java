@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.*;
+import com.varankin.brains.db.type.DbПараметр;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.Queue;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.db.xml.XmlBrains.*;
 
 /**
  *

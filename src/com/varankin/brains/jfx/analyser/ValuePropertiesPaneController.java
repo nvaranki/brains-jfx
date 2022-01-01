@@ -22,7 +22,7 @@ import javafx.util.*;
 /**
  * FXML-контроллер панели выбора параметров прорисовки отметок.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2020 Николай Варанкин
  */
 public final class ValuePropertiesPaneController implements Builder<Node>
 {
@@ -191,6 +191,7 @@ public final class ValuePropertiesPaneController implements Builder<Node>
     /**
      * @deprecated RT-34098
      */
+    @Deprecated
     void resetColorPicker()
     {
         colorPicker.fireEvent( new ActionEvent() );

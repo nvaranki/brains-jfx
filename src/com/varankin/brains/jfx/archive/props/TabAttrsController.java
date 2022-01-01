@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxProperty;
 import com.varankin.util.LoggerX;
@@ -30,7 +30,7 @@ import static javafx.beans.binding.Bindings.*;
 /**
  * FXML-контроллер панели дополнительных параметров.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public class TabAttrsController implements Builder<BorderPane>
 {

@@ -1,7 +1,10 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.db.*;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.db.*;
 
@@ -48,9 +51,9 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     }
     
     @Override
-    public List<DbАтрибутный.Ключ> компоненты()
+    public List<МаркированныйЗонныйКлюч> компоненты()
     {
-        List<DbАтрибутный.Ключ> list = new ArrayList<>( Arrays.asList( 
+        List<МаркированныйЗонныйКлюч> list = new ArrayList<>( Arrays.asList( 
                 new КлючImpl( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS, null ), 
                 new КлючImpl( SVG_ELEMENT_CIRCLE, XmlSvg.XMLNS_SVG, null ), 
                 new КлючImpl( SVG_ELEMENT_ELLIPSE, XmlSvg.XMLNS_SVG, null ), 

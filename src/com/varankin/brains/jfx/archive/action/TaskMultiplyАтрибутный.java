@@ -1,7 +1,8 @@
 package com.varankin.brains.jfx.archive.action;
 
 import com.varankin.brains.jfx.archive.multi.Схема;
-import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.io.xml.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
@@ -20,7 +21,7 @@ import javafx.concurrent.Task;
 /**
  * Задача мультипликации элемента коллекции.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 class TaskMultiplyАтрибутный extends Task<Void>
 {
@@ -83,7 +84,7 @@ class TaskMultiplyАтрибутный extends Task<Void>
     protected void failed()
     {
         Текст словарь = JavaFX.getInstance().словарь( TaskMultiplyАтрибутный.class );
-        ReadOnlyProperty<DbАтрибутный.Ключ> тип = образец.тип();
+        ReadOnlyProperty<МаркированныйЗонныйКлюч> тип = образец.тип();
         String msg = словарь.текст( "failure", тип.getValue().название() );
         Throwable exception = this.getException();
         LOGGER.log( Level.SEVERE, msg, exception );

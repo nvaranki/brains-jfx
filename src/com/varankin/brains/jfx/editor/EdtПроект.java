@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.*;
+import com.varankin.brains.db.type.DbПроект;
 import com.varankin.brains.jfx.db.*;
-import static com.varankin.brains.db.DbАтрибутный.*;
-import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.db.type.DbАтрибутный.*;
+import static com.varankin.brains.db.xml.XmlBrains.*;
 import static com.varankin.brains.io.xml.XmlSvg.*;
 
 import java.util.Queue;

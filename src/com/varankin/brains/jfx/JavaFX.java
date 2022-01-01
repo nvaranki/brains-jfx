@@ -7,8 +7,8 @@ import com.varankin.brains.jfx.history.ObservableHistoryList;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.jfx.history.LocalNeo4jProvider;
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.DbАрхив;
-import com.varankin.brains.db.DbЭлемент;
+import com.varankin.brains.db.type.DbАрхив;
+import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.jfx.archive.MenuArchiveController;
 import com.varankin.brains.jfx.archive.popup.MenuImportController;
 import com.varankin.brains.jfx.db.FxАрхив;
@@ -47,7 +47,7 @@ import javafx.stage.Stage;
 /**
  * Контекст среды JavaFX.
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class JavaFX 
 {

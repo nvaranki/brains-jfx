@@ -1,12 +1,12 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbТекстовыйБлок;
+import com.varankin.brains.db.type.DbТекстовыйБлок;
 
-import static com.varankin.brains.db.DbТекстовыйБлок.*;
+import static com.varankin.brains.db.xml.type.XmlТекстовыйБлок.*;
 
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxТекстовыйБлок extends FxАтрибутный<DbТекстовыйБлок>
 {
@@ -16,8 +16,8 @@ public final class FxТекстовыйБлок extends FxАтрибутный<D
     public FxТекстовыйБлок( DbТекстовыйБлок элемент ) 
     {
         super( элемент );
-        ТЕКСТ  = new FxPropertyImpl<>( элемент, "текст" , КЛЮЧ_А_ТЕКСТ,  () -> элемент.текст(),  (t) -> элемент.текст( t ) );
-        СТРОКА = new FxPropertyImpl<>( элемент, "строка", КЛЮЧ_А_СТРОКА, () -> элемент.строка(), (t) -> элемент.строка( t ) );
+        ТЕКСТ  = new FxPropertyImpl<>( элемент, "текст" , КЛЮЧ_А_ТЕКСТ,  элемент::текст,  элемент::текст );
+        СТРОКА = new FxPropertyImpl<>( элемент, "строка", КЛЮЧ_А_СТРОКА, элемент::строка, элемент::строка );
     }
 
     public FxProperty<String> текст()

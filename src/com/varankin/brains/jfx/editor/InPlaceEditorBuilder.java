@@ -6,10 +6,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import com.varankin.brains.db.DbАтрибутный;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.XmlBrains;
 
-import static com.varankin.brains.db.DbАтрибутный.*;
+import static com.varankin.brains.db.type.DbАтрибутный.*;
 /**
  *
  * @author Николай

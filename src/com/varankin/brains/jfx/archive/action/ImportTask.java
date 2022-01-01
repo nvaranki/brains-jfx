@@ -3,7 +3,7 @@ package com.varankin.brains.jfx.archive.action;
 import com.varankin.biz.action.Результат;
 import com.varankin.biz.action.РезультатТипа;
 import com.varankin.brains.appl.Импортировать;
-import com.varankin.brains.db.DbПакет;
+import com.varankin.brains.db.type.DbПакет;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАрхив;
@@ -19,7 +19,7 @@ import javafx.concurrent.Task;
 /**
  * {@linkplain Task Задача} импорта пакета в формате XML.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 class ImportTask extends Task<Boolean>
 {

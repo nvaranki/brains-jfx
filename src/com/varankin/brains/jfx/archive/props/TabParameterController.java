@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.DbПараметр;
-import com.varankin.brains.db.DbТекстовыйБлок;
+import com.varankin.brains.db.type.DbПараметр;
+import com.varankin.brains.db.type.DbТекстовыйБлок;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.db.FxПараметр;
 import com.varankin.util.LoggerX;
@@ -24,7 +24,7 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели выбора и установки параметра.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class TabParameterController implements Builder<GridPane>
 {

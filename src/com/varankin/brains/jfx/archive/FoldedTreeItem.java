@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 
@@ -17,7 +17,7 @@ import static com.varankin.brains.jfx.archive.ArchiveResourceFactory.*;
  * Выполняется отложенное построение структуры дерева, только на один уровень,
  * для экономии ресурсов и времени. 
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 final class FoldedTreeItem extends AbstractTreeItem
 {

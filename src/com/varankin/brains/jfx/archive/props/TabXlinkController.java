@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.io.xml.Xml.XLinkShow;
-import com.varankin.brains.io.xml.Xml.XLinkActuate;
+import com.varankin.brains.db.xml.XLinkShow;
+import com.varankin.brains.db.xml.XLinkActuate;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxТиповой;
 import com.varankin.util.LoggerX;
@@ -19,7 +19,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели выбора и установки параметров фрагмента.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class TabXlinkController implements Builder<GridPane>
 {

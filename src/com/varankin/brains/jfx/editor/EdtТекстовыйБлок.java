@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.DbТекстовыйБлок;
+import com.varankin.brains.db.type.DbТекстовыйБлок;
 import javafx.scene.*;
 import com.varankin.brains.jfx.db.FxТекстовыйБлок;
 import javafx.scene.control.Label;

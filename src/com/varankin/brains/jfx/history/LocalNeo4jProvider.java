@@ -3,7 +3,7 @@ package com.varankin.brains.jfx.history;
 import com.varankin.biz.action.Результат;
 import com.varankin.biz.action.РезультатТипа;
 import com.varankin.brains.appl.ОткрытьЛокальныйАрхивNeo4j;
-import com.varankin.brains.db.DbАрхив;
+import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.Контекст;
 
 import java.io.*;
@@ -14,7 +14,7 @@ import java.util.Objects;
  * пригодный для использования в 
  * {@linkplain com.varankin.history.HistoryList списке хранения истории}
  *
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class LocalNeo4jProvider implements SerializableProvider<DbАрхив>
 {

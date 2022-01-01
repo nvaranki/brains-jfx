@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbМусор;
+import com.varankin.brains.db.type.DbМусор;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxМусор extends FxАтрибутный<DbМусор>
 {
@@ -15,7 +15,7 @@ public final class FxМусор extends FxАтрибутный<DbМусор>
     {
         super( мусор );
         МУСОР = buildReadOnlyListProperty( мусор, "мусор", 
-            new FxList<>( мусор.мусор(), мусор, e -> FxФабрика.getInstance().создать( e ), e -> e.getSource() ) );
+            new FxList<>( мусор.мусор(), мусор, e -> FxФабрика.getInstance().создать( e ), FxАтрибутный::getSource ) );
     }
 
     public ReadOnlyListProperty<FxАтрибутный> мусор()

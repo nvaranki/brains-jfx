@@ -1,20 +1,21 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbАрхив;
-import com.varankin.brains.db.DbАтрибутный;
+import com.varankin.brains.db.type.DbАрхив;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.io.xml.XmlBrains;
+import com.varankin.brains.db.xml.XmlBrains;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 
 import java.util.Date;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.collections.ObservableList;
 
-import static com.varankin.brains.db.DbАрхив.*;
-import static com.varankin.brains.db.DbЭлемент.КЛЮЧ_А_НАЗВАНИЕ;
+import static com.varankin.brains.db.xml.type.XmlАрхив.*;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxАрхив extends FxАтрибутный<DbАрхив>
 {
@@ -29,15 +30,15 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     {
         super( элемент );
         ПАКЕТЫ = buildReadOnlyListProperty( элемент, "пакеты", 
-            new FxList<>( элемент.пакеты(), элемент, e -> new FxПакет( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.пакеты(), элемент, FxПакет::new, FxАтрибутный::getSource ) );
         NAMESPACES = buildReadOnlyListProperty( элемент, "namespaces", 
-            new FxList<>( элемент.namespaces(), элемент, e -> new FxЗона( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.namespaces(), элемент, FxЗона::new, FxАтрибутный::getSource ) );
         МУСОР = buildReadOnlyListProperty( элемент, "мусор", 
-            new FxList<>( элемент.мусор(), элемент, e -> new FxМусор( e ), e -> e.getSource() ) );
-        РАСПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "расположение", КЛЮЧ_А_РАСПОЛОЖЕНИЕ, () -> элемент.расположение() );
-        СОЗДАН       = new FxReadOnlyPropertyImpl<>( элемент, "создан",       КЛЮЧ_А_СОЗДАН,       () -> элемент.создан()       );
-        ИЗМЕНЕН      = new FxReadOnlyPropertyImpl<>( элемент, "изменен",      КЛЮЧ_А_ИЗМЕНЕН,      () -> элемент.изменен()      );
-        НАЗВАНИЕ     = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, () -> элемент.название(), t -> элемент.название( t ) );
+            new FxList<>( элемент.мусор(), элемент, FxМусор::new, FxАтрибутный::getSource ) );
+        РАСПОЛОЖЕНИЕ = new FxReadOnlyPropertyImpl<>( элемент, "расположение", КЛЮЧ_А_РАСПОЛОЖЕНИЕ, элемент::расположение );
+        СОЗДАН       = new FxReadOnlyPropertyImpl<>( элемент, "создан",       КЛЮЧ_А_СОЗДАН,       элемент::создан       );
+        ИЗМЕНЕН      = new FxReadOnlyPropertyImpl<>( элемент, "изменен",      КЛЮЧ_А_ИЗМЕНЕН,      элемент::изменен      );
+        НАЗВАНИЕ     = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, элемент::название, элемент::название );
         элемент.обработчик( a -> ИЗМЕНЕН.getFireHandler() );
     }
 
@@ -78,10 +79,10 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     
     public FxАтрибутный создатьНовыйЭлемент( String название, String uri )
     {
-        return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( название, uri ) );
+        return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( new ЗонныйКлюч( название, uri ) ) );
     }
     
-    public FxАтрибутный создатьНовыйЭлемент( DbАтрибутный.Ключ тип )
+    public FxАтрибутный создатьНовыйЭлемент( МаркированныйЗонныйКлюч тип )
     {
         return создатьНовыйЭлемент( тип.название(), тип.uri() );
     }

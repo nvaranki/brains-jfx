@@ -1,18 +1,19 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbЗаметка;
-import com.varankin.brains.db.КороткийКлюч;
+import com.varankin.brains.db.type.DbЗаметка;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
+
 import javafx.beans.property.ReadOnlyListProperty;
 
-import static com.varankin.brains.db.DbЗаметка.*;
+import static com.varankin.brains.db.xml.type.XmlЗаметка.*;
 
 /**
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxЗаметка extends FxУзел<DbЗаметка>
 {
-    static final КороткийКлюч КЛЮЧ_А_ТЕКСТ = new КороткийКлюч( "текст", null );
+    static final ЗонныйКлюч КЛЮЧ_А_ТЕКСТ = new ЗонныйКлюч( "текст", null );
 
     private final ReadOnlyListProperty<FxГрафика> ГРАФИКИ;
     private final FxReadOnlyPropertyImpl<String> ТЕКСТ;
@@ -22,9 +23,9 @@ public final class FxЗаметка extends FxУзел<DbЗаметка>
     {
         super( элемент );
         ГРАФИКИ = buildReadOnlyListProperty( элемент, "графики", 
-            new FxList<>( элемент.графики(), элемент, e -> new FxГрафика( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.графики(), элемент, FxГрафика::new, FxАтрибутный::getSource ) );
         ТЕКСТ = new FxReadOnlyPropertyImpl<>( элемент, "текст", КЛЮЧ_А_ТЕКСТ, () -> элемент.текст( "\n" ) );
-        ГЛУБИНА = new FxPropertyImpl<>( элемент, "глубина", КЛЮЧ_А_ГЛУБИНА, () -> элемент.глубина(), t -> элемент.глубина( t ) );
+        ГЛУБИНА = new FxPropertyImpl<>( элемент, "глубина", КЛЮЧ_А_ГЛУБИНА, элемент::глубина, элемент::глубина );
     }
 
     public ReadOnlyListProperty<FxГрафика> графики()

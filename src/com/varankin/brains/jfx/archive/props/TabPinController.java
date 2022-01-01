@@ -1,6 +1,12 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.*;
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.type.DbМодуль;
+import com.varankin.brains.db.type.DbРасчет;
+import com.varankin.brains.db.type.DbПоле;
+import com.varankin.brains.db.type.DbЛента;
+import com.varankin.brains.db.type.DbФрагмент;
 import com.varankin.brains.jfx.IntegerFilter;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxКонтакт;
@@ -18,12 +24,12 @@ import javafx.scene.layout.Priority;
 import javafx.util.Builder;
 import javafx.util.StringConverter;
 
-import static com.varankin.brains.db.DbКонтакт.*;
+import static com.varankin.brains.db.type.DbКонтакт.*;
 
 /**
  * FXML-контроллер панели установки параметров контакта.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public class TabPinController implements Builder<GridPane>
 {

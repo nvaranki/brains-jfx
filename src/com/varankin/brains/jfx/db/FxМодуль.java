@@ -1,11 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbМодуль;
+import com.varankin.brains.db.type.DbМодуль;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author Varankine
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxМодуль extends FxЭлемент<DbМодуль> implements FxКоммутируемый
 {
@@ -19,15 +19,15 @@ public final class FxМодуль extends FxЭлемент<DbМодуль> imple
     {
         super( модуль );
         БИБЛИОТЕКИ = buildReadOnlyListProperty( модуль, "библиотеки", 
-            new FxList<>( модуль.библиотеки(), модуль, e -> new FxБиблиотека( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.библиотеки(), модуль, FxБиблиотека::new, FxАтрибутный::getSource ) );
         ПРОЦЕССОРЫ = buildReadOnlyListProperty( модуль, "процессоры", 
-            new FxList<>( модуль.процессоры(), модуль, e -> new FxПроцессор( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.процессоры(), модуль, FxПроцессор::new, FxАтрибутный::getSource ) );
         ФРАГМЕНТЫ = buildReadOnlyListProperty( модуль, "фрагменты", 
-            new FxList<>( модуль.фрагменты(), модуль, e -> new FxФрагмент( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.фрагменты(), модуль, FxФрагмент::new, FxАтрибутный::getSource ) );
         СИГНАЛЫ = buildReadOnlyListProperty( модуль, "сигналы", 
-            new FxList<>( модуль.сигналы(), модуль, e -> new FxСигнал( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.сигналы(), модуль, FxСигнал::new, FxАтрибутный::getSource ) );
         СОЕДИНЕНИЯ = buildReadOnlyListProperty( модуль, "соединения", 
-            new FxList<>( модуль.соединения(), модуль, e -> new FxСоединение( e ), e -> e.getSource() ) );
+            new FxList<>( модуль.соединения(), модуль, FxСоединение::new, FxАтрибутный::getSource ) );
     }
 
     public ReadOnlyListProperty<FxБиблиотека> библиотеки()

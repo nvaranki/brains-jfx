@@ -1,16 +1,17 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.DbТочка;
-import com.varankin.brains.db.DbЭлемент;
-import com.varankin.brains.io.xml.Xml;
+import com.varankin.brains.db.type.DbТочка;
+import com.varankin.brains.db.type.DbЭлемент;
+import com.varankin.brains.db.xml.XLinkActuate;
+import com.varankin.brains.db.xml.XLinkShow;
 import javafx.beans.property.ReadOnlyListProperty;
 
-import static com.varankin.brains.db.DbТочка.*;
+import static com.varankin.brains.db.xml.type.XmlТочка.*;
 
 /**
  *
  *  
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class FxТочка 
         extends FxЭлемент<DbТочка> 
@@ -20,8 +21,8 @@ public final class FxТочка
     private final ReadOnlyListProperty<FxПараметр> ПАРАМЕТРЫ;
     private final ReadOnlyListProperty<FxКлассJava> КЛАССЫ;
     private final FxPropertyImpl<String> ССЫЛКА;
-    private final FxPropertyImpl<Xml.XLinkShow> ВИД;
-    private final FxPropertyImpl<Xml.XLinkActuate> РЕАЛИЗАЦИЯ;
+    private final FxPropertyImpl<XLinkShow> ВИД;
+    private final FxPropertyImpl<XLinkActuate> РЕАЛИЗАЦИЯ;
     private final FxReadOnlyPropertyImpl<FxТочка> ЭКЗЕМПЛЯР;
     private final FxPropertyImpl<Integer> ИНДЕКС;
     private final FxPropertyImpl<Boolean> ДАТЧИК;
@@ -32,19 +33,19 @@ public final class FxТочка
     {
         super( элемент );
         ТОЧКИ = buildReadOnlyListProperty( элемент, "точки", 
-            new FxList<>( элемент.точки(), элемент, e -> new FxТочка( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.точки(), элемент, FxТочка::new, FxАтрибутный::getSource ) );
         ПАРАМЕТРЫ = buildReadOnlyListProperty( элемент, "параметры", 
-            new FxList<>( элемент.параметры(), элемент, e -> new FxПараметр( e ), e -> e.getSource() ) );
+            new FxList<>( элемент.параметры(), элемент, FxПараметр::new, FxАтрибутный::getSource ) );
         КЛАССЫ = buildReadOnlyListProperty( элемент, "классы", 
-            new FxList<>( элемент.классы(), элемент, e -> new FxКлассJava( e ), e -> e.getSource() ) );
-        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     () -> элемент.ссылка(),     t -> элемент.ссылка( t )     );
-        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        () -> элемент.вид(),        t -> элемент.вид( t )        );
-        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, () -> элемент.реализация(), t -> элемент.реализация( t ) );
+            new FxList<>( элемент.классы(), элемент, FxКлассJava::new, FxАтрибутный::getSource ) );
+        ССЫЛКА     = new FxPropertyImpl<>( элемент, "ссылка",     КЛЮЧ_А_ССЫЛКА,     элемент::ссылка,     элемент::ссылка     );
+        ВИД        = new FxPropertyImpl<>( элемент, "вид",        КЛЮЧ_А_ВИД,        элемент::вид,        элемент::вид        );
+        РЕАЛИЗАЦИЯ = new FxPropertyImpl<>( элемент, "реализация", КЛЮЧ_А_РЕАЛИЗАЦИЯ, элемент::реализация, элемент::реализация );
         ЭКЗЕМПЛЯР  = new FxReadOnlyPropertyImpl<>( элемент, "экземпляр", КЛЮЧ_А_ЭКЗЕМПЛЯР, this::типовой );
-        ИНДЕКС  = new FxPropertyImpl<>( элемент, "индекс",  КЛЮЧ_А_ИНДЕКС,  () -> элемент.индекс(),  t -> элемент.индекс( t )  );
-        ДАТЧИК  = new FxPropertyImpl<>( элемент, "датчик",  КЛЮЧ_А_ДАТЧИК,  () -> элемент.датчик(),  t -> элемент.датчик( t )  );
-        ПОРОГ   = new FxPropertyImpl<>( элемент, "порог",   КЛЮЧ_А_ПОРОГ,   () -> элемент.порог(),   t -> элемент.порог( t )   );
-        КОНТАКТ = new FxPropertyImpl<>( элемент, "контакт", КЛЮЧ_А_КОНТАКТ, () -> элемент.контакт(), t -> элемент.контакт( t ) );
+        ИНДЕКС  = new FxPropertyImpl<>( элемент, "индекс",  КЛЮЧ_А_ИНДЕКС,  элемент::индекс,  элемент::индекс  );
+        ДАТЧИК  = new FxPropertyImpl<>( элемент, "датчик",  КЛЮЧ_А_ДАТЧИК,  элемент::датчик,  элемент::датчик  );
+        ПОРОГ   = new FxPropertyImpl<>( элемент, "порог",   КЛЮЧ_А_ПОРОГ,   элемент::порог,   элемент::порог   );
+        КОНТАКТ = new FxPropertyImpl<>( элемент, "контакт", КЛЮЧ_А_КОНТАКТ, элемент::контакт, элемент::контакт );
     }
 
     public ReadOnlyListProperty<FxТочка> точки()
@@ -69,13 +70,13 @@ public final class FxТочка
     }
 
     @Override
-    public FxProperty<Xml.XLinkShow> вид()
+    public FxProperty<XLinkShow> вид()
     {
         return ВИД;
     }
 
     @Override
-    public FxProperty<Xml.XLinkActuate> реализация()
+    public FxProperty<XLinkActuate> реализация()
     {
         return РЕАЛИЗАЦИЯ;
     }

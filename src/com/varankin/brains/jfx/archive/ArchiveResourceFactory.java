@@ -1,6 +1,10 @@
 package com.varankin.brains.jfx.archive;
 
-import com.varankin.brains.db.*;
+import com.varankin.brains.db.Транзакция;
+import com.varankin.brains.db.type.DbЗона;
+import com.varankin.brains.db.type.DbГрафика;
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.characteristic.Именованный;
@@ -9,8 +13,8 @@ import java.util.logging.Logger;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 
-import static com.varankin.brains.io.xml.Xml.*;
-import static com.varankin.brains.io.xml.XmlBrains.*;
+import static com.varankin.brains.db.xml.Xml.*;
+import static com.varankin.brains.db.xml.XmlBrains.*;
 import static com.varankin.brains.io.xml.XmlSvg.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
@@ -20,7 +24,7 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Фабрика ресурсов для навигатора по проектам.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2021 Николай Варанкин
  */
 public final class ArchiveResourceFactory
 {
@@ -51,7 +55,7 @@ public final class ArchiveResourceFactory
         return JavaFX.icon( "icons16x16/" + файл );
     }
 
-    public static String метка( DbАтрибутный.Ключ ключ )
+    public static String метка( МаркированныйЗонныйКлюч ключ )
     {
         String тип = ключ.название();
         if( !ключМеткиЭлемента.containsKey( тип ) ) тип = XML_UN_TEMP;
