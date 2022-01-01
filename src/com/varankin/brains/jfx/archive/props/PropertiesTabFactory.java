@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ELEMENT_USE;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ELEMENT_USE;
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.util.LoggerX;

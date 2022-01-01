@@ -12,7 +12,7 @@ import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.paint.Color;
 
 import static com.varankin.brains.db.xml.type.XmlГрафика.*;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 import static com.varankin.brains.jfx.db.FxТиповой.КЛЮЧ_А_ЭКЗЕМПЛЯР;
 
 /**

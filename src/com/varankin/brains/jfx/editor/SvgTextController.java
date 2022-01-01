@@ -16,7 +16,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
 
-import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 import static com.varankin.brains.jfx.editor.InPlaceEditorBuilder.*;
 
 /**

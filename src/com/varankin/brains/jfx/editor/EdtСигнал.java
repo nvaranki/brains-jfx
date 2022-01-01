@@ -6,7 +6,7 @@ import java.util.Queue;
 import javafx.scene.*;
 
 import static com.varankin.brains.db.xml.XmlBrains.*;
-import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 
 /**
  *

@@ -1,12 +1,11 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.type.DbУзел;
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
-import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.db.xml.Xml;
 import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.brains.jfx.db.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -16,12 +15,12 @@ import javafx.beans.property.ReadOnlyListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_FILL;
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_FONT_SIZE;
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_X;
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_Y;
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ELEMENT_TEXT;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_FILL;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_FONT_SIZE;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_X;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_Y;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ELEMENT_TEXT;
+import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 
 /**
  *
@@ -67,13 +66,13 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     protected void инструкции( List<Node> children )
     {
         children.addAll( загрузить( ЭЛЕМЕНТ.инструкции() ) );
-        компоненты.add( new КлючImpl( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
+        компоненты.add( new МаркированныйЗонныйКлюч( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
     }
     
     protected void тексты( List<Node> children )
     {
         children.addAll( загрузить( ЭЛЕМЕНТ.тексты() ) );
-        компоненты.add( new КлючImpl( Xml.XML_CDATA, XmlBrains.XMLNS_BRAINS, null ) );
+        компоненты.add( new МаркированныйЗонныйКлюч( Xml.XML_CDATA, XmlBrains.XMLNS_BRAINS, null ) );
     }
     
     @Override

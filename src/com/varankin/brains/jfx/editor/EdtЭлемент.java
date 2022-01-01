@@ -1,11 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbЭлемент;
-import com.varankin.brains.db.*;
-import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.xml.XmlBrains;
-import com.varankin.brains.io.xml.XmlSvg;
+import com.varankin.io.xml.svg.XmlSvg;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ import javafx.beans.property.ReadOnlyListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 
 /**
  *
@@ -54,14 +52,14 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     public List<МаркированныйЗонныйКлюч> компоненты()
     {
         List<МаркированныйЗонныйКлюч> list = new ArrayList<>( Arrays.asList( 
-                new КлючImpl( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS, null ), 
-                new КлючImpl( SVG_ELEMENT_CIRCLE, XmlSvg.XMLNS_SVG, null ), 
-                new КлючImpl( SVG_ELEMENT_ELLIPSE, XmlSvg.XMLNS_SVG, null ), 
-                new КлючImpl( SVG_ELEMENT_RECT, XmlSvg.XMLNS_SVG, null ), 
-                new КлючImpl( SVG_ELEMENT_LINE, XmlSvg.XMLNS_SVG, null ),
-                new КлючImpl( SVG_ELEMENT_POLYLINE, XmlSvg.XMLNS_SVG, null ), 
-                new КлючImpl( SVG_ELEMENT_POLYGON, XmlSvg.XMLNS_SVG, null ), 
-                new КлючImpl( SVG_ELEMENT_TEXT, XmlSvg.XMLNS_SVG, null ) ) );
+                new МаркированныйЗонныйКлюч( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS, null ), 
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_CIRCLE, XmlSvg.XMLNS_SVG, null ), 
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_ELLIPSE, XmlSvg.XMLNS_SVG, null ), 
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_RECT, XmlSvg.XMLNS_SVG, null ), 
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_LINE, XmlSvg.XMLNS_SVG, null ),
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_POLYLINE, XmlSvg.XMLNS_SVG, null ), 
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_POLYGON, XmlSvg.XMLNS_SVG, null ), 
+                new МаркированныйЗонныйКлюч( SVG_ELEMENT_TEXT, XmlSvg.XMLNS_SVG, null ) ) );
         list.addAll( super.компоненты() );
         return list;
     }
@@ -76,7 +74,7 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     
     protected List<Node> загрузить( ReadOnlyListProperty<? extends FxАтрибутный<?>> p, int pos, String ключ )
     {
-        компоненты.add( pos, new КлючImpl( ключ, XmlBrains.XMLNS_BRAINS, null ) );
+        компоненты.add( pos, new МаркированныйЗонныйКлюч( ключ, XmlBrains.XMLNS_BRAINS, null ) );
         return загрузить( p );
     }
     

@@ -2,7 +2,7 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.xml.XmlBrains;
-import com.varankin.brains.io.xml.XmlSvg;
+import com.varankin.io.xml.svg.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxЭлемент;
 import com.varankin.util.LoggerX;

@@ -4,8 +4,8 @@ import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.jfx.db.FxReadOnlyProperty;
 import com.varankin.brains.jfx.db.FxАтрибутный;
-import static com.varankin.brains.io.xml.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.brains.io.xml.XmlSvg.XMLNS_SVG;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_TRANSFORM;
+import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 import java.util.Collections;

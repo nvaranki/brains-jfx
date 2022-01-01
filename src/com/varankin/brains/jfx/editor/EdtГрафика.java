@@ -8,7 +8,7 @@ import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 import javafx.scene.transform.Translate;
 
 /**

@@ -4,7 +4,7 @@ import com.varankin.brains.jfx.archive.multi.Схема;
 import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.io.xml.XmlSvg;
+import com.varankin.io.xml.svg.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxProperty;
 import com.varankin.brains.jfx.db.FxАтрибутный;

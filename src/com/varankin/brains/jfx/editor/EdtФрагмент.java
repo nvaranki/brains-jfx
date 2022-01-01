@@ -2,8 +2,8 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbФрагмент;
 import com.varankin.brains.db.xml.XLinkShow;
-import com.varankin.brains.db.КлючImpl;
 import com.varankin.brains.db.xml.XLink;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 
 import static com.varankin.brains.db.xml.XmlBrains.*;
-import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 
 /**
  *
@@ -77,7 +77,7 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
             }
         }
         
-        компоненты.add( pos, new КлючImpl( ключ, XMLNS_BRAINS, null ) );
+        компоненты.add( pos, new МаркированныйЗонныйКлюч( ключ, XMLNS_BRAINS, null ) );
         
         return nodes;
     }

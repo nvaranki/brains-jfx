@@ -15,7 +15,7 @@ import javafx.scene.control.Tooltip;
 
 import static com.varankin.brains.db.xml.Xml.*;
 import static com.varankin.brains.db.xml.XmlBrains.*;
-import static com.varankin.brains.io.xml.XmlSvg.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
