@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.type.DbГрафика;
 import com.varankin.brains.db.xml.XLinkActuate;
 import com.varankin.brains.db.xml.XLinkShow;
@@ -11,6 +10,7 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.paint.Color;
 
+import static com.varankin.brains.db.DbПреобразователь.*;
 import static com.varankin.brains.db.xml.type.XmlГрафика.*;
 import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 import static com.varankin.brains.jfx.db.FxТиповой.КЛЮЧ_А_ЭКЗЕМПЛЯР;
@@ -80,13 +80,13 @@ public final class FxГрафика extends FxУзел<DbГрафика> impleme
 
     public double toSvgDouble( String атрибут, double нет )
     {
-        Double v = DbАтрибутный.toDoubleValue( атрибут( атрибут ).getValue() );
+        Double v = toDoubleValue( атрибут( атрибут ).getValue() );
         return v != null ? v : нет;
     }
 
     public String toSvgString( String атрибут, String нет )
     {
-        String v = DbАтрибутный.toStringValue( атрибут( атрибут ).getValue() );
+        String v = toStringValue( атрибут( атрибут ).getValue() );
         return v != null ? v : нет;
     }
 
@@ -99,7 +99,7 @@ public final class FxГрафика extends FxУзел<DbГрафика> impleme
             for( int i = 0, max = Array.getLength( a ); i < max; i++ )
                 v.add( Array.getDouble( a, i ) );
          else
-            for( String p : DbАтрибутный.toStringValue( a ).split( "[\\s,]+" ) )
+            for( String p : toStringValue( a ).split( "[\\s,]+" ) )
                 v.add( Double.valueOf( p.trim() ) );
         return v.isEmpty() ? нет : v.toArray( new Double[v.size()] );
     }

@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.DbПреобразователь;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxProperty;
 import com.varankin.util.LoggerX;
@@ -264,7 +264,7 @@ public class TabAttrsController implements Builder<BorderPane>
         @Override
         public String toString( Object object )
         {
-            return DbАтрибутный.toStringValue( object );
+            return DbПреобразователь.toStringValue( object );
         }
         
         @Override

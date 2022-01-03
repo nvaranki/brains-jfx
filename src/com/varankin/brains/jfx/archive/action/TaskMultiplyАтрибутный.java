@@ -1,17 +1,18 @@
 package com.varankin.brains.jfx.archive.action;
 
-import com.varankin.brains.jfx.archive.multi.Схема;
-import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.DbПреобразователь;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.io.xml.svg.XmlSvg;
-import com.varankin.brains.jfx.JavaFX;
+import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.jfx.archive.multi.Схема;
 import com.varankin.brains.jfx.db.FxProperty;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxОператор;
 import com.varankin.brains.jfx.db.FxЭлемент;
+import com.varankin.brains.jfx.JavaFX;
+import com.varankin.io.xml.svg.XmlSvg;
 import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
+
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -63,7 +64,7 @@ class TaskMultiplyАтрибутный extends Task<Void>
                         {
                             // добавить смещение к последовательности трансформаций
                             FxProperty атрибут = дубликат.атрибут( XmlSvg.SVG_ATTR_TRANSFORM, XmlSvg.XMLNS_SVG, FxProperty.class ); 
-                            String value = DbАтрибутный.toStringValue( атрибут.getValue() );
+                            String value = DbПреобразователь.toStringValue( атрибут.getValue() );
                             value = value == null ? "" : value + " ";
                             атрибут.setValue( String.format( "%stranslate(%d,%d)", value, dx, dy ) ); //TODO optimize transformations
                         }

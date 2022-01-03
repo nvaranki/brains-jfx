@@ -4,9 +4,6 @@ import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.jfx.db.FxReadOnlyProperty;
 import com.varankin.brains.jfx.db.FxАтрибутный;
-import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_TRANSFORM;
-import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
-import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +14,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Transform;
+
+import static com.varankin.brains.db.DbПреобразователь.*;
+import static com.varankin.brains.jfx.editor.EdtФрагмент.toTransforms;
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_TRANSFORM;
+import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 
 /**
  *
@@ -51,7 +53,7 @@ abstract class EdtАтрибутный<D extends DbАтрибутный, T exten
     private List<Transform> getTransformList()
     {
         FxReadOnlyProperty атрибут = ЭЛЕМЕНТ.атрибут( SVG_ATTR_TRANSFORM, XMLNS_SVG, FxReadOnlyProperty.class );
-        return toTransforms( DbАтрибутный.toStringValue( атрибут.getValue() ) );
+        return toTransforms( toStringValue( атрибут.getValue() ) );
     }
 
     protected Node createMarker( double s2 )

@@ -2,15 +2,16 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbПроект;
 import com.varankin.brains.jfx.db.*;
-import static com.varankin.brains.db.type.DbАтрибутный.*;
-import static com.varankin.brains.db.xml.XmlBrains.*;
-import static com.varankin.io.xml.svg.XmlSvg.*;
 
 import java.util.Queue;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
+
+import static com.varankin.brains.db.DbПреобразователь.*;
+import static com.varankin.brains.db.xml.XmlBrains.*;
+import static com.varankin.io.xml.svg.XmlSvg.*;
 
 /**
  *

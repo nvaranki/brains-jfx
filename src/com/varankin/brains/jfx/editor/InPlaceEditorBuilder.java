@@ -1,15 +1,17 @@
 package com.varankin.brains.jfx.editor;
 
+import com.varankin.brains.db.type.DbАтрибутный;
+import com.varankin.brains.db.xml.XmlBrains;
+
 import java.util.Collection;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.XmlBrains;
 
-import static com.varankin.brains.db.type.DbАтрибутный.*;
+import static com.varankin.brains.db.DbПреобразователь.*;
+
 /**
  *
  * @author Николай
