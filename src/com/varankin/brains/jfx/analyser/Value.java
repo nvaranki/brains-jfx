@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.appl.RatedObservable;
 import com.varankin.brains.artificial.rating.Ранжируемый;
 import com.varankin.brains.artificial.rating.СтандартныйРанжировщик;
 import com.varankin.brains.artificial.Элемент;
