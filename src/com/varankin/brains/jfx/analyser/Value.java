@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.artificial.rating.Ранжируемый;
-import com.varankin.brains.artificial.rating.СтандартныйРанжировщик;
+import com.varankin.brains.jfx.analyser.rating.Ранжируемый;
+import com.varankin.brains.jfx.analyser.rating.СтандартныйРанжировщик;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.Контекст;

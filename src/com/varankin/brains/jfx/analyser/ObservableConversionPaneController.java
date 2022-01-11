@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.artificial.rating.Ранжируемый;
+import com.varankin.brains.jfx.analyser.rating.Ранжируемый;
 import com.varankin.brains.jfx.ChangedTrigger;
 import com.varankin.brains.jfx.IntegerConverter;
 import com.varankin.brains.jfx.SingleSelectionProperty;

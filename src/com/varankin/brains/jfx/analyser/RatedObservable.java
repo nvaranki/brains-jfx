@@ -1,8 +1,8 @@
 package com.varankin.brains.jfx.analyser;
 
-import com.varankin.brains.artificial.rating.КаталогРанжировщиков;
-import com.varankin.brains.artificial.rating.Ранжируемый;
-import com.varankin.brains.artificial.rating.СтандартныйРанжировщик;
+import com.varankin.brains.jfx.analyser.rating.КаталогРанжировщиков;
+import com.varankin.brains.jfx.analyser.rating.Ранжируемый;
+import com.varankin.brains.jfx.analyser.rating.СтандартныйРанжировщик;
 import com.varankin.characteristic.Именованный;
 import com.varankin.characteristic.КаталогСвойств;
 import com.varankin.characteristic.НаблюдаемоеСвойство;
