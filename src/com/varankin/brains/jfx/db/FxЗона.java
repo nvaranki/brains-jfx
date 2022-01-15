@@ -1,12 +1,11 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.type.DbЗона;
+import com.varankin.brains.db.xml.BrainsКлюч;
 
 import java.util.List;
 
 import static com.varankin.brains.db.xml.type.XmlЗона.*;
-import static com.varankin.brains.db.xml.XmlBrains.XMLNS_BRAINS;
 
 /**
  *
@@ -14,7 +13,7 @@ import static com.varankin.brains.db.xml.XmlBrains.XMLNS_BRAINS;
  */
 public final class FxЗона extends FxАтрибутный<DbЗона>
 {
-    static final ЗонныйКлюч КЛЮЧ_А_НАЗВАНИЕ  = new ЗонныйКлюч( "название",  XMLNS_BRAINS );
+    static final BrainsКлюч КЛЮЧ_А_НАЗВАНИЕ = new BrainsКлюч( "название" ); // виртуальный атрибут по вариантам
 
     private final FxReadOnlyPropertyImpl<List<String>> ВАРИАНТЫ;
     private final FxPropertyImpl<String> НАЗВАНИЕ;

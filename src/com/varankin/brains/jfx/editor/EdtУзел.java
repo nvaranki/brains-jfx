@@ -4,6 +4,9 @@ import com.varankin.brains.db.type.DbУзел;
 import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.xml.Xml;
 import com.varankin.brains.db.xml.XmlBrains;
+import com.varankin.brains.db.xml.type.XmlГрафика;
+import com.varankin.brains.db.xml.type.XmlИнструкция;
+import com.varankin.brains.db.xml.type.XmlТекстовыйБлок;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
@@ -88,12 +91,12 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     
     protected FxГрафика графика( String тип )
     {
-        return (FxГрафика)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( тип, XMLNS_SVG );
+        return (FxГрафика)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( XmlГрафика.КЛЮЧ_Э_ГРАФИКА.get( тип ) );
     }
     
     protected FxИнструкция инструкция( String процессор, String код )
     {
-        FxИнструкция и = (FxИнструкция)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( Xml.PI_ELEMENT, null );
+        FxИнструкция и = (FxИнструкция)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( XmlИнструкция.КЛЮЧ_Э_ИНСТРУКЦИЯ );
         и.процессор().setValue( процессор );
         и.код().setValue( код );
         return и;
@@ -101,7 +104,7 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     
     protected FxТекстовыйБлок блок( String значение )
     {
-        FxТекстовыйБлок тб = (FxТекстовыйБлок)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
+        FxТекстовыйБлок тб = (FxТекстовыйБлок)ЭЛЕМЕНТ.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
         тб.текст().setValue( значение );
         return тб;
     }

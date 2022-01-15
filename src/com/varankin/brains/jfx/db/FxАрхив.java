@@ -2,10 +2,9 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
-import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.brains.db.xml.ЗонныйКлюч;
+import com.varankin.brains.db.xml.type.XmlМусор;
 
 import java.util.Date;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -77,14 +76,9 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         return ИЗМЕНЕН;
     }
     
-    public FxАтрибутный создатьНовыйЭлемент( String название, String uri )
+    public FxАтрибутный создатьНовыйЭлемент( ЗонныйКлюч тип )
     {
-        return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( new ЗонныйКлюч( название, uri ) ) );
-    }
-    
-    public FxАтрибутный создатьНовыйЭлемент( МаркированныйЗонныйКлюч тип )
-    {
-        return создатьНовыйЭлемент( тип.название(), тип.uri() );
+        return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( тип ) );
     }
     
     /**
@@ -108,8 +102,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     public boolean утилизировать( FxАтрибутный<? extends DbАтрибутный> объект ) 
     {
         if( МУСОР.isEmpty() )
-            МУСОР.add( (FxМусор) создатьНовыйЭлемент( 
-                    XmlBrains.XML_BASKET, XmlBrains.XMLNS_BRAINS ) );
+            МУСОР.add( (FxМусор) создатьНовыйЭлемент( XmlМусор.КЛЮЧ_Э_МУСОР ) );
         boolean утилизировано = false;
         for( FxМусор корзина : МУСОР )
             if( !утилизировано )

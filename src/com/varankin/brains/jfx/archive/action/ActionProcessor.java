@@ -15,8 +15,7 @@ import com.varankin.brains.db.type.DbУзел;
 import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.db.type.DbПроект;
 import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.Xml;
-import com.varankin.brains.db.xml.XmlBrains;
+import com.varankin.brains.db.xml.type.*;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.archive.ArchiveTask;
 import com.varankin.brains.jfx.archive.props.PropertiesController;
@@ -107,91 +106,91 @@ public final class ActionProcessor //TODO RT-37820
     
     // фабрики создания дочерних элементов
     private static final Фабрика<FxАрхив,FxПакет> фабрикаАрхивПакет
-            = архив -> (FxПакет)архив.создатьНовыйЭлемент( XmlBrains.XML_BRAINS, XmlBrains.XMLNS_BRAINS );
+            = архив -> (FxПакет)архив.создатьНовыйЭлемент( XmlПакет.КЛЮЧ_Э_ПАКЕТ );
     private static final Фабрика<FxАрхив,FxЗона> фабрикаАрхивNameSpace
             = архив -> архив.определитьПространствоИмен( "протокол://сервер/путь", "префикс" );
     private static final Фабрика<FxМодуль,FxБиблиотека> фабрикаМодульБиблиотека
-            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlBrains.XML_LIBRARY, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlБиблиотека.КЛЮЧ_Э_БИБЛИОТЕКА );
     private static final Фабрика<FxПроект,FxБиблиотека> фабрикаПроектБиблиотека
-            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlBrains.XML_LIBRARY, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlБиблиотека.КЛЮЧ_Э_БИБЛИОТЕКА );
     private static final Фабрика<FxЭлемент,FxЗаметка> фабрикаЭлементЗаметка
-            = e -> (FxЗаметка)e.архив().создатьНовыйЭлемент( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxЗаметка)e.архив().создатьНовыйЭлемент( XmlЗаметка.КЛЮЧ_Э_ЗАМЕТКА );
     private static final Фабрика<FxКонтакт,FxКлассJava> фабрикаКонтактКлассJava
-            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
     private static final Фабрика<FxБиблиотека,FxКлассJava> фабрикаБиблиотекаКлассJava
-            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
     private static final Фабрика<FxПараметр,FxКлассJava> фабрикаПараметрКлассJava
-            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
     private static final Фабрика<FxПроцессор,FxКлассJava> фабрикаПроцессорКлассJava
-            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
     private static final Фабрика<FxСигнал,FxКлассJava> фабрикаСигналКлассJava
-            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
     private static final Фабрика<FxТочка,FxКлассJava> фабрикаТочкаКлассJava
-            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JAVA, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
     private static final Фабрика<FxСоединение,FxКонтакт> фабрикаСоединениеКонтакт
-            = e -> (FxКонтакт)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PIN, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxКонтакт)e.архив().создатьНовыйЭлемент( XmlКонтакт.КЛЮЧ_Э_КОНТАКТ );
     private static final Фабрика<FxБиблиотека,FxЛента> фабрикаБиблиотекаЛента
-            = e -> (FxЛента)e.архив().создатьНовыйЭлемент( XmlBrains.XML_TIMELINE, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxЛента)e.архив().создатьНовыйЭлемент( XmlЛента.КЛЮЧ_Э_ЛЕНТА );
     private static final Фабрика<FxБиблиотека,FxМодуль> фабрикаБиблиотекаМодуль
-            = e -> (FxМодуль)e.архив().создатьНовыйЭлемент( XmlBrains.XML_MODULE, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxМодуль)e.архив().создатьНовыйЭлемент( XmlМодуль.КЛЮЧ_Э_МОДУЛЬ );
     private static final Фабрика<FxБиблиотека,FxРасчет> фабрикаБиблиотекаРасчет
-            = e -> (FxРасчет)e.архив().создатьНовыйЭлемент( XmlBrains.XML_COMPUTE, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxРасчет)e.архив().создатьНовыйЭлемент( XmlРасчет.КЛЮЧ_Э_РАСЧЕТ );
     private static final Фабрика<FxКонтакт,FxПараметр> фабрикаКонтактПараметр
-            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
     private static final Фабрика<FxПроцессор,FxПараметр> фабрикаПроцессорПараметр
-            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
     private static final Фабрика<FxТочка,FxПараметр> фабрикаТочкаПараметр
-            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
     private static final Фабрика<FxФрагмент,FxПараметр> фабрикаФрагментПараметр
-            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
     private static final Фабрика<FxСигнал,FxПараметр> фабрикаСигналПараметр
-            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
     private static final Фабрика<FxПараметр,FxПараметр> фабрикаПараметрПараметр
-            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PARAMETER, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
     private static final Фабрика<FxБиблиотека,FxПоле> фабрикаБиблиотекаПоле
-            = e -> (FxПоле)e.архив().создатьНовыйЭлемент( XmlBrains.XML_FIELD, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПоле)e.архив().создатьНовыйЭлемент( XmlПоле.КЛЮЧ_Э_ПОЛЕ );
     private static final Фабрика<FxПакет,FxПроект> фабрикаПакетПроект
-            = e -> (FxПроект)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PROJECT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПроект)e.архив().создатьНовыйЭлемент( XmlПроект.КЛЮЧ_Э_ПРОЕКТ );
     private static final Фабрика<FxПакет,FxБиблиотека> фабрикаПакетБиблиотека
-            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlBrains.XML_LIBRARY, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlБиблиотека.КЛЮЧ_Э_БИБЛИОТЕКА );
     private static final Фабрика<FxМодуль,FxПроцессор> фабрикаМодульПроцессор
-            = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PROCESSOR, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlПроцессор.КЛЮЧ_Э_ПРОЦЕССОР );
     private static final Фабрика<FxБиблиотека,FxПроцессор> фабрикаБиблиотекаПроцессор
-            = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PROCESSOR, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlПроцессор.КЛЮЧ_Э_ПРОЦЕССОР );
     private static final Фабрика<FxПроект,FxПроцессор> фабрикаПроектПроцессор
-            = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlBrains.XML_PROCESSOR, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlПроцессор.КЛЮЧ_Э_ПРОЦЕССОР );
     private static final Фабрика<FxПоле,FxСенсор> фабрикаПолеСенсор
-            = e -> (FxСенсор)e.архив().создатьНовыйЭлемент( XmlBrains.XML_SENSOR, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСенсор)e.архив().создатьНовыйЭлемент( XmlСенсор.КЛЮЧ_Э_СЕНСОР );
     private static final Фабрика<FxМодуль,FxСигнал> фабрикаМодульСигнал
-            = e -> (FxСигнал)e.архив().создатьНовыйЭлемент( XmlBrains.XML_SIGNAL, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСигнал)e.архив().создатьНовыйЭлемент( XmlСигнал.КЛЮЧ_Э_СИГНАЛ );
     private static final Фабрика<FxПроект,FxСигнал> фабрикаПроектСигнал
-            = e -> (FxСигнал)e.архив().создатьНовыйЭлемент( XmlBrains.XML_SIGNAL, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСигнал)e.архив().создатьНовыйЭлемент( XmlСигнал.КЛЮЧ_Э_СИГНАЛ );
     private static final Фабрика<FxЛента,FxСоединение> фабрикаЛентаСоединение
-            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JOINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
     private static final Фабрика<FxМодуль,FxСоединение> фабрикаМодульСоединение
-            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JOINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
     private static final Фабрика<FxПоле,FxСоединение> фабрикаПолеСоединение
-            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JOINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
     private static final Фабрика<FxРасчет,FxСоединение> фабрикаРасчетСоединение
-            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JOINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
     private static final Фабрика<FxФрагмент,FxСоединение> фабрикаФрагментСоединение
-            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlBrains.XML_JOINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
     private static final Фабрика<FxРасчет,FxТочка> фабрикаРасчетТочка
-            = e -> (FxТочка)e.архив().создатьНовыйЭлемент( XmlBrains.XML_POINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxТочка)e.архив().создатьНовыйЭлемент( XmlТочка.КЛЮЧ_Э_ТОЧКА );
     private static final Фабрика<FxТочка,FxТочка> фабрикаТочкаТочка
-            = e -> (FxТочка)e.архив().создатьНовыйЭлемент( XmlBrains.XML_POINT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxТочка)e.архив().создатьНовыйЭлемент( XmlТочка.КЛЮЧ_Э_ТОЧКА );
     private static final Фабрика<FxМодуль,FxФрагмент> фабрикаМодульФрагмент
-            = e -> (FxФрагмент)e.архив().создатьНовыйЭлемент( XmlBrains.XML_FRAGMENT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxФрагмент)e.архив().создатьНовыйЭлемент( XmlФрагмент.КЛЮЧ_Э_ФРАГМЕНТ );
     private static final Фабрика<FxПроект,FxФрагмент> фабрикаПроектФрагмент
-            = e -> (FxФрагмент)e.архив().создатьНовыйЭлемент( XmlBrains.XML_FRAGMENT, XmlBrains.XMLNS_BRAINS );
+            = e -> (FxФрагмент)e.архив().создатьНовыйЭлемент( XmlФрагмент.КЛЮЧ_Э_ФРАГМЕНТ );
     private static final Фабрика<FxЗаметка,FxТекстовыйБлок> фабрикаЗаметкаТекст
-            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
+            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
     private static final Фабрика<FxГрафика,FxТекстовыйБлок> фабрикаГрафикаТекст
-            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
+            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
     private static final Фабрика<FxПараметр,FxТекстовыйБлок> фабрикаПараметрТекст
-            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( Xml.XML_CDATA, null );
+            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
     private static final Фабрика<FxГрафика,FxИнструкция> фабрикаГрафикаИнструкция
-            = e -> (FxИнструкция)e.архив().создатьНовыйЭлемент( Xml.PI_ELEMENT, null );
+            = e -> (FxИнструкция)e.архив().создатьНовыйЭлемент( XmlИнструкция.КЛЮЧ_Э_ИНСТРУКЦИЯ );
 
     //</editor-fold>
     
