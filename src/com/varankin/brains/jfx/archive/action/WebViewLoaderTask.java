@@ -22,7 +22,7 @@ import static com.varankin.filter.НЕ.не;
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 class WebViewLoaderTask extends Task<String>
 {
@@ -49,7 +49,7 @@ class WebViewLoaderTask extends Task<String>
             т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.архив() );
             название = элемент.название();
             Фильтр<DbЭлемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
-            String code = SvgФабрика.getInstance().providerOf( элемент, сборка ).newInstance(); //TODO Отображаемый.MIME_SVG
+            String code = SvgФабрика.getInstance().providerOf( элемент, сборка ).get(); //TODO Отображаемый.MIME_SVG
             т.завершить( code != null );
             return code;
         }
