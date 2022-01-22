@@ -2,18 +2,19 @@ package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbГрафика;
 import com.varankin.brains.jfx.db.*;
+
 import java.util.List;
 import java.util.Queue;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Translate;
 
 import static com.varankin.io.xml.svg.XmlSvg.*;
-import javafx.scene.transform.Translate;
 
 /**
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
 {
@@ -39,8 +40,8 @@ class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
         group.getChildren().addAll( загрузить( ЭЛЕМЕНТ.графики() ) );
 
         String s;
-        if( XMLNS_SVG.equals( ЭЛЕМЕНТ.тип().getValue().uri() ) )
-            switch( ЭЛЕМЕНТ.тип().getValue().название() )
+        if( XMLNS_SVG.equals( ЭЛЕМЕНТ.тип().getValue().ЗОНА ) )
+            switch( ЭЛЕМЕНТ.тип().getValue().НАЗВАНИЕ )
             {
                 case SVG_ELEMENT_TEXT:
                     //VBox box = new VBox();
@@ -180,7 +181,7 @@ class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
     public boolean составить( Queue<int[]> path )
     {
         if( path.isEmpty() ) return false;
-        switch( ЭЛЕМЕНТ.тип().getValue().название() )
+        switch( ЭЛЕМЕНТ.тип().getValue().НАЗВАНИЕ )
         {
             case SVG_ELEMENT_TEXT:
                 int[] xy = path.poll();

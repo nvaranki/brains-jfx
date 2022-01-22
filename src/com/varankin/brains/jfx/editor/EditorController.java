@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.io.xml.svg.XmlSvg;
 import com.varankin.brains.jfx.JavaFX;
@@ -56,7 +56,7 @@ import javafx.util.StringConverter;
 /**
  * FXML-контроллер панели редактора. 
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class EditorController implements Builder<Parent>
 {
@@ -76,7 +76,7 @@ public final class EditorController implements Builder<Parent>
     @FXML private Label posY;
     @FXML private Group zero;
     @FXML private ContextMenu popup;
-    @FXML private ChoiceBox<МаркированныйЗонныйКлюч> itemsAdd;
+    @FXML private ChoiceBox<ЗонныйКлюч> itemsAdd;
     @FXML private ToggleButton buttonBase;
     @FXML private ToggleButton buttonSelect;
     @FXML private ToggleButton buttonAdd;
@@ -490,8 +490,8 @@ public final class EditorController implements Builder<Parent>
             {
                 int[] xy = new int[]{ xProperty.get(), yProperty.get() };
                 clicks.add( xy );
-                МаркированныйЗонныйКлюч ключ = itemsAdd.getValue();
-                Integer goal = limit.get( ключ.название() );
+                ЗонныйКлюч ключ = itemsAdd.getValue();
+                Integer goal = limit.get( ключ.НАЗВАНИЕ );
                 if( goal != null && clicks.size() == goal || e.isControlDown() )
                 {
                     LOGGER.getLogger().info( "addition at "+xProperty.get()+","+yProperty.get()/*+" for "+userData+""*/ );

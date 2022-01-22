@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbФрагмент;
+import com.varankin.brains.db.xml.BrainsКлюч;
 import com.varankin.brains.db.xml.XLinkShow;
 import com.varankin.brains.db.xml.XLink;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import static com.varankin.io.xml.svg.XmlSvg.*;
 
 /**
  *
- * @author Николай
+ * @author &copy; 2022 Николай Варанкин
  */
 class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФрагмент>
 {
@@ -54,7 +54,7 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
     }
     
     protected List<Node> загрузить_( ReadOnlyListProperty<FxСоединение> соединенияСнаружи, 
-            int pos, String ключ )
+            int pos, String тип )
     {
         FxКоммутируемый экземпляр = ЭЛЕМЕНТ.экземпляр().getValue();
         Collection<FxСоединение> соединенияВнутри = экземпляр != null ? 
@@ -77,7 +77,7 @@ class EdtФрагмент extends EdtЭлемент<DbФрагмент,FxФра�
             }
         }
         
-        компоненты.add( pos, new МаркированныйЗонныйКлюч( ключ, XMLNS_BRAINS, null ) );
+        компоненты.add( pos, new BrainsКлюч( тип ) );
         
         return nodes;
     }

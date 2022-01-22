@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbЭлемент;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.BrainsКлюч;
+import com.varankin.brains.db.xml.SvgКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.xml.XmlBrains;
 import com.varankin.io.xml.svg.XmlSvg;
 import com.varankin.brains.jfx.db.*;
@@ -49,17 +51,17 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
     }
     
     @Override
-    public List<МаркированныйЗонныйКлюч> компоненты()
+    public List<ЗонныйКлюч> компоненты()
     {
-        List<МаркированныйЗонныйКлюч> list = new ArrayList<>( Arrays.asList( 
-                new МаркированныйЗонныйКлюч( XmlBrains.XML_NOTE, XmlBrains.XMLNS_BRAINS, null ), 
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_CIRCLE, XmlSvg.XMLNS_SVG, null ), 
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_ELLIPSE, XmlSvg.XMLNS_SVG, null ), 
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_RECT, XmlSvg.XMLNS_SVG, null ), 
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_LINE, XmlSvg.XMLNS_SVG, null ),
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_POLYLINE, XmlSvg.XMLNS_SVG, null ), 
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_POLYGON, XmlSvg.XMLNS_SVG, null ), 
-                new МаркированныйЗонныйКлюч( SVG_ELEMENT_TEXT, XmlSvg.XMLNS_SVG, null ) ) );
+        List<ЗонныйКлюч> list = new ArrayList<>( Arrays.asList( 
+                new BrainsКлюч( XmlBrains.XML_NOTE ), 
+                new SvgКлюч( SVG_ELEMENT_CIRCLE ), 
+                new SvgКлюч( SVG_ELEMENT_ELLIPSE ), 
+                new SvgКлюч( SVG_ELEMENT_RECT ), 
+                new SvgКлюч( SVG_ELEMENT_LINE ),
+                new SvgКлюч( SVG_ELEMENT_POLYLINE ), 
+                new SvgКлюч( SVG_ELEMENT_POLYGON ), 
+                new SvgКлюч( SVG_ELEMENT_TEXT ) ) );
         list.addAll( super.компоненты() );
         return list;
     }
@@ -72,9 +74,9 @@ abstract class EdtЭлемент<D extends DbЭлемент, T extends FxЭле�
         return copy;
     }
     
-    protected List<Node> загрузить( ReadOnlyListProperty<? extends FxАтрибутный<?>> p, int pos, String ключ )
+    protected List<Node> загрузить( ReadOnlyListProperty<? extends FxАтрибутный<?>> p, int pos, String тип )
     {
-        компоненты.add( pos, new МаркированныйЗонныйКлюч( ключ, XmlBrains.XMLNS_BRAINS, null ) );
+        компоненты.add( pos, new BrainsКлюч( тип ) );
         return загрузить( p );
     }
     

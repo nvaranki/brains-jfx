@@ -2,7 +2,6 @@ package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
 import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.characteristic.Изменение;
@@ -29,7 +28,7 @@ import javafx.collections.ObservableList;
 /**
  * @param <T> тип вложенного элемента.
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public class FxАтрибутный<T extends DbАтрибутный>
 {
@@ -41,7 +40,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
     private final Map<String,ObservableList<? extends FxАтрибутный>> КОЛЛЕКЦИИ;
     private final ListProperty<FxProperty> АТРИБУТЫ_ПРОЧИЕ;
     private final ReadOnlyListWrapper<FxReadOnlyProperty> АТРИБУТЫ_ОСНОВНЫЕ;
-    private final FxReadOnlyPropertyImpl<МаркированныйЗонныйКлюч> ТИП;
+    private final FxReadOnlyPropertyImpl<ЗонныйКлюч> ТИП;
     private final FxReadOnlyPropertyImpl<Boolean> ВОССТАНОВИМЫЙ;
     private final FxReadOnlyPropertyImpl<String> ПОЛОЖЕНИЕ;
     private final Map<ЗонныйКлюч,FxReadOnlyProperty> AM = new HashMap<>();
@@ -74,7 +73,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
         return FxФабрика.getInstance().создать( ЭЛЕМЕНТ.архив() );
     }
     
-    public final FxReadOnlyProperty<МаркированныйЗонныйКлюч> тип()
+    public final FxReadOnlyProperty<ЗонныйКлюч> тип()
     {
         return ТИП;
     }
@@ -160,18 +159,15 @@ public class FxАтрибутный<T extends DbАтрибутный>
             try( final Транзакция т = ЭЛЕМЕНТ.транзакция() )
             {
                 АТРИБУТЫ_ПРОЧИЕ.clear();
-                for( МаркированныйЗонныйКлюч ключ : ЭЛЕМЕНТ.ключи() )
-                {
-                    ЗонныйКлюч кк = new ЗонныйКлюч( ключ.название(), ключ.uri() );
-                    if( !AM.containsKey( кк ))
+                for( ЗонныйКлюч ключ : ЭЛЕМЕНТ.ключи() )
+                    if( !AM.containsKey( ключ ))
                     {
-                        FxPropertyImpl p = new FxPropertyImpl( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 
-                            () -> ЭЛЕМЕНТ.атрибут( кк, null ),
-                            t  -> ЭЛЕМЕНТ.определить( кк, t ) );
-                        AM.put( кк, p );
+                        FxPropertyImpl p = new FxPropertyImpl( ЭЛЕМЕНТ, ключ.НАЗВАНИЕ, ключ, 
+                            () -> ЭЛЕМЕНТ.атрибут( ключ, null ),
+                            t  -> ЭЛЕМЕНТ.определить( ключ, t ) );
+                        AM.put( ключ, p );
                         АТРИБУТЫ_ПРОЧИЕ.add( p );
                     }    
-                }
                 атрибутыПрочиеЗагружены = true;
                 т.завершить( true );
             }
@@ -385,7 +381,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
      */
     /*default*/ public <X> X выполнить( FxОператор<X> оператор, FxАтрибутный узел )
     {
-        String s = "UNSUPPORTED OPERATOR OVER NODE=" + ( узел != null ? узел.getSource().тип().название() : null );
+        String s = "UNSUPPORTED OPERATOR OVER NODE=" + ( узел != null ? узел.getSource().тип().НАЗВАНИЕ : null );
         throw new UnsupportedOperationException( s );
     }
     

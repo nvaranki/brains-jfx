@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import java.util.List;
 import java.util.Queue;
 import javafx.scene.Node;
@@ -16,5 +15,5 @@ public interface NodeBuilder
     
     boolean составить( Queue<int[]> path );
     
-    List<МаркированныйЗонныйКлюч> компоненты();
+    List<ЗонныйКлюч> компоненты();
 }

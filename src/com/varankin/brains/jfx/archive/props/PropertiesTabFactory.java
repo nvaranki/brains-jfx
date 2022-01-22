@@ -1,18 +1,20 @@
 package com.varankin.brains.jfx.archive.props;
 
-import static com.varankin.io.xml.svg.XmlSvg.SVG_ELEMENT_USE;
 import com.varankin.brains.jfx.BuilderFX;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.util.LoggerX;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 
+import static com.varankin.io.xml.svg.XmlSvg.SVG_ELEMENT_USE;
+
 /**
  *
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 final class PropertiesTabFactory
 {
@@ -67,7 +69,7 @@ final class PropertiesTabFactory
     List<Tab> collectTabs( FxГрафика value )
     {
         List<Tab> tabs = new ArrayList<>();
-        tabs.addAll( SVG_ELEMENT_USE.equals( value.тип().getValue().название() ) ?
+        tabs.addAll( SVG_ELEMENT_USE.equals( value.тип().getValue().НАЗВАНИЕ ) ?
                 collectTabs( (FxТиповой)value ) :
                 collectTabs( (FxУзел)value ) );
         return tabs;

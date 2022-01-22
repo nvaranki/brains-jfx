@@ -1,13 +1,13 @@
 package com.varankin.brains.jfx.archive.action;
 
 import com.varankin.brains.artificial.io.Фабрика;
-import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
+
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.binding.ListExpression;
@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 /**
  * Задача создания элемента коллекции.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 class TaskCreateАтрибутный<E extends FxАтрибутный, T extends FxАтрибутный> 
         extends Task<E>
@@ -78,8 +78,8 @@ class TaskCreateАтрибутный<E extends FxАтрибутный, T extends
     protected void failed()
     {
         Текст словарь = JavaFX.getInstance().словарь( TaskCreateАтрибутный.class );
-        ReadOnlyProperty<МаркированныйЗонныйКлюч> тип = владелец.тип();
-        String msg = словарь.текст( "failure", тип.getValue().название() );
+        ReadOnlyProperty<ЗонныйКлюч> тип = владелец.тип();
+        String msg = словарь.текст( "failure", тип.getValue().НАЗВАНИЕ );
         Throwable exception = this.getException();
         LOGGER.log( Level.SEVERE, msg, exception );
     }

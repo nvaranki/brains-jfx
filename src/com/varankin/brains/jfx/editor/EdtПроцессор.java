@@ -1,7 +1,9 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbПроцессор;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
+import com.varankin.brains.db.xml.type.XmlПараметр;
+import com.varankin.brains.db.xml.type.XmlКлассJava;
 import com.varankin.brains.jfx.db.*;
 
 import java.util.ArrayList;
@@ -10,11 +12,9 @@ import java.util.Queue;
 import javafx.collections.ObservableList;
 import javafx.scene.*;
 
-import static com.varankin.brains.db.xml.XmlBrains.*;
-
 /**
  *
- * @author Николай
+ * @author &copy; 2022 Николай Варанкин
  */
 class EdtПроцессор extends EdtЭлемент<DbПроцессор,FxПроцессор>
 {
@@ -28,18 +28,18 @@ class EdtПроцессор extends EdtЭлемент<DbПроцессор,FxП�
     {
         Group group = super.загрузить( основной );
         ObservableList<Node> children = group.getChildren();
-        children.addAll( загрузить( ЭЛЕМЕНТ.параметры(), 0, XML_PARAMETER ) );
-        children.addAll( загрузить( ЭЛЕМЕНТ.классы(), 0, XML_JAVA ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.параметры(), 0, XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР.НАЗВАНИЕ ) );
+        children.addAll( загрузить( ЭЛЕМЕНТ.классы(), 0, XmlКлассJava.КЛЮЧ_Э_JAVA.НАЗВАНИЕ ) );
 
         return group;
     }
     
     @Override
-    public List<МаркированныйЗонныйКлюч> компоненты()
+    public List<ЗонныйКлюч> компоненты()
     {
-        List<МаркированныйЗонныйКлюч> list = new ArrayList<>( super.компоненты() );
-        list.add( 0, new МаркированныйЗонныйКлюч( XML_PARAMETER, XMLNS_BRAINS, null ) );
-        list.add( 1, new МаркированныйЗонныйКлюч( XML_JAVA, XMLNS_BRAINS, null ) );
+        List<ЗонныйКлюч> list = new ArrayList<>( super.компоненты() );
+        list.add( 0, XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
+        list.add( 1, XmlКлассJava.КЛЮЧ_Э_JAVA );
         return list;
     }
 

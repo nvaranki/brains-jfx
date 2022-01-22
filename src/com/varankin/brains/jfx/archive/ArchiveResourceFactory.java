@@ -4,27 +4,28 @@ import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.db.type.DbЗона;
 import com.varankin.brains.db.type.DbГрафика;
 import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.jfx.db.*;
 import com.varankin.characteristic.Именованный;
+
 import java.util.*;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 
 import static com.varankin.brains.db.xml.Xml.*;
 import static com.varankin.brains.db.xml.XmlBrains.*;
 import static com.varankin.io.xml.svg.XmlSvg.*;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Фабрика ресурсов для навигатора по проектам.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class ArchiveResourceFactory
 {
@@ -55,9 +56,9 @@ public final class ArchiveResourceFactory
         return JavaFX.icon( "icons16x16/" + файл );
     }
 
-    public static String метка( МаркированныйЗонныйКлюч ключ )
+    public static String метка( ЗонныйКлюч ключ )
     {
-        String тип = ключ.название();
+        String тип = ключ.НАЗВАНИЕ;
         if( !ключМеткиЭлемента.containsKey( тип ) ) тип = XML_UN_TEMP;
         return RB.getString( ключМеткиЭлемента.get( тип ) );
     }
@@ -136,7 +137,7 @@ public final class ArchiveResourceFactory
     
     private static String тип( DbАтрибутный элемент, Map<String,String> карта )
     {
-        String тип = элемент.тип().название();
+        String тип = элемент.тип().НАЗВАНИЕ;
         if( элемент instanceof DbЗона )
             тип = XML_NS_TEMP;
         else if( элемент instanceof DbГрафика )
@@ -146,7 +147,7 @@ public final class ArchiveResourceFactory
     
     private static String тип( FxАтрибутный<?> элемент, Map<String,String> карта )
     {
-        String тип = элемент.тип().getValue().название();
+        String тип = элемент.тип().getValue().НАЗВАНИЕ;
         if( элемент instanceof FxЗона )
             тип = XML_NS_TEMP;
         else if( элемент instanceof FxГрафика )

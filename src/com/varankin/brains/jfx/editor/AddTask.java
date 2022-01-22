@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.brains.jfx.db.FxОператор;
@@ -19,19 +19,19 @@ import javafx.scene.Node;
 /**
  * {@linkplain Task Задача} по созданию нового элемента и добавлению его в {@linkplain Group группу}.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 class AddTask extends Task<Node>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( AddTask.class );
     
     static final FxОператор оператор = (o, c) -> c.add( o );
-    final МаркированныйЗонныйКлюч ключ;
+    final ЗонныйКлюч ключ;
     final Queue<int[]> path;
     final Group group;
     final FxЭлемент узел;
 
-    AddTask( МаркированныйЗонныйКлюч ключ, Queue<int[]> path, Group group )
+    AddTask( ЗонныйКлюч ключ, Queue<int[]> path, Group group )
     {
         this.ключ = ключ;
         this.path = new LinkedList<>( path );

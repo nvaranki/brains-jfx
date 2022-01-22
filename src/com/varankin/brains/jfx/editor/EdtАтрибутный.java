@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbАтрибутный;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.jfx.db.FxReadOnlyProperty;
 import com.varankin.brains.jfx.db.FxАтрибутный;
 
@@ -22,7 +22,7 @@ import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 
 /**
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 abstract class EdtАтрибутный<D extends DbАтрибутный, T extends FxАтрибутный<D>> 
         implements NodeBuilder
@@ -69,7 +69,7 @@ abstract class EdtАтрибутный<D extends DbАтрибутный, T exten
     }
     
     @Override
-    public List<МаркированныйЗонныйКлюч> компоненты()
+    public List<ЗонныйКлюч> компоненты()
     {
         return Collections.emptyList();
     }

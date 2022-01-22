@@ -1,9 +1,7 @@
 package com.varankin.brains.jfx.editor;
 
 import com.varankin.brains.db.type.DbУзел;
-import com.varankin.brains.db.xml.МаркированныйЗонныйКлюч;
-import com.varankin.brains.db.xml.Xml;
-import com.varankin.brains.db.xml.XmlBrains;
+import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.xml.type.XmlГрафика;
 import com.varankin.brains.db.xml.type.XmlИнструкция;
 import com.varankin.brains.db.xml.type.XmlТекстовыйБлок;
@@ -23,16 +21,15 @@ import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_FONT_SIZE;
 import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_X;
 import static com.varankin.io.xml.svg.XmlSvg.SVG_ATTR_Y;
 import static com.varankin.io.xml.svg.XmlSvg.SVG_ELEMENT_TEXT;
-import static com.varankin.io.xml.svg.XmlSvg.XMLNS_SVG;
 
 /**
  *
- * @author Николай
+ * @author &copy; 2022 Николай Варанкин
  */
 abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extends EdtАтрибутный<D,T>
 {
     private ListChangeListener<FxАтрибутный> составитель;
-    protected final List<МаркированныйЗонныйКлюч> компоненты;
+    protected final List<ЗонныйКлюч> компоненты;
     
     EdtУзел( T элемент )
     {
@@ -69,17 +66,17 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     protected void инструкции( List<Node> children )
     {
         children.addAll( загрузить( ЭЛЕМЕНТ.инструкции() ) );
-        компоненты.add( new МаркированныйЗонныйКлюч( Xml.PI_ELEMENT, XmlBrains.XMLNS_BRAINS, null ) );
+        компоненты.add( XmlИнструкция.КЛЮЧ_Э_ИНСТРУКЦИЯ );
     }
     
     protected void тексты( List<Node> children )
     {
         children.addAll( загрузить( ЭЛЕМЕНТ.тексты() ) );
-        компоненты.add( new МаркированныйЗонныйКлюч( Xml.XML_CDATA, XmlBrains.XMLNS_BRAINS, null ) );
+        компоненты.add( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
     }
     
     @Override
-    public List<МаркированныйЗонныйКлюч> компоненты()
+    public List<ЗонныйКлюч> компоненты()
     {
         return компоненты;
     }
