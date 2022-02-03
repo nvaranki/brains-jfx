@@ -267,8 +267,8 @@ public class FxАтрибутный<T extends DbАтрибутный>
         // скопировать все атрибуты
         образец.getSource().ключи().forEach( ключ -> 
         {
-            FxProperty копия   = дубликат.атрибут( ключ.название(), ключ.uri(), FxProperty.class );
-            FxProperty оригинал = образец.атрибут( ключ.название(), ключ.uri(), FxProperty.class );
+            FxProperty копия   = дубликат.атрибут( ключ.НАЗВАНИЕ, ключ.ЗОНА, FxProperty.class );
+            FxProperty оригинал = образец.атрибут( ключ.НАЗВАНИЕ, ключ.ЗОНА, FxProperty.class );
             копия.setValue( оригинал.getValue() );
         });
         // скопировать все коллекции
