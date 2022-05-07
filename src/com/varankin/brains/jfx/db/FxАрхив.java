@@ -14,7 +14,7 @@ import static com.varankin.brains.db.xml.type.XmlАрхив.*;
 
 /**
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class FxАрхив extends FxАтрибутный<DbАрхив>
 {
@@ -38,7 +38,6 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
         СОЗДАН       = new FxReadOnlyPropertyImpl<>( элемент, "создан",       КЛЮЧ_А_СОЗДАН,       элемент::создан       );
         ИЗМЕНЕН      = new FxReadOnlyPropertyImpl<>( элемент, "изменен",      КЛЮЧ_А_ИЗМЕНЕН,      элемент::изменен      );
         НАЗВАНИЕ     = new FxPropertyImpl<>( элемент, "название", КЛЮЧ_А_НАЗВАНИЕ, элемент::название, элемент::название );
-        элемент.обработчик( a -> ИЗМЕНЕН.getFireHandler() );
     }
 
     public ReadOnlyListProperty<FxПакет> пакеты()

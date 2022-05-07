@@ -109,16 +109,14 @@ public class FxАтрибутный<T extends DbАтрибутный>
         атрибутыОсновные();
         атрибутыПрочие();
 
-        String название = кк.НАЗВАНИЕ;
-        String uri = кк.ЗОНА;
         FxReadOnlyProperty p = AM.get( кк );
         if( p == null )
         {
             String префикс = null;//uri.substring( Math.max( uri.lastIndexOf( '/' ) "New name space";
-            архив().определитьПространствоИмен( uri, префикс );
-            FxPropertyImpl np = new FxPropertyImpl( ЭЛЕМЕНТ, название, кк, 
-                    () -> ЭЛЕМЕНТ.атрибут( название, uri, null ),
-                    (t) -> ЭЛЕМЕНТ.определить( название, uri, t ) );
+            архив().определитьПространствоИмен( кк.ЗОНА, префикс );
+            FxPropertyImpl np = new FxPropertyImpl( ЭЛЕМЕНТ, кк.НАЗВАНИЕ, кк, 
+                    () -> ЭЛЕМЕНТ.атрибут( кк, null ),
+                    (t) -> ЭЛЕМЕНТ.определить( кк, t ) );
             AM.put( кк, np );
             АТРИБУТЫ_ПРОЧИЕ.add( np );
             p = np;
