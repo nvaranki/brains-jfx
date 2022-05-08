@@ -30,7 +30,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>brains-db-neo4j-embedded</foreign-project>
+                <foreign-project>brains-db-neo4j</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
