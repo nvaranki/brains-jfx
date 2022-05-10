@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Закладка для установки способа конвертирования значения.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabConverterController" 
+    styleClass="tab-converter"
+    >
+    
+    <stylesheets>
+        <URL value="@TabConverter.css"/>
+    </stylesheets>
+    
+    <children>
+        <Label 
+            text="%tab.converter.method" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="method"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+            GridPane.hgrow="ALWAYS" 
+        />
+        <Label 
+            text="%tab.converter.from" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField
+            fx:id="from"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            GridPane.hgrow="ALWAYS" 
+        />
+        <Label 
+            text="%tab.converter.to" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <TextField
+            fx:id="to"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2"  
+            GridPane.hgrow="ALWAYS" 
+        />
+    </children>
+    
+</GridPane>

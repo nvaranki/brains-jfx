@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Author     : Николай Варанкин
+    Description: Панель меню импорта пакета в архив.
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<Menu
+    fx:controller="com.varankin.brains.jfx.archive.PopupImportController"
+    fx:id="menu"
+    text="%archive.popup.import" 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <items>
+        <MenuItem text="%archive.popup.import.file" onAction="#onActionImportFile" >
+            <graphic>
+                <ImageView>
+                    <image>
+                        <Image url="@/icons16x16/file-xml.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem text="%archive.popup.import.network" onAction="#onActionImportNet" >
+            <graphic>
+                <ImageView>
+                    <image>
+                        <Image url="@/icons16x16/load-internet.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+    </items>
+</Menu>

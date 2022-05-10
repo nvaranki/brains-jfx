@@ -1,0 +1,38 @@
+/* 
+    Document   : ValueRulerPropertiesPane.css
+    Created on : Nov 14, 2013
+    Author     : Николай Варанкин
+    Description: Панель диалога для выбора и установки параметров оси значений.
+*/
+
+.value-ruler-properties-pane #valueMin
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.value-ruler-properties-pane #valueMax
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.value-ruler-properties-pane #textColor
+{
+    -fx-cursor: hand;
+}
+
+.value-ruler-properties-pane #tickColor 
+{
+    -fx-cursor: hand;
+}
+
+.value-ruler-properties-pane #fontPicker
+{
+    -fx-padding: 0px;
+}
+
+.value-ruler-properties-pane 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

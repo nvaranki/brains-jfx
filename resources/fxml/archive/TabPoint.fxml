@@ -1,0 +1,75 @@
+<!-- 
+    Description: Панель выбора и установки параметров точки.
+    Author     : (c) 2017 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabPointController" 
+    styleClass="properties-tab-point"
+    >
+    
+    <stylesheets>
+        <URL value="@TabPoint.css"/>
+    </stylesheets>
+  
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <children>
+        <Label 
+            text="%tab.point.index" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="index"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%tab.point.threshold" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField
+            fx:id="threshold"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%tab.point.sensor" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <CheckBox
+            fx:id="sensor"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%tab.point.pin" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="3" 
+        />
+        <TextField
+            fx:id="pin"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="3"  
+            focusTraversable="true"      
+        />
+    </children>
+  
+</GridPane>
+

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель управления прорисовкой отметок.
+    Author     : (c) 2016 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane
+        fx:controller="com.varankin.brains.jfx.analyser.LegendPaneController"
+        styleClass="legend-pane" 
+        xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" >
+    
+    <stylesheets>
+        <URL value="@LegendPane.css"/>
+    </stylesheets>
+    
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" halignment="LEFT"  minWidth="110" ></ColumnConstraints>
+        <ColumnConstraints hgrow="NEVER"  halignment="RIGHT" minWidth="100" ></ColumnConstraints>
+    </columnConstraints>
+    
+    <rowConstraints>
+        <RowConstraints fillHeight="true" valignment="TOP" vgrow="NEVER" ></RowConstraints>   
+    </rowConstraints>
+    
+    <FlowPane fx:id="values" >
+        <GridPane.columnIndex>0</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+        <Label fx:id="label" />   
+    </FlowPane>
+
+    <CheckBox fx:id="time" selected="false" >
+        <GridPane.columnIndex>1</GridPane.columnIndex>
+        <GridPane.rowIndex>0</GridPane.rowIndex>
+        <contextMenu>
+            <ContextMenu fx:id="timePopup" >
+                <items>
+                    <MenuItem fx:id="menuItemResume" text="%control.popup.start" onAction="#onActionResume" />
+                    <MenuItem fx:id="menuItemStop"   text="%control.popup.stop"  onAction="#onActionStop" />
+                </items>
+            </ContextMenu>
+        </contextMenu>
+    </CheckBox>
+
+</GridPane>

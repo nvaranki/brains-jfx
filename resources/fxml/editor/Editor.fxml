@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Панель редактора.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane 
+    fx:controller="com.varankin.brains.jfx.editor.EditorController" 
+    fx:id="pane" 
+    styleClass="editor"
+    fitToWidth="true" 
+    fitToHeight="true" 
+    hbarPolicy="ALWAYS" 
+    vbarPolicy="ALWAYS"  
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@Editor.css"/>
+    </stylesheets>
+
+    <contextMenu>
+        <ContextMenu fx:id="popup" >
+            <items>
+            </items>
+        </ContextMenu>        
+    </contextMenu>
+    
+    <content>
+        <BorderPane >
+            <center>
+                <ProgressIndicator 
+                    prefWidth="50"  maxWidth="150" 
+                    prefHeight="50" maxHeight="150"  
+                />  
+            </center>
+        </BorderPane>
+    </content>
+    
+</ScrollPane>

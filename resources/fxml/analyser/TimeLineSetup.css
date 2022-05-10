@@ -1,0 +1,21 @@
+/* 
+    Description: Диалог выбора параметров рисования графика.
+    Author     : (с) 2014 Николай Варанкин
+*/
+
+.time-line-setup HBox Button
+{
+    -fx-cursor: hand;
+}
+
+.time-line-setup HBox
+{
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+    -fx-alignment: baseline-right;
+}
+
+.time-line-setup 
+{ 
+}
+

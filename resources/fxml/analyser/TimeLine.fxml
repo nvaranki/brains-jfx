@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель графика динамического изменения значений по времени.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    fx:controller="com.varankin.brains.jfx.analyser.TimeLineController"
+    fx:id="pane"
+    styleClass="time-line" 
+    onContextMenuRequested="#onContextMenuRequested" 
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" 
+    >
+
+    <stylesheets>
+        <URL value="@TimeLine.css"/>
+    </stylesheets>
+    
+    <columnConstraints>
+        <ColumnConstraints minWidth="45" hgrow="NEVER" halignment="RIGHT" />  
+        <ColumnConstraints minWidth="100" hgrow="ALWAYS" halignment="LEFT" />  
+    </columnConstraints>
+    
+    <rowConstraints>
+        <RowConstraints minHeight="100" vgrow="ALWAYS" valignment="BOTTOM" />   
+        <RowConstraints minHeight="25" vgrow="NEVER" valignment="TOP" />   
+        <RowConstraints vgrow="NEVER" fillHeight="false" />   
+    </rowConstraints>
+    
+    <fx:include 
+        fx:id="valueRuler" 
+        source="ValueRuler.fxml" 
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="0"
+        />
+
+    <fx:include 
+        fx:id="timeRuler" 
+        source="TimeRuler.fxml" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="1"
+        />
+
+    <fx:include 
+        fx:id="graph" 
+        source="GraphPane.fxml" 
+        onDragOver="#onDragOver"
+        onDragDropped="#onDragDropped"
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="0"
+        />
+
+    <fx:include 
+        fx:id="legend" 
+        source="LegendPane.fxml" 
+        onDragOver="#onDragOver"
+        onDragDropped="#onDragDropped"
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="2"
+        GridPane.columnSpan="2"
+        />
+    
+    <fx:define>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem 
+                    text="%timeline.popup.remove" 
+                    onAction="#onActionRemove"
+                    >
+                    <graphic>
+                        <ImageView>
+                            <image>
+                                <Image url="@/icons16x16/remove.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </MenuItem>
+            </items>
+        </ContextMenu>
+    </fx:define>
+    
+</GridPane>

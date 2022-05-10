@@ -1,0 +1,11 @@
+/* 
+    Description: Панель установки параметров класса Java.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.tab-class-java 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель выбора и установки параметров заметки.
+    Author     : (c) 2017 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabNoteController" 
+    styleClass="properties-tab-note"
+    >
+    
+    <stylesheets>
+        <URL value="@TabNote.css"/>
+    </stylesheets>
+  
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+        
+    <children>
+        <Label 
+            text="%properties.tab.note.level" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField 
+            fx:id="level"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0" 
+        />
+        <Label 
+            text="%properties.tab.note.text" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextArea
+            fx:id="text"
+            focusTraversable="true"      
+            wrapText="true"
+            editable="false"
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2"  
+            GridPane.columnSpan="2"  
+            GridPane.rowSpan="1"  
+        />
+    </children>
+  
+</GridPane>

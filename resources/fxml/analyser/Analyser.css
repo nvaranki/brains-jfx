@@ -1,0 +1,28 @@
+/* 
+    Description: Панель графиков.
+    Author     : (c) 2016 Николай Варанкин
+*/
+
+.analyser 
+{ 
+}
+
+.analyser #toolbar
+{
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5px;
+    -fx-spacing: 5px;
+}
+
+.analyser #box
+{
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+    -fx-background-color: white;
+}
+
+.analyser #box #toolbar Button
+{
+    -fx-cursor: hand;
+}

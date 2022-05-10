@@ -1,0 +1,10 @@
+/* 
+    Description: Панель навигатора по архиву.
+    Author     : (c) 2015 Николай Варанкин
+*/
+
+.archive HBox
+{ 
+    -fx-padding: 0px;
+}
+

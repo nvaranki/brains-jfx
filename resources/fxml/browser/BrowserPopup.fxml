@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Контекстное меню навигатора по проектам.
+    Author     : (c) 2015 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<ContextMenu 
+    fx:controller="com.varankin.brains.jfx.browser.BrowserPopupController" 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+
+    <items>
+        <MenuItem 
+                onAction="#onActionStart" 
+                text="%browser.action.start" 
+                disable="${controller.disableStart}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/start.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionPause" 
+                text="%browser.action.pause" 
+                disable="${controller.disablePause}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/pause.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionStop" 
+                text="%browser.action.stop" 
+                disable="${controller.disableStop}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/stop.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionRemove" 
+                text="%browser.action.remove" 
+                disable="${controller.disableRemove}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/remove.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionProperties" 
+                text="%browser.action.properties" 
+                disable="${controller.disableProperties}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/properties.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+    </items>
+    
+</ContextMenu>

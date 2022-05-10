@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Панель графиков.
+    Author     : (c) 2016 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane 
+    fx:controller="com.varankin.brains.jfx.analyser.AnalyserController" 
+    fx:id="pane" 
+    styleClass="analyser"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@Analyser.css"/>
+    </stylesheets>
+
+    <top>
+        <HBox 
+            fx:id="toolbar" 
+            alignment="CENTER_LEFT" 
+            >  
+            <Button 
+                text="@analyzer.popup.add" 
+                onAction="#onActionAddTimeLine" 
+                />      
+            <Button 
+                fx:id="buttonRemoveAll" 
+                text="@analyzer.popup.clean" 
+                onAction="#onActionRemoveAllTimeLines" 
+                >
+                <graphic>
+                    <ImageView >
+                        <image>
+                            <Image url="@icons16x16/remove.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>      
+            <ToggleButton 
+                fx:id="buttonDynamic" 
+                text="@analyzer.popup.pause" 
+                selected="false" 
+                >
+                <graphic>
+                    <ImageView >
+                        <image>
+                            <Image url="@/icons16x16/pause.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </ToggleButton>      
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane 
+            fitToWidth="true" 
+            hbarPolicy="NEVER" 
+            vbarPolicy="ALWAYS"  
+            >
+            <contextMenu>
+                <ContextMenu fx:id="popup" >
+                    <items>
+                        <MenuItem 
+                            fx:id="menuItemAdd" 
+                            text="%analyser.popup.add"  
+                            onAction="#onActionAddTimeLine" 
+                        />  
+                    </items>
+                </ContextMenu>        
+            </contextMenu>
+            <content>
+                <VBox 
+                    fx:id="box"
+                    fillWidth="true" 
+                    focusTraversable="true"
+                    visible="false" 
+                    >
+                    <children>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+    
+</BorderPane>

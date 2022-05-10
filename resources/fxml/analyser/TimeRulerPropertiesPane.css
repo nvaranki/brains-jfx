@@ -1,0 +1,41 @@
+/* 
+    Description: Панель выбора и установки параметров параметров оси времени.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.time-ruler-properties-pane #duration
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.time-ruler-properties-pane #excess
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.time-ruler-properties-pane #unit
+{
+    -fx-cursor: hand;
+}
+
+.time-ruler-properties-pane #textColor
+{
+    -fx-cursor: hand;
+}
+
+.time-ruler-properties-pane #tickColor 
+{
+    -fx-cursor: hand;
+}
+
+.time-ruler-properties-pane #fontPicker
+{
+    -fx-padding: 0px;
+}
+
+.time-ruler-properties-pane 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

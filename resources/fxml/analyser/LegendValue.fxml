@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    Description: Элемент управления прорисовкой отметок.
+    Author     : (c) 2016 Николай Варанкин
+-->
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<CheckBox 
+        fx:controller="com.varankin.brains.jfx.analyser.LegendValueController"
+        styleClass="legend-value" 
+        fx:id="legend" 
+        selected="false"
+        xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" >
+    
+    <stylesheets>
+        <URL value="@LegendValue.css"/>
+    </stylesheets>
+    
+    <contextMenu>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem fx:id="menuItemShow" onAction="#onActionShow" />  
+                <MenuItem fx:id="menuItemHide" onAction="#onActionHide" />  
+                <MenuItem fx:id="menuItemRemove" onAction="#onActionRemove" />  
+                <MenuItem fx:id="menuItemProperties" onAction="#onActionProperties" text="%control.popup.properties" >
+                    <graphic>
+                        <ImageView>
+                            <image>
+                                <Image url="@/icons16x16/remove.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </MenuItem> 
+            </items>
+        </ContextMenu> 
+    </contextMenu>
+    
+</CheckBox>

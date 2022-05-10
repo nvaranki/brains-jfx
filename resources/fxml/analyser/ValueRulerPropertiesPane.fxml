@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель выбора параметров оси значений.
+    Author     : 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane
+    fx:controller="com.varankin.brains.jfx.analyser.ValueRulerPropertiesPaneController" 
+    styleClass="value-ruler-properties-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@ValueRulerPropertiesPane.css"/>
+    </stylesheets>
+    
+  <children>
+    <Label 
+        text="%properties.ruler.value.min" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <TextField 
+        fx:id="valueMin"
+        prefColumnCount="9"
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"
+        GridPane.columnSpan="2"  
+    />   
+    <Label 
+        text="%properties.ruler.value.max" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <TextField 
+        fx:id="valueMax"
+        prefColumnCount="9"  
+        focusTraversable="true"   
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0" 
+        GridPane.columnSpan="2"  
+    />   
+    <Label 
+        text="%properties.ruler.text.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <ColorPicker 
+        fx:id="textColor" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2" 
+        focusTraversable="false"      
+    /><!-- focusTraversable="true" RT-21549 -->
+    <Label 
+        text="%properties.ruler.tick.color" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2" 
+    />
+    <ColorPicker 
+        fx:id="tickColor" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="2" 
+        focusTraversable="false"      
+    /><!-- focusTraversable="true" RT-21549 -->
+    <fx:include 
+        source="../shared/FontPickerPane.fxml" 
+        fx:id="fontPicker"
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="3" 
+        GridPane.columnSpan="4"  
+    />
+  </children>
+  
+</GridPane>

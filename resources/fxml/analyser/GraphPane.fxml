@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Графическая зона для рисования  отметок.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane
+        fx:controller="com.varankin.brains.jfx.analyser.GraphPaneController"
+        styleClass="graph-pane" 
+        fx:id="pane"
+        onContextMenuRequested="#onContextMenuRequested"  
+        xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2" >
+    
+    <stylesheets>
+        <URL value="@GraphPane.css"/>
+    </stylesheets>
+    
+    <fx:define>
+        <ContextMenu fx:id="popup" >
+            <items>
+                <MenuItem 
+                    fx:id="menuItemResume" 
+                    onAction="#onActionResume" 
+                    text="%control.popup.start"  
+                />  
+                <MenuItem 
+                    fx:id="menuItemStop" 
+                    onAction="#onActionStop" 
+                    text="%control.popup.stop"  
+                />  
+                <MenuItem 
+                    onAction="#onActionProperties" 
+                    text="%control.popup.properties"
+                    >
+                    <graphic>
+                        <ImageView>
+                            <image>
+                                <Image url="@/icons16x16/properties.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </MenuItem> 
+            </items>
+        </ContextMenu>
+    </fx:define>
+    
+    <ImageView fx:id="imageView" preserveRatio="true" mouseTransparent="true" />
+
+</Pane>

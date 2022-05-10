@@ -1,0 +1,31 @@
+/* 
+    Description: Панель для выбора и установки параметров шрифта.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.font-picker-pane #family
+{
+    -fx-cursor: hand;
+}
+
+.font-picker-pane #weight
+{
+    -fx-cursor: hand;
+}
+
+.font-picker-pane #posture
+{
+    -fx-cursor: hand;
+}
+
+.font-picker-pane #size
+{
+    -fx-alignment: BASELINE_RIGHT;
+}
+
+.font-picker-pane 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

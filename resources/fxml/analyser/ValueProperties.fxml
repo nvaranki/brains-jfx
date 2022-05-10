@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель диалога для выбора и установки параметров прорисовки отметок.
+    Author     : (с) 2016 Николай Варанкин
+-->
+<?import java.lang.* ?>
+<?import java.net.URL ?>
+<?import java.util.* ?>
+<?import javafx.geometry.* ?>
+<?import javafx.scene.control.* ?>
+<?import javafx.scene.layout.* ?>
+<?import javafx.scene.paint.* ?>
+
+<BorderPane
+    fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesController" 
+    styleClass="value-properties"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+  <stylesheets>
+    <URL value="@ValueProperties.css"/>
+  </stylesheets>
+  
+  <center>
+        <TabPane>
+            <tabs>
+                <Tab text="%observable.setup.presentation.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ValuePropertiesPane.fxml" 
+                            fx:id="properties"
+                            />
+                    </content>
+                </Tab>  
+                <Tab text="%observable.setup.conversion.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ObservableConversionPane.fxml" 
+                            fx:id="observableConversionPane"
+                            />
+                    </content>
+                </Tab>  
+            </tabs>
+        </TabPane>
+  </center>  
+  
+  <bottom>
+    <HBox>
+      <children>
+        <Button 
+            text="%button.ok" 
+            onAction="#onActionOK" 
+            defaultButton="true" 
+            fx:id="buttonOK"  
+        />
+        <Button 
+            text="%button.cancel" 
+            onAction="#onActionCancel" 
+            cancelButton="true" 
+        />
+        <Button 
+            text="%button.apply" 
+            onAction="#onActionApply"
+            fx:id="buttonApply"  
+        />
+      </children>
+    </HBox>
+  </bottom>
+  
+</BorderPane>

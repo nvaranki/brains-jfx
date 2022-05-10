@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель выбора параметров прорисовки отметок.
+    Author     : (c) 2016 Николай Варанкин
+-->
+<?import java.lang.* ?>
+<?import java.net.URL ?>
+<?import java.util.* ?>
+<?import javafx.collections.* ?>
+<?import javafx.geometry.* ?>
+<?import javafx.scene.control.* ?>
+<?import javafx.scene.image.* ?>
+<?import javafx.scene.layout.* ?>
+<?import javafx.scene.paint.* ?>
+
+<GridPane
+    fx:controller="com.varankin.brains.jfx.analyser.ValuePropertiesPaneController" 
+    styleClass="value-properties-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+  <stylesheets>
+    <URL value="@ValuePropertiesPane.css"/>
+  </stylesheets>
+    
+  <children>
+    <Label 
+        text="%observable.setup.value.name" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <ComboBox
+        fx:id="title"
+        focusTraversable="true"
+        editable="true" 
+        visibleRowCount="5" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0"  
+        GridPane.columnSpan="3" 
+    />
+    <Label 
+        text="%properties.value.color" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <ColorPicker 
+        fx:id="colorPicker"
+        focusTraversable="false"  
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1" 
+    />
+    <Label 
+        text="%properties.value.marker" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <ComboBox 
+        fx:id="markerPicker" 
+        visibleRowCount="7" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2"
+    />
+    <Label 
+        text="%properties.value.pattern" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="1" 
+    />
+    <ComboBox 
+        fx:id="scalePicker" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2"
+    />
+    <ImageView 
+        fx:id="preview"
+        preserveRatio="true" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="1" 
+        GridPane.rowSpan="2" 
+    />
+  </children>
+  
+</GridPane>

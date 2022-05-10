@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Диалог выбора параметров рисования графика.
+    Author     : (с) 2016 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane 
+    fx:controller="com.varankin.brains.jfx.analyser.TimeLineSetupController" 
+    styleClass="time-line-setup"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2"
+    >
+    
+    <stylesheets>
+        <URL value="@TimeLineSetup.css"/>
+    </stylesheets>
+  
+    <center>
+        <TabPane>
+            <tabs>
+                <Tab text="%timeline.setup.graph.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="GraphPropertiesPane.fxml" 
+                            fx:id="graphPropertiesPane"
+                            />
+                    </content>
+                </Tab>  
+                <Tab text="%timeline.setup.value.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="ValueRulerPropertiesPane.fxml" 
+                            fx:id="valueRulerPropertiesPane"
+                            />
+                    </content>
+                </Tab>  
+                <Tab text="%timeline.setup.time.title" closable="false" >
+                    <content>
+                        <fx:include 
+                            source="TimeRulerPropertiesPane.fxml" 
+                            fx:id="timeRulerPropertiesPane"
+                            />
+                    </content>
+                </Tab>  
+            </tabs>
+        </TabPane>
+    </center>
+    
+    <bottom>
+        <HBox>
+            <children>
+                <Button 
+                    fx:id="buttonOK" 
+                    text="%button.create" 
+                    defaultButton="true"
+                    onAction="#onActionOK"
+                    />
+                <Button 
+                    fx:id="buttonCancel" 
+                    text="%button.cancel" 
+                    cancelButton="true" 
+                    onAction="#onActionCancel"
+                    /> 
+            </children>
+        </HBox>
+    </bottom>
+    
+</BorderPane>

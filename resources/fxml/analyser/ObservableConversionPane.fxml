@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Панель выбора и установки параметров конверсии наблюдаемого значения.
+    Author     : (c) 2016 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane
+    fx:controller="com.varankin.brains.jfx.analyser.ObservableConversionPaneController" 
+    styleClass="observable-conversion-pane"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@ObservableConversionPane.css"/>
+    </stylesheets>
+    
+  <children>
+    <Label 
+        text="%observable.setup.conversion.parameter" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="0" 
+    />
+    <ComboBox
+        fx:id="parameter"
+        focusTraversable="true"
+        editable="false" 
+        visibleRowCount="5" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="0"  
+    />
+    <Label 
+        text="%observable.setup.conversion.convertor" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <ComboBox
+        fx:id="convertor"
+        focusTraversable="true"
+        editable="false" 
+        visibleRowCount="5" 
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="1"  
+    />
+    <Label 
+        text="%observable.setup.buffer.name" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <TextField
+        fx:id="buffer"
+        focusTraversable="true"      
+        prefColumnCount="6"       
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2"  
+    />
+  </children>
+  
+</GridPane>

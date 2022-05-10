@@ -1,0 +1,11 @@
+/* 
+    Description: Панель выбора и установки параметров архива.
+    Author     : (c) 2016 Николай Варанкин
+*/
+
+.properties-tab-archive 
+{
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}

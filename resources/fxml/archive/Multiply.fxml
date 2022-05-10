@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Панель выбора и установки параметров дублирования элементов.
+    Author     : (c) 2017 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane 
+    fx:controller="com.varankin.brains.jfx.archive.MultiplyController" 
+    styleClass="multiply"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@Multiply.css"/>
+    </stylesheets>
+    
+    <center>
+        <GridPane
+            fx:id="pane"
+            >
+            <children>
+                <Label 
+                    text="%multiply.count" 
+                    GridPane.columnIndex="1" 
+                    GridPane.rowIndex="0" 
+                />
+                <Label 
+                    text="%multiply.offset" 
+                    GridPane.columnIndex="2" 
+                    GridPane.rowIndex="0" 
+                />
+                <Label 
+                    text="%multiply.nx" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="1" 
+                />
+                <Spinner
+                    fx:id="nx"
+                    editable="true"
+                    styleClass="arrows-on-right-horizontal"
+                    GridPane.columnIndex="1" 
+                    GridPane.rowIndex="1" 
+                />
+                <TextField
+                    fx:id="dx"
+                    prefColumnCount="3"
+                    alignment="BASELINE_RIGHT"
+                    GridPane.columnIndex="2" 
+                    GridPane.rowIndex="1" 
+                    text="0"
+                />
+                <Label 
+                    text="%multiply.ny" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="2" 
+                />
+                <Spinner
+                    fx:id="ny"
+                    editable="true"
+                    styleClass="arrows-on-right-horizontal"
+                    GridPane.columnIndex="1" 
+                    GridPane.rowIndex="2" 
+                />
+                <TextField
+                    fx:id="dy"
+                    prefColumnCount="3"
+                    alignment="BASELINE_RIGHT"
+                    text="0"
+                    GridPane.columnIndex="2" 
+                    GridPane.rowIndex="2" 
+                />
+                <Label 
+                    text="%multiply.preview" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="3" 
+                />
+                <GridPane
+                    fx:id="preview"
+                    GridPane.columnIndex="1" 
+                    GridPane.rowIndex="3" 
+                    >
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER"  minWidth="20" ></ColumnConstraints>
+                        <ColumnConstraints halignment="CENTER"  minWidth="20" ></ColumnConstraints>
+                        <ColumnConstraints halignment="CENTER"  minWidth="20" ></ColumnConstraints>
+                        <ColumnConstraints halignment="CENTER"  minWidth="20" ></ColumnConstraints>
+                        <ColumnConstraints halignment="CENTER"  minWidth="20" ></ColumnConstraints>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints valignment="CENTER" minHeight="20" ></RowConstraints>   
+                        <RowConstraints valignment="CENTER" minHeight="20" ></RowConstraints>   
+                        <RowConstraints valignment="CENTER" minHeight="20" ></RowConstraints>   
+                        <RowConstraints valignment="CENTER" minHeight="20" ></RowConstraints>   
+                        <RowConstraints valignment="CENTER" minHeight="20" ></RowConstraints>   
+                    </rowConstraints>
+                    <children>
+                        <Circle fx:id="c00" radius="9"   GridPane.columnIndex="0" GridPane.rowIndex="0" strokeWidth="2" />
+                        <Circle fx:id="c10" radius="10"  GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Circle fx:id="c20" radius="10"  GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <Circle fx:id="c30" radius="10"  GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                        <Circle fx:id="c40" radius="10"  GridPane.columnIndex="4" GridPane.rowIndex="0" />
+                        <Circle fx:id="c01" radius="10"  GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Circle fx:id="c11" radius="10"  GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Circle fx:id="c21" radius="10"  GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Circle fx:id="c31" radius="10"  GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Circle fx:id="c41" radius="10"  GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <Circle fx:id="c02" radius="10"  GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Circle fx:id="c12" radius="10"  GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Circle fx:id="c22" radius="10"  GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <Circle fx:id="c32" radius="10"  GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <Circle fx:id="c42" radius="10"  GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                        <Circle fx:id="c03" radius="10"  GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <Circle fx:id="c13" radius="10"  GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Circle fx:id="c23" radius="10"  GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                        <Circle fx:id="c33" radius="10"  GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <Circle fx:id="c43" radius="10"  GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                        <Circle fx:id="c04" radius="10"  GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <Circle fx:id="c14" radius="10"  GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Circle fx:id="c24" radius="10"  GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <Circle fx:id="c34" radius="10"  GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                        <Circle fx:id="c44" radius="10"  GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                    </children>
+                </GridPane>
+                <Label 
+                    fx:id="note1" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="4" 
+                    GridPane.columnSpan="3" 
+                />
+                <Label 
+                    text="%multiply.prefix" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="5" 
+                />
+                <TextField
+                    fx:id="prefix"
+                    GridPane.columnIndex="1" 
+                    GridPane.rowIndex="5" 
+                />
+                <CheckBox
+                    fx:id="hasPrefix"
+                    GridPane.columnIndex="2" 
+                    GridPane.rowIndex="5" 
+                />
+                <Label 
+                    text="%multiply.index" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="6" 
+                />
+                <Spinner
+                    fx:id="index"
+                    editable="true"
+                    styleClass="arrows-on-right-horizontal"
+                    GridPane.columnIndex="1" 
+                    GridPane.rowIndex="6" 
+                />
+                <CheckBox
+                    fx:id="hasIndex"
+                    GridPane.columnIndex="2" 
+                    GridPane.rowIndex="6" 
+                />
+                <Label 
+                    fx:id="note2" 
+                    GridPane.columnIndex="0" 
+                    GridPane.rowIndex="7" 
+                    GridPane.columnSpan="3" 
+                />
+            </children>
+        </GridPane>
+    </center>
+    
+    <bottom>
+        <HBox>
+            <Button 
+                fx:id="buttonOK"
+                text="%multiply.start" 
+                onAction="#onActionOK" 
+                defaultButton="true"
+                />
+            <Button 
+                text="%button.cancel" 
+                onAction="#onActionCancel" 
+                cancelButton="true" 
+                />
+        </HBox>
+    </bottom>
+
+</BorderPane>

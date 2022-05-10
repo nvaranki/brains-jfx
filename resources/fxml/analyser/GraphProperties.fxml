@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Author     : Николай Варанкин
+    Description: Панель диалога для выбора и установки параметров рисования графика.
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane 
+    fx:controller="com.varankin.brains.jfx.analyser.GraphPropertiesController" 
+    styleClass="graph-properties"
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+
+    <stylesheets>
+        <URL value="@GraphProperties.css"/>
+    </stylesheets>
+
+  <center>
+      <fx:include source="GraphPropertiesPane.fxml" fx:id="properties"/>
+  </center>  
+  
+  <bottom>
+    <HBox>
+      <children>
+        <Button 
+            text="%button.ok" 
+            onAction="#onActionOK" 
+            defaultButton="true"
+            fx:id="buttonOK"  
+        />
+        <Button 
+            text="%button.cancel" 
+            onAction="#onActionCancel" 
+            cancelButton="true" 
+        />
+        <Button 
+            text="%button.apply" 
+            onAction="#onActionApply"
+            fx:id="buttonApply"  
+        />
+      </children>
+    </HBox>
+  </bottom>
+  
+</BorderPane>

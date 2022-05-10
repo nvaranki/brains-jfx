@@ -1,0 +1,21 @@
+/* 
+    Description: Диалог выбора параметров рисования наблюдаемого значения.
+    Author     : (с) 2014 Николай Варанкин
+*/
+
+.observable-setup HBox Button
+{
+    -fx-cursor: hand;
+}
+
+.observable-setup HBox
+{
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+    -fx-alignment: baseline-right;
+}
+
+.observable-setup 
+{ 
+}
+

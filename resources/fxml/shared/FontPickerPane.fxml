@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Панель для выбора и установки параметров шрифта.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane
+    fx:controller="com.varankin.brains.jfx.shared.FontPickerPaneController" 
+    styleClass="font-picker-pane" 
+    xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/2.2">
+
+    <stylesheets>
+        <URL value="@FontPickerPane.css"/>
+    </stylesheets>
+    
+    <Label 
+        text="%properties.font.family" 
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="0" 
+    />   
+    <ComboBox 
+        fx:id="family" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="0" 
+        GridPane.columnSpan="3"
+    />
+    <Label 
+        text="%properties.font.weight" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="1" 
+    />
+    <ComboBox 
+        fx:id="weight" 
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="1"
+    />
+    <Label 
+        text="%properties.font.posture" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="1" 
+    />
+    <ComboBox 
+        fx:id="posture" 
+        GridPane.columnIndex="3"
+        GridPane.rowIndex="1"
+    />
+    <Label 
+        text="%properties.font.size" 
+        GridPane.columnIndex="0" 
+        GridPane.rowIndex="2" 
+    />
+    <TextField 
+        fx:id="size"
+        prefColumnCount="4"  
+        GridPane.columnIndex="1" 
+        GridPane.rowIndex="2" 
+    />
+    <Label 
+        text="%properties.font.sample" 
+        GridPane.columnIndex="2" 
+        GridPane.rowIndex="2" 
+    />
+    <Label 
+        fx:id="sample" 
+        GridPane.columnIndex="3" 
+        GridPane.rowIndex="2" 
+    />    
+
+</GridPane>

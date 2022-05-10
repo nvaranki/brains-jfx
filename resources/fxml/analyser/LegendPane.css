@@ -1,0 +1,21 @@
+/* 
+    Description: Панель управления прорисовкой отметок.
+    Author     : (c) 2016 Николай Варанкин
+*/
+
+.legend-pane #values
+{
+    -fx-hgap: 30px;
+    -fx-alignment: top-left;
+    -fx-padding: 0 5px 0 5px;
+}
+
+.legend-pane #time
+{
+    
+}
+
+.legend-pane 
+{ 
+}
+

@@ -1,0 +1,9 @@
+/* 
+    Description: Панель навигатора по проектам.
+    Author     : (c) 2015 Николай Варанкин
+*/
+
+.browser HBox
+{ 
+    -fx-padding: 0px;
+}

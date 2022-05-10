@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Панель навигатора по архиву.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<TitledPane 
+        xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+        fx:controller="com.varankin.brains.jfx.archive.ArchiveController" 
+        styleClass="archive"
+        text="%archive.title"
+        >
+    
+    <stylesheets>
+        <URL value="@Archive.css"/>
+    </stylesheets>
+
+    <content>
+        <HBox >
+            <children>
+                <fx:include fx:id="toolbar" source="ArchiveToolBar.fxml" />
+                <TreeView fx:id="tree" showRoot="false" editable="false" HBox.hgrow="ALWAYS" >
+                    <contextMenu>
+                        <fx:include fx:id="popup" source="ArchivePopup.fxml" />
+                    </contextMenu>
+                </TreeView>
+            </children>
+        </HBox>
+    </content>
+
+</TitledPane>

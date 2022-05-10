@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель закладок для установки параметров процессора.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.PropertiesXmlNameSpaceController" 
+    styleClass="properties-processor"
+    >
+    
+    <stylesheets>
+        <URL value="@PropertiesProcessor.css"/>
+    </stylesheets>
+
+    <tabs>
+        <Tab 
+            text="%properties.processor.tab.processor" 
+            closable="false"
+            >
+            <fx:include fx:id="processor" source="TabProcessor.fxml" />
+        </Tab>
+        <Tab 
+            text="%properties.processor.tab.element" 
+            closable="false"
+            >
+            <fx:include fx:id="element" source="TabElement.fxml" />
+        </Tab>
+    </tabs>
+
+</TabPane>

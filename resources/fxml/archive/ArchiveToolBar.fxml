@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Набор инструментов навигатора по архиву.
+    Author     : (c) 2014 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<ToolBar 
+        fx:controller="com.varankin.brains.jfx.archive.ArchiveToolBarController" 
+        styleClass="archive-toolbar"
+        orientation="VERTICAL" 
+        xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    
+    <stylesheets>
+        <URL value="@ArchiveToolBar.css"/>
+    </stylesheets>
+
+    <items>
+        <Button onAction="#onActionLoad" disable="${controller.disableLoad}" >
+            <tooltip>
+                <Tooltip text="%archive.action.load" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/load.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Separator orientation="HORIZONTAL" /> 
+        <Button onAction="#onActionPreview" disable="${controller.disablePreview}" >
+            <tooltip>
+                <Tooltip text="%archive.action.preview" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/preview.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionEdit" disable="${controller.disableEdit}" >
+            <tooltip>
+                <Tooltip text="%archive.action.edit" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/edit.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionRemove" disable="${controller.disableRemove}" >
+            <tooltip>
+                <Tooltip text="%archive.action.remove" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/remove.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionNew" disable="${controller.disableNew}" >
+            <tooltip>
+                <Tooltip text="%archive.action.new" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/new-library.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionProperties" disable="${controller.disableProperties}" >
+            <tooltip>
+                <Tooltip text="%archive.action.properties" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/properties.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Separator orientation="HORIZONTAL" /> 
+        <Button onAction="#onActionImportFile" disable="${controller.disableImportFile}" >
+            <tooltip>
+                <Tooltip text="%archive.action.import.file" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-xml.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionImportNet" disable="${controller.disableImportNet}" >
+            <tooltip>
+                <Tooltip text="%archive.action.import.network" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/load-internet.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionExportXml" disable="${controller.disableExportXml}" >
+            <tooltip>
+                <Tooltip text="%archive.action.export.xml" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-export.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button onAction="#onActionExportPic" disable="${controller.disableExportPic}" >
+            <tooltip>
+                <Tooltip text="%archive.action.export.pic" />
+            </tooltip>
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-export.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </items>
+    
+</ToolBar>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель установки параметров класса Java.
+    Author     : (c) 2020 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.props.TabClassJavaController" 
+    styleClass="tab-class-java"
+    >
+    
+    <stylesheets>
+        <URL value="@TabClassJava.css"/>
+    </stylesheets>
+    
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+        
+    <children>
+        <CheckBox 
+            text="%tab.class.name" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="name"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+        />
+        <Label 
+            text="%tab.class.purpose" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <ChoiceBox
+            fx:id="purpose"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+        />
+        <Label 
+            text="%tab.class.code" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <Button 
+            fx:id="compile"
+            text="%properties.tab.compile" 
+            onAction="#compile"
+            GridPane.halignment="RIGHT"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2" 
+        />
+        <TextArea
+            fx:id="code"
+            prefColumnCount="40"
+            prefRowCount="15"  
+            focusTraversable="true"      
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="3"  
+            GridPane.columnSpan="2" 
+        />
+    </children>
+    
+</GridPane>

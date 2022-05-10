@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель ввода и редактирования текста.
+    Author     : (c) 2020 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.props.TabTextController" 
+    styleClass="properties-tab-text"
+    >
+    
+    <stylesheets>
+        <URL value="@TabText.css"/>
+    </stylesheets>
+  
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+        
+    <children>
+        <Label 
+            text="%properties.text.text" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextArea
+            fx:id="text"
+            focusTraversable="true"      
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1"  
+            GridPane.columnSpan="2" 
+            GridPane.rowSpan="1"  
+        />
+        <Label 
+            text="%properties.text.line" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="2" 
+        />
+        <TextField
+            fx:id="line"
+            focusTraversable="true"      
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="2"  
+        />
+    </children>
+  
+</GridPane>

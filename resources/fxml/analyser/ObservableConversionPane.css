@@ -1,0 +1,12 @@
+/* 
+    Description: Панель выбора и установки параметров конверсии наблюдаемого значения.
+    Author     : (c) 2014 Николай Варанкин
+*/
+
+.observable-conversion-pane
+{ 
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
+

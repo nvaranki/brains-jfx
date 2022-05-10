@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Description: Панель выбора и установки параметров пакета.
+    Author     : (c) 2017 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane 
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="com.varankin.brains.jfx.archive.TabPackageController" 
+    styleClass="properties-tab-package"
+    >
+    
+    <stylesheets>
+        <URL value="@TabPackage.css"/>
+    </stylesheets>
+  
+    <columnConstraints>
+        <ColumnConstraints minWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <children>
+        <Label 
+            text="%tab.package.name" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="0" 
+        />
+        <TextField
+            fx:id="name"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="0"  
+            focusTraversable="true"      
+        />
+        <Label 
+            text="%tab.package.version" 
+            GridPane.columnIndex="0" 
+            GridPane.rowIndex="1" 
+        />
+        <TextField
+            fx:id="version"
+            GridPane.columnIndex="1" 
+            GridPane.rowIndex="1"  
+            focusTraversable="true" 
+            editable="false"     
+        />
+    </children>
+  
+</GridPane>

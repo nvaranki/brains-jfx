@@ -1,0 +1,11 @@
+/*
+    Document   : LegendValue.css
+    Created on : Nov 10, 2013
+    Author     : Николай Варанкин
+    Description: Элемент управления прорисовкой отметок.
+ */
+
+.legend-value 
+{
+    -fx-graphic-text-gap: 3px;
+}

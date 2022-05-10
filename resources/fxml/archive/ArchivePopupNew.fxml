@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Description: Контекстное меню новых элементов навигатора по архиву.
+    Author     : (c) 2017 Николай Варанкин
+-->
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<Menu 
+    fx:controller="com.varankin.brains.jfx.archive.ArchivePopupNewController" 
+    text="%archive.action.new"
+    xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    
+    <items>
+        <MenuItem 
+                onAction="#onActionNewАрхив" 
+                text="%cell.archive" 
+                disable="${controller.disableNewАрхив}" >
+            <!--graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-xml.png" />
+                    </image>
+                </ImageView>
+            </graphic-->
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewПакет" 
+                text="%cell.package" 
+                disable="${controller.disableNewПакет}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file-xml.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewПроект" 
+                text="%cell.project" 
+                disable="${controller.disableNewПроект}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/new-project.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewБиблиотека" 
+                text="%cell.library" 
+                disable="${controller.disableNewБиблиотека}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/new-library.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewФрагмент" 
+                text="%cell.fragment" 
+                disable="${controller.disableNewФрагмент}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/fragment.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewСигнал" 
+                text="%cell.signal" 
+                disable="${controller.disableNewСигнал}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/signal.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewСенсор" 
+                text="%cell.sensor" 
+                disable="${controller.disableNewСенсор}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/sensor.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewСоединение" 
+                text="%cell.connector" 
+                disable="${controller.disableNewСоединение}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/connector.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewКонтакт" 
+                text="%cell.pin" 
+                disable="${controller.disableNewКонтакт}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/pin.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewМодуль" 
+                text="%cell.module" 
+                disable="${controller.disableNewМодуль}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/module.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewРасчет" 
+                text="%cell.compute" 
+                disable="${controller.disableNewРасчет}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/compute.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewЛента" 
+                text="%cell.timeline" 
+                disable="${controller.disableNewЛента}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/timeline.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewПоле" 
+                text="%cell.field" 
+                disable="${controller.disableNewПоле}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/field2.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewПроцессор" 
+                text="%cell.processor" 
+                disable="${controller.disableNewПроцессор}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/processor2.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewТочка" 
+                text="%cell.point" 
+                disable="${controller.disableNewТочка}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/point.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewПараметр" 
+                text="%cell.parameter" 
+                disable="${controller.disableNewПараметр}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/parameter.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewЗаметка" 
+                text="%cell.note" 
+                disable="${controller.disableNewЗаметка}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/properties.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewИнструкция" 
+                text="%cell.instruction" 
+                disable="${controller.disableNewИнструкция}" >
+            <!--graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/.png" />
+                    </image>
+                </ImageView>
+            </graphic-->
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewКлассJava" 
+                text="%cell.class.java" 
+                disable="${controller.disableNewКлассJava}" >
+            <!--graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/.png" />
+                    </image>
+                </ImageView>
+            </graphic-->
+        </MenuItem>
+        <MenuItem 
+                onAction="#onActionNewТекстовыйБлок" 
+                text="%cell.text" 
+                disable="${controller.disableNewТекстовыйБлок}" >
+            <graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/file.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </MenuItem>
+        <SeparatorMenuItem />
+        <MenuItem 
+                onAction="#onActionNewXmlNameSpace" 
+                text="%cell.namespace" 
+                disable="${controller.disableNewXmlNameSpace}" >
+            <!--graphic>
+                <ImageView >
+                    <image>
+                        <Image url="@/icons16x16/.png" />
+                    </image>
+                </ImageView>
+            </graphic-->
+        </MenuItem>
+    </items>
+</Menu>
