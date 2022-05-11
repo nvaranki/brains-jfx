@@ -25,3 +25,4 @@ This is a NetBeans/Ant project built on JavaFX API. It requires:
 [../brains-db-neo4j](https://github.com/nvaranki/brains-db-neo4j) 
 [../stream](https://github.com/nvaranki/stream) 
 [../utility](https://github.com/nvaranki/utility) 
+[Neo4j v3.5.XX](https://neo4j.com/download-center/#community)
