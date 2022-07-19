@@ -70,7 +70,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
     
     public final FxАрхив архив()
     {
-        return FxФабрика.getInstance().создать( ЭЛЕМЕНТ.архив() );
+        return FxФабрика.getInstance().apply( ЭЛЕМЕНТ.архив() );
     }
     
     public final FxReadOnlyProperty<ЗонныйКлюч> тип()
@@ -198,7 +198,7 @@ public class FxАтрибутный<T extends DbАтрибутный>
             if( изменение.АКТУАЛЬНОЕ != null && property.stream()
                     .map( FxАтрибутный::getSource )
                     .noneMatch( a -> a.equals( изменение.АКТУАЛЬНОЕ ) ) )
-                property.add( (E) FxФабрика.getInstance().создать( изменение.АКТУАЛЬНОЕ ) );
+                property.add( (E) FxФабрика.getInstance().apply( изменение.АКТУАЛЬНОЕ ) );
         } );
     }
     

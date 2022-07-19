@@ -307,7 +307,7 @@ public final class EditorController implements Builder<Parent>
     {
         try
         {
-            NodeBuilder builder = EdtФабрика.getInstance().создать( элемент );
+            NodeBuilder builder = EdtФабрика.getInstance().apply( элемент );
             content = builder.загрузить( true );
             Platform.runLater( () -> 
             { 

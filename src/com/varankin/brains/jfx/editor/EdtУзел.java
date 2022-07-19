@@ -44,7 +44,7 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
         List<Node> children = group.getChildren();
         составитель = ( ListChangeListener.Change<? extends FxАтрибутный> c ) 
             -> onListPropertyChanged( c, children, 
-                i -> EdtФабрика.getInstance().создать( i ).загрузить( false ) );
+                i -> EdtФабрика.getInstance().apply( i ).загрузить( false ) );
 
         инструкции( children );
         тексты( children );
@@ -57,7 +57,7 @@ abstract class EdtУзел<D extends DbУзел, T extends FxУзел<D>> extend
     protected List<Node> загрузить( ReadOnlyListProperty<? extends FxАтрибутный<?>> p )
     {
         List<Node> list = p.stream()
-            .map( э -> EdtФабрика.getInstance().создать( э ).загрузить( false ) )
+            .map( э -> EdtФабрика.getInstance().apply( э ).загрузить( false ) )
             .collect( Collectors.toList() );
         p.addListener( составитель() );
         return list;

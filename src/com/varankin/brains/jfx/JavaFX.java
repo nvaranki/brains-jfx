@@ -6,7 +6,7 @@ import com.varankin.brains.jfx.selector.LocalFolderSelector;
 import com.varankin.brains.jfx.history.ObservableHistoryList;
 import com.varankin.biz.action.Действие;
 import com.varankin.brains.jfx.history.LocalNeo4jProvider;
-import com.varankin.brains.artificial.io.Фабрика;
+import java.util.function.Function;
 import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.jfx.archive.MenuArchiveController;
@@ -47,7 +47,7 @@ import javafx.stage.Stage;
 /**
  * Контекст среды JavaFX.
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class JavaFX 
 {
@@ -144,11 +144,11 @@ public final class JavaFX
     }
     
     public <E extends DbЭлемент> void show( E элемент, Predicate<? super TitledSceneGraph> predicate, 
-            Фабрика<E,TitledSceneGraph> фабрика )
+            Function<E,TitledSceneGraph> фабрика )
     {
         List<TitledSceneGraph> список = views.getValue();
         if( !isShown( элемент, predicate ) )
-            список.add( фабрика.создать( элемент ) );
+            список.add( фабрика.apply( элемент ) );
         else
         {
             //TODO временный обходной вариант для активации view

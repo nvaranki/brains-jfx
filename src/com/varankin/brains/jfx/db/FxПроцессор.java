@@ -124,7 +124,7 @@ public final class FxПроцессор
     private FxПроцессор типовой()
     {
         DbЭлемент экземпляр = getSource().экземпляр();
-        return экземпляр != null ? (FxПроцессор)FxФабрика.getInstance().создать( экземпляр ) : null;
+        return экземпляр != null ? (FxПроцессор)FxФабрика.getInstance().apply( экземпляр ) : null;
     }
 
     @Override

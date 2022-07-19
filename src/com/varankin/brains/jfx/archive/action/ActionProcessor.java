@@ -9,7 +9,6 @@ import com.varankin.brains.appl.ДействияПоПорядку;
 import com.varankin.brains.appl.ЗагрузитьАрхивныйПроект;
 import com.varankin.brains.appl.ЭкспортироватьSvg;
 import com.varankin.brains.appl.ЭкспортироватьXml;
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.type.DbАрхив;
 import com.varankin.brains.db.type.DbУзел;
 import com.varankin.brains.db.type.DbЭлемент;
@@ -53,7 +52,7 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 /**
  * Действия над элементами архива.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class ActionProcessor //TODO RT-37820
 {
@@ -105,91 +104,91 @@ public final class ActionProcessor //TODO RT-37820
     //<editor-fold defaultstate="collapsed" desc="фабрикаXxxYyy">
     
     // фабрики создания дочерних элементов
-    private static final Фабрика<FxАрхив,FxПакет> фабрикаАрхивПакет
+    private static final Function<FxАрхив,FxПакет> фабрикаАрхивПакет
             = архив -> (FxПакет)архив.создатьНовыйЭлемент( XmlПакет.КЛЮЧ_Э_ПАКЕТ );
-    private static final Фабрика<FxАрхив,FxЗона> фабрикаАрхивNameSpace
+    private static final Function<FxАрхив,FxЗона> фабрикаАрхивNameSpace
             = архив -> архив.определитьПространствоИмен( "протокол://сервер/путь", "префикс" );
-    private static final Фабрика<FxМодуль,FxБиблиотека> фабрикаМодульБиблиотека
+    private static final Function<FxМодуль,FxБиблиотека> фабрикаМодульБиблиотека
             = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlБиблиотека.КЛЮЧ_Э_БИБЛИОТЕКА );
-    private static final Фабрика<FxПроект,FxБиблиотека> фабрикаПроектБиблиотека
+    private static final Function<FxПроект,FxБиблиотека> фабрикаПроектБиблиотека
             = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlБиблиотека.КЛЮЧ_Э_БИБЛИОТЕКА );
-    private static final Фабрика<FxЭлемент,FxЗаметка> фабрикаЭлементЗаметка
+    private static final Function<FxЭлемент,FxЗаметка> фабрикаЭлементЗаметка
             = e -> (FxЗаметка)e.архив().создатьНовыйЭлемент( XmlЗаметка.КЛЮЧ_Э_ЗАМЕТКА );
-    private static final Фабрика<FxКонтакт,FxКлассJava> фабрикаКонтактКлассJava
+    private static final Function<FxКонтакт,FxКлассJava> фабрикаКонтактКлассJava
             = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
-    private static final Фабрика<FxБиблиотека,FxКлассJava> фабрикаБиблиотекаКлассJava
+    private static final Function<FxБиблиотека,FxКлассJava> фабрикаБиблиотекаКлассJava
             = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
-    private static final Фабрика<FxПараметр,FxКлассJava> фабрикаПараметрКлассJava
+    private static final Function<FxПараметр,FxКлассJava> фабрикаПараметрКлассJava
             = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
-    private static final Фабрика<FxПроцессор,FxКлассJava> фабрикаПроцессорКлассJava
+    private static final Function<FxПроцессор,FxКлассJava> фабрикаПроцессорКлассJava
             = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
-    private static final Фабрика<FxСигнал,FxКлассJava> фабрикаСигналКлассJava
+    private static final Function<FxСигнал,FxКлассJava> фабрикаСигналКлассJava
             = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
-    private static final Фабрика<FxТочка,FxКлассJava> фабрикаТочкаКлассJava
+    private static final Function<FxТочка,FxКлассJava> фабрикаТочкаКлассJava
             = e -> (FxКлассJava)e.архив().создатьНовыйЭлемент( XmlКлассJava.КЛЮЧ_Э_JAVA );
-    private static final Фабрика<FxСоединение,FxКонтакт> фабрикаСоединениеКонтакт
+    private static final Function<FxСоединение,FxКонтакт> фабрикаСоединениеКонтакт
             = e -> (FxКонтакт)e.архив().создатьНовыйЭлемент( XmlКонтакт.КЛЮЧ_Э_КОНТАКТ );
-    private static final Фабрика<FxБиблиотека,FxЛента> фабрикаБиблиотекаЛента
+    private static final Function<FxБиблиотека,FxЛента> фабрикаБиблиотекаЛента
             = e -> (FxЛента)e.архив().создатьНовыйЭлемент( XmlЛента.КЛЮЧ_Э_ЛЕНТА );
-    private static final Фабрика<FxБиблиотека,FxМодуль> фабрикаБиблиотекаМодуль
+    private static final Function<FxБиблиотека,FxМодуль> фабрикаБиблиотекаМодуль
             = e -> (FxМодуль)e.архив().создатьНовыйЭлемент( XmlМодуль.КЛЮЧ_Э_МОДУЛЬ );
-    private static final Фабрика<FxБиблиотека,FxРасчет> фабрикаБиблиотекаРасчет
+    private static final Function<FxБиблиотека,FxРасчет> фабрикаБиблиотекаРасчет
             = e -> (FxРасчет)e.архив().создатьНовыйЭлемент( XmlРасчет.КЛЮЧ_Э_РАСЧЕТ );
-    private static final Фабрика<FxКонтакт,FxПараметр> фабрикаКонтактПараметр
+    private static final Function<FxКонтакт,FxПараметр> фабрикаКонтактПараметр
             = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
-    private static final Фабрика<FxПроцессор,FxПараметр> фабрикаПроцессорПараметр
+    private static final Function<FxПроцессор,FxПараметр> фабрикаПроцессорПараметр
             = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
-    private static final Фабрика<FxТочка,FxПараметр> фабрикаТочкаПараметр
+    private static final Function<FxТочка,FxПараметр> фабрикаТочкаПараметр
             = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
-    private static final Фабрика<FxФрагмент,FxПараметр> фабрикаФрагментПараметр
+    private static final Function<FxФрагмент,FxПараметр> фабрикаФрагментПараметр
             = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
-    private static final Фабрика<FxСигнал,FxПараметр> фабрикаСигналПараметр
+    private static final Function<FxСигнал,FxПараметр> фабрикаСигналПараметр
             = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
-    private static final Фабрика<FxПараметр,FxПараметр> фабрикаПараметрПараметр
+    private static final Function<FxПараметр,FxПараметр> фабрикаПараметрПараметр
             = e -> (FxПараметр)e.архив().создатьНовыйЭлемент( XmlПараметр.КЛЮЧ_Э_ПАРАМЕТР );
-    private static final Фабрика<FxБиблиотека,FxПоле> фабрикаБиблиотекаПоле
+    private static final Function<FxБиблиотека,FxПоле> фабрикаБиблиотекаПоле
             = e -> (FxПоле)e.архив().создатьНовыйЭлемент( XmlПоле.КЛЮЧ_Э_ПОЛЕ );
-    private static final Фабрика<FxПакет,FxПроект> фабрикаПакетПроект
+    private static final Function<FxПакет,FxПроект> фабрикаПакетПроект
             = e -> (FxПроект)e.архив().создатьНовыйЭлемент( XmlПроект.КЛЮЧ_Э_ПРОЕКТ );
-    private static final Фабрика<FxПакет,FxБиблиотека> фабрикаПакетБиблиотека
+    private static final Function<FxПакет,FxБиблиотека> фабрикаПакетБиблиотека
             = e -> (FxБиблиотека)e.архив().создатьНовыйЭлемент( XmlБиблиотека.КЛЮЧ_Э_БИБЛИОТЕКА );
-    private static final Фабрика<FxМодуль,FxПроцессор> фабрикаМодульПроцессор
+    private static final Function<FxМодуль,FxПроцессор> фабрикаМодульПроцессор
             = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlПроцессор.КЛЮЧ_Э_ПРОЦЕССОР );
-    private static final Фабрика<FxБиблиотека,FxПроцессор> фабрикаБиблиотекаПроцессор
+    private static final Function<FxБиблиотека,FxПроцессор> фабрикаБиблиотекаПроцессор
             = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlПроцессор.КЛЮЧ_Э_ПРОЦЕССОР );
-    private static final Фабрика<FxПроект,FxПроцессор> фабрикаПроектПроцессор
+    private static final Function<FxПроект,FxПроцессор> фабрикаПроектПроцессор
             = e -> (FxПроцессор)e.архив().создатьНовыйЭлемент( XmlПроцессор.КЛЮЧ_Э_ПРОЦЕССОР );
-    private static final Фабрика<FxПоле,FxСенсор> фабрикаПолеСенсор
+    private static final Function<FxПоле,FxСенсор> фабрикаПолеСенсор
             = e -> (FxСенсор)e.архив().создатьНовыйЭлемент( XmlСенсор.КЛЮЧ_Э_СЕНСОР );
-    private static final Фабрика<FxМодуль,FxСигнал> фабрикаМодульСигнал
+    private static final Function<FxМодуль,FxСигнал> фабрикаМодульСигнал
             = e -> (FxСигнал)e.архив().создатьНовыйЭлемент( XmlСигнал.КЛЮЧ_Э_СИГНАЛ );
-    private static final Фабрика<FxПроект,FxСигнал> фабрикаПроектСигнал
+    private static final Function<FxПроект,FxСигнал> фабрикаПроектСигнал
             = e -> (FxСигнал)e.архив().создатьНовыйЭлемент( XmlСигнал.КЛЮЧ_Э_СИГНАЛ );
-    private static final Фабрика<FxЛента,FxСоединение> фабрикаЛентаСоединение
+    private static final Function<FxЛента,FxСоединение> фабрикаЛентаСоединение
             = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
-    private static final Фабрика<FxМодуль,FxСоединение> фабрикаМодульСоединение
+    private static final Function<FxМодуль,FxСоединение> фабрикаМодульСоединение
             = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
-    private static final Фабрика<FxПоле,FxСоединение> фабрикаПолеСоединение
+    private static final Function<FxПоле,FxСоединение> фабрикаПолеСоединение
             = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
-    private static final Фабрика<FxРасчет,FxСоединение> фабрикаРасчетСоединение
+    private static final Function<FxРасчет,FxСоединение> фабрикаРасчетСоединение
             = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
-    private static final Фабрика<FxФрагмент,FxСоединение> фабрикаФрагментСоединение
+    private static final Function<FxФрагмент,FxСоединение> фабрикаФрагментСоединение
             = e -> (FxСоединение)e.архив().создатьНовыйЭлемент( XmlСоединение.КЛЮЧ_Э_СОЕДИНЕНИЕ );
-    private static final Фабрика<FxРасчет,FxТочка> фабрикаРасчетТочка
+    private static final Function<FxРасчет,FxТочка> фабрикаРасчетТочка
             = e -> (FxТочка)e.архив().создатьНовыйЭлемент( XmlТочка.КЛЮЧ_Э_ТОЧКА );
-    private static final Фабрика<FxТочка,FxТочка> фабрикаТочкаТочка
+    private static final Function<FxТочка,FxТочка> фабрикаТочкаТочка
             = e -> (FxТочка)e.архив().создатьНовыйЭлемент( XmlТочка.КЛЮЧ_Э_ТОЧКА );
-    private static final Фабрика<FxМодуль,FxФрагмент> фабрикаМодульФрагмент
+    private static final Function<FxМодуль,FxФрагмент> фабрикаМодульФрагмент
             = e -> (FxФрагмент)e.архив().создатьНовыйЭлемент( XmlФрагмент.КЛЮЧ_Э_ФРАГМЕНТ );
-    private static final Фабрика<FxПроект,FxФрагмент> фабрикаПроектФрагмент
+    private static final Function<FxПроект,FxФрагмент> фабрикаПроектФрагмент
             = e -> (FxФрагмент)e.архив().создатьНовыйЭлемент( XmlФрагмент.КЛЮЧ_Э_ФРАГМЕНТ );
-    private static final Фабрика<FxЗаметка,FxТекстовыйБлок> фабрикаЗаметкаТекст
+    private static final Function<FxЗаметка,FxТекстовыйБлок> фабрикаЗаметкаТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
-    private static final Фабрика<FxГрафика,FxТекстовыйБлок> фабрикаГрафикаТекст
+    private static final Function<FxГрафика,FxТекстовыйБлок> фабрикаГрафикаТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
-    private static final Фабрика<FxПараметр,FxТекстовыйБлок> фабрикаПараметрТекст
+    private static final Function<FxПараметр,FxТекстовыйБлок> фабрикаПараметрТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
-    private static final Фабрика<FxГрафика,FxИнструкция> фабрикаГрафикаИнструкция
+    private static final Function<FxГрафика,FxИнструкция> фабрикаГрафикаИнструкция
             = e -> (FxИнструкция)e.архив().создатьНовыйЭлемент( XmlИнструкция.КЛЮЧ_Э_ИНСТРУКЦИЯ );
 
     //</editor-fold>
@@ -292,7 +291,7 @@ public final class ActionProcessor //TODO RT-37820
     }
 
     private <S extends FxАтрибутный,R extends FxАтрибутный> 
-    void onActionNew( Фабрика<S,R> ф, Class<S> c, Function<S,ListExpression<R>> f ) 
+    void onActionNew( Function<S,R> ф, Class<S> c, Function<S,ListExpression<R>> f ) 
     {
         SELECTION.stream()
             .map( ti -> ti.getValue() )

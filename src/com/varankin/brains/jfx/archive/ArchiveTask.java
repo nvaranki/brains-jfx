@@ -29,7 +29,7 @@ public final class ArchiveTask extends Task<FxАрхив>
     @Override
     protected FxАрхив call() throws Exception
     {
-        return FxФабрика.getInstance().создать( поставщик.newInstance() );
+        return FxФабрика.getInstance().apply( поставщик.newInstance() );
     }
     
     @Override

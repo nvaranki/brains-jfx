@@ -131,7 +131,7 @@ class EdtГрафика extends EdtУзел<DbГрафика,FxГрафика>
                     FxГрафика экземпляр = ЭЛЕМЕНТ.экземпляр().getValue();
                     if( экземпляр != null )
                     {
-                        Node use = EdtФабрика.getInstance().создать( экземпляр ).загрузить( false );
+                        Node use = EdtФабрика.getInstance().apply( экземпляр ).загрузить( false );
                         use.setVisible( true ); // see above for SVG_ELEMENT_USE
                         use.getTransforms().add( new Translate( 
                                 ЭЛЕМЕНТ.toSvgDouble( SVG_ATTR_X, 0d ), 

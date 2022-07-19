@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive.action;
 
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.db.xml.ЗонныйКлюч;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.jfx.JavaFX;
@@ -8,6 +7,7 @@ import com.varankin.brains.jfx.db.FxАтрибутный;
 import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
 
+import java.util.function.Function;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.binding.ListExpression;
@@ -25,11 +25,11 @@ class TaskCreateАтрибутный<E extends FxАтрибутный, T extends
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( TaskCreateАтрибутный.class );
     
-    private final Фабрика<T, E> фабрика;
+    private final Function<T, E> фабрика;
     private final T владелец;
     private final ListExpression<E> коллекция;
 
-    TaskCreateАтрибутный( Фабрика<T,E> фабрика, T владелец, ListExpression<E> коллекция ) 
+    TaskCreateАтрибутный( Function<T,E> фабрика, T владелец, ListExpression<E> коллекция ) 
     {
         this.фабрика = фабрика;
         this.владелец = владелец;
@@ -42,7 +42,7 @@ class TaskCreateАтрибутный<E extends FxАтрибутный, T extends
         try( final Транзакция т = владелец.getSource().транзакция() )
         {
             т.согласовать( Транзакция.Режим.ЗАПРЕТ_ДОСТУПА, владелец.getSource() );
-            E элемент = фабрика.создать( владелец );
+            E элемент = фабрика.apply( владелец );
             if( элемент == null ) 
             {
                 cancel();

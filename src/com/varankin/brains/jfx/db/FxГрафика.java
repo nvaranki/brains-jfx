@@ -41,7 +41,7 @@ public final class FxГрафика extends FxУзел<DbГрафика> impleme
     private FxГрафика типовой()
     {
         DbГрафика экземпляр = getSource().экземпляр();
-        return экземпляр != null ? FxФабрика.getInstance().создать( экземпляр ) : null;
+        return экземпляр != null ? FxФабрика.getInstance().apply( экземпляр ) : null;
     }
 
     @Override

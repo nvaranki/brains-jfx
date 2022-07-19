@@ -56,7 +56,7 @@ class AddTask extends Task<Node>
             Node edt = null;
             if( добавлено )
             {
-                NodeBuilder создатель = fxАтрибутный != null ? EdtФабрика.getInstance().создать( fxАтрибутный ) : null;
+                NodeBuilder создатель = fxАтрибутный != null ? EdtФабрика.getInstance().apply( fxАтрибутный ) : null;
                 edt = создатель != null && создатель.составить( path ) ? создатель.загрузить( false ) : null;
             }
             транзакция.завершить( edt != null );

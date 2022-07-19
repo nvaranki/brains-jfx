@@ -81,7 +81,7 @@ public final class FxФрагмент
     private FxКоммутируемый коммутируемый()
     {
         DbЭлемент экземпляр = getSource().экземпляр();
-        return экземпляр != null ? (FxКоммутируемый)FxФабрика.getInstance().создать( экземпляр ) : null;
+        return экземпляр != null ? (FxКоммутируемый)FxФабрика.getInstance().apply( экземпляр ) : null;
     }
 
     @Override

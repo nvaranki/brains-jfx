@@ -81,7 +81,7 @@ public final class FxСенсор
     private FxСенсор типовой()
     {
         DbЭлемент экземпляр = getSource().экземпляр();
-        return экземпляр != null ? (FxСенсор)FxФабрика.getInstance().создать( экземпляр ) : null;
+        return экземпляр != null ? (FxСенсор)FxФабрика.getInstance().apply( экземпляр ) : null;
     }
 
     @Override

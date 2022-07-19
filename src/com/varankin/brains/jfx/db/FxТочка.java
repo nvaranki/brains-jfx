@@ -111,7 +111,7 @@ public final class FxТочка
     private FxТочка типовой()
     {
         DbЭлемент экземпляр = getSource().экземпляр();
-        return экземпляр != null ? (FxТочка)FxФабрика.getInstance().создать( экземпляр ) : null;
+        return экземпляр != null ? (FxТочка)FxФабрика.getInstance().apply( экземпляр ) : null;
     }
     
     @Override

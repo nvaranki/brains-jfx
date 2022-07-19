@@ -77,7 +77,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
     
     public FxАтрибутный создатьНовыйЭлемент( ЗонныйКлюч тип )
     {
-        return FxФабрика.getInstance().создать( getSource().создатьНовыйЭлемент( тип ) );
+        return FxФабрика.getInstance().apply( getSource().создатьНовыйЭлемент( тип ) );
     }
     
     /**
@@ -139,7 +139,7 @@ public final class FxАрхив extends FxАтрибутный<DbАрхив>
             {
                 try( final Транзакция транзакция = getSource().транзакция() )
                 {
-                    FxЗона ns = FxФабрика.getInstance().создать( 
+                    FxЗона ns = FxФабрика.getInstance().apply( 
                         getSource().определитьПространствоИмен( uri, префикс ) );
                     транзакция.завершить( NAMESPACES.add( ns ) );
                     return ns;

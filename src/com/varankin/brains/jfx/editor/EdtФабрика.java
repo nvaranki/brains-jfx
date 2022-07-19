@@ -1,14 +1,15 @@
 package com.varankin.brains.jfx.editor;
 
-import com.varankin.brains.artificial.io.Фабрика;
 import com.varankin.brains.jfx.db.*;
+
+import java.util.function.Function;
 
 /**
  * Фабрика генераторов текста в формате XML для произвольного элемента.
  * 
- * @author &copy; 2020 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
-public final class EdtФабрика implements Фабрика<FxАтрибутный,NodeBuilder>
+public final class EdtФабрика implements Function<FxАтрибутный,NodeBuilder>
 {
     private static final EdtФабрика ФАБРИКА = new EdtФабрика();
     
@@ -21,7 +22,7 @@ public final class EdtФабрика implements Фабрика<FxАтрибут�
     
     @SuppressWarnings("Confusing indentation")
     @Override
-    public NodeBuilder создать( FxАтрибутный элемент )
+    public NodeBuilder apply( FxАтрибутный элемент )
     {
         NodeBuilder p;
         if( элемент == null ) throw new NullPointerException(); else 

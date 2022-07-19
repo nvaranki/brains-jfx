@@ -1,6 +1,6 @@
 package com.varankin.brains.jfx.db;
 
-import com.varankin.brains.artificial.io.Фабрика;
+import java.util.function.Function;
 import com.varankin.brains.db.type.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Map;
  * 
  * @author &copy; 2021 Николай Варанкин
  */
-public final class FxФабрика implements Фабрика<DbАтрибутный,FxАтрибутный>
+public final class FxФабрика implements Function<DbАтрибутный,FxАтрибутный>
 {
     private static final FxФабрика ФАБРИКА = new FxФабрика();
     
@@ -26,25 +26,25 @@ public final class FxФабрика implements Фабрика<DbАтрибутн
         АРХИВЫ = new HashMap<>();
     }
     
-    public FxАрхив создать( DbАрхив элемент )
+    public FxАрхив apply( DbАрхив элемент )
     {
         FxАрхив архив = АРХИВЫ.get( элемент );
         if( архив == null ) АРХИВЫ.put( элемент, архив = new FxАрхив( элемент ) );
         return архив;
     }
         
-    public FxГрафика создать( DbГрафика элемент )
+    public FxГрафика apply( DbГрафика элемент )
     {
         return new FxГрафика( элемент );
     }
     
-    public FxЗона создать( DbЗона элемент )
+    public FxЗона apply( DbЗона элемент )
     {
         return new FxЗона( элемент );
     }
     
     @Override
-    public FxАтрибутный создать( DbАтрибутный элемент )
+    public FxАтрибутный apply( DbАтрибутный элемент )
     {
         return создатьПоЭлементу( элемент );
     }
