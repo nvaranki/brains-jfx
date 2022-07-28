@@ -7,7 +7,6 @@ import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.io.svg.save.SvgФабрика;
 import com.varankin.brains.jfx.HtmlGenerator;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.filter.*;
 import com.varankin.util.Текст;
 
 import java.util.logging.*;
@@ -18,6 +17,7 @@ import javafx.scene.web.WebEngine;
 import static com.varankin.brains.appl.ЭкспортироватьSvg.*;
 import static com.varankin.filter.И.и;
 import static com.varankin.filter.НЕ.не;
+import java.util.function.Predicate;
 
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
@@ -48,7 +48,7 @@ class WebViewLoaderTask extends Task<String>
         {
             т.согласовать( Транзакция.Режим.ЧТЕНИЕ_БЕЗ_ЗАПИСИ, элемент.архив() );
             название = элемент.название();
-            Фильтр<DbЭлемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
+            Predicate<DbЭлемент> сборка = и( new Сборка( элемент ), не( БИБЛИОТЕКА ) );
             String code = SvgФабрика.getInstance().providerOf( элемент, сборка ).get(); //TODO Отображаемый.MIME_SVG
             т.завершить( code != null );
             return code;
