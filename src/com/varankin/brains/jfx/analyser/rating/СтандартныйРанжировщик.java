@@ -1,13 +1,13 @@
 package com.varankin.brains.jfx.analyser.rating;
 
-import com.varankin.brains.artificial.algebra.Значимый;
+import com.varankin.brains.artificial.algebra.Константы;
 import com.varankin.characteristic.Именованный;
 import com.varankin.util.LoggerX;
 
 /**
  * Ранжировщик множества известных объектов.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class СтандартныйРанжировщик implements Ранжируемый, Именованный
 {
@@ -33,7 +33,7 @@ public final class СтандартныйРанжировщик implements Ра�
         }
         else if( value == null )
         {
-            measure = Значимый.НЕИЗВЕСТНЫЙ.значение();
+            measure = Константы.НЕИЗВЕСТНО;
         }
         else
         {
