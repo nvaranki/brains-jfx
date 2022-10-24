@@ -1,11 +1,12 @@
 package com.varankin.brains.jfx.db;
 
 import com.varankin.brains.db.type.DbПроект;
+import static com.varankin.brains.db.xml.type.XmlПроект.КЛЮЧ_А_ПРОЦЕССОР;
 import javafx.beans.property.ReadOnlyListProperty;
 
 /**
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 public final class FxПроект extends FxЭлемент<DbПроект>
 {
@@ -13,6 +14,7 @@ public final class FxПроект extends FxЭлемент<DbПроект>
     private final ReadOnlyListProperty<FxПроцессор> ПРОЦЕССОРЫ;
     private final ReadOnlyListProperty<FxФрагмент> ФРАГМЕНТЫ;
     private final ReadOnlyListProperty<FxСигнал> СИГНАЛЫ;
+    private final FxPropertyImpl<String> ПРОЦЕССОР;
 
     public FxПроект( DbПроект проект ) 
     {
@@ -25,6 +27,7 @@ public final class FxПроект extends FxЭлемент<DbПроект>
             new FxList<>( проект.фрагменты(), проект, FxФрагмент::new, FxАтрибутный::getSource ) );
         СИГНАЛЫ = buildReadOnlyListProperty( проект, "сигналы", 
             new FxList<>( проект.сигналы(), проект, FxСигнал::new, FxАтрибутный::getSource ) );
+        ПРОЦЕССОР  = new FxPropertyImpl<>( проект, "процессор",  КЛЮЧ_А_ПРОЦЕССОР,  проект::процессор,  проект::процессор  );
     }
 
     public ReadOnlyListProperty<FxБиблиотека> библиотеки()
@@ -45,6 +48,11 @@ public final class FxПроект extends FxЭлемент<DbПроект>
     public ReadOnlyListProperty<FxСигнал> сигналы()
     {
         return СИГНАЛЫ;
+    }
+    
+    public FxProperty<String> процессор()
+    {
+        return ПРОЦЕССОР;
     }
 
     @Override
