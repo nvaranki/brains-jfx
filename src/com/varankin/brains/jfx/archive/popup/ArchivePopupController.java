@@ -195,7 +195,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
     @FXML
     private void onActionClose( ActionEvent event )
     {
-        processor.onActionClose( event );
+        processor.onActionArchiveClose( event );
         event.consume();
     }
     
@@ -255,7 +255,7 @@ public final class ArchivePopupController implements Builder<ContextMenu>
         disableMultiply.bind( processor.disableMultiplyProperty() );
         disableRemove.bind( processor.disableRemoveProperty() );
         disableRestore.bind( processor.disableRestoreProperty() );
-        disableClose.bind( processor.disableCloseProperty() );
+        disableClose.bind( processor.disableArchiveCloseProperty() );
         disableProperties.bind( processor.disablePropertiesProperty() );
         disableImport.bind( processor.disableImportProperty() );
         disableExportXml.bind( processor.disableExportXmlProperty() );

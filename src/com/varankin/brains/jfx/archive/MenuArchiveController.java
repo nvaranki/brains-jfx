@@ -23,11 +23,12 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер меню открытия архива, с историей.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class MenuArchiveController implements Builder<Menu>
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( MenuArchiveController.class );
+    private static final String ICON_ARCHIVE = "icons16x16/archive.png";
     private static final String ICON_NET  = "icons16x16/load-internet.png";
     private static final String ICON_FILE = "icons16x16/file-xml.png";
     
@@ -45,18 +46,28 @@ public final class MenuArchiveController implements Builder<Menu>
     @Override
     public Menu build()
     {
+        MenuItem menuNewArchiveFile = new MenuItem(
+                LOGGER.text( "menu.archive.file.new" ), 
+                icon( ICON_FILE ) );
+        menuNewArchiveFile.setOnAction( this::onNewArchiveFromFile );
+        
         MenuItem menuArchiveFile = new MenuItem(
-                LOGGER.text( "menu.archive.file" ), 
+                LOGGER.text( "menu.archive.file.open" ), 
                 icon( ICON_FILE ) );
         menuArchiveFile.setOnAction( this::onArchiveFromFile );
         
         MenuItem menuArchiveNet = new MenuItem(
-                LOGGER.text( "menu.archive.network" ), 
+                LOGGER.text( "menu.archive.network.open" ), 
                 icon( ICON_NET ) );
         menuArchiveNet.setOnAction( this::onArchiveFromNet );
         
-        menu = new Menu( LOGGER.text( "menu.archive" ) );
-        menu.getItems().addAll( menuArchiveFile, menuArchiveNet );
+        menu = new Menu( LOGGER.text( "menu.archive" ), icon( ICON_ARCHIVE ) );
+        menu.getItems().addAll( 
+                menuNewArchiveFile, 
+                new SeparatorMenuItem(), 
+                menuArchiveFile, 
+                menuArchiveNet, 
+                new SeparatorMenuItem() );
 
         initialize();
         
@@ -77,15 +88,21 @@ public final class MenuArchiveController implements Builder<Menu>
             //item.setAccelerator( KeyCombination.valueOf( "Ctrl+" + Integer.toString( i ) ) );
             onInvalidatedHistory( item, jfx.history.archive );
             jfx.history.archive.addListener( (o) -> onInvalidatedHistory( item, o ) );
-            if( i == 1 ) items.add( new SeparatorMenuItem() );
             items.add( item );
         }
     }
     
     @FXML
+    private void onNewArchiveFromFile( ActionEvent event )
+    {
+        ActionProcessor.onArchiveFromFile( true );
+        event.consume();
+    }
+    
+    @FXML
     private void onArchiveFromFile( ActionEvent event )
     {
-        ActionProcessor.onArchiveFromFile();
+        ActionProcessor.onArchiveFromFile( false );
         event.consume();
     }
     

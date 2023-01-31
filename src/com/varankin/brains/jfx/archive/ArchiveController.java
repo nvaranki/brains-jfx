@@ -17,9 +17,9 @@ import javafx.util.Builder;
 
 
 /**
- * FXML-контроллер навигатора по архиву. 
+ * FXML-контроллер навигатора по архивам. 
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class ArchiveController implements Builder<TitledPane>
 {

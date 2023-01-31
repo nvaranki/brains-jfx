@@ -218,7 +218,7 @@ public final class JavaFX
             {
                 String dbpath = контекст.параметр( Контекст.Параметры.ARCHIVE_NEO4J_PATH ); //TODO config
                 if( dbpath != null )
-                    execute( new ArchiveTask( new LocalNeo4jProvider( new File( dbpath ) ) ) );
+                    execute( new ArchiveTask( new LocalNeo4jProvider( new File( dbpath ), null ) ) );
             }
         Runnable r = () -> { Font.getFamilies(); };
         Thread t = new Thread( r, "Font Family loader" );

@@ -14,23 +14,26 @@ import java.util.Objects;
  * пригодный для использования в 
  * {@linkplain com.varankin.history.HistoryList списке хранения истории}
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class LocalNeo4jProvider implements SerializableProvider<DbАрхив>
 {
     private final File dir;
+    private Boolean новый;
 
-    public LocalNeo4jProvider( File dir )
+    public LocalNeo4jProvider( File dir, Boolean новый )
     {
+        this.новый = новый;
         this.dir = dir;
     }
 
     @Override
     public DbАрхив newInstance()
     {
-        РезультатТипа<DbАрхив> результат = new ОткрытьЛокальныйАрхивNeo4j().выполнить( dir );
+        РезультатТипа<DbАрхив> результат = new ОткрытьЛокальныйАрхивNeo4j( новый ).выполнить( dir );
         if( результат.код() == Результат.НОРМА )
         {
+            новый = Boolean.FALSE;
             return результат.значение();
         }
         else

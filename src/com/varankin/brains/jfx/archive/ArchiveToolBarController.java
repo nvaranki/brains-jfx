@@ -27,6 +27,8 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     public static final String RESOURCE_FXML  = "/fxml/archive/ArchiveToolBar.fxml";
     public static final ResourceBundle RESOURCE_BUNDLE = LOGGER.getLogger().getResourceBundle();
 
+    private final BooleanProperty disableOpen;
+    private final BooleanProperty disableClose;
     private final BooleanProperty disableNew;
     private final BooleanProperty disableLoad;
     private final BooleanProperty disablePreview;
@@ -43,6 +45,8 @@ public class ArchiveToolBarController implements Builder<ToolBar>
 
     public ArchiveToolBarController()
     {
+        disableOpen = new SimpleBooleanProperty( this, "disableNew" );
+        disableClose = new SimpleBooleanProperty( this, "disableNew" );
         disableNew = new SimpleBooleanProperty( this, "disableNew" );
         disableLoad = new SimpleBooleanProperty( this, "disableLoad" );
         disablePreview = new SimpleBooleanProperty( this, "disablePreview" );
@@ -65,6 +69,18 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     @Override
     public ToolBar build()
     {
+        Button buttonOpen = new Button();
+        buttonOpen.setTooltip( new Tooltip( LOGGER.text( "archive.action.archive-open" ) ) );
+        buttonOpen.setGraphic( icon( "icons16x16/archive.png" ) ); //TODO archive-open.png
+        buttonOpen.setOnAction( this::onActionOpen );
+        buttonOpen.disableProperty().bind( disableOpen );
+        
+        Button buttonClose = new Button();
+        buttonClose.setTooltip( new Tooltip( LOGGER.text( "archive.action.archive-close" ) ) );
+        buttonClose.setGraphic( icon( "icons16x16/archive.png" ) ); //TODO archive-close.png
+        buttonClose.setOnAction( this::onActionClose );
+        buttonClose.disableProperty().bind( disableClose );
+        
         Button buttonLoad = new Button();
         buttonLoad.setTooltip( new Tooltip( LOGGER.text( "archive.action.load" ) ) );
         buttonLoad.setGraphic( icon( "icons16x16/load.png" ) );
@@ -135,19 +151,22 @@ public class ArchiveToolBarController implements Builder<ToolBar>
         toolbar.setOrientation( Orientation.VERTICAL );
         toolbar.getItems().addAll
         (
-                buttonLoad,
-                new Separator( Orientation.HORIZONTAL ),
-                buttonPreview,
-                buttonEdit,
-                buttonMultiply,
-                buttonRemove,
-                buttonNew,
-                buttonProperties,
-                new Separator( Orientation.HORIZONTAL ),
+                buttonOpen,
+                buttonClose,
                 buttonImportFile,
                 buttonImportNet,
                 buttonExportXml,
-                buttonExportPic
+                buttonExportPic,
+                new Separator( Orientation.HORIZONTAL ),
+                buttonLoad,
+                new Separator( Orientation.HORIZONTAL ),
+                buttonNew,
+                buttonRemove,
+                buttonEdit,
+                buttonMultiply,
+                new Separator( Orientation.HORIZONTAL ),
+                buttonPreview,
+                buttonProperties
         );
         toolbar.getStyleClass().add( CSS_CLASS );
         toolbar.getStylesheets().add( getClass().getResource( RESOURCE_CSS ).toExternalForm() );
@@ -160,6 +179,20 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     @FXML
     protected void initialize()
     {
+    }
+    
+    @FXML
+    private void onActionOpen( ActionEvent event )
+    {
+        processor.onActionArchiveOpen( event );
+        event.consume();
+    }
+    
+    @FXML
+    private void onActionClose( ActionEvent event )
+    {
+        processor.onActionArchiveClose( event );
+        event.consume();
     }
     
     @FXML
@@ -239,6 +272,8 @@ public class ArchiveToolBarController implements Builder<ToolBar>
         event.consume();
     }
 
+    public BooleanProperty disableOpenProperty() { return disableOpen; }
+    public BooleanProperty disableCloseProperty() { return disableClose; }
     public BooleanProperty disableNewProperty() { return disableNew; }
     public BooleanProperty disableLoadProperty() { return disableLoad; }
     public BooleanProperty disablePreviewProperty() { return disablePreview; }
@@ -251,6 +286,8 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     public BooleanProperty disableExportXmlProperty() { return disableExportXml; }
     public BooleanProperty disableExportPicProperty() { return disableExportPic; }
     
+    public boolean getDisableOpen() { return disableOpen.get(); }
+    public boolean getDisableClose() { return disableClose.get(); }
     public boolean getDisableNew() { return disableNew.get(); }
     public boolean getDisableLoad() { return disableLoad.get(); }
     public boolean getDisablePreview() { return disablePreview.get(); }
@@ -267,6 +304,8 @@ public class ArchiveToolBarController implements Builder<ToolBar>
     {
         this.processor = processor; // helps for onActionXxx()
         
+        disableOpen.bind( processor.disableArchiveOpenProperty() );
+        disableClose.bind( processor.disableArchiveCloseProperty() );
 //        disableNew.bind( processor.disableNewProperty() );
         disableLoad.bind( processor.disableLoadProperty() );
         disablePreview.bind( processor.disablePreviewProperty() );

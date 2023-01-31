@@ -3,6 +3,7 @@ package com.varankin.brains.jfx;
 import com.varankin.util.Текст;
 import java.util.*;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 
 /**
@@ -48,10 +49,11 @@ public class MenuFactory
         private MenuItem menuItem;
 
         @Deprecated
-        public MenuNode( MenuItem menuItem )
+        public MenuNode( MenuItem menuItem, EventHandler<ActionEvent> handler )
         {
             this( (AbstractJfxAction)null );
             this.menuItem = menuItem;
+            this.menuItem.setOnAction( handler );
         }
         
         public MenuNode( AbstractJfxAction node, MenuNode... childs )

@@ -1,19 +1,18 @@
 package com.varankin.brains.jfx;
 
 import com.varankin.brains.appl.КаталогДействий;
-
 import static com.varankin.brains.appl.КаталогДействий.Индекс.*;
-
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.brains.jfx.MenuFactory.SubMenuAction;
 import com.varankin.brains.jfx.archive.MenuArchiveController;
+
 import java.util.*;
 import javafx.scene.control.*;
 
 /**
  * Построитель главного меню приложения.
  *
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 class ApplicationMenuBar 
 {
@@ -48,7 +47,7 @@ class ApplicationMenuBar
 //                    new MenuNode( действие( Загрузить, jfx, "ApplicationActionLoad" ) ),
 //                    new MenuNode( действие( Очистить,  jfx, "ApplicationActionClean" ) ),
 //                    null,
-                    new MenuNode( new MenuArchiveController().build() ),
+                    new MenuNode( new MenuArchiveController().build(), null ),
                     null,
                     new MenuNode( new ApplicationActionExit( jfx ) ) ),
 

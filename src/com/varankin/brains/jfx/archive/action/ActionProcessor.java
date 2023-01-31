@@ -52,7 +52,7 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 /**
  * Действия над элементами архива.
  * 
- * @author &copy; 2022 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class ActionProcessor //TODO RT-37820
 {
@@ -64,6 +64,7 @@ public final class ActionProcessor //TODO RT-37820
     
     // предикаты для блокировки строк в контекстном меню
     private static final Predicate<FxАтрибутный> pClose = i -> i instanceof FxАрхив;
+    private static final Predicate<FxАтрибутный> pOpen = i -> i != null;
     private static final Predicate<FxАтрибутный> pEdit = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pExportPic = i -> i instanceof FxЭлемент;
     private static final Predicate<FxАтрибутный> pExportXml = i -> i instanceof FxПакет || i instanceof FxЭлемент;
@@ -199,21 +200,20 @@ public final class ActionProcessor //TODO RT-37820
     private MultiplyStage multiplier;
     
     private final BooleanBinding
-        disableNewАрхив, disableNewБиблиотека, disableNewЗаметка, 
+        disableNewБиблиотека, disableNewЗаметка, 
         disableNewИнструкция, disableNewКонтакт, disableNewКлассJava, 
         disableNewЛента, disableNewМодуль, disableNewРасчет, disableNewПакет, disableNewПараметр, disableNewПроект, 
         disableNewПоле, disableNewПроцессор, disableNewСенсор, disableNewСигнал, 
         disableNewСоединение, disableNewТекстовыйБлок, disableNewТочка, 
         disableNewФрагмент, disableNewXmlNameSpace,             
         disableLoad, disablePreview, disableEdit, disableMultiply, 
-        disableRemove, disableRestore, disableClose, disableProperties, 
+        disableRemove, disableRestore, disableArchiveClose, disableArchiveOpen, disableProperties, 
         disableImport, disableExportXml, disableExportPic;
     
     public ActionProcessor( ObservableList<TreeItem<FxАтрибутный>> selection )
     {
         SELECTION = selection;
 
-        disableNewАрхив         = createBooleanBinding( () -> !selection.isEmpty(), selection );
         disableNewПакет         = createBooleanBinding( () -> disableAction( pNewПакет ), selection );
         disableNewПараметр      = createBooleanBinding( () -> disableAction( pNewПараметр ), selection );
         disableNewПроект        = createBooleanBinding( () -> disableAction( pNewПроект ), selection );
@@ -240,14 +240,14 @@ public final class ActionProcessor //TODO RT-37820
         disableEdit             = createBooleanBinding( () -> disableAction( pEdit ), selection );
         disableRemove           = createBooleanBinding( () -> disableAction( pRemove ), selection );
         disableRestore          = createBooleanBinding( () -> disableAction( pRestore ), selection );
-        disableClose            = createBooleanBinding( () -> disableAction( pClose ), selection );
+        disableArchiveClose     = createBooleanBinding( () -> disableAction( pClose ), selection );
+        disableArchiveOpen      = createBooleanBinding( () -> !selection.isEmpty(), selection );
         disableProperties       = createBooleanBinding( () -> disableAction( pProperties ), selection );
         disableImport           = createBooleanBinding( () -> disableAction( pImport ), selection );
         disableExportXml        = createBooleanBinding( () -> disableAction( pExportXml ), selection );
         disableExportPic        = createBooleanBinding( () -> disableAction( pExportPic ), selection );
     }
 
-    public BooleanBinding disableNewАрхивProperty() { return disableNewАрхив; }
     public BooleanBinding disableNewПакетProperty() { return disableNewПакет; }
     public BooleanBinding disableNewПараметрProperty() { return disableNewПараметр; }
     public BooleanBinding disableNewПроектProperty() { return disableNewПроект; }
@@ -274,7 +274,8 @@ public final class ActionProcessor //TODO RT-37820
     public BooleanBinding disableMultiplyProperty() { return disableMultiply; }
     public BooleanBinding disableRemoveProperty() { return disableRemove; }
     public BooleanBinding disableRestoreProperty() { return disableRestore; }
-    public BooleanBinding disableCloseProperty() { return disableClose; }
+    public BooleanBinding disableArchiveCloseProperty() { return disableArchiveClose; }
+    public BooleanBinding disableArchiveOpenProperty() { return disableArchiveOpen; }
     public BooleanBinding disablePropertiesProperty() { return disableProperties; }
     public BooleanBinding disableImportProperty() { return disableImport; }
     public BooleanBinding disableExportXmlProperty() { return disableExportXml; }
@@ -285,7 +286,7 @@ public final class ActionProcessor //TODO RT-37820
     public void onActionNewАрхив()
     {
         if( SELECTION.isEmpty() ) 
-            onArchiveFromFile( );
+            onArchiveFromFile( true );
         else
             LOGGER.log( Level.WARNING, "Unable to create {0} embedded into selection", "Архив" );
     }
@@ -548,7 +549,15 @@ public final class ActionProcessor //TODO RT-37820
             i -> JavaFX.getInstance().execute( new RestoreTreeItemTask( i ) ) );
     }
     
-    public void onActionClose( ActionEvent event )
+    public void onActionArchiveOpen( ActionEvent event )
+    {
+        if( SELECTION.isEmpty() ) 
+            onArchiveFromFile( false );
+        else
+            LOGGER.log( Level.WARNING, "Unable to create {0} embedded into selection", "Архив" );
+    }
+    
+    public void onActionArchiveClose( ActionEvent event )
     {
         SELECTION.stream()
                 .map( i -> i.getValue() )
@@ -564,12 +573,12 @@ public final class ActionProcessor //TODO RT-37820
                 } );
     }
     
-    public static void onArchiveFromFile()
+    public static void onArchiveFromFile( Boolean новый )
     {
         JavaFX jfx = JavaFX.getInstance();
         File file = jfx.getLocalFolderSelector().newInstance();
         if( file != null && file.isDirectory() )
-            jfx.execute( new ArchiveTask( new LocalNeo4jProvider( file ) ) );
+            jfx.execute( new ArchiveTask( new LocalNeo4jProvider( file, новый ) ) );
     }
     
     public static void onArchiveFromNet( ActionEvent event )

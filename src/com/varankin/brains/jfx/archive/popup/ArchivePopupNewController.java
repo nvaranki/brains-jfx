@@ -16,7 +16,7 @@ import static com.varankin.brains.jfx.JavaFX.icon;
 /**
  * FXML-контроллер контекстного меню новых элементов навигатора по архиву.
  * 
- * @author &copy; 2017 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class ArchivePopupNewController implements Builder<Menu>
 {
@@ -30,7 +30,7 @@ public final class ArchivePopupNewController implements Builder<Menu>
     private ActionProcessor processor;
     
     @FXML private final BooleanProperty
-        disableNewАрхив, disableNewПакет, disableNewПараметр,
+        disableNewПакет, disableNewПараметр,
         disableNewПроект, disableNewБиблиотека, disableNewФрагмент, 
         disableNewСенсор, disableNewСигнал, disableNewСоединение, disableNewКонтакт, 
         disableNewЛента, disableNewМодуль, disableNewРасчет, disableNewПоле, disableNewПроцессор, 
@@ -39,7 +39,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
 
     public ArchivePopupNewController()
     {
-        disableNewАрхив = new SimpleBooleanProperty( this, "disableNewАрхив" );
         disableNewПакет = new SimpleBooleanProperty( this, "disableNewПакет" );
         disableNewПараметр = new SimpleBooleanProperty( this, "disableNewПараметр" );
         disableNewПроект = new SimpleBooleanProperty( this, "disableNewПроект" );
@@ -71,11 +70,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
     @Override
     public Menu build()
     {
-        MenuItem menuNewАрхив = new MenuItem(
-                LOGGER.text( "cell.archive" ) );//, icon( "icons16x16/archive.png" ) );
-        menuNewАрхив.setOnAction( this::onActionNewАрхив );
-        menuNewАрхив.disableProperty().bind( disableNewАрхив );
-        
         MenuItem menuNewБиблиотека = new MenuItem(
                 LOGGER.text( "cell.library" ), icon( "icons16x16/new-library.png" ) );
         menuNewБиблиотека.setOnAction( this::onActionNewБиблиотека );
@@ -179,7 +173,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
         Menu menu = new Menu( LOGGER.text( "archive.action.new" ) );
         menu.getItems().addAll
         (
-                menuNewАрхив,
                 menuNewПакет,
                 new SeparatorMenuItem(),
                 menuNewПроект,
@@ -208,13 +201,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
                 menuNewXmlNameSpace
         );
         return menu;
-    }
-    
-    @FXML
-    private void onActionNewАрхив( ActionEvent event )
-    {
-        processor.onActionNewАрхив();
-        event.consume();
     }
     
     @FXML
@@ -357,7 +343,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
         event.consume();
     }
 
-    public BooleanProperty disableNewАрхивProperty() { return disableNewАрхив; }
     public BooleanProperty disableNewПакетProperty() { return disableNewПакет; }
     public BooleanProperty disableNewПроектProperty() { return disableNewПроект; }
     public BooleanProperty disableNewБиблиотекаProperty() { return disableNewБиблиотека; }
@@ -376,7 +361,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
     public BooleanProperty disableNewТекстовыйБлокProperty() { return disableNewТекстовыйБлок; }
     public BooleanProperty disableNewXmlNameSpaceProperty() { return disableNewXmlNameSpace; }
     
-    public boolean getDisableNewАрхив() { return disableNewАрхив.get(); }
     public boolean getDisableNewПакет() { return disableNewПакет.get(); }
     public boolean getDisableNewПроект() { return disableNewПроект.get(); }
     public boolean getDisableNewБиблиотека() { return disableNewБиблиотека.get(); }
@@ -400,7 +384,6 @@ public final class ArchivePopupNewController implements Builder<Menu>
         this.processor = processor;
         
         if( processor == null ) return;
-        disableNewАрхив.bind( processor.disableNewАрхивProperty() );
         disableNewПакет.bind( processor.disableNewПакетProperty() );
         disableNewПараметр.bind( processor.disableNewПараметрProperty() );
         disableNewПроект.bind( processor.disableNewПроектProperty() );
