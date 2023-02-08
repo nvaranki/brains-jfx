@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.archive.action;
 
-import com.varankin.brains.appl.Отображаемый;
 import com.varankin.brains.appl.Сборка;
 import com.varankin.brains.db.Транзакция;
 import com.varankin.brains.db.type.DbЭлемент;
@@ -22,11 +21,13 @@ import java.util.function.Predicate;
 /**
  * Загрузчик изображения элемента в формате SVG в Интернет навигатор.
  * 
- * @author &copy; 2022 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 class WebViewLoaderTask extends Task<String>
 {
     private static final Logger LOGGER = Logger.getLogger( WebViewLoaderTask.class.getName() );
+    private static final String MIME_SVG = "image/svg+xml";
+    private static final String MIME_TEXT = "text/html";
     
     private final DbЭлемент элемент;
     private final StringProperty заголовок;
@@ -59,7 +60,7 @@ class WebViewLoaderTask extends Task<String>
     protected void succeeded()
     {
         заголовок.setValue( название );
-        engine.loadContent( getValue(), Отображаемый.MIME_SVG );
+        engine.loadContent( getValue(), MIME_SVG );
     }
 
     @Override
@@ -68,7 +69,7 @@ class WebViewLoaderTask extends Task<String>
         Текст словарь = JavaFX.getInstance().словарь( WebViewLoaderTask.class );
         String msg = словарь.текст( "failure", название );
         Throwable exception = this.getException();
-        engine.loadContent( HtmlGenerator.toHtml( msg, exception ), Отображаемый.MIME_TEXT );
+        engine.loadContent( HtmlGenerator.toHtml( msg, exception ), MIME_TEXT );
         LOGGER.log( Level.SEVERE, msg, exception );
     }
     

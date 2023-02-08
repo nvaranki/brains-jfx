@@ -1,6 +1,8 @@
 package com.varankin.brains.jfx;
 
+import com.varankin.brains.Конфигурация;
 import com.varankin.util.Текст;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -22,12 +24,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
 /**
  * Экранная форма "О программе".
  *
- * @author &copy; 2012 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 class Открытка extends Stage
 {
@@ -42,13 +43,13 @@ class Открытка extends Stage
         InputStream stream = getClass().getClassLoader().getResourceAsStream( "images/dragon.jpg" );
         логотип = new ImageView( new Image( stream ) );
         заметка = new Text( словарь.текст( "Card.memo" ));
-        версия = new Text( словарь.текст( "Card.version" ) + jfx.контекст.версия );
+        версия = new Text( словарь.текст( "Card.version" ) + jfx.контекст.конфигурация.параметр( Конфигурация.Параметры.VERSION ) );
         права = new Text( словарь.текст( "Card.copyright" ));
         закрыть = new Button( словарь.текст( "Card.close" ));
-        закрыть.setOnAction( new StageCloseHandler<ActionEvent>( this, dispose ) );
+        закрыть.setOnAction( new StageCloseHandler<>( this, dispose ) );
         сайт = new Hyperlink ( "www.varankin.com" );
         //сайт.setVisited( false );
-        String html = jfx.контекст.параметр( "Card.company", "http://varankin.com/" );//TODO
+        String html = jfx.контекст.конфигурация.параметр( "Card.company", "http://varankin.com/" );//TODO
         сайт.setOnAction( new HtmlLinkHandler( html, jfx ) );
                 
         initOwner( jfx.платформа );
@@ -59,7 +60,7 @@ class Открытка extends Stage
         Scene scene = new Scene( new Layout( jfx ), 350.0, 160.0, Color.WHITE );
         //Позиционер.настроить( (Window)this );
         setScene( scene );
-        setOnCloseRequest( new StageCloseHandler<WindowEvent>( this, dispose ) );
+        setOnCloseRequest( new StageCloseHandler<>( this, dispose ) );
         закрыть.requestFocus();
      }
     

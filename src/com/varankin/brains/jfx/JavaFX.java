@@ -5,6 +5,7 @@ import com.varankin.brains.jfx.selector.UrlSelector;
 import com.varankin.brains.jfx.selector.LocalFolderSelector;
 import com.varankin.brains.jfx.history.ObservableHistoryList;
 import com.varankin.biz.action.Действие;
+import com.varankin.biz.action.СогласованноеДействие;
 import com.varankin.brains.jfx.history.LocalNeo4jProvider;
 import java.util.function.Function;
 import com.varankin.brains.db.type.DbАрхив;
@@ -15,6 +16,8 @@ import com.varankin.brains.jfx.db.FxАрхив;
 import com.varankin.brains.jfx.history.SerializableProvider;
 import com.varankin.brains.jfx.selector.LocalFileSelector;
 import com.varankin.brains.Контекст;
+import com.varankin.brains.Конфигурация;
+import com.varankin.brains.Конфигурация.Параметры;
 import com.varankin.util.LoggerX;
 import com.varankin.util.Текст;
 import java.awt.Desktop;
@@ -27,6 +30,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
@@ -40,14 +45,13 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
  * Контекст среды JavaFX.
  *
- * @author &copy; 2022 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class JavaFX 
 {
@@ -97,11 +101,12 @@ public final class JavaFX
     private final ObservableObjectList<TitledSceneGraph> views;
     private final ExecutorService es;
     private final ScheduledExecutorService ses;
+    private final ActionCatalog каталогДействий;
     private LocalFileSelector localFileSelector;
     private LocalFolderSelector localFolderSelector;
     private UrlSelector urlSelector;
     public final boolean archiveFoldedTreeItems;
-    public final ObservableList<FxАрхив> архивы;
+    public final ObservableList<FxАрхив> архивы;  //TODO move to ArchiveController
     public boolean archiveLoadLastOnStart = true, archiveLoadDefault = false; //TODO enum
     public FileChooser.ExtensionFilter[] filtersXml;
 
@@ -119,14 +124,21 @@ public final class JavaFX
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<>() );
         ses = new ScheduledThreadPoolExecutor( 10 ); //TODO appl config
-        views = new ObservableObjectList<>( new ArrayList<TitledSceneGraph>() );
+        views = new ObservableObjectList<>( new ArrayList<>() );
         
         filtersXml = new FileChooser.ExtensionFilter[]{
                 new FileChooser.ExtensionFilter( LOGGER.text( "ext.xml" ), "*.xml" ) };
         
-        
         архивы = FXCollections.observableArrayList();
         archiveFoldedTreeItems = false;
+        
+        каталогДействий = ActionCatalog.getInstance();
+        каталогДействий.заполнить( контекст );
+    }
+
+    public СогласованноеДействие<Контекст> действие( ActionCatalog.Индекс индекс )
+    {
+        return каталогДействий.действие( индекс );
     }
     
     ObservableValue<ObservableList<TitledSceneGraph>> getViews()
@@ -207,31 +219,41 @@ public final class JavaFX
     {
         new GuiBuilder( this ).createView( платформа );
         платформа.show();
-        if( архивы.isEmpty() )
-            if( archiveLoadLastOnStart )
-            {
-                SerializableProvider<DbАрхив> provider = history.archive.size() > 1 ? history.archive.get( 1 ) : null; // история начинается с индекса 1
-                if( provider != null )
-                    execute( new ArchiveTask( provider ) ); // последний архив --> архивы
-            }
-            else if( archiveLoadDefault )
-            {
-                String dbpath = контекст.параметр( Контекст.Параметры.ARCHIVE_NEO4J_PATH ); //TODO config
-                if( dbpath != null )
-                    execute( new ArchiveTask( new LocalNeo4jProvider( new File( dbpath ), null ) ) );
-            }
-        Runnable r = () -> { Font.getFamilies(); };
-        Thread t = new Thread( r, "Font Family loader" );
-        t.setPriority( Thread.currentThread().getPriority() - 1 );
-        t.start();
+        if( archiveLoadLastOnStart )
+        {
+            SerializableProvider<DbАрхив> provider = history.archive.size() > 1 ? history.archive.get( 1 ) : null; // история начинается с индекса 1
+            if( provider != null )
+                execute( new ArchiveTask( provider ) ); // последний архив --> архивы
+        }
+        else if( archiveLoadDefault )
+        {
+            String dbpath = контекст.конфигурация.параметр( Параметры.ARCHIVE_NEO4J_PATH ); //TODO config
+            if( dbpath != null )
+                execute( new ArchiveTask( new LocalNeo4jProvider( new File( dbpath ), null ) ) );
+        }
     }
 
     void стоп()
     {
+        long ожидание = Long.valueOf( Контекст.getInstance().конфигурация.параметр( 
+            Конфигурация.Параметры.SHUTDOWN_THREAD_TIMEOUT_MS ) );
+        for( ExecutorService service : List.of( es, ses ) )
+            try
+            {
+                service.shutdownNow();
+                service.awaitTermination( ожидание, TimeUnit.MILLISECONDS );
+            }
+            catch( InterruptedException ex )
+            {
+                LOGGER.log( Level.WARNING, "JavaFX service", ex );
+            }
+            finally
+            {
+                if( ! service.isTerminated() )
+                    Контекст.getInstance().проблемныеСервисы.add( service );
+            }
         Parent root = платформа.getScene().getRoot();
         ((Pane)root).getChildren().clear(); // brute force signal TODO validate approach
-        es.shutdown();
-        ses.shutdown();
         платформа.close();
     }
     

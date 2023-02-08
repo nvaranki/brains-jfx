@@ -15,6 +15,8 @@ import com.varankin.brains.db.type.DbЭлемент;
 import com.varankin.brains.db.type.DbПроект;
 import com.varankin.brains.db.type.DbАтрибутный;
 import com.varankin.brains.db.xml.type.*;
+import com.varankin.brains.factory.КаталогФабрикЭлементов;
+import com.varankin.brains.factory.observable.ФабрикаНаблюдаемыхБазовыхЭлементов;
 import com.varankin.brains.jfx.*;
 import com.varankin.brains.jfx.archive.ArchiveTask;
 import com.varankin.brains.jfx.archive.props.PropertiesController;
@@ -57,8 +59,6 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 public final class ActionProcessor //TODO RT-37820
 {
     private static final LoggerX LOGGER = LoggerX.getLogger( ActionProcessor.class );
-    private static final Действие<DbПроект> действиеЗагрузитьПроект 
-        = new ЗагрузитьАрхивныйПроект();
 
     //<editor-fold defaultstate="collapsed" desc="pXxx">
     
@@ -434,8 +434,12 @@ public final class ActionProcessor //TODO RT-37820
         if( ceлектор.isEmpty() )
             LOGGER.log( Level.INFO, "002005002I" );
         else
+        {
+            Действие<DbПроект> действиеЗагрузитьПроект = new ЗагрузитьАрхивныйПроект( 
+                КаталогФабрикЭлементов.getInstance().фабрика( ФабрикаНаблюдаемыхБазовыхЭлементов.class ) ); //TODO take class from appl options
             JavaFX.getInstance().execute( new ДействияПоПорядку<>( 
                 ДействияПоПорядку.Приоритет.КОНТЕКСТ, действиеЗагрузитьПроект ), ceлектор );
+        }
     }
     
     public void onActionPreview( ActionEvent event )

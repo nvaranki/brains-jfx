@@ -1,9 +1,9 @@
 package com.varankin.brains.jfx.archive.props;
 
-import com.varankin.brains.appl.NativeJavaClasses;
 import com.varankin.brains.db.type.DbКлассJava.Назначение;
 import com.varankin.brains.jfx.db.FxКлассJava;
 import com.varankin.util.LoggerX;
+import com.varankin.util.NativeJavaClasses;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import javafx.util.Builder;
 /**
  * FXML-контроллер панели установки параметров класса Java.
  * 
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public class TabClassJavaController implements Builder<GridPane>
 {

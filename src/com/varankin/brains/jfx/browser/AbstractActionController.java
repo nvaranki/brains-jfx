@@ -30,7 +30,7 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 /**
  * Основа FXML-контроллера для набора инструментов навигатора по проектам.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 abstract class AbstractActionController 
 {
@@ -77,10 +77,10 @@ abstract class AbstractActionController
     public boolean getDisableRemove()     { return disableRemove.get(); }
     public boolean getDisableProperties() { return disableProperties.get(); }
 
-    private void onChangeProcesses( УправлениеПроцессом.Команда команда )
+    private void onChangeProcesses( Процесс.Состояние команда )
     {
         Действие<List<Процесс>> действие = new ДействияПоПорядку( ДействияПоПорядку.Приоритет.КОНТЕКСТ, 
-                new УправлениеПроцессом( JavaFX.getInstance().контекст, команда ) );
+                new УправлениеПроцессом( команда ) );
         List<Процесс> ceлектор = selection.stream()
             .map( Вложенный::процесс )
             .filter( i -> i != null )
@@ -119,29 +119,29 @@ abstract class AbstractActionController
     @FXML
     void onActionStart( ActionEvent event )
     {
-        onChangeProcesses( УправлениеПроцессом.Команда.СТАРТ );
+        onChangeProcesses( Процесс.Состояние.РАБОТА );
         event.consume();
     }
     
     @FXML
     void onActionPause( ActionEvent event )
     {
-        onChangeProcesses( УправлениеПроцессом.Команда.ПАУЗА );
+        onChangeProcesses( Процесс.Состояние.ПАУЗА );
         event.consume();
     }
     
     @FXML
     void onActionStop( ActionEvent event )
     {
-        onChangeProcesses( УправлениеПроцессом.Команда.СТОП );
+        onChangeProcesses( Процесс.Состояние.ОСТАНОВ );
         event.consume();
     }
     
     @FXML
     void onActionRemove( ActionEvent event )
     {
-        УправлениеПроцессом управлениеПроцессом = new УправлениеПроцессом( JavaFX.getInstance().контекст, УправлениеПроцессом.Команда.СТОП );
-        Действие<Проект> управлениеПроектом = проект -> управлениеПроцессом.выполнить( Вложенный.процесс( проект ) );
+        УправлениеПроцессом управлениеПроцессом = new УправлениеПроцессом( Процесс.Состояние.ОСТАНОВ );
+        Действие<Проект> управлениеПроектом = проект -> управлениеПроцессом.выполнить( проект.процесс() );
         Действие<List<Проект>> действие = new ДействияПоПорядку( ДействияПоПорядку.Приоритет.КОНТЕКСТ, 
                 управлениеПроектом,
                 new ВыгрузитьПроект( JavaFX.getInstance().контекст ) );

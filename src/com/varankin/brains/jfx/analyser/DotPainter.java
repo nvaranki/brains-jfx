@@ -2,6 +2,8 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.Контекст;
+import com.varankin.brains.Конфигурация;
+
 import java.util.concurrent.*;
 import java.util.logging.*;
 import javafx.application.Platform;
@@ -15,7 +17,7 @@ import javafx.scene.paint.Color;
  * Менеджер рисования отметок в графической зоне. 
  * Отметки рисуются блоками, по мере поступления в очередь.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 class DotPainter
 {
@@ -236,9 +238,9 @@ class DotPainter
         DotStreamCutter()
         {
             Контекст контекст = JavaFX.getInstance().контекст;
-            количество = Integer.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_QUEUE ) );
-            пауза = Long.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_TIMEOUT ) );
-            единица = TimeUnit.valueOf( контекст.параметр( Контекст.Параметры.PAINTER_UNIT ) );
+            количество = Integer.valueOf( контекст.конфигурация.параметр( Конфигурация.Параметры.PAINTER_QUEUE ) );
+            пауза = Long.valueOf( контекст.конфигурация.параметр( Конфигурация.Параметры.PAINTER_TIMEOUT ) );
+            единица = TimeUnit.valueOf( контекст.конфигурация.параметр( Конфигурация.Параметры.PAINTER_UNIT ) );
         }
         
         /**

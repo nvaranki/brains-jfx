@@ -5,6 +5,7 @@ import com.varankin.brains.jfx.browser.BrowserController;
 import com.varankin.brains.Контекст;
 import com.varankin.util.LoggingHandler;
 import com.varankin.util.Текст;
+
 import java.util.logging.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -18,7 +19,7 @@ import javafx.stage.Stage;
 /**
  * Построитель главной экранной формы приложения.
  *
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 class GuiBuilder 
 {
@@ -35,8 +36,8 @@ class GuiBuilder
     {
         stage.setTitle( словарь.текст( "Title" ) );
 
-        int w = Integer.valueOf( JFX.контекст.параметр( "frame.width",  "800" ));
-        int h = Integer.valueOf( JFX.контекст.параметр( "frame.height", "600" ));
+        int w = Integer.valueOf( JFX.контекст.конфигурация.параметр( "frame.width",  "800" ));
+        int h = Integer.valueOf( JFX.контекст.конфигурация.параметр( "frame.height", "600" ));
         stage.setWidth( w );
         stage.setHeight( h );
         stage.setX( 100 );
@@ -110,7 +111,7 @@ class GuiBuilder
     {
         // консоль сообщений
         Контекст контекст = JFX.контекст;
-        int limit = Integer.valueOf( контекст.параметр( "frame.console.rows.buffer", "500" ) ); //"50"//"5"
+        int limit = Integer.valueOf( контекст.конфигурация.параметр( "frame.console.rows.buffer", "500" ) ); //"50"//"5"
         TextArea табло = new Табло( limit );
         LoggingHandler информатор = new LoggingHandler( new LoggingAgent( табло ) ); //, RED, BLUE, null, null, null, null, null ) );
         //, RED, BLUE, null, null, null, null, null ) );

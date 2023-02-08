@@ -12,9 +12,9 @@ import javafx.scene.layout.*;
 import javafx.util.Builder;
 
 /**
- * FXML-контроллер навигатора по проектам. 
+ * FXML-контроллер навигатора по процессам. 
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public class BrowserController implements Builder<TitledPane>
 {

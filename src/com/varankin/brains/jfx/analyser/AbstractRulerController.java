@@ -2,6 +2,8 @@ package com.varankin.brains.jfx.analyser;
 
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.brains.Контекст;
+import com.varankin.brains.Конфигурация;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -15,7 +17,7 @@ import javafx.util.Builder;
 /**
  * Абстрактный FXML-контроллер шкалы по некоторой оси.
  * 
- * @author &copy; 2014 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public abstract class AbstractRulerController implements Builder<Pane>
 {
@@ -26,9 +28,9 @@ public abstract class AbstractRulerController implements Builder<Pane>
     protected AbstractRulerController()
     {
         Контекст контекст = JavaFX.getInstance().контекст;
-        tickSizeLarge = Integer.valueOf( контекст.параметр( Контекст.Параметры.TICK_LARGE ) );
-        tickSizeMedium = Integer.valueOf( контекст.параметр( Контекст.Параметры.TICK_MEDIUM ) );
-        tickSizeSmall = Integer.valueOf( контекст.параметр( Контекст.Параметры.TICK_SMALL ) );
+        tickSizeLarge = Integer.valueOf( контекст.конфигурация.параметр( Конфигурация.Параметры.TICK_LARGE ) );
+        tickSizeMedium = Integer.valueOf( контекст.конфигурация.параметр( Конфигурация.Параметры.TICK_MEDIUM ) );
+        tickSizeSmall = Integer.valueOf( контекст.конфигурация.параметр( Конфигурация.Параметры.TICK_SMALL ) );
 
         tickColorProperty = new SimpleObjectProperty<>( Color.BLACK );
         textColorProperty = new SimpleObjectProperty<>( Color.BLACK );

@@ -1,7 +1,7 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.*;
+import com.varankin.brains.factory.КаталогФабричныхСвойств;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.characteristic.*;
 import java.util.ArrayList;
@@ -194,8 +194,15 @@ public final class BrowserPropertiesController implements Builder<Parent>
             {
                 КаталогСвойств каталог = ((Полисвойственный)элемент).свойства();
                 List<Свойство<?>> перечень = new ArrayList<>( каталог.перечень() );
-                перечень.remove( каталог.свойство( ПРОЦЕСС ) ); // неинформативный
-                List<String> pks = Arrays.asList( НАЗВАНИЕ, ТИП, ЗНАЧЕНИЕ, ВХОД, ПРИНЯТО, ВЫХОД, ПЕРЕДАНО );
+                перечень.remove( каталог.свойство( КаталогФабричныхСвойств.ПРОЦЕСС ) ); // неинформативный
+                List<String> pks = Arrays.asList( 
+                        КаталогФабричныхСвойств.НАЗВАНИЕ, 
+                        КаталогФабричныхСвойств.ТИП, 
+                        КаталогФабричныхСвойств.ЗНАЧЕНИЕ, 
+                        КаталогФабричныхСвойств.ВХОД, 
+                        КаталогФабричныхСвойств.ПРИНЯТО, 
+                        КаталогФабричныхСвойств.ВЫХОД, 
+                        КаталогФабричныхСвойств.ПЕРЕДАНО );
                 Function<Integer,Integer> nm = (i) -> i < 0 ? 100000 : i;
                 Comparator<Свойство<?>> sorter1 = ( s1, s2 ) -> nm.apply( pks.indexOf( каталог.ключ( s1 ) )) 
                         - nm.apply( pks.indexOf( каталог.ключ( s2 ) ) );
@@ -451,7 +458,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
         @Override
         public String toString( Enum e )
         {
-            return e.name();
+            return e != null ? e.name() : null;
         }
         
         @Override
@@ -532,7 +539,7 @@ public final class BrowserPropertiesController implements Builder<Parent>
         public void changed( ObservableValue<? extends Boolean> ov, Boolean before, Boolean after )
         {
             if( after )
-                C.add( S.get() );
+                C.add( S.get() ); //TODO remember then delete explicitly
             else
                 C.removeAll( C.stream().filter( F ).collect( Collectors.toList() ) );
         }

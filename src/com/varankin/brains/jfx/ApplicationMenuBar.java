@@ -1,7 +1,6 @@
 package com.varankin.brains.jfx;
 
-import com.varankin.brains.appl.КаталогДействий;
-import static com.varankin.brains.appl.КаталогДействий.Индекс.*;
+import static com.varankin.brains.jfx.ActionCatalog.Индекс.*;
 import com.varankin.brains.jfx.MenuFactory.MenuNode;
 import com.varankin.brains.jfx.MenuFactory.SubMenuAction;
 import com.varankin.brains.jfx.archive.MenuArchiveController;
@@ -69,9 +68,9 @@ class ApplicationMenuBar
         };
     }
     
-    static private AbstractJfxAction действие( КаталогДействий.Индекс индекс, JavaFX jfx, String префикс )
+    static private AbstractJfxAction действие( ActionCatalog.Индекс индекс, JavaFX jfx, String префикс )
     {
-        return new CoordinatedAction<>( jfx.контекст.действие( индекс ), jfx.контекст, jfx, префикс );
+        return new CoordinatedAction<>( jfx.действие( индекс ), jfx.контекст, jfx, префикс );
     }
 
 }

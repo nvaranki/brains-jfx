@@ -1,6 +1,5 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.appl.AbstractIconLocator;
 import com.varankin.brains.artificial.async.Процесс;
 import java.net.URL;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import javafx.scene.paint.Color;
 /**
  *
  *
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 class BrowserRenderer 
 {
@@ -33,7 +32,7 @@ class BrowserRenderer
     
     BrowserRenderer()
     {
-        локатор = new IconLocator( "icons16x16/" );
+        локатор = new IconLocator( "icons16x16/" ); //TODO appl settings
     }
     
     Node getIcon( Object id )

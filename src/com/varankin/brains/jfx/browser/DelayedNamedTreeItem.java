@@ -1,10 +1,11 @@
 package com.varankin.brains.jfx.browser;
 
-import com.varankin.brains.appl.ФабрикаНазваний;
 import com.varankin.brains.artificial.async.Процесс;
 import com.varankin.brains.artificial.Элемент;
-import com.varankin.brains.factory.observable.НаблюдаемыеСвойства;
+import com.varankin.brains.factory.Агрегатор;
+import com.varankin.brains.factory.Контейнер;
 import com.varankin.brains.factory.Составной;
+import com.varankin.brains.factory.observable.НаблюдаемыйЭлемент;
 import com.varankin.brains.jfx.JavaFX;
 import com.varankin.characteristic.Наблюдаемый;
 import com.varankin.characteristic.Наблюдатель;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
+import com.varankin.brains.factory.КаталогФабричныхСвойств;
 
 /**
  * Модификация класса {@link TreeItem} для навигатора по проектам. 
@@ -30,7 +32,7 @@ import javafx.scene.control.TreeItem;
  * предопределенный текст, который применяется для отображения 
  * справа от марки в узле дерева.
  * 
- * @author &copy; 2019 Николай Варанкин
+ * @author &copy; 2022 Николай Варанкин
  */
 final class DelayedNamedTreeItem extends TreeItem<Элемент>
 {
@@ -63,7 +65,7 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
 
     void разобратьДерево( Элемент элемент )
     {
-        getChildren().removeAll(getChildren().stream()
+        getChildren().removeAll( getChildren().stream()
                 .filter( ti -> ti.getValue().equals( элемент ) )
                 .peek( DelayedNamedTreeItem::разобратьДерево )
                 .collect( Collectors.toList() ) );
@@ -84,9 +86,12 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
     @Override
     public boolean isLeaf() 
     { 
-        return настроено ? super.isLeaf() : !( getValue() instanceof Составной ); 
+        return настроено ? super.isLeaf() : потомки( getValue() ).findAny().isEmpty();
     }
 
+    /**
+     * Формирует состав (листья узла) данного элемента из извлеченных компонентов.
+     */
     private void настроитьСостав()
     {
         Элемент элемент = getValue();
@@ -97,9 +102,7 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
             DelayedNamedTreeItem дерево = new DelayedNamedTreeItem( э );
             список.add( дерево.позиция( список, TREE_ITEM_COMPARATOR ), дерево );
         };
-        Collections.singleton( элемент ).stream()
-                .filter( ФИЛЬТР_СОСТАВНОЙ )
-                .flatMap( ТИП_СОСТАВНОЙ.andThen( ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ ) )
+        потомки( getValue() )
                 .filter( ФИЛЬТР_ЭЛЕМЕНТ )
                 .map( ТИП_ЭЛЕМЕНТ )
                 .forEach( составитель );
@@ -107,7 +110,7 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
 
         настроено = true;
     }
-
+    
     /**
      * Вычисляет рекомендуемую позицию для вставки узла в список.
      * 
@@ -124,6 +127,62 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
     
     //<editor-fold defaultstate="collapsed" desc="статические методы">
     
+    private static Stream<Элемент> потомки( Элемент элемент )
+    {
+        /*if( элемент instanceof НаблюдаемыйЭлемент )
+        {
+        return потомки( (Элемент) ( (НаблюдаемыйЭлемент) элемент ).вложение() );
+        }
+        else*/ if( элемент instanceof Агрегатор )
+        {
+            Агрегатор агрегатор = (Агрегатор) элемент;
+            return агрегатор.группы().stream()
+                .flatMap( группа -> агрегатор.состав( группа ).stream() );
+        }
+        else if( элемент instanceof Составной )
+        {
+            return ( (Составной) элемент ).состав().stream()
+                    .filter( э -> э instanceof Элемент )
+                    .map( э -> (Элемент) э );
+        }
+        else if( элемент instanceof Контейнер )
+        {
+            return потомки( ( (Контейнер) элемент ).вложение() );
+        }
+        else
+            return Stream.empty(); /*Collections.<Элемент>emptyList().stream();/*.singleton( элемент ).stream()
+                .filter( ФИЛЬТР_СОСТАВНОЙ )
+                .flatMap( ТИП_СОСТАВНОЙ.andThen( ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ ) );*/
+    }
+
+    private static Stream<Collection> коллекции( Элемент элемент )
+    {
+        /*if( элемент instanceof НаблюдаемыйЭлемент )
+        {
+        return потомки( (Элемент) ( (НаблюдаемыйЭлемент) элемент ).вложение() );
+        }
+        else*/ if( элемент instanceof Агрегатор )
+        {
+            Агрегатор агрегатор = (Агрегатор) элемент;
+            return агрегатор.группы().stream()
+                .map( группа -> агрегатор.состав( группа ) );
+        }
+        else if( элемент instanceof Составной )
+        {
+            return Stream.of( ( (Составной) элемент ).состав() );/*.stream()
+                    .filter( э -> э instanceof Элемент )
+                    .map( э -> (Элемент) э );*/
+        }
+        else if( элемент instanceof Контейнер )
+        {
+            return коллекции( ( (Контейнер) элемент ).вложение() );
+        }
+        else
+            return Stream.empty();/* Collections.<Элемент>emptyList().stream();/*.singleton( элемент ).stream()
+                .filter( ФИЛЬТР_СОСТАВНОЙ )
+                .flatMap( ТИП_СОСТАВНОЙ.andThen( ЭКСТРАКТОР_СОСТАВЛЯЮЩИХ ) );*/
+    }
+
     private static void разобратьДерево( TreeItem<Элемент> ti )
     {
         Элемент элемент = ti.getValue();
@@ -136,9 +195,7 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
     
     private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостава( Элемент элемент )
     {
-        return Collections.singleton( элемент ).stream()
-                .filter( o -> o instanceof Составной )
-                .map( ТИП_СОСТАВНОЙ.andThen( Составной::состав ) )
+        return коллекции( элемент )
                 .filter( ФИЛЬТР_НАБЛЮДАЕМЫЙ )
                 .map( ТИП_НАБЛЮДАЕМЫЙ.andThen( ЭКСТРАКТОР_НАБЛЮДАТЕЛИ ) );
     }
@@ -148,7 +205,7 @@ final class DelayedNamedTreeItem extends TreeItem<Элемент>
         return (Stream)Collections.singleton( элемент ).stream()
                 .filter( ФИЛЬТР_СВОЙСТВЕННЫЙ )
                 .map( ТИП_СВОЙСТВЕННЫЙ.andThen( Полисвойственный::свойства )
-                        .andThen( э -> э.свойство( НаблюдаемыеСвойства.СОСТОЯНИЕ ) ) )
+                        .andThen(э -> э.свойство( КаталогФабричныхСвойств.СОСТОЯНИЕ ) ) )
                 .filter(  э -> э != null );
     }
     private static Stream<Collection<Наблюдатель<?>>> наблюдателиСостояния( Элемент элемент )

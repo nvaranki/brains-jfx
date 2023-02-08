@@ -4,7 +4,7 @@ import com.varankin.brains.jfx.analyser.rating.Ранжируемый;
 import com.varankin.brains.jfx.analyser.rating.СтандартныйРанжировщик;
 import com.varankin.brains.artificial.Элемент;
 import com.varankin.brains.jfx.JavaFX;
-import com.varankin.brains.Контекст;
+import com.varankin.brains.Конфигурация;
 import com.varankin.characteristic.*;
 import com.varankin.util.LoggerX;
 import java.util.*;
@@ -24,7 +24,7 @@ import javafx.scene.paint.Color;
 /**
  * Значение, отображаемое на графике.
  * 
- * @author &copy; 2016 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 final class Value
 {
@@ -61,7 +61,7 @@ final class Value
         observableProperty.addListener( this::onObservableChanged );
         convertorProperty = new SimpleObjectProperty<>();
         
-        bufferProperty = new SimpleIntegerProperty( Integer.valueOf( JavaFX.getInstance().контекст.параметр( Контекст.Параметры.BUFFER ) ) );
+        bufferProperty = new SimpleIntegerProperty( Integer.valueOf( JavaFX.getInstance().контекст.конфигурация.параметр( Конфигурация.Параметры.BUFFER ) ) );
         colorProperty = new SimpleObjectProperty<>( colors.next() );
         patternProperty = new SimpleObjectProperty<>( patterns.next() );
         painterProperty = new ReadOnlyObjectWrapper<>();
