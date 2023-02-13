@@ -8,7 +8,7 @@ import static com.varankin.brains.db.xml.type.XmlКлассJava.*;
 
 /**
  *
- * @author &copy; 2021 Николай Варанкин
+ * @author &copy; 2023 Николай Варанкин
  */
 public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 {
@@ -16,12 +16,14 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
 
     private final FxPropertyImpl<Назначение> НАЗНАЧЕНИЕ;
     private final FxPropertyImpl<String> КОД;
+    private final FxPropertyImpl<String> ОПЦИИ;
 
     public FxКлассJava( DbКлассJava элемент ) 
     {
         super( элемент );
         НАЗНАЧЕНИЕ = new FxPropertyImpl<>( элемент, "назначение", КЛЮЧ_А_НАЗНАЧЕНИЕ, элемент::назначение, элемент::назначение );
         КОД        = new FxPropertyImpl<>( элемент, "код",        КЛЮЧ_А_КОД,        элемент::код,        элемент::код        );
+        ОПЦИИ      = new FxPropertyImpl<>( элемент, "опции",      КЛЮЧ_А_ОПЦИИ,      элемент::опции,      элемент::опции      );
     }
     
     
@@ -33,6 +35,11 @@ public final class FxКлассJava extends FxЭлемент<DbКлассJava>
     public FxProperty<String> код()
     {
         return КОД;
+    }
+
+    public FxProperty<String> опции()
+    {
+        return ОПЦИИ;
     }
 
     @Override

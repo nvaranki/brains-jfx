@@ -90,7 +90,7 @@ public final class ActionProcessor //TODO RT-37820
     private static final Predicate<FxАтрибутный> pNewСигнал = i -> i instanceof FxПроект || i instanceof FxМодуль;
     private static final Predicate<FxАтрибутный> pNewСоединение = i -> i instanceof FxФрагмент || i instanceof FxПоле || i instanceof FxМодуль
             || i instanceof FxРасчет || i instanceof FxЛента;
-    private static final Predicate<FxАтрибутный> pNewТекстовыйБлок = i -> i instanceof FxЗаметка || i instanceof FxГрафика || i instanceof FxПараметр;
+    private static final Predicate<FxАтрибутный> pNewТекстовыйБлок = i -> i instanceof FxЗаметка || i instanceof FxГрафика || i instanceof FxПараметр || i instanceof FxКлассJava;
     private static final Predicate<FxАтрибутный> pNewТочка = i -> i instanceof FxРасчет || i instanceof FxТочка;
     private static final Predicate<FxАтрибутный> pNewФрагмент = i -> i instanceof FxПроект || i instanceof FxМодуль;
     private static final Predicate<FxАтрибутный> pNewXmlNameSpace = i -> i instanceof FxАрхив;
@@ -188,6 +188,8 @@ public final class ActionProcessor //TODO RT-37820
     private static final Function<FxГрафика,FxТекстовыйБлок> фабрикаГрафикаТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
     private static final Function<FxПараметр,FxТекстовыйБлок> фабрикаПараметрТекст
+            = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
+    private static final Function<FxКлассJava,FxТекстовыйБлок> фабрикаКлассТекст
             = e -> (FxТекстовыйБлок)e.архив().создатьНовыйЭлемент( XmlТекстовыйБлок.КЛЮЧ_Э_Т_БЛОК );
     private static final Function<FxГрафика,FxИнструкция> фабрикаГрафикаИнструкция
             = e -> (FxИнструкция)e.архив().создатьНовыйЭлемент( XmlИнструкция.КЛЮЧ_Э_ИНСТРУКЦИЯ );
@@ -404,6 +406,7 @@ public final class ActionProcessor //TODO RT-37820
         onActionNew( фабрикаЗаметкаТекст, FxЗаметка.class, e -> e.тексты() );
         onActionNew( фабрикаГрафикаТекст, FxГрафика.class, e -> e.тексты() );
         onActionNew( фабрикаПараметрТекст, FxПараметр.class, e -> e.тексты() );
+        onActionNew( фабрикаКлассТекст, FxКлассJava.class, e -> e.тексты() );
     }
 
     public void onActionNewТочка() 
