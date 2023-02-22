@@ -77,6 +77,7 @@ public final class FxФабрика implements Function<DbАтрибутный,F
         if( элемент instanceof DbЗаметка       ) p = new FxЗаметка( (DbЗаметка)элемент ); else
         if( элемент instanceof DbИнструкция    ) p = new FxИнструкция( (DbИнструкция)элемент ); else
         if( элемент instanceof DbТекстовыйБлок ) p = new FxТекстовыйБлок( (DbТекстовыйБлок)элемент ); else
+        if( элемент instanceof DbАтрибутный    ) p = new FxАтрибутный( (DbАтрибутный)элемент ); else
         throw new ClassCastException( элемент.getClass().getName() );//p = (x) -> new TextArea("DEBUG: Loaded element will be here in the near future.");
 //                                                 p = new FxАтрибутный( (DbАтрибутный)элемент );
 //                content = new TextArea("DEBUG: Loaded element will be here."); //TODO not impl
