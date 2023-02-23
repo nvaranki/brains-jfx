@@ -118,11 +118,7 @@ class GuiBuilder
         информатор.setLevel( Level.INFO ); //TODO setup
         //TODO setup
         контекст.регистратор().addHandler( информатор );
-        ScrollPane spoc = new ScrollPane();
-        spoc.setContent( табло );
-        spoc.setFitToHeight( true );
-        spoc.setFitToWidth( true );
-        return spoc;
+        return табло;
     }
 
 }
